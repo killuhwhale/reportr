@@ -56,7 +56,6 @@ class ParcelView extends Component {
   }
 
   render(){
-    console.log(this.state)
     return(
       <Grid container item xs={12}>
           {this.state.field_parcels.length > 0 ?

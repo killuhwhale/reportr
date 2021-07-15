@@ -37,29 +37,48 @@ class ParcelNumber extends Component {
 
 
   formatNumber(num){
-    // console.log("Incoming number")
-    // console.log(num)
-    let _num = num.replace(/~/g, "")
-    // Take current number and format to => ____-____-____-____
-    // console.log("Outgoing number")
-    // console.log(_num)
-
+    let _num = num.replace(/-/g, "").substring(0,16)
+    let template = "    -    -    -    "
     if(_num.length === 0){
       return [_num, ""]
     }
-    return [_num, `~${_num}~`]
+    let fmt = [...template].map((ch, i) => {
+      if(ch === "-"){
+        return ch
+      }
+      let hyphenOffset = parseInt(i / 5)
+      if(i < _num.length + hyphenOffset){
+        return _num.charAt(i - hyphenOffset)
+      }
+      return ch
+    })
+    return [_num.trim(), fmt.join("")]
   }
 
   onChange(ev){
     const {name, value} = ev.target
+
+    let caret = ev.target.selectionStart;
+    const element = ev.target;
+    
     // Do processing on incoming number setState to both
     // pnumber and formmated_number
     let [ num, formattedNumber ] = this.formatNumber(value)
+    let num_len = [...num].length
+    console.log(num, num_len)
+    if([4,9,13].indexOf(num_len) > -1){
+      caret++
+    }
+
     this.setState({
       pnumber: num,
       formattedNumber: formattedNumber
     }, () => {
       this.onUpdate()
+      window.requestAnimationFrame(() => {
+        element.selectionStart = caret;
+        element.selectionEnd = caret;
+      });
     })
   }
 
