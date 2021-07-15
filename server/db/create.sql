@@ -39,11 +39,10 @@ CREATE TABLE IF NOT EXISTS parcels(
 );
 
 CREATE TABLE IF NOT EXISTS field_parcel(
+  pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
   field_id INT NOT NULL,
   parcel_id INT NOT NULL,
-
-  CONSTRAINT pk PRIMARY KEY (dairy_id, field_id, parcel_id),
   UNIQUE(dairy_id, field_id, parcel_id),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 

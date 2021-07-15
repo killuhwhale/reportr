@@ -23,10 +23,11 @@ import { withTheme } from '@material-ui/core/styles';
 class ParcelNumber extends Component {
   constructor(props){
     super(props)
+    let [num, fnum] = this.formatNumber(props.parcel.pnumber)
     this.state = {
       parcel: props.parcel,
-      p_number: props.parcel.p_number,
-      formattedNumber: ""
+      pnumber: num,
+      formattedNumber: fnum
     }
   }
   
@@ -34,13 +35,18 @@ class ParcelNumber extends Component {
     return state
   }
 
+
   formatNumber(num){
-    console.log("Incoming number")
-    console.log(num)
+    // console.log("Incoming number")
+    // console.log(num)
     let _num = num.replace(/~/g, "")
     // Take current number and format to => ____-____-____-____
-    console.log("Outgoing number")
-    console.log(_num)
+    // console.log("Outgoing number")
+    // console.log(_num)
+
+    if(_num.length === 0){
+      return [_num, ""]
+    }
     return [_num, `~${_num}~`]
   }
 
@@ -50,7 +56,7 @@ class ParcelNumber extends Component {
     // pnumber and formmated_number
     let [ num, formattedNumber ] = this.formatNumber(value)
     this.setState({
-      p_number: num,
+      pnumber: num,
       formattedNumber: formattedNumber
     }, () => {
       this.onUpdate()
@@ -59,10 +65,11 @@ class ParcelNumber extends Component {
 
   onUpdate(){
     // send number to parent for storage
-    this.props.onUpdate(this.props.parcel.pk, this.state.p_number)
+    this.props.onUpdate(this.props.parcel.pk, this.state.pnumber)
   }
   
   render(){
+    // console.log(this.state.parcel)
     return(
       <Grid item container xs={12}>
         <Grid item xs={12}>
@@ -70,7 +77,7 @@ class ParcelNumber extends Component {
             name='pnumber'  
             value={this.state.formattedNumber}
             onChange={this.onChange.bind(this)}
-            label="APN Accessor Parcel Number"
+            label="APN"
             style={{width: "100%"}}        
             placeholder="    -    -    "
           />

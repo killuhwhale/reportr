@@ -95,6 +95,7 @@ app.get("/api/field_parcel/:dairy_id", (req, res) => {
       res.json(result.rows)
       return;    
     }
+    console.log(err)
     res.json({"test": "Get all field_parcel unsuccessful"});
   })
 });
@@ -122,21 +123,22 @@ app.post("/api/parcels/create", (req, res) => {
     res.json({"test": "Inserted parcel unsuccessful"});
   })
 });
-app.post("/api/fields_parcel/create", (req, res) => {
+app.post("/api/field_parcel/create", (req, res) => {
   const {dairy_id, field_id, parcel_id} = req.body
-  db.insertFieldParcel([title, acres, cropable, dairy_id], (err, result) => {
+  db.insertFieldParcel([dairy_id, field_id, parcel_id], (err, result) => {
     console.log(result)
     if(!err){
-      res.json({"test": "Inserted field successfully"});
+      res.json({"test": "Inserted field_parcel successfully"});
       return;    
     }
     console.log(err)
-    res.json({"test": "Inserted field unsuccessful"});
+    res.json({"test": "Inserted field_parcel unsuccessful"});
   })
 });
 app.post("/api/fields/update", (req, res) => {
   console.log("Updating....", req.body.data)
-  db.updateField(req.body.data, (err, result) => {
+  const { title, acres, cropable, pk } = req.body.data
+  db.updateField([title, acres, cropable, pk], (err, result) => {
     console.log(result)
     if(!err){
       res.json({"test": "Updated field successfully"});
@@ -148,7 +150,8 @@ app.post("/api/fields/update", (req, res) => {
 });
 app.post("/api/parcels/update", (req, res) => {
   console.log("Updating....", req.body.data)
-  db.updateField(req.body.data, (err, result) => {
+  const { pnumber, pk } = req.body.data
+  db.updateParcel([pnumber, pk], (err, result) => {
     console.log(result)
     if(!err){
       res.json({"test": "Updated parcel successfully"});
@@ -158,16 +161,16 @@ app.post("/api/parcels/update", (req, res) => {
     res.json({"test": "Updated parcel unsuccessful"});
   })
 });
-app.post("/api/field_parcel/update", (req, res) => {
-  console.log("Updating....", req.body.data)
-  db.updateField(req.body.data, (err, result) => {
+app.post("/api/field_parcel/delete", (req, res) => {
+  console.log("Deleting....", req.body.data)
+  db.rmFieldParcel(req.body.data, (err, result) => {
     console.log(result)
     if(!err){
-      res.json({"test": "Updated field_parcel successfully"});
+      res.json({"test": "Deleted field_parcel successfully"});
       return;    
     }
     console.log(err)
-    res.json({"test": "Updated field_parcel unsuccessful"});
+    res.json({"test": "Deleted field_parcel unsuccessful"});
   })
 });
 // app.post("/api/postImage", (req, res) => {

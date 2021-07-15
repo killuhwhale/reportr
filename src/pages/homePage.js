@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField, AppBar,  Tabs, Tab
 }from '@material-ui/core'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
@@ -8,7 +8,7 @@ import AddIcon from '@material-ui/icons/Add'
 import DairyTab from "../comps/Dairy/dairyTab"
 import AddDairyModal from "../comps/Modals/addDairyModal"
 import { get, post, uploadFiles } from "../utils/requests"
-
+import "../App.css"
 const BASE_URL = "http://localhost:3001"
 const COUNTIES = ["Merced", "San Joaquin"]
 const BASINS = ["River", "Rio"]
@@ -24,6 +24,13 @@ class HomePage extends Component {
       showAddDairyModal: false,
       createDairyTitle: "",
       dairy: 0, // current dairy being edited
+      tabs: {
+        0: "show",
+        1: "hide",
+        2: "hide",
+        3: "hide"
+      },
+      tabIndex: 0
     }
   }
   static getDerivedStateFromProps(props, state){
@@ -93,6 +100,15 @@ class HomePage extends Component {
       console.log(err)
     })
   }
+
+  handleTabChange(ev, index){
+    console.log("Tab change")
+    console.log(ev, index)
+    let tabs = this.state.tabs
+    tabs[this.state.tabIndex] = "hide"
+    tabs[index] = "show"
+  	this.setState({tabIndex: index, tabs: tabs})
+  }
   
 
   render(){
@@ -144,16 +160,31 @@ class HomePage extends Component {
         </Grid>
         <hr />
         <Grid item xs={12}>
-          <DairyTab 
-            reportingYr={this.state.reportingYr}
-            dairy={this.state.dairies.length > 0? this.state.dairies[this.state.dairy]: {}}
-            basins={BASINS}
-            counties={COUNTIES}
-            breeds={BREEDS}
-            onChange={this.onDairyChange.bind(this)}
-            onUpdate={this.updateDairy.bind(this)}
-          />
+        <AppBar position="static">
+          <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
+              onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example">
+            <Tab label="Dairy"/>
+            <Tab label="Add Gym" />
+          </Tabs>
+        </AppBar>
+
+          <Grid item xs={12} className={`${this.state.tabs[0]}`}>
+            <DairyTab 
+              reportingYr={this.state.reportingYr}
+              dairy={this.state.dairies.length > 0? this.state.dairies[this.state.dairy]: {}}
+              basins={BASINS}
+              counties={COUNTIES}
+              breeds={BREEDS}
+              onChange={this.onDairyChange.bind(this)}
+              onUpdate={this.updateDairy.bind(this)}
+            />
+          </Grid>
+          <Grid item xs={12} className={`${this.state.tabs[1]}`}>
+            <Typography>Test aksmdlasmdlskma</Typography>
+          </Grid>
         </Grid>
+        
+
         <AddDairyModal
           open={this.state.showAddDairyModal}
           actionText="Add"

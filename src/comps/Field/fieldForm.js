@@ -55,7 +55,7 @@ class FieldForm extends Component {
   render(){
     return(
       <Grid item container xs={12}>
-        <Grid item xs={12}>
+        <Grid item xs={4} style={{marginTop: "16px"}}>
           <TextField
             name='title'  
             value={this.state.field.title}
@@ -64,7 +64,7 @@ class FieldForm extends Component {
             style={{width: "100%"}}        
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={4} style={{marginTop: "16px"}}>
           <TextField
             name='acres'  
             value={this.state.field.acres}
@@ -73,7 +73,7 @@ class FieldForm extends Component {
             style={{width: "100%"}}        
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={4} style={{marginTop: "16px"}}>
           <TextField
             name='cropable'  
             value={this.state.field.cropable}

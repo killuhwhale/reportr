@@ -5,6 +5,16 @@ import { withTheme } from '@material-ui/core/styles';
 import FieldForm from "../Field/fieldForm"
 
 
+// Creates a new Field
+// Starting with empty Field object,
+//  Give to FieldForm to update each TextField to that object
+//  This calls on udpated and sets the state to save the updated info
+// The onAction method given by the parent will send the Field object to be saved in the data base
+//                  Data flow
+//       this file          <==>   destn.
+//  empty data in Modal      => form component
+//  Updated data from user   <= form component
+//  Updated data -> onAction => parent
 
 class AddFieldModal extends Component{
 	constructor(props){

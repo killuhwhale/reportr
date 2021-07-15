@@ -122,8 +122,40 @@ module.exports = {
   },
   getFieldParcel: (dairy_id, callback)=> {
     return pool.query(
-      format("SELECT * FROM field_parcel where dairy_id = %L", dairy_id),
+      format(
+        `SELECT
+            field_parcel.pk,
+            dairies.title as dairyTitle,
+            parcels.pnumber, fields.title, fields.acres,
+            fields.cropable FROM field_parcel
+          JOIN fields
+          ON field_parcel.field_id = fields.pk
+          JOIN parcels
+          ON field_parcel.parcel_id = parcels.pk
+          JOIN dairies
+          ON field_parcel.dairy_id = dairies.pk
+          WHERE field_parcel.dairy_id = %L
+         `
+        , dairy_id),
       [],
+      callback
+    )
+  },
+  updateField: (values, callback) => {
+    return pool.query(`UPDATE fields SET
+      title = $1,
+      acres = $2,
+      cropable = $3
+      WHERE pk=$4`, 
+      values,
+      callback
+    )
+  },
+  updateParcel: (values, callback) => {
+    return pool.query(`UPDATE parcels SET
+      pnumber = $1 
+      WHERE pk=$2`, 
+      values,
       callback
     )
   },
