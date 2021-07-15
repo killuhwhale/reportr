@@ -1,25 +1,88 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {
+  Switch, Route, Link, BrowserRouter
+} from 'react-router-dom';
+import {
+  createTheme, withStyles, ThemeProvider, responsiveFontSizes
+} from '@material-ui/core/styles';
+import {
+  Grid, Paper
+} from '@material-ui/core';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import apptheme from "./css/apptheme"
+import HomePage  from "./pages/homePage"
+
+const BackgroundGrid = withStyles(theme =>({
+  root:{
+    backgroundColor: theme.palette.background.paper,
+    position: "absolute",
+    minHeight: "100vh",
+    maxHeight: "100vh",
+    overflowY: "auto"
+  }
+}))(Grid)
+
+const breakPoints = ['xs', 'sm', 'md', 'lg', 'xl']
+let darkTheme = responsiveFontSizes(createTheme(apptheme), breakPoints)
+
+export default class App extends React.Component {
+  constructor(props){
+    super(props)
+    this.state={
+      theme: darkTheme,
+      alertInfo: {},
+      alertOpen: false,
+    }
+  }
+
+  static getDerivedStateFromProps(props, state){
+    return state
+  }
+
+  onAlert(alert){
+    console.log(alert)
+    // this.setState({alertInfo: alert, alertOpen: true})
+  }
+
+  onCloseAlert(){
+    // this.setState({alertOpen: false, alertInfo: false})
+  }
+
+  render(){
+    return(
+      <BrowserRouter >
+      <ThemeProvider theme={this.state.theme}>
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <BackgroundGrid container direction="column" alignItems="center">
+      <Grid item container xs={12} sm={11} md={10} lg={9} xl={8}
+        style={{
+          minHeight: "100%",
+          paddingTop: "8px",
+          paddingLeft: "8px",
+          paddingRight: "8px"
+        }}
+      >
+        <Paper style={{width: "100%"}}>
+        <Switch>
+          <Route exact path="/">
+            <HomePage
+              onAlert={this.onAlert.bind(this)}
+            />
+          </Route>
+
+          
+        </Switch>
+        </Paper>
+      </Grid>
+      </BackgroundGrid>
+      </MuiPickersUtilsProvider>
+      </ThemeProvider>
+      </BrowserRouter>
+        
+    )
+  }
 }
 
-export default App;
+// App.contextType = FirebaseAuthContext
