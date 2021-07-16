@@ -61,7 +61,7 @@ class ParcelView extends Component {
           {this.state.field_parcels.length > 0 ?
             this.state.field_parcels.map((fieldParcel, i) => {
               return(
-              <Grid key={`fieldParcel${i}`} item container xs={6} justifyContent="center" alignItems="center">
+              <Grid key={`fieldParcel1337${i}`} item container xs={6} justifyContent="center" alignItems="center">
                 <Grid item xs={10} >
                   <Typography>{`${fieldParcel.title} - ${fieldParcel.pnumber}`}</Typography>  
                 </Grid>

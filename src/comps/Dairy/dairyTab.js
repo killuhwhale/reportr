@@ -11,6 +11,7 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import { get, post } from '../../utils/requests';
 import ParcelView from "../Parcel/parcelView"
+import OperatorView from "../Operators/operatorView"
 import AddParcelModal from "../Modals/addParcelModal"
 import AddFieldModal from "../Modals/addFieldModal"
 
@@ -88,7 +89,6 @@ class DairyTab extends Component {
         this.toggleFieldModal(false)
       })
   }
-
   toggleFieldModal(val) {
     this.setState({ showAddFieldModal: val })
   }
@@ -102,7 +102,20 @@ class DairyTab extends Component {
             <Typography variant="h2">
               Dairy Information
             </Typography>
-            <Grid item container xs={12}>
+            <Grid item xs={12}>
+              <OperatorView
+                dairy={this.state.dairy}
+              
+              />
+            </Grid>
+
+
+            <Grid item container xs={12} style={{marginTop: "64px"}}>
+              <Grid item xs={12}>
+                <Typography variant="h2">
+                  Address
+                </Typography>
+              </Grid>
               <Grid item xs={4}>
                 <TextField
                   name='title'
@@ -236,7 +249,7 @@ class DairyTab extends Component {
               </Grid>
               </Grid>
             </Grid>
-            <Grid item container align="center" xs={12} style={{marginTop:"24px"}} spacing={2}>
+            <Grid item container key="parcel_FieldList"align="center" xs={12} style={{marginTop:"24px"}} spacing={2}>
               <Grid item xs={6}>
                 <Grid item xs={12}>
                   <Typography variant="h4">
@@ -256,18 +269,16 @@ class DairyTab extends Component {
                 </Tooltip>
               </Grid>
               <Grid item xs={6}>           
-              <Grid item xs={12}>
                 <Typography variant="h4">
                   Fields
                 </Typography>
-              </Grid>
                 <Tooltip title="Add field to dairy">
-                <Button 
+                  <Button 
                     onClick={() => this.toggleFieldModal(true)} 
                     fullWidth variant="outlined" color="primary"
                     style={{marginTop:"16px"}}
                   >
-                     <Typography variant="subtitle2">
+                    <Typography variant="subtitle2">
                       Add Field
                     </Typography>
                   </Button>
@@ -280,14 +291,8 @@ class DairyTab extends Component {
                 dairy={this.state.dairy}
               />
             </Grid>
-          </Grid>
-          :
-          <React.Fragment>
-            <Grid item xs={12}>
-              <Typography>No dairy selected!</Typography>
-            </Grid>
-          </React.Fragment>
-        }
+
+
         <AddParcelModal
           open={this.state.showAddParcelModal}
           actionText="Add"
@@ -295,7 +300,6 @@ class DairyTab extends Component {
           modalText={`Add Parcel to Dairy ${this.state.dairy.title}`}
           parcel={{ pnumber: "" }}
           onUpdate={this.onParcelChange.bind(this)}
-
           onAction={this.createParcel.bind(this)}
           onClose={() => this.toggleParcelModal(false)}
         />
@@ -307,6 +311,15 @@ class DairyTab extends Component {
           onAction={this.createField.bind(this)}
           onClose={() => this.toggleFieldModal(false)}
         />
+          </Grid>
+          :
+          <React.Fragment>
+            <Grid item xs={12}>
+              <Typography>No dairy selected!</Typography>
+            </Grid>
+          </React.Fragment>
+        }
+        
       </React.Fragment>
     )
   }

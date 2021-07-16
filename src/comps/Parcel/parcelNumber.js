@@ -37,7 +37,7 @@ class ParcelNumber extends Component {
 
 
   formatNumber(num){
-    let _num = num.replace(/-/g, "").substring(0,16)
+    let _num = num.replace(/-/g, "").replace(/\s/g, "").substring(0,16)
     let template = "    -    -    -    "
     if(_num.length === 0){
       return [_num, ""]
@@ -67,6 +67,7 @@ class ParcelNumber extends Component {
     let num_len = [...num].length
     console.log(num, num_len)
     if([4,9,13].indexOf(num_len) > -1){
+      
       caret++
     }
 
@@ -90,7 +91,7 @@ class ParcelNumber extends Component {
   render(){
     // console.log(this.state.parcel)
     return(
-      <Grid item container xs={12}>
+      <Grid item container xs={12} key={this.props.key}>
         <Grid item xs={12}>
           <TextField
             name='pnumber'  

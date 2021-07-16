@@ -7,14 +7,6 @@ const pool = new Pool({
   password: 'mostdope',
   port: 5432,
 })
-// Test connection
-// pool.query('SELECT NOW()', (err, res) => {
-//   if(err){
-//     console.log("Connection Unsuccessful.")
-//   }else{
-//     console.log("Connection Successful.")
-//   }
-// })
 
 
 /** Tables
@@ -24,21 +16,6 @@ const pool = new Pool({
  *  parcels
  *  
  */
-
-// db.query("SQL HERE", [val1, val2, ...], callback(err, res))
-// sql = format('INSERT INTO t (name, age) VALUES %L', myNestedArray); z
-// console.log(sql); // INSERT INTO t (name, age) VALUES ('a', '1'), ('b', '2')z
-/**
- * street VARCHAR(100) NOT NULL,
-  cross_street VARCHAR(50),
-  county VARCHAR(30),
-  city VARCHAR(30) NOT NULL,
-  city_state VARCHAR(3),
-  city_zip VARCHAR(20) NOT NULL,
-  title VARCHAR(30) NOT NULL,
-  basin_plan VARCHAR(30),
-  began timestamp,
- */
 module.exports = {
   query: (text, params, callback) => {
     return pool.query(text, params, callback)
@@ -46,7 +23,7 @@ module.exports = {
   insert: (stmt, values, callback) => {
     return pool.query(format(stmt, values), [], callback)
   },
-  getDairies: (reportingYr, callback)=> {
+  getDairies: (reportingYr, callback) => {
     return pool.query(
       format("SELECT * FROM dairies where reporting_yr = %L", reportingYr),
       [],
@@ -61,7 +38,7 @@ module.exports = {
       [],
       callback
     )
-  }, 
+  },
   updateDairy: (values, callback) => {
     return pool.query(`UPDATE dairies SET
       street = $1, 
@@ -74,7 +51,7 @@ module.exports = {
       basin_plan = $8,
       p_breed = $9,
       began = $10
-      WHERE pk=$11`, 
+      WHERE pk=$11`,
       values,
       callback
     )
@@ -88,6 +65,30 @@ module.exports = {
       callback
     )
   },
+  getFields: (dairy_id, callback) => {
+    return pool.query(
+      format("SELECT * FROM fields where dairy_id = %L", dairy_id),
+      [],
+      callback
+    )
+  },
+  updateField: (values, callback) => {
+    return pool.query(`UPDATE fields SET
+      title = $1,
+      acres = $2,
+      cropable = $3
+      WHERE pk=$4`,
+      values,
+      callback
+    )
+  },
+  rmField: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM fields where pk = %L", id),
+      [],
+      callback
+    )
+  },
   insertParcel: (values, callback) => {
     console.log("Values in DB Pool query")
     console.log(values)
@@ -96,7 +97,29 @@ module.exports = {
       [],
       callback
     )
-  }, 
+  },
+  getParcels: (dairy_id, callback) => {
+    return pool.query(
+      format("SELECT * FROM parcels where dairy_id = %L", dairy_id),
+      [],
+      callback
+    )
+  },
+  updateParcel: (values, callback) => {
+    return pool.query(`UPDATE parcels SET
+      pnumber = $1 
+      WHERE pk=$2`,
+      values,
+      callback
+    )
+  },
+  rmParcel: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM parcels where pk = %L", id),
+      [],
+      callback
+    )
+  },
   insertFieldParcel: (values, callback) => {
     console.log("Values in DB Pool query")
     console.log(values)
@@ -106,21 +129,7 @@ module.exports = {
       callback
     )
   },
-  getFields: (dairy_id, callback)=> {
-    return pool.query(
-      format("SELECT * FROM fields where dairy_id = %L", dairy_id),
-      [],
-      callback
-    )
-  },
-  getParcels: (dairy_id, callback)=> {
-    return pool.query(
-      format("SELECT * FROM parcels where dairy_id = %L", dairy_id),
-      [],
-      callback
-    )
-  },
-  getFieldParcel: (dairy_id, callback)=> {
+  getFieldParcel: (dairy_id, callback) => {
     return pool.query(
       format(
         `SELECT
@@ -141,44 +150,87 @@ module.exports = {
       callback
     )
   },
-  updateField: (values, callback) => {
-    return pool.query(`UPDATE fields SET
-      title = $1,
-      acres = $2,
-      cropable = $3
-      WHERE pk=$4`, 
-      values,
-      callback
-    )
-  },
-  updateParcel: (values, callback) => {
-    return pool.query(`UPDATE parcels SET
-      pnumber = $1 
-      WHERE pk=$2`, 
-      values,
-      callback
-    )
-  },
-  rmField: (id, callback)=> {
-    return pool.query(
-      format("DELETE FROM fields where pk = %L", id),
-      [],
-      callback
-    )
-  },
-  rmParcel: (id, callback)=> {
-    return pool.query(
-      format("DELETE FROM parcels where pk = %L", id),
-      [],
-      callback
-    )
-  },
-  rmFieldParcel: (id, callback)=> {
+  rmFieldParcel: (id, callback) => {
     return pool.query(
       format("DELETE FROM field_parcel where pk = %L", id),
       [],
       callback
     )
   },
+  insertOperator: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      format(`INSERT INTO operators(
+        dairy_id, title, primary_phone, secondary_phone,
+        street, city, city_state, city_zip, is_owner, is_responsible
+        ) VALUES (%L)`, values),
+      [],
+      callback
+    )
+  },
+  getOperators: (dairy_id, callback) => {
+    return pool.query(
+      format("SELECT * FROM operators where dairy_id = %L", dairy_id),
+      [],
+      callback
+    )
+  },
+  updateOperator: (values, callback) => {
+    return pool.query(`UPDATE operators SET
+      dairy_id = $1,
+      title = $2,
+      primary_phone = $3,
+      secondary_phone = $4,
+      street = $5,
+      city = $6, 
+      city_state = $7,
+      city_zip = $8, 
+      is_owner = $9, 
+      is_responsible = $10 
+      WHERE pk=$11`,
+      values,
+      callback
+    )
+  },
+  rmOperator: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM operators where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  insertHerd: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      format(`INSERT INTO herds(
+        dairy_id) VALUES (%L)`, values),
+      [],
+      callback
+    )
+  },
+  getHerd: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT * FROM herds WHERE dairy_id = %L`, dairy_id),
+      [],
+      callback
+    )
+  },
+  updateHerd: (values, callback) => {
+    return pool.query(`UPDATE herds SET
+      milk_cows = $1,
+      dry_cows = $2,
+      bred_cows = $3,
+      cows = $4,
+      calf_young = $5,
+      calf_old = $6 
+      WHERE pk=$7`,
+      values,
+      callback
+    )
+  },
+
 }
 

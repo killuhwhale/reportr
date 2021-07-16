@@ -69,7 +69,7 @@ class FieldParcelJoinModal extends Component{
                   >
                     {this.state.fields.map((field, i) => {
                       return(
-                        <option key={`fieldJoin${i}`} value={i}>{field.title}</option>
+                        <option key={`fieldJoinFPJM${i}`} value={i}>{field.title}</option>
                       )
                     })}
                   </TextField>
@@ -87,7 +87,7 @@ class FieldParcelJoinModal extends Component{
                   >
                     {this.state.parcels.map((parcel, i) => {
                       return(
-                        <option key={`parcelJoin${i}`} value={i}>{parcel.pnumber}</option>
+                        <option key={`parcelJoinFPJM${i}`} value={i}>{parcel.pnumber}</option>
                       )
                     })}
                   </TextField>

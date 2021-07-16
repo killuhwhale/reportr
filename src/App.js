@@ -56,7 +56,7 @@ export default class App extends React.Component {
       <ThemeProvider theme={this.state.theme}>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <BackgroundGrid container direction="column" alignItems="center">
-      <Grid item container xs={12} sm={11} md={10} lg={9} xl={8}
+      <Grid item container xs={12}
         style={{
           minHeight: "100%",
           paddingTop: "8px",

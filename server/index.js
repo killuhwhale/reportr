@@ -76,29 +76,6 @@ app.get("/api/fields/:dairy_id", (req, res) => {
     res.json({"test": "Get all fields unsuccessful"});
   })
 });
-app.get("/api/parcels/:dairy_id", (req, res) => {
-	db.getParcels(req.params.dairy_id, 
-  (err, result) => {
-    if(!err){
-      console.log(result.rows)
-      res.json(result.rows)
-      return;    
-    }
-    res.json({"test": "Get all parcels unsuccessful"});
-  })
-});
-app.get("/api/field_parcel/:dairy_id", (req, res) => {
-	db.getFieldParcel(req.params.dairy_id, 
-  (err, result) => {
-    if(!err){
-      console.log(result.rows)
-      res.json(result.rows)
-      return;    
-    }
-    console.log(err)
-    res.json({"test": "Get all field_parcel unsuccessful"});
-  })
-});
 app.post("/api/fields/create", (req, res) => {
   const {title, acres, cropable, dairy_id} = req.body.data
   db.insertField([title, acres, cropable, dairy_id], (err, result) => {
@@ -109,30 +86,6 @@ app.post("/api/fields/create", (req, res) => {
     }
     console.log(err)
     res.json({"test": "Inserted field unsuccessful"});
-  })
-});
-app.post("/api/parcels/create", (req, res) => {
-  
-  db.insertParcel(req.body.data, (err, result) => {
-    console.log(result)
-    if(!err){
-      res.json({"test": "Inserted parcel successfully"});
-      return;    
-    }
-    console.log(err)
-    res.json({"test": "Inserted parcel unsuccessful"});
-  })
-});
-app.post("/api/field_parcel/create", (req, res) => {
-  const {dairy_id, field_id, parcel_id} = req.body
-  db.insertFieldParcel([dairy_id, field_id, parcel_id], (err, result) => {
-    console.log(result)
-    if(!err){
-      res.json({"test": "Inserted field_parcel successfully"});
-      return;    
-    }
-    console.log(err)
-    res.json({"test": "Inserted field_parcel unsuccessful"});
   })
 });
 app.post("/api/fields/update", (req, res) => {
@@ -148,6 +101,41 @@ app.post("/api/fields/update", (req, res) => {
     res.json({"test": "Updated field unsuccessful"});
   })
 });
+app.post("/api/fields/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmField(req.body.pk, (err, result) => {
+    console.log(result)
+    if(!err){
+      res.json({"test": "Deleted field successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Deleted field unsuccessful"});
+  })
+});
+app.get("/api/parcels/:dairy_id", (req, res) => {
+	db.getParcels(req.params.dairy_id, 
+  (err, result) => {
+    if(!err){
+      console.log(result.rows)
+      res.json(result.rows)
+      return;    
+    }
+    res.json({"test": "Get all parcels unsuccessful"});
+  })
+});
+app.post("/api/parcels/create", (req, res) => {
+  
+  db.insertParcel(req.body.data, (err, result) => {
+    console.log(result)
+    if(!err){
+      res.json({"test": "Inserted parcel successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Inserted parcel unsuccessful"});
+  })
+});
 app.post("/api/parcels/update", (req, res) => {
   console.log("Updating....", req.body.data)
   const { pnumber, pk } = req.body.data
@@ -159,6 +147,42 @@ app.post("/api/parcels/update", (req, res) => {
     }
     console.log(err)
     res.json({"test": "Updated parcel unsuccessful"});
+  })
+});
+app.post("/api/parcels/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmField(req.body.pk, (err, result) => {
+    console.log(result)
+    if(!err){
+      res.json({"test": "Deleted parcel successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Deleted parcel unsuccessful"});
+  })
+});
+app.get("/api/field_parcel/:dairy_id", (req, res) => {
+	db.getFieldParcel(req.params.dairy_id, 
+  (err, result) => {
+    if(!err){
+      console.log(result.rows)
+      res.json(result.rows)
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Get all field_parcel unsuccessful"});
+  })
+});
+app.post("/api/field_parcel/create", (req, res) => {
+  const {dairy_id, field_id, parcel_id} = req.body
+  db.insertFieldParcel([dairy_id, field_id, parcel_id], (err, result) => {
+    console.log(result)
+    if(!err){
+      res.json({"test": "Inserted field_parcel successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Inserted field_parcel unsuccessful"});
   })
 });
 app.post("/api/field_parcel/delete", (req, res) => {
@@ -173,6 +197,145 @@ app.post("/api/field_parcel/delete", (req, res) => {
     res.json({"test": "Deleted field_parcel unsuccessful"});
   })
 });
+app.post("/api/operators/create", (req, res) => {
+  console.log("Creating....", req.body)
+  const { dairy_id, title, primary_phone, secondary_phone, street, city,
+         city_state, city_zip, is_owner, is_responsible} = req.body
+  db.insertOperator(
+    [
+      dairy_id, title, primary_phone, secondary_phone, street, city,
+      city_state, city_zip, is_owner, is_responsible
+    ],
+    (err, result) => {
+      console.log(result)
+      if(!err){
+        res.json({"test": "Created operator successfully"});
+        return;    
+      }
+      console.log(err)
+      res.json({"test": "Created operator unsuccessful"});
+    }
+  )
+});
+app.get("/api/operators/:dairy_id", (req, res) => {
+	db.getOperators(req.params.dairy_id, 
+  (err, result) => {
+    if(!err){
+      console.log(result.rows)
+      res.json(result.rows)
+      return;    
+    }
+    res.json({"test": "Get all operators unsuccessful"});
+  })
+});
+app.post("/api/operators/update", (req, res) => {
+  console.log("Updating....", req.body)
+  const { 
+    dairy_id ,
+    title,
+    primary_phone,
+    secondary_phone ,
+    street,
+    city, 
+    city_state,
+    city_zip, 
+    is_owner, 
+    is_responsible,
+    pk
+  } = req.body
+  db.updateOperator([
+    dairy_id ,
+    title,
+    primary_phone,
+    secondary_phone ,
+    street,
+    city, 
+    city_state,
+    city_zip, 
+    is_owner, 
+    is_responsible,
+    pk
+  ], (err, result) => {
+    console.log(result)
+    if(!err){
+      res.json({"test": "Updated operator successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Updated operator unsuccessful"});
+  })
+});
+app.post("/api/operators/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmOperator(req.body.pk, (err, result) => {
+    console.log(result)
+    if(!err){
+      res.json({"test": "Deleted operator successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Deleted operator unsuccessful"});
+  })
+});
+
+
+
+app.post("/api/herds/create", (req, res) => {
+  console.log("Creating....", req.body)
+  const { dairy_id } = req.body
+  db.insertHerd(
+    [
+      dairy_id
+    ],
+    (err, result) => {
+      console.log(result)
+      if(!err){
+        res.json({"test": "Created herds successfully"});
+        return;    
+      }
+      console.log(err)
+      res.json({"test": "Created herds unsuccessful"});
+    }
+  )
+});
+app.get("/api/herds/:dairy_id", (req, res) => {
+	db.getHerd(req.params.dairy_id, 
+  (err, result) => {
+    if(!err){
+      console.log(result.rows)
+      res.json(result.rows)
+      return;    
+    }
+    res.json({"test": "Get all herds unsuccessful"});
+  })
+});
+app.post("/api/herds/update", (req, res) => {
+  console.log("Updating....", req.body)
+  const { milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, pk } = req.body
+  db.updateHerd([
+    milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, pk
+  ], (err, result) => {
+    console.log(result)
+    if(!err){
+      res.json({"test": "Updated herds successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Updated herds unsuccessful"});
+  })
+});
+
+
+// udapte
+// dairy_id, milk_cows, dry_cows, bred_cows,
+//         cows, calf_young, calf_old_state
+
+
+
+
+
+
+
 // app.post("/api/postImage", (req, res) => {
 //   console.log(req.files.images)
 //   res.json(req.files.images)

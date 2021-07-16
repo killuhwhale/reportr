@@ -58,89 +58,40 @@ CREATE TABLE IF NOT EXISTS field_parcel(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+-- Owner information all persons here are operators, if they are operator and owner, they get is_owner flag.
+CREATE TABLE IF NOT EXISTS operators(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  title VARCHAR(50) NOT NULL,
+  primary_phone VARCHAR(15),
+  secondary_phone VARCHAR(15),
+  street VARCHAR(100),
+  city VARCHAR(30),
+  city_state VARCHAR(3) DEFAULT 'CA',
+  city_zip VARCHAR(20) ,
+  is_owner BOOLEAN,
+  is_responsible BOOLEAN DEFAULT FALSE, -- responsible for paying permit fees.
+
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+);
 
 
+CREATE TABLE IF NOT EXISTS herds(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  milk_cows INT[] DEFAULT '{0,0,0,0,0,0}',
+  dry_cows INT[] DEFAULT '{0,0,0,0,0}',
+  bred_cows INT[] DEFAULT '{0,0,0,0,0}',
+  cows INT[] DEFAULT '{0,0,0,0,0}',
+  calf_young INT[] DEFAULT '{0,0,0,0}',
+  calf_old INT[] DEFAULT '{0,0,0,0}', -- open confinement, under roof, max, avg, avg live weight, 
+  UNIQUE(dairy_id),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+);
 
-
--- -- Owner information 
--- CREATE TABLE IF NOT EXISTS ownOperators(
---   pk SERIAL PRIMARY KEY,
---   dairy_id INT,
---   street VARCHAR(100) NOT NULL,
---   cross_street VARCHAR(50),
---   county VARCHAR(30),
---   city VARCHAR(30) NOT NULL,
---   city_state VARCHAR(3),
---   city_zip VARCHAR(20) NOT NULL,
---   is_owner BOOLEAN,
---   is_responsible BOOLEAN DEFAULT FALSE,
---   primary_phone VARCHAR(15),
---   secondary_phone VARCHAR(15),
---   CONSTRAINT fk_dairy
---     FOREIGN KEY(dairy_id) 
--- 	  REFERENCES dairies(pk)
--- );
-
--- nutrient_plan_contact
--- CREATE TABLE IF NOT EXISTS nutrient_plan_contact(
---   pk SERIAL PRIMARY KEY,
---   dairy_id INT NOT NULL,
---   contact_id INT NOT NULL,
---   title VARCHAR(30) NOT NULL,
---   address_id INT NOT NULL,
---   priority INT,
---   created timestamp NOT NULL NOW(),
---   CONSTRAINT fk_dairy
---     FOREIGN KEY(dairy_id) 
--- 	  REFERENCES dairies(pk),
---   CONSTRAINT fk_person
---     FOREIGN KEY(contact_id) 
--- 	  REFERENCES persons(pk),
---   CONSTRAINT fk_address
---     FOREIGN KEY(adress_id) 
--- 	  REFERENCES addresses(pk)
--- )
-
--- waste_plan_contact
--- CREATE TABLE IF NOT EXISTS waste_plan_contact(
---   pk SERIAL PRIMARY KEY,
---   dairy_id INT NOT NULL,
---   contact_id INT NOT NULL,
---   title VARCHAR(30) NOT NULL,
---   address_id INT NOT NULL,
---   created timestamp NOT NULL NOW(),
---   priority INT,
---   CONSTRAINT fk_dairy
---     FOREIGN KEY(dairy_id) 
--- 	  REFERENCES dairies(pk),
---   CONSTRAINT fk_person
---     FOREIGN KEY(contact_id) 
--- 	  REFERENCES persons(pk),
---   CONSTRAINT fk_address
---     FOREIGN KEY(adress_id) 
--- 	  REFERENCES addresses(pk)
--- )
-
--- haulers
-  -- Name
-  -- Persons(contact), Addresses
--- CREATE TABLE IF NOT EXISTS haulers(
---   pk SERIAL PRIMARY KEY,
---   title VARCHAR(30) NOT NULL,
---   address_id INT NOT NULL,
---   person_id INT NOT NULL,
---   created timestamp NOT NULL NOW(),
---   CONSTRAINT fk_dairy
---     FOREIGN KEY(dairy_id) 
--- 	  REFERENCES dairies(pk),
---   CONSTRAINT fk_address
---     FOREIGN KEY(adress_id) 
--- 	  REFERENCES addresses(pk)
--- )
-
--- export_recipient
-  -- destination_type text
-  -- address addresses fk
-  -- contact persons fk
 
 
