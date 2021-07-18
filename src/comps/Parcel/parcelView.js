@@ -128,7 +128,7 @@ class ParcelView extends Component {
   getAllFieldParcels() {
     get(`${BASE_URL}/api/field_parcel/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
+        // console.log(res)
         this.setState({ field_parcels: res })
       })
       .catch(err => { console.log(err) })

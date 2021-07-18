@@ -33,7 +33,6 @@ class HerdTab extends Component {
   }
 
   static getDerivedStateFromProps(props, state) {
-    console.log(props.dairy)
     return props
   }
   componentDidMount() {

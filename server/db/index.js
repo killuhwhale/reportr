@@ -231,6 +231,61 @@ module.exports = {
       callback
     )
   },
+  insertFieldCrop: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      format(`INSERT INTO field_crop(
+        dairy_id, field_id, crop_id, plant_date, acres_planted, typical_yield, moisture, n,p,k,salt
+        ) VALUES (%L)`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCrop: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT *, f.title as fieldTitle, c.title as cropTitle FROM field_crop fc
+        JOIN crops c
+        ON c.pk = fc.crop_id
+        JOIN fields f
+        ON f.pk = fc.field_id
+        WHERE fc.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  updateFieldCrop: (values, callback) => {
+    return pool.query(`UPDATE field_crop SET
+      crop_id = $1,
+      plant_date = $2,
+      acres_planted = $3,
+      typical_yield = $4, 
+      moisture = $5,
+      n = $6, 
+      p = $7, 
+      k = $8,
+      salt = $9
+      WHERE pk=$10`,
+      values,
+      callback
+    )
+  },
+  rmFieldCrop: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  getCrops: (field_id, callback) => {
+    return pool.query(
+      `SELECT * FROM crops;`,
+      [],
+      callback
+    )
+  },
 
 }
 

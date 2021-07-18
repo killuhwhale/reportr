@@ -55,7 +55,7 @@ class OperatorView extends Component {
       ...this.state.createOperatorObj, dairy_id: this.state.dairy.pk
     })
     .then(res => {
-      console.log(res)
+      // console.log(res)
       this.getAllOperators()
     })
     .catch(err => {
@@ -76,7 +76,7 @@ class OperatorView extends Component {
   getAllOperators(){
     get(`${BASE_URL}/api/operators/${this.state.dairy.pk}`)
     .then(res => {
-      console.log(res)
+      // console.log(res)
       this.setState({operators: res})
     })
     .catch(err => {
@@ -131,7 +131,6 @@ class OperatorView extends Component {
   }
 
   render() {
-    console.log(this.state.dairy)
     return (
       <Grid item xs={12}>
         <Typography variant="h2">Owner Operators</Typography>

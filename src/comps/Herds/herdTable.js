@@ -6,36 +6,41 @@ import {
   DatePicker
 } from '@material-ui/pickers';
 import AddIcon from '@material-ui/icons/Add'
+
+import calculateHerdManNKPNaCl from "../../utils/herdCalculation"
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import { get, post } from '../../utils/requests';
 
 
+/**
+ * WHEN YOU NEED HERD CALCULATIONS< JUST GET ALL HERD INFO AND RUN THROUGH THE CALC FUNTION.
+ * 
+ * 
+ * 
+ * Need to save herd calculations.
+ * 
+ * 1. Create herd calc table
+ *    - SQL
+ *    - Add create table to the button when creating a new table for a dairy
+ * 2. Follow same pattern as herds
+ *    - use empty object for init state
+ *    - If no keys, do not disaply View Component
+ *    - Fetch from DB and update State
+ * 
+ * 3. When clicking update herds
+ *    -Currently, this updates an object holding updates.....
+ *    -Once the update is done, the app fetches all herds again, passing through to the calc function, and setting state for the calcs
+ *    - To update the calcs as well, 
+ * 
+ * When
+ */
+
 const BASE_URL = "http://localhost:3001"
 
-const LBS_PER_KG = 2.20462262
-const KG_PER_LB = 0.45359237
+const REPORTING_PERIOD = 365
 
-const KG_PER_G = 0.001;
-const NITROGEN_EXCRETION_DRY_COW = 0.5;
-const NITROGEN_EXCRETION_HEIFER = 0.26;
-const NITROGEN_EXCRETION_CALF = 0.14;
-
-const PHOSPHORUS_EXCRETION_DRY_COW = 0.066;
-const PHOSPHORUS_EXCRETION_HEIFER = 0.044;
-const PHOSPHORUS_EXCRETION_CALF = 0.0099;
-
-const POTASSIUM_EXCRETION_DRY_COW = 0.33;
-
-const INORGANIC_SALT_EXCRETION_MILK_COW = 1.29;
-const INORGANIC_SALT_EXCRETION_DRY_COW = 0.63;
-
-
-
-let r = (num) => {
-  return Math.round(num)
-}
 
 class HerdTable extends Component {
   constructor(props) {
@@ -64,7 +69,7 @@ class HerdTable extends Component {
   getHerds() {
     get(`${BASE_URL}/api/herds/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.test) {
           return;
         }
@@ -82,16 +87,16 @@ class HerdTable extends Component {
   onChange(ev) {
     const {name, value } = ev.target
     let [ cowType, index ] = name.split("~")
-    console.log(cowType, index, value)
+    // console.log(cowType, index, value)
     let herds = this.state.herds
     herds[cowType][index] = value
     this.setState({herds: herds})
   }
   createHerds() {
-    console.log(this.state.dairy)
+    // console.log(this.state.dairy)
     post(`${BASE_URL}/api/herds/create`, { dairy_id: this.state.dairy.pk })
       .then(res => {
-        console.log(res)
+        // console.log(res)
         this.getHerds()
       })
       .catch(err => {
@@ -100,10 +105,10 @@ class HerdTable extends Component {
   }
 
   updateHerds(){
-    console.log("Updating Herds", this.state.herds)
+    // console.log("Updating Herds", this.state.herds)
     post(`${BASE_URL}/api/herds/update`, this.state.herds)
     .then(res => {
-      console.log(res)
+      // console.log(res)
       this.calcHerd()
       // this.getHerds()
     })
@@ -112,108 +117,22 @@ class HerdTable extends Component {
     })
   }
 
+  
+
   calcHerd(){
-    let _herdCalc = this.state.herdCalc
-    let amtAvgMilkProduction = this.state.herds.milk_cows[5]
-    let milk = amtAvgMilkProduction * KG_PER_LB;
-    
-    let amtAvgMilkCowCount = this.state.herds.milk_cows[3]
-    let lblHerdManurePerYearMilkCow = ((milk * 0.647) + 43.212) * LBS_PER_KG * amtAvgMilkCowCount * 365;
-    let tonsHerdManurePerYearMilkCow = lblHerdManurePerYearMilkCow / 2000;
-    let lblHerdNPerYearMilkCow = amtAvgMilkCowCount * ((milk * 4.204) + 283.3) * KG_PER_G * LBS_PER_KG * 365;
-    let lblHerdPPerYearMilkCow = amtAvgMilkCowCount * ((milk * 0.773) + 46.015) * KG_PER_G * LBS_PER_KG * 365;
-    let lblHerdKPerYearMilkCow = amtAvgMilkCowCount * ((milk * 1.800) + 31.154) * KG_PER_G * LBS_PER_KG * 365;
-    let lblHerdSaltPerYearMilkCow = amtAvgMilkCowCount * INORGANIC_SALT_EXCRETION_MILK_COW * 365;
-    let milk_cows = [
-      tonsHerdManurePerYearMilkCow, lblHerdNPerYearMilkCow,
-      lblHerdPPerYearMilkCow, lblHerdKPerYearMilkCow, lblHerdSaltPerYearMilkCow
-    ]
-    _herdCalc['milk_cows'] = milk_cows
-
-
-
-    let amtAvgDryCowCount = this.state.herds.dry_cows[3]
-    let amtDryCowAvgWeight = this.state.herds.dry_cows[4]
-    let lblHerdManurePerYearDryCow = (((amtDryCowAvgWeight / LBS_PER_KG) * 0.022) + 21.844) * LBS_PER_KG * amtAvgDryCowCount * 365;
-    let tonsHerdManurePerYearDryCow = lblHerdManurePerYearDryCow / 2000;
-    let lblHerdNPerYearDryCow = amtAvgDryCowCount * NITROGEN_EXCRETION_DRY_COW * 365;
-    let lblHerdPPerYearDryCow = amtAvgDryCowCount * PHOSPHORUS_EXCRETION_DRY_COW * 365;
-    let lblHerdKPerYearDryCow = amtAvgDryCowCount * POTASSIUM_EXCRETION_DRY_COW * 365;
-    let lblHerdSaltPerYearDryCow = amtAvgDryCowCount * INORGANIC_SALT_EXCRETION_DRY_COW * 365;
-    let dry_cows = [
-      tonsHerdManurePerYearDryCow, lblHerdNPerYearDryCow, lblHerdPPerYearDryCow, 
-      lblHerdKPerYearDryCow, lblHerdSaltPerYearDryCow
-    ]
-   console.log("Dry Cowszzzzzzzzzzzzz", dry_cows)
-    _herdCalc['dry_cows'] = dry_cows
-    
-    let amtAvgHeifer15To24Count = this.state.herds.bred_cows[3]
-    let amtHeifer15To24AvgWeight = this.state.herds.bred_cows[4]
-    let lblHerdManurePerYearHeifer15To24 = (((amtHeifer15To24AvgWeight / LBS_PER_KG) * 0.018) + 17.817) * LBS_PER_KG * amtAvgHeifer15To24Count * 365;
-    let tonsHerdManurePerYearHeifer15To24 = lblHerdManurePerYearHeifer15To24 / 2000;
-    let lblHerdNPerYearHeifer15To24 = amtAvgHeifer15To24Count * NITROGEN_EXCRETION_HEIFER * 365;
-    let lblHerdPPerYearHeifer15To24 = amtAvgHeifer15To24Count * PHOSPHORUS_EXCRETION_HEIFER * 365;
-
-    let bred_cows = [
-      tonsHerdManurePerYearHeifer15To24, lblHerdNPerYearHeifer15To24, lblHerdPPerYearHeifer15To24
-    ]
-    _herdCalc['bred_cows'] = bred_cows
-
-    
-    let amtAvgHeifer7To14Count = this.state.herds.cows[3]
-    let amtHeifer7To14AvgWeight = this.state.herds.cows[4]
-    let lblHerdManurePerYearHeifer7To14 = (((amtHeifer7To14AvgWeight / LBS_PER_KG) * 0.018) + 17.817) * LBS_PER_KG * amtAvgHeifer7To14Count * 365;
-    let tonsHerdManurePerYearHeifer7To14 = lblHerdManurePerYearHeifer7To14 / 2000;
-    let lblHerdNPerYearHeifer7To14 = amtAvgHeifer7To14Count * NITROGEN_EXCRETION_HEIFER * 365;
-    let lblHerdPPerYearHeifer7To14 = amtAvgHeifer7To14Count * PHOSPHORUS_EXCRETION_HEIFER * 365;
-
-    let cows = [
-      tonsHerdManurePerYearHeifer7To14, lblHerdNPerYearHeifer7To14, lblHerdPPerYearHeifer7To14
-    ]
-    _herdCalc['cows'] = cows
-
-    let amtAvgCalf4To6Count = this.state.herds.calf_old[3]
-    let lblHerdManurePerYearCalf4To6 = 19 * amtAvgCalf4To6Count * 365;
-    let tonsHerdManurePerYearCalf4To6 = lblHerdManurePerYearCalf4To6 /2000;
-    let lblHerdNPerYearCalf4To6 = amtAvgCalf4To6Count * NITROGEN_EXCRETION_CALF * 365;
-    let lblHerdPPerYearCalf4To6 = amtAvgCalf4To6Count * PHOSPHORUS_EXCRETION_CALF * 365;
-    let calf_old = [
-      tonsHerdManurePerYearCalf4To6, lblHerdNPerYearCalf4To6, lblHerdPPerYearCalf4To6
-    ]
-    _herdCalc['calf_old'] = calf_old
-
-
-    let amtAvgCalfTo3Count = this.state.herds.calf_young[3]
-    let lblHerdManurePerYearCalfTo3 = 19 * amtAvgCalfTo3Count * 365;
-    let tonsHerdManurePerYearCalfTo3 = lblHerdManurePerYearCalfTo3 / 2000;
-    let lblHerdNPerYearCalfTo3 = amtAvgCalfTo3Count * NITROGEN_EXCRETION_CALF * 365;
-    let lblHerdPPerYearCalfTo3 = amtAvgCalfTo3Count * PHOSPHORUS_EXCRETION_CALF * 365;
-    let calf_young= [
-      tonsHerdManurePerYearCalfTo3, lblHerdNPerYearCalfTo3, lblHerdPPerYearCalfTo3
-    ]
-    _herdCalc['calf_young'] = calf_young
-
-
-
-    let lblHerdManurePerYearTotal = lblHerdManurePerYearMilkCow + lblHerdManurePerYearDryCow + lblHerdManurePerYearHeifer15To24 + lblHerdManurePerYearHeifer7To14 + lblHerdManurePerYearCalf4To6 + lblHerdManurePerYearCalfTo3;
-    let tonsHerdManurePerYearTotal = lblHerdManurePerYearTotal / 2000;
-    let lblHerdNPerYearTotal = lblHerdNPerYearMilkCow + lblHerdNPerYearDryCow + lblHerdNPerYearHeifer15To24 + lblHerdNPerYearHeifer7To14 + lblHerdNPerYearCalf4To6 + lblHerdNPerYearCalfTo3;
-    let lblHerdPPerYearTotal = lblHerdPPerYearMilkCow + lblHerdPPerYearDryCow + lblHerdPPerYearHeifer15To24 + lblHerdPPerYearHeifer7To14 + lblHerdPPerYearCalf4To6 + lblHerdPPerYearCalfTo3;
-    let lblHerdKPerYearTotal = lblHerdKPerYearMilkCow + lblHerdKPerYearDryCow;
-    let lblHerdSaltPerYearTotal = lblHerdSaltPerYearMilkCow + lblHerdSaltPerYearDryCow;
-
-    let totals = [
-      tonsHerdManurePerYearTotal, lblHerdNPerYearTotal, lblHerdPPerYearTotal, lblHerdKPerYearTotal, lblHerdSaltPerYearTotal
-    ]
-    _herdCalc['totals'] = totals
-
-
-
+    // Extracts the state obj
+    // Uses the extracted state obj for data to do the calculations
+    // calculations produce and array of information where the order is important
+    //      - calculation list order corresponds to the field it is display, UI uses the index pos to fetch the correct data point
+    // Each array corresponds to a Column in the UI
+    //    - This column has a key: milk_cows, dry_cows_bred_cows, etc...
+    // The Calc function should just return the extracted & updated state obj
+    // Then the calling function can use the returned object as they need.
+    let _herdCalc = calculateHerdManNKPNaCl(this.state.herds)
     this.setState({herdCalc: _herdCalc})
   }
 
   render() {
-    console.log( Object.keys(this.state.herds).length, this.state.herds )
     return (
       <Grid item container spacing={2} xs={12} style={{marginTop: "16px"}}>
       {
@@ -532,7 +451,7 @@ class HerdTable extends Component {
             </Grid>
             
 
-            <Grid item  xs={12} align="left" spacing={1} key="Update Herds" style={{marginTop: "16px"}}>
+            <Grid item  xs={12} align="left"  key="Update Herds" style={{marginTop: "16px"}}>
               <Tooltip title="Update herds">
                 <Button color="primary" variant="outlined" fullWidth
                   onClick={()=>{ this.updateHerds() }}
@@ -603,7 +522,7 @@ class HerdTable extends Component {
               <TextField disabled
                   name="total_man"
                   label="Total Manure"
-                  value={this.state.herdCalc['totals'][0].toFixed(0)}
+                  value={this.state.herdCalc['totals'][0].toFixed(2)}
                 />
               </Grid>
             </Grid>
@@ -659,7 +578,7 @@ class HerdTable extends Component {
               <TextField disabled
                   name="total_N"
                   label="Total N"
-                  value={this.state.herdCalc['totals'][1].toFixed(0)}
+                  value={this.state.herdCalc['totals'][1].toFixed(2)}
                 />
               </Grid>
             </Grid>
@@ -715,7 +634,7 @@ class HerdTable extends Component {
               <TextField disabled
                   name="total_P"
                   label="Total Phosphorus"
-                  value={this.state.herdCalc['totals'][2].toFixed(0)}
+                  value={this.state.herdCalc['totals'][2].toFixed(2)}
                 />
               </Grid>
             </Grid>
@@ -744,7 +663,7 @@ class HerdTable extends Component {
               <TextField disabled
                   name="total_K"
                   label="Total Potassium"
-                  value={this.state.herdCalc['totals'][3].toFixed(0)}
+                  value={this.state.herdCalc['totals'][3].toFixed(2)}
                   
                 />
               </Grid>
@@ -773,11 +692,12 @@ class HerdTable extends Component {
               <TextField disabled
                   name="total_nacl"
                   label="Total Salt"
-                  value={this.state.herdCalc['totals'][4].toFixed(0)}
+                  value={this.state.herdCalc['totals'][4].toFixed(2)}
                 />
               </Grid>
             </Grid>
-          
+
+            
           </React.Fragment>
           :
           <Grid item xs={2}>

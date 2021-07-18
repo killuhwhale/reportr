@@ -73,6 +73,7 @@ app.get("/api/fields/:dairy_id", (req, res) => {
       res.json(result.rows)
       return;    
     }
+    console.log(req.params.dairy_id)
     res.json({"test": "Get all fields unsuccessful"});
   })
 });
@@ -326,12 +327,76 @@ app.post("/api/herds/update", (req, res) => {
 });
 
 
-// udapte
-// dairy_id, milk_cows, dry_cows, bred_cows,
-//         cows, calf_young, calf_old_state
+app.get("/api/crops", (req, res) => {
+	db.getCrops("", 
+  (err, result) => {
+    if(!err){
+      console.log(result.rows)
+      res.json(result.rows)
+      return;    
+    }
+    res.json({"test": "Get all herds unsuccessful"});
+  })
+});
 
+app.post("/api/field_crop/create", (req, res) => {
+  console.log("Creating....", req.body)
+  const { dairy_id, field_id, crop_id, plant_date, acres_planted, typical_yield, moisture, n,p,k,salt } = req.body
+  db.insertFieldCrop(
+    [
+      dairy_id, field_id, crop_id, plant_date, acres_planted, typical_yield, moisture, n,p,k,salt
+    ],
+    (err, result) => {
+      console.log(result)
+      if(!err){
+        res.json({"test": "Created field_crop successfully"});
+        return;    
+      }
+      console.log(err)
+      res.json({"test": "Created field_crop unsuccessful"});
+    }
+  )
+});
+app.get("/api/field_crop/:dairy_id", (req, res) => {
+	db.getFieldCrop(req.params.dairy_id, 
+  (err, result) => {
+    if(!err){
+      console.log(result.rows)
+      res.json(result.rows)
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Get all field_crop unsuccessful"});
+  })
+});
+app.post("/api/field_crop/update", (req, res) => {
+  console.log("Updating....", req.body)
+  const { crop_id, plant_date, acres_planted, typical_yield, moisture, n,p,k,salt, pk } = req.body
+  db.updateFieldCrop([
+    crop_id, plant_date, acres_planted, typical_yield, moisture, n,p,k,salt, pk
+  ], (err, result) => {
+    console.log(result)
+    if(!err){
+      res.json({"test": "Updated field_crop successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Updated field_crop unsuccessful"});
+  })
+});
 
-
+app.post("/api/field_crop/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmFieldCrop(req.body.pk, (err, result) => {
+    console.log(result)
+    if(!err){
+      res.json({"test": "Deleted field_crop successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Deleted field_crop unsuccessful"});
+  })
+});
 
 
 

@@ -94,7 +94,6 @@ class DairyTab extends Component {
   }
 
   render() {
-    console.log(this.state.dairy)
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
