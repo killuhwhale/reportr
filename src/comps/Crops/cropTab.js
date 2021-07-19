@@ -128,24 +128,34 @@ class CropTab extends Component {
     return obj
   }
 
+  deleteFieldCrop(delFieldCropObj){
+    console.log("Deleting field crop ", delFieldCropObj)
+    post(`${BASE_URL}/api/field_crop/delete`, {pk: delFieldCropObj.pk})
+    .then(res => {
+      console.log(res)
+      this.getAllFieldCrops()
+    })
+  }
+
   render() {
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
         <Grid item container xs={12}>
-          <Typography>Crop Tab</Typography>
-          <Button fullWidth variant="outlined" color="primary"
-            onClick={() => this.toggleShowAddFieldCropModal(true)}>
-              Add new Crop to Field
-            </Button>
             {this.state.field_crops.length > 0 ?
               <CropView 
                 dairy={this.state.dairy}  
                 field_crops={this.state.field_crops}
                 convertedFieldCrops={this.state.convertedFieldCrops}
+                onDeleteFieldCrop={this.deleteFieldCrop.bind(this)}
+                addNewCrop={this.toggleShowAddFieldCropModal.bind(this)}
               />
             :
-              <React.Fragment></React.Fragment>
+              <React.Fragment>
+                <Button onClick={() => this.toggleShowAddFieldCropModal(true)}>
+                  Add new planted crop
+                </Button>
+              </React.Fragment>
              }
         </Grid>
           :

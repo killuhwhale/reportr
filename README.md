@@ -17,13 +17,60 @@ QUESTIONS::
 
 
 
+
+
+
 TODO TONIGHT
 - ANNUAL Report:
-  - Manure Excreted (1)
-  - Crops (1)
-  - Process Wastewater Analyses (1)
+  - Harvest Events
   - Fresh water sources and analyses (2)
+  - Process Wastewater Analyses (1)
   - Tile Drain sources and analyses (2)
+
+
+
+Harvet Event
+  - field_crop
+  - harvest_date
+  - harvest_yield
+  - reporting_method [dry_wt, as_is]
+  - moisture 
+  - n
+    - recorded as a percentage(still a decimal number)
+    - converted to mg/kg by multiplying it by 10,000 (confirmed on paper)
+    - 
+  - p
+  - k
+
+  - tfs, total fixed solids, ash
+    - percent
+
+
+
+
+Fresh Water Sources
+- fresh_wtr_srcs
+ - dairy_id -> tied to a dairy (used in Land applications)
+ - title
+ - src_type [ground water, surface water]
+
+
+Fresh Water Analyses - (fresh_wtrsrc + lab data from sample @ specific sample_date)
+  - Water source plus lab data?
+- fresh_wtr_lab -> unique by fresh_wtr_src && sample_date
+  - dairy_id 
+  - fresh_wtr_src_id
+  - desc
+  - sample_date
+  - src_of_analysis [lab / other or estimated]
+  - Lab Data
+    - nutrient_con [n, ammonium-n, Nitrate-n] {concentration / Detection Limit (mg/L)} ** multiple field 3*2 = 6 fields   
+    - gen_mineral_con [mineral list] {concentration / Detection Limit (mg/L)} ** multiple field 7*2 = 14 fields
+    - electrical_cond [conductivity, detection_limit] (microHOS/ cm) **2 fields
+    - Total Disolved Solids [tds, detection_limit] (mg/L) **2 fields
+    - From the lab data (Spreadsheet),
+        - it looks like only N (PPM), electrical_cond, TDS are recorded
+    
 
 
 

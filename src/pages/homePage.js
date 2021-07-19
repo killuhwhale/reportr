@@ -8,6 +8,7 @@ import AddIcon from '@material-ui/icons/Add'
 import DairyTab from "../comps/Dairy/dairyTab"
 import HerdTab from "../comps/Herds/herdTab"
 import CropTab from "../comps/Crops/cropTab"
+import HarvestTab from "../comps/Harvests/harvestTab"
 import AddDairyModal from "../comps/Modals/addDairyModal"
 import { get, post, uploadFiles } from "../utils/requests"
 import "../App.css"
@@ -177,6 +178,8 @@ class HomePage extends Component {
                 <Tab label="Dairy" />
                 <Tab label="Herds" />
                 <Tab label="Crops planted" />
+                <Tab label="Crops harvested" />
+
               </Tabs>
             </AppBar>
             {this.state.dairies.length > 0 ?
@@ -199,6 +202,11 @@ class HomePage extends Component {
                 </Grid>
                 <Grid item xs={12} className={`${this.state.tabs[2]}`}>
                   <CropTab
+                    dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
+                  />
+                </Grid>
+                <Grid item xs={12} className={`${this.state.tabs[3]}`}>
+                  <HarvestTab
                     dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
                   />
                 </Grid>

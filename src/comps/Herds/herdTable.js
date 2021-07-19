@@ -135,10 +135,14 @@ class HerdTable extends Component {
   render() {
     return (
       <Grid item container spacing={2} xs={12} style={{marginTop: "16px"}}>
+         <Grid item xs={12}>
+          <Typography variant="h2">
+            Dairy Herd Input
+          </Typography>
+        </Grid>
       {
         Object.keys(this.state.herds).length > 0 ?
           <React.Fragment>
-            
             <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid chartreuse" }} xs={6} spacing={1} justifyContent="space-between" key="Milk Cow Col/ data row" >
               <Grid item xs={12}>
                 <Typography variant="subtitle1">
@@ -462,7 +466,12 @@ class HerdTable extends Component {
                 </Button>
               </Tooltip>
             </Grid>
-            
+            <Grid item xs={12}>
+                <Typography variant="h2">
+                  Output Data
+                </Typography>
+              </Grid>
+
             
             <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid #ff2fbc", marginTop: "16px"}} xs={12} spacing={1} justifyContent="flex-start" key="Manure" >
               <Grid item xs={3}>

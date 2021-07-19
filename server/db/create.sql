@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS crops(
   title VARCHAR(30),
   typical_yield INT,-- tons
   moisture INT, -- stored as a percent 10 == 10%
-  n NUMERIC(8,6), -- stored as a raw value e.g 0.0175 == 1.75%
+  n NUMERIC(8,6), -- stored as a raw value e.g 0.0175 == 1.75%, basica default (percet in standard form, lbs/tons)
   p NUMERIC(8,6), 
   k NUMERIC(8,6),
   salt NUMERIC(8,6),
@@ -119,15 +119,52 @@ CREATE TABLE IF NOT EXISTS field_crop(
   crop_id INT NOT NULL,
   plant_date timestamp,
   acres_planted INT,
-  typical_yield INT,-- tons
+  typical_yield INT, -- tons/ acre 
   moisture INT, -- stored as a percent 10 == 10%
-  n NUMERIC(8,6), -- stored as a raw value e.g 0.0175 == 1.75%
+  n NUMERIC(8,6), -- Concentration by default data, lb/ton 
   p NUMERIC(8,6), 
   k NUMERIC(8,6),
   salt NUMERIC(8,6),
-  UNIQUE(dairy_id, field_id, crop_id, plant_date)
+  UNIQUE(dairy_id, field_id, crop_id, plant_date),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk),
+  CONSTRAINT fk_field
+    FOREIGN KEY(field_id) 
+    REFERENCES fields(pk),
+  CONSTRAINT fk_crop
+    FOREIGN KEY(crop_id) 
+	  REFERENCES crops(pk)
 );
 
+
+
+-- Concentration conversion factors:
+-- Display mg/kg == x 10,000
+-- Display actualy yields == divide by 0.49999899 and then use in the formula
+    -- yield(tons/acre) * convertedFactor(lbs/ton) == Totals N, P, K in lbs/acre
+CREATE TABLE IF NOT EXISTS field_crop_harvest(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  field_crop_id INT NOT NULL,
+  harvest_date timestamp,
+  basis VARCHAR(20), -- reporting method
+  density INT, -- lbs/ ft**3 cubic foot
+  actual_yield INT, -- tons -- calculate to find tons/ acres by field_crop.acres_planted 
+  moisture INT, -- stored as a percent 10 == 10%
+  n NUMERIC(8,6), -- Come from lab as a percentage of concentration in mg/kg, divide by .49999899 to convert to lb/ ton conversion factor
+  p NUMERIC(8,6),       -- With the conversions factor in lb/ton we can calculate the required Annual report data
+  k NUMERIC(8,6),       --    totals for N, P K & Salt == yield(tons/acre) * CF (concentration factor in lb/ton) 
+  tfs NUMERIC(8,6), -- total fixed solids
+  UNIQUE(dairy_id, field_crop_id, harvest_date),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk),
+  CONSTRAINT fk_field_crop
+    FOREIGN KEY(field_crop_id) 
+	  REFERENCES field_crop(pk)
+
+);
 
 
 

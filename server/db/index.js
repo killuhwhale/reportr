@@ -245,7 +245,22 @@ module.exports = {
   getFieldCrop: (dairy_id, callback) => {
     return pool.query(
       format(
-        `SELECT *, f.title as fieldTitle, c.title as cropTitle FROM field_crop fc
+        `SELECT 
+          fc.pk,
+          fc.field_id,
+          fc.plant_date,
+          fc.acres_planted,
+          fc.typical_yield,
+          fc.moisture,
+          fc.n,
+          fc.p, 
+          fc.k,
+          fc.salt,
+          f.cropable,
+          f.acres,
+          f.title as fieldTitle,
+          c.title as cropTitle 
+        FROM field_crop fc
         JOIN crops c
         ON c.pk = fc.crop_id
         JOIN fields f
@@ -258,16 +273,15 @@ module.exports = {
   },
   updateFieldCrop: (values, callback) => {
     return pool.query(`UPDATE field_crop SET
-      crop_id = $1,
-      plant_date = $2,
-      acres_planted = $3,
-      typical_yield = $4, 
-      moisture = $5,
-      n = $6, 
-      p = $7, 
-      k = $8,
-      salt = $9
-      WHERE pk=$10`,
+      plant_date = $1,
+      acres_planted = $2,
+      typical_yield = $3, 
+      moisture = $4,
+      n = $5, 
+      p = $6, 
+      k = $7,
+      salt = $8
+      WHERE pk=$9`,
       values,
       callback
     )
@@ -286,6 +300,78 @@ module.exports = {
       callback
     )
   },
+  insertFieldCropHarvest: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      format(`INSERT INTO field_crop_harvest(
+        dairy_id, field_crop_id, harvest_date, density, basis, actual_yield, moisture, n,p,k,tfs
+        ) VALUES (%L)`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropHarvest: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT 
+           fch.pk,
+           fch.harvest_date,
+           fch.actual_yield,
+           fch.basis,
+           fch.density,
+           fch.moisture as actual_moisture,
+           fch.n as actual_n,
+           fch.p as actual_p,
+           fch.k as actual_k,
+           fch.tfs,
+           c.title as croptitle,
+           f.title as fieldtitle,
+           fc.plant_date,
+           fc.acres_planted,
+           fc.typical_yield,
+           fc.moisture as typical_moisture,
+           fc.n as typical_n,
+           fc.p as typical_p,
+           fc.k as typical_k,
+           fc.salt as typical_salt
 
+        FROM field_crop_harvest fch
+        JOIN field_crop fc
+        ON fc.pk = fch.field_crop_id
+        JOIN fields f
+        ON f.pk = fc.field_id
+        JOIN crops c
+        ON c.pk = fc.crop_id
+        WHERE 
+          fch.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  updateFieldCropHarvest: (values, callback) => {
+    return pool.query(`UPDATE field_crop_harvest SET
+      harvest_date = $1,
+      actual_yield = $2,
+      basis = $3, 
+      density = $4,
+      moisture = $5, 
+      n = $6, 
+      p = $7,
+      k = $8,
+      tfs = $9
+      WHERE pk=$10`,
+      values,
+      callback
+    )
+  },
+  rmFieldCropHarvest: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_harvest where pk = %L", id),
+      [],
+      callback
+    )
+  },
 }
 
