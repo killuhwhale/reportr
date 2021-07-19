@@ -10,7 +10,8 @@ import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import HarvestView from "./harvestView"
-import AddFieldCropHarvestModal from '../Modals/addFieldCropHarvestModal';
+import AddFieldCropHarvestModal from '../Modals/addFieldCropHarvestModal'
+import UploadHarvestCSVModal from '../Modals/uploadHarvestCSVModal';
 import { get, post } from '../../utils/requests';
 
 
@@ -24,6 +25,7 @@ class HarvestTab extends Component {
       field_crops: [], // The planted crops to choose from to create a harvest event in field_crop_harvest DB table
       field_crop_harvests: [],
       showAddFieldCropHarvestModal: false,
+      showUploadCSV: false,
       createFieldCropHarvestObj: {
         harvest_date: new Date(),
         field_crop_idx: 0,
@@ -111,6 +113,33 @@ class HarvestTab extends Component {
     })
   }
 
+  toggleShowUploadCSV(val){
+    this.setState({showUploadCSV: val})
+  }
+  onCSVChange(ev){
+    console.log(ev)
+    const {files } = ev.target;
+    console.log(files);
+    if(files.length > 0){
+      this.readCSV(files[0])
+    }
+  }
+
+
+  readCSV(file){
+    const reader = new FileReader();
+    reader.addEventListener('load', (ev) => {
+      const { result } = ev.target;
+      console.log(result)
+      console.log(ev.target)
+    });
+    reader.readAsText(file);
+  }
+
+  uploadCSV(){
+    console.log("Uploading CSV")
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -119,17 +148,20 @@ class HarvestTab extends Component {
 
           <Grid item container xs={12}>
             <Button variant="outlined" fullWidth color="primary"
-              onClick={() => this.toggleShowAddFieldCropHarvestModal(true)}
-            >
+              onClick={() => this.toggleShowAddFieldCropHarvestModal(true)}>
               Add new harvest
             </Button>
-
-            {this.state.field_crop_harvests.length > 0 ?
-              <HarvestView 
-                dairy={this.state.dairy}
-                field_crop_harvests={this.state.field_crop_harvests}
-                getAllFieldCropHarvests={this.getAllFieldCropHarvests.bind(this)}
-              />
+            <Button variant="outlined" fullWidth color="primary"
+              onClick={() => this.toggleShowUploadCSV(true)}>
+              Import Harvest from CSV Production Records
+            </Button>
+            {
+              this.state.field_crop_harvests.length > 0 ?
+                <HarvestView 
+                  dairy={this.state.dairy}
+                  field_crop_harvests={this.state.field_crop_harvests}
+                  getAllFieldCropHarvests={this.getAllFieldCropHarvests.bind(this)}
+                />
             :
               <React.Fragment></React.Fragment>
             }
@@ -139,6 +171,16 @@ class HarvestTab extends Component {
           :
           <React.Fragment>Loading....</React.Fragment>
         }
+
+        <UploadHarvestCSVModal 
+          open={this.state.showUploadCSV}
+          actionText="Add"
+          cancelText="Cancel"
+          modalText={`Import CSV`}
+          onAction={this.uploadCSV.bind(this)}
+          onChange={this.onCSVChange.bind(this)}
+          onClose={() => this.toggleShowUploadCSV(false)}
+        />
         <AddFieldCropHarvestModal
           open={this.state.showAddFieldCropHarvestModal}
           actionText="Add"

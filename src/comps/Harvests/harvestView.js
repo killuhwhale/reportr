@@ -92,7 +92,7 @@ class HarvestView extends Component {
         <Grid item container xs={12}>
           {this.state.field_crop_harvests.map((harvest, i) => {
             return (
-              <Grid item container xs={12}>
+              <Grid item container key={`fch${i}`} xs={12}>
                 <Grid item xs={10}>
                   {harvest.harvest_date} / {harvest.fieldtitle} / {harvest.croptitle} / {harvest.actual_yield} / N:{harvest.actual_n} / P:{harvest.actual_p} / K:{harvest.actual_k}
                 </Grid>
