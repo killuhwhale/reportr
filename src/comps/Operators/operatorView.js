@@ -23,6 +23,7 @@ class OperatorView extends Component {
     this.state = {
       dairy: props.dairy,
       showOperatorModal: false,
+      showDeleteOperatorModal: false,
       operators:[],
       updateOperatorObjs: {},
       curDeleteOperatorObj:{},

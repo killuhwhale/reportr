@@ -18,7 +18,7 @@ let _apptheme = {
        "PrivateTabIndicator":{
           "colorSecondary":
            {
-             "backgroundColor": "white"
+             "backgroundColor": "#ec00d9"
           }
        },
        "MuiInput":{
@@ -77,7 +77,7 @@ let _apptheme = {
        },
        "error":{
           "light":"#ea4331",
-          "main":"#c43627",
+          "main":"red",
           "dark":"#2d0d0b",
           "contrastText":"rgba(255, 255, 255, 1)"
        },

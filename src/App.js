@@ -80,9 +80,6 @@ export default class App extends React.Component {
       </MuiPickersUtilsProvider>
       </ThemeProvider>
       </BrowserRouter>
-        
     )
   }
 }
-
-// App.contextType = FirebaseAuthContext

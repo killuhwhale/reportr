@@ -7,7 +7,8 @@ class UploadHarvestCSVModal extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      open: props.open
+      open: props.open,
+      uploadedFilename: props.uploadedFilename
     }
     /*
     open
@@ -45,7 +46,7 @@ class UploadHarvestCSVModal extends Component {
             <Paper style={{ height: "25vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <Grid item container xs={12}>
                 <Grid item xs={12}>
-                  <Typography style={{ marginTop: "32px" }}>
+                  <Typography variant="h6" style={{ marginTop: "32px" }}>
                     {this.props.modalText}
                   </Typography>
                 </Grid>
@@ -58,11 +59,15 @@ class UploadHarvestCSVModal extends Component {
                     multiple
                     type="file"
                   />
-                  <label htmlFor="raised-button-file">
-                    <Button variant="outlined" component="span">
-                      Upload CSV
-                    </Button>
-                  </label>
+                  <Button htmlFor="raised-button-file" variant="outlined" color="primary" component="label">
+                      Select TSV
+                  </Button>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1" color="secondary">
+                    {this.state.uploadedFilename}
+                  </Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Button
@@ -73,7 +78,7 @@ class UploadHarvestCSVModal extends Component {
                 </Grid>
                 <Grid item xs={6}>
                   <Button
-                    color="primary"
+                    color="secondary"
                     variant="outlined"
                     onClick={() => { this.props.onAction() }}>
                     {this.props.actionText}

@@ -110,8 +110,12 @@ class CropTab extends Component {
     get(`${BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
     .then(res => {
       console.log("Getting all Field Crops")
-      console.log(res)
-      this.setState({field_crops: res, convertedFieldCrops: this.convertFieldCrops(res)})
+      if(res.test){
+        console.log("Field Crops not found.")
+      }else{
+        console.log(res)
+        this.setState({field_crops: res, convertedFieldCrops: this.convertFieldCrops(res)})
+      }
     })
   }
 

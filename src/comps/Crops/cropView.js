@@ -27,7 +27,7 @@ class CropViewTable extends Component {
     super(props)
     this.state = {
       dairy: props.dairy,
-      field_crops: props.field_crops
+      field_crops: props.field_crops,
     }
   }
   static getDerivedStateFromProps(props, state) {
@@ -60,7 +60,6 @@ class CropViewTable extends Component {
           </Grid>
         </Grid>
         {this.state.field_crops.map((field_crop, i) => {
-          console.log("Plant date::", field_crop.plant_date)
           return(
             <Grid item container spacing={2} xs={12} key={`cwtfc${i}`} style={{marginBottom: "16px"}}>
               <Grid item container xs={12}>
@@ -70,7 +69,7 @@ class CropViewTable extends Component {
                   </Typography>
                 </Grid>
                 <Grid item xs={6} align="right">
-                  <DatePicker label="Plant Date"
+                  <DatePicker label="Plant Date" disabled
                    value={field_crop.plant_date}
                    onChange={(date) => this.props.onChange(date, field_crop.field_id, i)}
                   

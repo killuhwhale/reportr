@@ -9,8 +9,9 @@ var http = require('http').createServer(app);
 const db = require('./db/index')
 
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({limit: '10mb'}))
+// app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json({limit: '10mb'}))
+app.use(express.json())
 app.use(express.static(path.join(__dirname, "..", "build")));
 app.use(express.static(path.join(__dirname, "../public")));
 app.use(fileUpload());
@@ -33,7 +34,7 @@ app.get("/api/dairies/:reportingYear", (req, res) => {
 	db.getDairies(req.params.reportingYear, 
   (err, result) => {
     if(!err){
-      console.log(result.rows)
+      
       res.json(result.rows)
       return;    
     }
@@ -43,7 +44,7 @@ app.get("/api/dairies/:reportingYear", (req, res) => {
 app.post("/api/dairies/create", (req, res) => {
   console.log("INserting....", req.body.title, req.body.reportingYr)
   db.insertDairy([req.body.title, req.body.reportingYr], (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Inserted dairy successfully"});
       return;    
@@ -56,7 +57,7 @@ app.post("/api/dairies/update", (req, res) => {
   console.log("Updating....", req.body.data)
   // req.body.data is a list of values in order to match DB Table
   db.updateDairy(req.body.data, (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Updated dairy successfully"});
       return;    
@@ -69,7 +70,7 @@ app.get("/api/fields/:dairy_id", (req, res) => {
 	db.getFields(req.params.dairy_id, 
   (err, result) => {
     if(!err){
-      console.log(result.rows)
+      
       res.json(result.rows)
       return;    
     }
@@ -78,22 +79,24 @@ app.get("/api/fields/:dairy_id", (req, res) => {
   })
 });
 app.post("/api/fields/create", (req, res) => {
+  console.log("Server:: acres, cropable")
+  console.log(req.body)
   const {title, acres, cropable, dairy_id} = req.body.data
   db.insertField([title, acres, cropable, dairy_id], (err, result) => {
-    console.log(result)
     if(!err){
-      res.json({"test": "Inserted field successfully"});
+      res.json(result.rows)
+      // res.json({"test": "Inserted field successfully"});
       return;    
     }
     console.log(err)
-    res.json({"test": "Inserted field unsuccessful"});
+    res.json({"test": err});
   })
 });
 app.post("/api/fields/update", (req, res) => {
   console.log("Updating....", req.body.data)
   const { title, acres, cropable, pk } = req.body.data
   db.updateField([title, acres, cropable, pk], (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Updated field successfully"});
       return;    
@@ -105,7 +108,7 @@ app.post("/api/fields/update", (req, res) => {
 app.post("/api/fields/delete", (req, res) => {
   console.log("Deleting....", req.body.pk)
   db.rmField(req.body.pk, (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Deleted field successfully"});
       return;    
@@ -118,7 +121,7 @@ app.get("/api/parcels/:dairy_id", (req, res) => {
 	db.getParcels(req.params.dairy_id, 
   (err, result) => {
     if(!err){
-      console.log(result.rows)
+      
       res.json(result.rows)
       return;    
     }
@@ -128,7 +131,7 @@ app.get("/api/parcels/:dairy_id", (req, res) => {
 app.post("/api/parcels/create", (req, res) => {
   
   db.insertParcel(req.body.data, (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Inserted parcel successfully"});
       return;    
@@ -141,7 +144,7 @@ app.post("/api/parcels/update", (req, res) => {
   console.log("Updating....", req.body.data)
   const { pnumber, pk } = req.body.data
   db.updateParcel([pnumber, pk], (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Updated parcel successfully"});
       return;    
@@ -153,7 +156,7 @@ app.post("/api/parcels/update", (req, res) => {
 app.post("/api/parcels/delete", (req, res) => {
   console.log("Deleting....", req.body.pk)
   db.rmField(req.body.pk, (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Deleted parcel successfully"});
       return;    
@@ -166,7 +169,7 @@ app.get("/api/field_parcel/:dairy_id", (req, res) => {
 	db.getFieldParcel(req.params.dairy_id, 
   (err, result) => {
     if(!err){
-      console.log(result.rows)
+      
       res.json(result.rows)
       return;    
     }
@@ -177,7 +180,7 @@ app.get("/api/field_parcel/:dairy_id", (req, res) => {
 app.post("/api/field_parcel/create", (req, res) => {
   const {dairy_id, field_id, parcel_id} = req.body
   db.insertFieldParcel([dairy_id, field_id, parcel_id], (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Inserted field_parcel successfully"});
       return;    
@@ -189,7 +192,7 @@ app.post("/api/field_parcel/create", (req, res) => {
 app.post("/api/field_parcel/delete", (req, res) => {
   console.log("Deleting....", req.body.data)
   db.rmFieldParcel(req.body.data, (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Deleted field_parcel successfully"});
       return;    
@@ -208,7 +211,7 @@ app.post("/api/operators/create", (req, res) => {
       city_state, city_zip, is_owner, is_responsible
     ],
     (err, result) => {
-      console.log(result)
+      
       if(!err){
         res.json({"test": "Created operator successfully"});
         return;    
@@ -222,7 +225,7 @@ app.get("/api/operators/:dairy_id", (req, res) => {
 	db.getOperators(req.params.dairy_id, 
   (err, result) => {
     if(!err){
-      console.log(result.rows)
+      
       res.json(result.rows)
       return;    
     }
@@ -257,7 +260,7 @@ app.post("/api/operators/update", (req, res) => {
     is_responsible,
     pk
   ], (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Updated operator successfully"});
       return;    
@@ -269,7 +272,7 @@ app.post("/api/operators/update", (req, res) => {
 app.post("/api/operators/delete", (req, res) => {
   console.log("Deleting....", req.body.pk)
   db.rmOperator(req.body.pk, (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Deleted operator successfully"});
       return;    
@@ -289,7 +292,7 @@ app.post("/api/herds/create", (req, res) => {
       dairy_id
     ],
     (err, result) => {
-      console.log(result)
+      
       if(!err){
         res.json({"test": "Created herds successfully"});
         return;    
@@ -303,7 +306,7 @@ app.get("/api/herds/:dairy_id", (req, res) => {
 	db.getHerd(req.params.dairy_id, 
   (err, result) => {
     if(!err){
-      console.log(result.rows)
+      
       res.json(result.rows)
       return;    
     }
@@ -316,7 +319,7 @@ app.post("/api/herds/update", (req, res) => {
   db.updateHerd([
     milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, pk
   ], (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Updated herds successfully"});
       return;    
@@ -326,18 +329,30 @@ app.post("/api/herds/update", (req, res) => {
   })
 });
 
-
+app.get("/api/crops/:title", (req, res) => {
+  console.log("Getting crop by Title", req.body.title)
+  db.getCropsByTitle(req.params.title, 
+  (err, result) => {
+    if(!err){
+      
+      res.json(result.rows)
+      return;    
+    }
+    res.json({"test": "Get crops by Title unsuccessful"});
+  })
+});
 app.get("/api/crops", (req, res) => {
 	db.getCrops("", 
   (err, result) => {
     if(!err){
-      console.log(result.rows)
+      
       res.json(result.rows)
       return;    
     }
-    res.json({"test": "Get all herds unsuccessful"});
+    res.json({"test": "Get all crops unsuccessful"});
   })
 });
+
 
 app.post("/api/field_crop/create", (req, res) => {
   console.log("Creating....", req.body)
@@ -347,9 +362,10 @@ app.post("/api/field_crop/create", (req, res) => {
       dairy_id, field_id, crop_id, plant_date, acres_planted, typical_yield, moisture, n,p,k,salt
     ],
     (err, result) => {
-      console.log(result)
+      
       if(!err){
-        res.json({"test": "Created field_crop successfully"});
+        res.json(result.rows)
+        // res.json({"test": "Created field_crop successfully"});
         return;    
       }
       console.log(err)
@@ -361,7 +377,7 @@ app.get("/api/field_crop/:dairy_id", (req, res) => {
 	db.getFieldCrop(req.params.dairy_id, 
   (err, result) => {
     if(!err){
-      console.log(result.rows)
+      
       res.json(result.rows)
       return;    
     }
@@ -375,7 +391,7 @@ app.post("/api/field_crop/update", (req, res) => {
   db.updateFieldCrop([
     plant_date, parseInt(acres_planted), parseInt(typical_yield), moisture, n,p,k,salt, pk
   ], (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Updated field_crop successfully"});
       return;    
@@ -388,7 +404,7 @@ app.post("/api/field_crop/update", (req, res) => {
 app.post("/api/field_crop/delete", (req, res) => {
   console.log("Deleting....", req.body.pk)
   db.rmFieldCrop(req.body.pk, (err, result) => {
-    console.log(result)
+    
     if(!err){
       res.json({"test": "Deleted field_crop successfully"});
       return;    
@@ -407,9 +423,10 @@ app.post("/api/field_crop_harvest/create", (req, res) => {
       dairy_id, field_crop_id, harvest_date, density, basis, actual_yield, moisture, n,p,k,tfs
     ],
     (err, result) => {
-      console.log(result)
+      
       if(!err){
-        res.json({"test": "Created field_crop_harvest successfully"});
+        res.json(result)
+        // res.json({"test": "Created field_crop_harvest successfully"});
         return;    
       }
       console.log(err)
@@ -417,12 +434,70 @@ app.post("/api/field_crop_harvest/create", (req, res) => {
     }
   )
 });
-
 app.get("/api/field_crop_harvest/:dairy_id", (req, res) => {
 	db.getFieldCropHarvest(req.params.dairy_id, 
   (err, result) => {
     if(!err){
-      console.log(result.rows)
+      
+      res.json(result.rows)
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Get all field_crop_harvest unsuccessful"});
+  })
+});
+app.post("/api/field_crop_harvest/update", (req, res) => {
+  console.log("Updating....", req.body)
+  const {
+    harvest_date, density, basis, actual_yield, moisture, n,p,k,tfs, pk
+  } = req.body
+  db.updateFieldCropHarvest([
+    harvest_date, actual_yield, basis, density, moisture, n,p,k,tfs, pk
+  ], (err, result) => {
+    
+    if(!err){
+      res.json({"test": "Updated field_crop_harvest successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Updated field_crop_harvest unsuccessful"});
+  })
+});
+app.post("/api/field_crop_harvest/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmFieldCropHarvest(req.body.pk, (err, result) => {
+    
+    if(!err){
+      res.json({"test": "Deleted field_crop_harvest successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Deleted field_crop_harvest unsuccessful"});
+  })
+});
+
+
+
+
+app.get("/api/search/fields/:title/:dairy_id", (req, res) => {
+	db.searchFieldsByTitle([req.params.title, req.params.dairy_id], 
+  (err, result) => {
+    if(!err){
+      
+      res.json(result.rows)
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Get all field_crop_harvest unsuccessful"});
+  })
+});
+// dairy_id is here because lazyGet uses it for the url but we dont need it here.
+app.get("/api/search/field_crop/:field_id/:crop_id/:plant_date/:dairy_id", (req, res) => {
+	db.searchFieldCropsByFieldCropPlantdate([
+    req.params.field_id, req.params.crop_id, req.params.plant_date], 
+  (err, result) => {
+    if(!err){
+      
       res.json(result.rows)
       return;    
     }
@@ -432,37 +507,8 @@ app.get("/api/field_crop_harvest/:dairy_id", (req, res) => {
 });
 
 
-app.post("/api/field_crop_harvest/update", (req, res) => {
-  console.log("Updating....", req.body)
-  const {
-    harvest_date, density, basis, actual_yield, moisture, n,p,k,tfs, pk
-  } = req.body
-  db.updateFieldCropHarvest([
-    harvest_date, actual_yield, basis, density, moisture, n,p,k,tfs, pk
-  ], (err, result) => {
-    console.log(result)
-    if(!err){
-      res.json({"test": "Updated field_crop_harvest successfully"});
-      return;    
-    }
-    console.log(err)
-    res.json({"test": "Updated field_crop_harvest unsuccessful"});
-  })
-});
 
 
-app.post("/api/field_crop_harvest/delete", (req, res) => {
-  console.log("Deleting....", req.body.pk)
-  db.rmFieldCropHarvest(req.body.pk, (err, result) => {
-    console.log(result)
-    if(!err){
-      res.json({"test": "Deleted field_crop_harvest successfully"});
-      return;    
-    }
-    console.log(err)
-    res.json({"test": "Deleted field_crop_harvest unsuccessful"});
-  })
-});
 // app.post("/api/postImage", (req, res) => {
 //   console.log(req.files.images)
 //   res.json(req.files.images)

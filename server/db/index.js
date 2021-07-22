@@ -60,7 +60,7 @@ module.exports = {
     console.log("Values in DB Pool query")
     console.log(values)
     return pool.query(
-      format("INSERT INTO fields(title, acres, cropable, dairy_id) VALUES (%L)", values),
+      format("INSERT INTO fields(title, acres, cropable, dairy_id) VALUES (%L) RETURNING *", values),
       [],
       callback
     )
@@ -115,7 +115,7 @@ module.exports = {
   },
   rmParcel: (id, callback) => {
     return pool.query(
-      format("DELETE FROM parcels where pk = %L", id),
+      format("DELETE FROM parcels where pk = %L ", id),
       [],
       callback
     )
@@ -152,7 +152,7 @@ module.exports = {
   },
   rmFieldParcel: (id, callback) => {
     return pool.query(
-      format("DELETE FROM field_parcel where pk = %L", id),
+      format("DELETE FROM field_parcel where pk = %L ", id),
       [],
       callback
     )
@@ -195,7 +195,7 @@ module.exports = {
   },
   rmOperator: (id, callback) => {
     return pool.query(
-      format("DELETE FROM operators where pk = %L", id),
+      format("DELETE FROM operators where pk = %L ", id),
       [],
       callback
     )
@@ -237,7 +237,7 @@ module.exports = {
     return pool.query(
       format(`INSERT INTO field_crop(
         dairy_id, field_id, crop_id, plant_date, acres_planted, typical_yield, moisture, n,p,k,salt
-        ) VALUES (%L)`, values),
+        ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
     )
@@ -300,13 +300,20 @@ module.exports = {
       callback
     )
   },
+  getCropsByTitle: (title, callback) => {
+    return pool.query(
+      `SELECT * FROM crops WHERE title = $1;`,
+      [title],
+      callback
+    )
+  },
   insertFieldCropHarvest: (values, callback) => {
     console.log("Values in DB Pool query")
     console.log(values)
     return pool.query(
       format(`INSERT INTO field_crop_harvest(
         dairy_id, field_crop_id, harvest_date, density, basis, actual_yield, moisture, n,p,k,tfs
-        ) VALUES (%L)`, values),
+        ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
     )
@@ -370,6 +377,24 @@ module.exports = {
     return pool.query(
       format("DELETE FROM field_crop_harvest where pk = %L", id),
       [],
+      callback
+    )
+  },
+  searchFieldsByTitle: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      "SELECT * FROM fields where title = $1 and dairy_id = $2",
+      values,
+      callback
+    )
+  },
+  searchFieldCropsByFieldCropPlantdate: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      "SELECT * FROM field_crop where field_id = $1 and crop_id = $2 and plant_date = $3",
+      values,
       callback
     )
   },

@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS dairies(
 CREATE TABLE IF NOT EXISTS fields(
   pk SERIAL PRIMARY KEY,
   title VARCHAR(30) NOT NULL,
-  acres INT DEFAULT 0,
-  cropable INT DEFAULT 0,
+  acres NUMERIC(6,2),
+  cropable NUMERIC(6,2),
   dairy_id INT NOT NULL,
   UNIQUE(title, dairy_id),
   CONSTRAINT fk_dairy
@@ -118,9 +118,9 @@ CREATE TABLE IF NOT EXISTS field_crop(
   field_id INT NOT NULL,
   crop_id INT NOT NULL,
   plant_date timestamp,
-  acres_planted INT,
-  typical_yield INT, -- tons/ acre 
-  moisture INT, -- stored as a percent 10 == 10%
+  acres_planted NUMERIC(6,2),
+  typical_yield NUMERIC(6,2), -- tons/ acre 
+  moisture NUMERIC(6,2), -- stored as a percent 10 == 10%
   n NUMERIC(8,6), -- Concentration by default data, lb/ton 
   p NUMERIC(8,6), 
   k NUMERIC(8,6),
@@ -128,13 +128,16 @@ CREATE TABLE IF NOT EXISTS field_crop(
   UNIQUE(dairy_id, field_id, crop_id, plant_date),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
-	  REFERENCES dairies(pk),
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT fk_field
     FOREIGN KEY(field_id) 
-    REFERENCES fields(pk),
+    REFERENCES fields(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT fk_crop
     FOREIGN KEY(crop_id) 
 	  REFERENCES crops(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 
@@ -149,9 +152,9 @@ CREATE TABLE IF NOT EXISTS field_crop_harvest(
   field_crop_id INT NOT NULL,
   harvest_date timestamp,
   basis VARCHAR(20), -- reporting method
-  density INT, -- lbs/ ft**3 cubic foot
-  actual_yield INT, -- tons -- calculate to find tons/ acres by field_crop.acres_planted 
-  moisture INT, -- stored as a percent 10 == 10%
+  density NUMERIC(6,2), -- lbs/ ft**3 cubic foot
+  actual_yield NUMERIC(6,2), -- tons -- calculate to find tons/ acres by field_crop.acres_planted 
+  moisture NUMERIC(6,2), -- stored as a percent 10 == 10%
   n NUMERIC(8,6), -- Come from lab as a percentage of concentration in mg/kg, divide by .49999899 to convert to lb/ ton conversion factor
   p NUMERIC(8,6),       -- With the conversions factor in lb/ton we can calculate the required Annual report data
   k NUMERIC(8,6),       --    totals for N, P K & Salt == yield(tons/acre) * CF (concentration factor in lb/ton) 
@@ -159,65 +162,66 @@ CREATE TABLE IF NOT EXISTS field_crop_harvest(
   UNIQUE(dairy_id, field_crop_id, harvest_date),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
-	  REFERENCES dairies(pk),
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT fk_field_crop
     FOREIGN KEY(field_crop_id) 
 	  REFERENCES field_crop(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
 
 );
 
 
 
 -- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Alfalfa Haylage',21,70,1,0.09,0.7,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Alfalfa, hay',8,10,3,0.27,2.1,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Almond, in shell',0,0,6.5,1.1,7.05,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Apple',0,0,0.3,0.08,0.54,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Barley silage, boot stage',8,70,0.8,0.13,0.58,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Barley silage, soft dough',16,70,0.5,0.08,0.415,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Barley, grain',3,10,1.85,0.35,0.5,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Bermudagrass, hay',8,10,1.75,0.23,2.1,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Broccoli',0,0,0.44,0.075,0.35,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Bromegrass, forage',0,0,1.8,0.285,2.45,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Cabbage',0,0,0.39,0.04,0.3,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Canola, grain',0,0,3.8,0.9,0.6,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Cantaloupe',0,0,0.365,0.05,0.54,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Celery',0,0,0.19,0.045,0.415,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Clover-grass, hay',6,10,1.9,0.25,2.1,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Corn, grain',5,10,1.45,0.275,0.3,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Corn, silage',30,70,0.4,0.075,0.33,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Cotton, lint',3,0,1.75,0.285,0.58,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Grape',0,0,0.415,0.065,0.455,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Lettuce',0,0,0.24,0.03,0.415,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Oats, grain',2,10,2.2,0.325,0.375,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Oats, hay',4,10,2,0.325,1.65,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Oats, silage-soft dough',16,70,0.5,0.08,0.415,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Orchardgrass, hay',6,10,1.75,0.23,2.1,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Pasture',20,70,0.92,0.13,0.945,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Pasture, Silage',15,70,0.92,0.13,0.945,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Peach',0,0,0.315,0.135,0.33,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Pear',0,0,0.285,0.035,0.26,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Potato',0,0,0.35,0.065,0.465,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Prune',0,0,0.3,0.04,0.36,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Ryegrass, hay',6,10,1.6,0.23,2.1,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Safflower',2,0,5,0.55,3.1,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sorghum',4,10,2.5,0.435,2,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sorghum-Sudangrass, forage',0,0,2.05,0.35,2.45,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Squash',0,0,0.42,0.04,0.5,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sudangrass, hay',8,10,1.6,0.22,1.65,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sudangrass, silage',8,70,0.55,0.085,0.6,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sugar beets',30,0,0.425,0.045,0.75,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sweet Potato',0,0,0.52,0.1,0.83,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Tall Fescue, hay',6,10,1.6,0.23,2.1,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Timothy, hay',6,10,1.75,0.23,2.1,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Tomato',75,90,0.125,0.045,0.285,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Triticale, boot stage',12,70,0.75,0.135,0.58,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Triticale, soft dough',22,70,0.5,0.085,0.375,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Vetch, forage',0,0,0,0,0,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Wheat, grain',3,10,2.9,0.545,2.5,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Wheat, Hay',4,10,1.65,0.255,1.245,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Wheat, silage, boot stage',10,70,0.8,0.14,0.6,0);
---   INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Wheat, silage, soft dough',18,70,0.55,0.085,0.415,0);
-
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Alfalfa hay',8,10,3,0.27,2.1,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Almond in shell',0,0,6.5,1.1,7.05,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Apple',0,0,0.3,0.08,0.54,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Barley silage boot stage',8,70,0.8,0.13,0.58,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Barley silage soft dough',16,70,0.5,0.08,0.415,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Barley grain',3,10,1.85,0.35,0.5,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Bermudagrass hay',8,10,1.75,0.23,2.1,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Broccoli',0,0,0.44,0.075,0.35,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Bromegrass forage',0,0,1.8,0.285,2.45,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Cabbage',0,0,0.39,0.04,0.3,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Canola grain',0,0,3.8,0.9,0.6,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Cantaloupe',0,0,0.365,0.05,0.54,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Celery',0,0,0.19,0.045,0.415,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Clover-grass hay',6,10,1.9,0.25,2.1,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Corn grain',5,10,1.45,0.275,0.3,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Corn silage',30,70,0.4,0.075,0.33,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Cotton lint',3,0,1.75,0.285,0.58,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Grape',0,0,0.415,0.065,0.455,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Lettuce',0,0,0.24,0.03,0.415,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Oats grain',2,10,2.2,0.325,0.375,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Oats hay',4,10,2,0.325,1.65,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Oats silage-soft dough',16,70,0.5,0.08,0.415,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Orchardgrass hay',6,10,1.75,0.23,2.1,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Pasture',20,70,0.92,0.13,0.945,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Pasture Silage',15,70,0.92,0.13,0.945,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Peach',0,0,0.315,0.135,0.33,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Pear',0,0,0.285,0.035,0.26,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Potato',0,0,0.35,0.065,0.465,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Prune',0,0,0.3,0.04,0.36,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Ryegrass hay',6,10,1.6,0.23,2.1,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Safflower',2,0,5,0.55,3.1,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sorghum',4,10,2.5,0.435,2,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sorghum-Sudangrass forage',0,0,2.05,0.35,2.45,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Squash',0,0,0.42,0.04,0.5,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sudangrass hay',8,10,1.6,0.22,1.65,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sudangrass silage',8,70,0.55,0.085,0.6,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sugar beets',30,0,0.425,0.045,0.75,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Sweet Potato',0,0,0.52,0.1,0.83,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Tall Fescue hay',6,10,1.6,0.23,2.1,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Timothy hay',6,10,1.75,0.23,2.1,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Tomato',75,90,0.125,0.045,0.285,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Triticale boot stage',12,70,0.75,0.135,0.58,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Triticale soft dough',22,70,0.5,0.085,0.375,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Vetch forage',0,0,0,0,0,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Wheat grain',3,10,2.9,0.545,2.5,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Wheat Hay',4,10,1.65,0.255,1.245,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Wheat silage boot stage',10,70,0.8,0.14,0.6,0);
+-- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Wheat silage soft dough',18,70,0.55,0.085,0.415,0);
 
 
 

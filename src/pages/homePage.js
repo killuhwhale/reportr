@@ -172,13 +172,13 @@ class HomePage extends Component {
 
         <Grid item container xs={10}>
           <Grid item xs={12}>
-            <AppBar position="static">
+            <AppBar position="static" style={{marginBottom: "32px", backgroundColor: "black"}}>
               <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
                 onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example">
-                <Tab label="Dairy" />
-                <Tab label="Herds" />
-                <Tab label="Crops planted" />
-                <Tab label="Crops harvested" />
+                <Tab label="Dairy" style={{color: "#ec00d9"}}/>
+                <Tab label="Herds" style={{color: "#ec00d9"}}/>
+                <Tab label="Crops planted" style={{color: "#ec00d9"}}/>
+                <Tab label="Crops harvested" style={{color: "#ec00d9"}} />
 
               </Tabs>
             </AppBar>
@@ -220,7 +220,7 @@ class HomePage extends Component {
         <hr />
 
         <AddDairyModal
-          open={this.state.showAddDairyModal ? this.state.showAddDairyModal : false}
+          open={this.state.showAddDairyModal}
           actionText="Add"
           cancelText="Cancel"
           modalText={`Add Dairy to current Reporting Year ${this.state.reportingYr}`}

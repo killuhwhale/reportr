@@ -1,8 +1,17 @@
 Running psql macos 
 - /Library/PostgreSQL/13/scripts/runpsql.sh
-
-start server from server npm start
+- added to .zshrc ==> $ runpsql
+start server from /server npm start
 start react from root npm start
+
+
+To host your site with Firebase Hosting, you need the Firebase CLI (a command line tool).
+
+Run the following npm command to install the CLI or update to the latest CLI version.
+
+npm install -g firebase-tools
+
+
 
 importing db/index.js gives you the connection to the DB server.
 
@@ -22,14 +31,14 @@ QUESTIONS::
 
 TODO TONIGHT
 - ANNUAL Report:
-  - Harvest Events
+  - Harvest Events (Almost done complete w/ upload from TSV!)
   - Fresh water sources and analyses (2)
   - Process Wastewater Analyses (1)
   - Tile Drain sources and analyses (2)
 
 
 
-Harvet Event
+Harvest Event
   - field_crop
   - harvest_date
   - harvest_yield
@@ -152,3 +161,30 @@ Field 4 - PLANT DATE - CROP
     - EX: Lateral 7, Surface water,         0,     0,    0,      511,               6,655,500.00 gal    
     - EX: Wastewater, Process waste water,  63.77, 9.47, 131.37, 1,159.52,          600,000.00gal
     - Total application ------------        X,     X,    X,      x,yyy.zz,         ----------------    (------- => BLANK)
+
+
+
+
+
+Upload their documents
+Website
+
+Promote, Advertise, 
+
+Notary service, 
+  - Upload documents, from notaries
+  - Remote online notaries
+  - 
+
+
+Title company
+  - embassy appt to sign document to do transaction
+  - tkaes 6-8 weeks to get appt
+  - Notary service solves problem online
+    - California is not authorized
+    - 
+
+  Notary SnapDoc Service, She want to be like this company.
+
+    - Title company sends email (through snapdoc), signing.
+    - Notary 
