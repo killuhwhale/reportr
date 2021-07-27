@@ -9,7 +9,7 @@ import AddIcon from '@material-ui/icons/Add'
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
-import { get, post } from '../../utils/requests';
+import { get, getPDF, post } from '../../utils/requests';
 import ParcelView from "../Parcel/parcelView"
 import OperatorView from "../Operators/operatorView"
 import AddParcelModal from "../Modals/addParcelModal"
@@ -93,14 +93,44 @@ class DairyTab extends Component {
     this.setState({ showAddFieldModal: val })
   }
 
+  generatePDF(){
+    
+    console.log("Generating pdf ")
+    getPDF(`${BASE_URL}/api/pdf/${this.state.dairy.pk}`)
+    .then(res => {
+      console.log(res.data)
+      const blob = new Blob([res.data], {type: 'application/pdf'})
+      const link = document.createElement('a')
+      link.href = window.URL.createObjectURL(blob)
+      link.download = `test.pdf`
+      link.click()
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
   render() {
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
           <Grid item container xs={12}>
-            <Typography variant="h2">
-              Dairy Information
-            </Typography>
+            <Grid item xs={6} >
+              <Typography variant="h2">
+                Dairy Information
+              </Typography>
+
+            </Grid>
+            <Grid item xs={6} >
+              <Tooltip title="Generate Annual Report">
+                <IconButton 
+                  onClick={this.generatePDF.bind(this)} >
+                  <AddIcon style={{color: this.props.theme.palette.text.primary}}/>
+                </IconButton>
+              </Tooltip>
+
+            </Grid>
+
+
             <Grid item xs={12}>
               <OperatorView
                 dairy={this.state.dairy}

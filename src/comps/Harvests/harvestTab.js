@@ -11,7 +11,8 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import HarvestView from "./harvestView"
 import AddFieldCropHarvestModal from '../Modals/addFieldCropHarvestModal'
-import UploadHarvestCSVModal from '../Modals/uploadHarvestCSVModal';
+import UploadHarvestCSVModal from '../Modals/uploadHarvestCSVModal'
+import ViewTSVsModal from "../Modals/viewTSVsModal"
 import { get, post } from '../../utils/requests';
 import { MG_KG, KG_MG } from '../../utils/convertCalc'
 import { isEmpty } from "../../utils/valid"
@@ -33,6 +34,7 @@ class HarvestTab extends Component {
       uploadedFilename: "",
       updateFieldCropHarvestObj: {}, // PK: {all data for field_crop harvest that is updatable...}
       groupedField_crop_harvests: {},
+      showViewTSVsModal: false,
       createFieldCropHarvestObj: {
         harvest_date: new Date(),
         field_crop_idx: 0,
@@ -222,6 +224,7 @@ class HarvestTab extends Component {
     });
     reader.readAsText(file)
   }
+  // helper
   processCSVText(csvText) {
     console.log("Processing CSV Text")
     // Field,Acres,Crop,Plant Date,Harvest Dates,Expected Yield Tons/Acre,Actual Yield Tons/Acre,Actual Yield Total Tons,Reporting Method,% Moisture,% N,% P,% K,% TFS    Salt  (Dry Basis),Lbs/Acre N,Lbs/Acre P,Lbs/Acre K,Lbs/Acre Salt
@@ -241,7 +244,7 @@ class HarvestTab extends Component {
     })
     return rows
   }
-  /**
+  /** helper
    * Creating from CSV assumes that each row is a new harvest event(field_crop_harvest).
    
   *   Deciding to not modify identifying information for fields, field_crop and field_crop_harvest
@@ -254,7 +257,7 @@ class HarvestTab extends Component {
    *    -- ** This means, field title, crop title, plant date, or harvest date should not be
    *                   modified to avoid confusion by the user.
    * 
-   */
+  */
   createFieldsFromCSV(fields) {
     // Helper to create all fields in spreadsheet since they are parents of everything else
     // There is an issue when multiple rows try to create a field and there is a race condition conflict.
@@ -279,11 +282,11 @@ class HarvestTab extends Component {
     })
     return Promise.all(promises)
   }
-  uploadCSV() {
-    console.log("Uploading CSV")
-    let rows = this.processCSVText(this.state.csvText)
+
+  createFieldSet(rows){
     let fields = []
     let fieldSet = new Set()
+    // Create a set of fields to ensure duplicates are not attempted.
     rows.forEach(row => {
       const [
         field_title, acres_planted, cropable, acres, crop_title, crop_title1, plant_date, harvest_date, typical_yield, actual_yield_tons_per_acre,
@@ -294,19 +297,49 @@ class HarvestTab extends Component {
         fieldSet.add(field_title)
       }
     })
+    return fields
+  }
 
-    this.createFieldsFromCSV(fields)
+  uploadTSVToDB(){
+    console.log("Uploading TSV to DB", this.state.uploadedFilename, this.state.csvText)
+    post(`${BASE_URL}/api/tsv/create`, {
+      title: this.state.uploadedFilename,
+      data: this.state.csvText,
+      dairy_id: this.state.dairy.pk
+    })
+    .then(res => {
+      console.log("Uploaded to DB: ", res)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+  // Triggered when user presses Add btn in Modal
+  uploadCSV() {
+    console.log("Uploading CSV")
+    let rows = this.processCSVText(this.state.csvText)
+
+    // Create a set of fields to ensure duplicates are not attempted.
+    let fields = this.createFieldSet(rows)   
+    this.uploadTSVToDB() // remove this when done testing, do this after the data was successfully create in DB
+
+
+
+    this.createFieldsFromCSV(fields)      // Create fields before proceeding
       .then(createFieldRes => {
         console.log(createFieldRes)
         let result_promises = rows.map((row, i) => {
-          return this.createDataFromCSVListRow(row, i)
+          return this.createDataFromCSVListRow(row, i)    // Create entries for ea row in TSV file
         })
-        Promise.all(result_promises)
+
+        Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
           .then(res => {
             console.log("Completed Results")
             console.log(res)
             this.toggleShowUploadCSV(false)
             this.getAllFieldCropHarvests()
+            // If successful store tsv data
+            // this.uploadTSVToDB()     // TODO() remove once done testing
 
           })
           .catch(err => {
@@ -321,8 +354,6 @@ class HarvestTab extends Component {
 
 
   }
-
-
   /**
    *  Returns the obj requested or creates and returns it.
    * 
@@ -459,6 +490,10 @@ class HarvestTab extends Component {
 
   }
 
+  toggleShowTSVsModal(val){
+    this.setState({showViewTSVsModal: val})
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -467,6 +502,10 @@ class HarvestTab extends Component {
             <Button variant="outlined" fullWidth color="secondary"
               onClick={this.updateFieldCropHarvest.bind(this)}>
               Update Harvests
+            </Button>
+            <Button variant="outlined" fullWidth color="secondary"
+              onClick={() => this.toggleShowTSVsModal(true)}>
+              View TSVs
             </Button>
             <Button variant="outlined" fullWidth color="primary"
               onClick={() => this.toggleShowUploadCSV(true)}>
@@ -501,6 +540,14 @@ class HarvestTab extends Component {
           :
           <React.Fragment>Loading....</React.Fragment>
         }
+
+        <ViewTSVsModal
+          open={this.state.showViewTSVsModal}
+          actionText="Upload"
+          cancelText="Close"
+          dairy_id={this.state.dairy.pk}
+          onClose={() => this.toggleShowTSVsModal(false)}
+        />
 
         <UploadHarvestCSVModal
           open={this.state.showUploadCSV}

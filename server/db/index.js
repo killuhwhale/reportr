@@ -398,5 +398,31 @@ module.exports = {
       callback
     )
   },
+  insertTSV: (values, callback) => {
+    console.log("Values in DB Pool query TSV")
+    console.log(values)
+    return pool.query(
+      format(`INSERT INTO TSVs(
+        dairy_id, title, data
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getTSVs: (dairy_id, callback) => {
+    return pool.query(
+      format("SELECT * FROM TSVs where dairy_id = %L", dairy_id),
+      [],
+      callback
+    )
+  },
+  rmTSV: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM TSVs where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  
 }
 

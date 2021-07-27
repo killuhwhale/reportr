@@ -1,5 +1,4 @@
 --- db: reportrr, user: admin, pass 
-
 CREATE TABLE IF NOT EXISTS dairies(
   pk SERIAL PRIMARY KEY,
   reporting_yr SMALLINT DEFAULT 2021,
@@ -172,6 +171,18 @@ CREATE TABLE IF NOT EXISTS field_crop_harvest(
 );
 
 
+
+CREATE TABLE IF NOT EXISTS TSVs(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  data TEXT,
+  UNIQUE(dairy_id, title),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
 
 -- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Alfalfa Haylage',21,70,1,0.09,0.7,0);
 -- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Alfalfa hay',8,10,3,0.27,2.1,0);

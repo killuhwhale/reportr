@@ -78,7 +78,7 @@ class CropViewTable extends Component {
             </Grid>
             <Grid item xs={2}>
               <TextField
-                label="Acres Planted"
+                label="Acres Planted" 
                 name="acres_planted"
                 value={field_crop.acres_planted}
                 onChange={(ev) => this.props.onChange(ev, field_crop.field_id, i)}
@@ -86,7 +86,7 @@ class CropViewTable extends Component {
               />
             </Grid>
             <Grid item xs={2}>
-              <TextField
+              <TextField 
                 label="Typical Yield"
                 name="typical_yield"
                 value={field_crop.typical_yield}

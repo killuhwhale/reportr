@@ -11,14 +11,10 @@ import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import ActionCancelModal from "../Modals/actionCancelModal"
-
 import { get, post } from '../../utils/requests'
 import { MG_KG, KG_MG } from '../../utils/convertCalc'
 
 const BASE_URL = "http://localhost:3001"
-
-
-
 
 
 /** Displays field_crop_harvest entries

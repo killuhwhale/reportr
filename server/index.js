@@ -1,16 +1,19 @@
+const puppeteer = require('puppeteer')
 const path = require("path");
 const express = require("express");
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const app = express(); // create express app
-const bodyParser = require('body-parser');
+// const {Storage} = require('@google-cloud/storage');
 require('dotenv').config();
 var http = require('http').createServer(app);
 const db = require('./db/index')
-
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json({limit: '10mb'}))
+// const storage = new Storage();
+
+
+
+// Setup
 app.use(express.json())
 app.use(express.static(path.join(__dirname, "..", "build")));
 app.use(express.static(path.join(__dirname, "../public")));
@@ -30,6 +33,85 @@ app.use(cors({
 }));
 
 
+async function printPDF(url) {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto(url, {waitUntil: 'networkidle0'});
+  await page.addStyleTag({ content: '@page { size: auto; }' })
+  await page.evaluate(() => window.scrollBy(0, 1000))
+  
+  const pdf = await page.pdf({ 
+    printBackground: true,
+    format: "Letter",
+    margin: {
+        top: "10px",
+        bottom: "10px",
+        // left: "20px",
+        // right: "20px"
+    }
+   });
+ 
+  await browser.close();
+  return pdf
+}
+
+app.get("/api/pdf/:dairy_id", (req, res) => {
+  console.log("Generating pdf for url", req.params.dairy_id)
+  printPDF("http://localhost:3000")
+  .then(pdf => {
+    console.log(pdf)
+    res.set({'Content-Type': 'application/pdf', 'Content-Length': pdf.length})
+    res.send(pdf)
+  })
+  .catch(err => {
+    console.log("PDF error: ", err)
+  })
+  
+  
+});
+
+
+
+
+app.post("/api/tsv/create", (req, res) => {
+  console.log("Inserting....",)
+  const { dairy_id, title, data } = req.body
+  db.insertTSV([dairy_id, title, data], (err, result) => {
+    
+    if(!err){
+      res.json({"test": "Inserted TSV successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Inserted TSV unsuccessful"});
+  })
+});
+
+app.get("/api/tsv/:dairy_id", (req, res) => {
+	db.getTSVs(req.params.dairy_id, 
+  (err, result) => {
+    if(!err){
+      
+      res.json(result.rows)
+      return;    
+    }
+    res.json({"test": "Get all TSVs unsuccessful"});
+  })
+});
+
+app.post("/api/tsv/delete", (req, res) => {
+  console.log("Deleting TSV w/ pk: ", req.body.pk)
+  db.rmTSV(req.body.pk, (err, result) => {
+    if(!err){
+      res.json({"test": "Deleted TSV successfully"});
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Deleted TSV unsuccessful"});
+  })
+});
+
+// API
 app.get("/api/dairies/:reportingYear", (req, res) => {
 	db.getDairies(req.params.reportingYear, 
   (err, result) => {

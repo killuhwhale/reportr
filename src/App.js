@@ -13,13 +13,15 @@ import DateFnsUtils from '@date-io/date-fns';
 
 import apptheme from "./css/apptheme"
 import HomePage  from "./pages/homePage"
+import AnnualReport  from "./pages/annualReport"
+
 
 const BackgroundGrid = withStyles(theme =>({
   root:{
     backgroundColor: theme.palette.background.paper,
     position: "absolute",
     minHeight: "100vh",
-    maxHeight: "100vh",
+    // maxHeight: "100vh",
     overflowY: "auto"
   }
 }))(Grid)
@@ -58,13 +60,13 @@ export default class App extends React.Component {
       <BackgroundGrid container direction="column" alignItems="center">
       <Grid item container xs={12}
         style={{
-          minHeight: "100%",
+          // minHeight: "100%",
           paddingTop: "8px",
           paddingLeft: "8px",
           paddingRight: "8px"
         }}
       >
-        <Paper style={{width: "100%"}}>
+        <Paper style={{minWidth: "100%"}}>
         <Switch>
           <Route exact path="/">
             <HomePage
@@ -72,7 +74,13 @@ export default class App extends React.Component {
             />
           </Route>
 
-          
+          <Route path="/annualReport/:dairy_id"
+            render= { props =>(
+              <AnnualReport
+                dairy_id={props.match.params.dairy_id}
+                onAlert={this.onAlert.bind(this)}/>
+            )}
+          />
         </Switch>
         </Paper>
       </Grid>

@@ -4,12 +4,35 @@ Running psql macos
 start server from /server npm start
 start react from root npm start
 
+--------------------------------------------------------------------------------------------------------------
+Firebase & Google Cloud
+
+Firebase:
+  -- 
+
+Google Cloud
+https://cloud.google.com/storage/docs/reference/libraries?authuser=3#client-libraries-install-nodejs
 
 To host your site with Firebase Hosting, you need the Firebase CLI (a command line tool).
 
 Run the following npm command to install the CLI or update to the latest CLI version.
 
 npm install -g firebase-tools
+
+You can deploy now or later. To deploy now, open a terminal window, then navigate to or create a root directory for your web app.
+
+Sign in to Google
+firebase login
+Initiate your project
+Run this command from your app’s root directory:
+
+firebase init
+When you’re ready, deploy your web app
+Put your static files (e.g., HTML, CSS, JS) in your app’s deploy directory (the default is “public”). Then, run this command from your app’s root directory:
+
+firebase deploy
+
+--------------------------------------------------------------------------------------------------------------
 
 
 
@@ -30,6 +53,16 @@ QUESTIONS::
 
 
 TODO TONIGHT
+Get Server Side PDF generation sample working 
+- Set up Puppeteer on Server
+- Create client page that shows the "Annual report in html"
+- Set up client-server logic to Start a request to reserver with the page url
+    - page unique by dairy_id
+- Once request is received, use puppeteer to go to that page, and generate a PDF
+- Send generated PDF back to client to where the callback will download the PDF.
+
+
+
 - ANNUAL Report:
   - Harvest Events (Almost done complete w/ upload from TSV!)
   - Fresh water sources and analyses (2)

@@ -212,7 +212,7 @@ class HomePage extends Component {
                 </Grid>
               </React.Fragment>
               :
-              <React.Fragment>Laoding....</React.Fragment>
+              <React.Fragment>Loading....</React.Fragment>
             }
 
           </Grid>
