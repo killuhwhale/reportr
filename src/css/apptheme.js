@@ -7,7 +7,7 @@ let _apptheme = {
        },
        "MuiSelect": {
           "icon": {
-             "color": "white"
+             "color": "#fff"
           }
        },
        "MuiInputBase":{
@@ -24,7 +24,7 @@ let _apptheme = {
        "MuiInput":{
           "underline":{
              '&:before': {
-                borderBottomColor: "white"
+                borderBottomColor: "#fff"
             }
           }
        },
@@ -35,7 +35,7 @@ let _apptheme = {
        },
        "MuiBottomNavigationAction" :{
           root: {
-             color: "white",
+             color: "#fff",
              '&$selected': {
                 color: "#004a7b"
              }
@@ -55,7 +55,7 @@ let _apptheme = {
           "white":"#fff"
        },
        "appBackground":{
-          "main": "black"
+          "main": "#000"
          },
        "background":{
           "paper":"#212121",

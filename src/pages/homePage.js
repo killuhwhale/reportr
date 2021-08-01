@@ -11,7 +11,9 @@ import CropTab from "../comps/Crops/cropTab"
 import HarvestTab from "../comps/Harvests/harvestTab"
 import AddDairyModal from "../comps/Modals/addDairyModal"
 import { get, post, uploadFiles } from "../utils/requests"
+
 import "../App.css"
+
 const BASE_URL = "http://localhost:3001"
 const COUNTIES = ["Merced", "San Joaquin"]
 const BASINS = ["River", "Rio"]
@@ -102,15 +104,12 @@ class HomePage extends Component {
         console.log(err)
       })
   }
-
   handleTabChange(ev, index) {
     let tabs = this.state.tabs
     tabs[this.state.tabIndex] = "hide"
     tabs[index] = "show"
     this.setState({ tabIndex: index, tabs: tabs })
   }
-
-
   render() {
     return (
       <Grid container direction="row" item xs={12} spacing={2}>

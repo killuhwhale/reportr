@@ -12,81 +12,90 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
 import apptheme from "./css/apptheme"
-import HomePage  from "./pages/homePage"
-import AnnualReport  from "./pages/annualReport"
+import pdftheme from "./css/lightTheme"
+
+import HomePage from "./pages/homePage"
+import AnnualReport from "./pages/annualReport"
 
 
-const BackgroundGrid = withStyles(theme =>({
-  root:{
+const BackgroundGrid = withStyles(theme => ({
+  root: {
     backgroundColor: theme.palette.background.paper,
     position: "absolute",
-    minHeight: "100vh",
+    // minHeight: "100vh",
     // maxHeight: "100vh",
-    overflowY: "auto"
+    // overflowY: "auto"
   }
 }))(Grid)
 
 const breakPoints = ['xs', 'sm', 'md', 'lg', 'xl']
 let darkTheme = responsiveFontSizes(createTheme(apptheme), breakPoints)
+let pdfTheme = responsiveFontSizes(createTheme(pdftheme), breakPoints)
 
 export default class App extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props)
-    this.state={
+    this.state = {
       theme: darkTheme,
       alertInfo: {},
       alertOpen: false,
     }
   }
 
-  static getDerivedStateFromProps(props, state){
+  static getDerivedStateFromProps(props, state) {
     return state
   }
 
-  onAlert(alert){
+  onAlert(alert) {
     console.log(alert)
     // this.setState({alertInfo: alert, alertOpen: true})
   }
 
-  onCloseAlert(){
+  onCloseAlert() {
     // this.setState({alertOpen: false, alertInfo: false})
   }
 
-  render(){
-    return(
+  render() {
+    return (
       <BrowserRouter >
-      <ThemeProvider theme={this.state.theme}>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <BackgroundGrid container direction="column" alignItems="center">
-      <Grid item container xs={12}
-        style={{
-          // minHeight: "100%",
-          paddingTop: "8px",
-          paddingLeft: "8px",
-          paddingRight: "8px"
-        }}
-      >
-        <Paper style={{minWidth: "100%"}}>
-        <Switch>
-          <Route exact path="/">
-            <HomePage
-              onAlert={this.onAlert.bind(this)}
-            />
-          </Route>
+        <ThemeProvider theme={this.state.theme}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <BackgroundGrid container direction="column" alignItems="center">
+              <Grid item container xs={12}
+                style={{
+                  minHeight: "100%",
+                  paddingTop: "8px",
+                  paddingLeft: "8px",
+                  paddingRight: "8px"
+                }}
+              >
+                <Paper style={{ minWidth: "100%" }}>
+                  <Switch>
+                    <Route exact path="/">
+                      <HomePage
+                        onAlert={this.onAlert.bind(this)}
+                      />
+                    </Route>
 
-          <Route path="/annualReport/:dairy_id"
-            render= { props =>(
-              <AnnualReport
-                dairy_id={props.match.params.dairy_id}
-                onAlert={this.onAlert.bind(this)}/>
-            )}
-          />
-        </Switch>
-        </Paper>
-      </Grid>
-      </BackgroundGrid>
-      </MuiPickersUtilsProvider>
-      </ThemeProvider>
+
+                  </Switch>
+                </Paper>
+              </Grid>
+            </BackgroundGrid>
+
+            <switch>
+              <ThemeProvider theme={pdfTheme}>
+                <Route path="/annualReport/:dairy_id"
+                  render={props => (
+                    <AnnualReport
+                      dairy_id={props.match.params.dairy_id}
+                      onAlert={this.onAlert.bind(this)} />
+                  )}
+                />
+              </ThemeProvider>
+            </switch>
+          </MuiPickersUtilsProvider>
+        </ThemeProvider>
       </BrowserRouter>
     )
   }

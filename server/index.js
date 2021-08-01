@@ -1,4 +1,3 @@
-const puppeteer = require('puppeteer')
 const path = require("path");
 const express = require("express");
 const fileUpload = require('express-fileupload');
@@ -10,7 +9,6 @@ var http = require('http').createServer(app);
 const db = require('./db/index')
 const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
 // const storage = new Storage();
-
 
 
 // Setup
@@ -31,47 +29,6 @@ app.use(cors({
     return callback(null, true);
   }
 }));
-
-
-async function printPDF(url) {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-  await page.goto(url, {waitUntil: 'networkidle0'});
-  await page.addStyleTag({ content: '@page { size: auto; }' })
-  await page.evaluate(() => window.scrollBy(0, 1000))
-  
-  const pdf = await page.pdf({ 
-    printBackground: true,
-    format: "Letter",
-    margin: {
-        top: "10px",
-        bottom: "10px",
-        // left: "20px",
-        // right: "20px"
-    }
-   });
- 
-  await browser.close();
-  return pdf
-}
-
-app.get("/api/pdf/:dairy_id", (req, res) => {
-  console.log("Generating pdf for url", req.params.dairy_id)
-  printPDF("http://localhost:3000")
-  .then(pdf => {
-    console.log(pdf)
-    res.set({'Content-Type': 'application/pdf', 'Content-Length': pdf.length})
-    res.send(pdf)
-  })
-  .catch(err => {
-    console.log("PDF error: ", err)
-  })
-  
-  
-});
-
-
-
 
 app.post("/api/tsv/create", (req, res) => {
   console.log("Inserting....",)

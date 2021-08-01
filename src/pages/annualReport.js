@@ -28,7 +28,7 @@ const OwnOperators = [
 
 const OwnerOperatorHeaderGrid = withStyles(theme => ({
   root: {
-    backgroundColor: 'darkslategray',
+    backgroundColor: 'grey',
     padding: "6px"
 
   }
@@ -36,21 +36,21 @@ const OwnerOperatorHeaderGrid = withStyles(theme => ({
 
 const HerdInfoTCHeader = withStyles(theme => ({
   root: {
-    border: "1px solid white",
+    border: "1px solid black",
     backgroundColor: "grey"
 
   }
 }))(TableCell)
 const HerdInfoTCBody = withStyles(theme => ({
   root: {
-    border: "1px solid white"
+    border: "1px solid black"
 
   }
 }))(TableCell)
 
 const OwnerOperatorBodyGrid = withStyles(theme => ({
   root: {
-    border: "2px solid darkslategray"
+    border: "2px solid black"
   }
 }))(Grid)
 
@@ -444,139 +444,142 @@ class AnnualReportPage extends Component {
 
   render() {
     return (
-      <Grid container direction="row" item xs={12} spacing={2}>
-        <Grid item container xs={12} id="A" justifyContent="flex-end" alignItems="flex-end">
-          <Grid item xs={3}>
-            <Typography variant="subtitle2">
-              A. NAME OF DAIRY OR BUSINESS OPERATING THE DAIRY:
-            </Typography>
-          </Grid>
-          <Grid item xs={9}>
-            <TextField disabled
-              value="Da Farm"
-              fullWidth
-            />
-          </Grid>
+      <Grid container alignItems="center" alignContent="center" align="center" item xs={12} style={{paddingTop: "16px"}} >
+        <Grid item xs={1}></Grid>
+        <Grid item xs={10} container direction="row" item align="center" spacing={2}>
+          <Grid item container xs={12} id="A" justifyContent="flex-end" alignItems="flex-end">
+            <Grid item xs={3}>
+              <Typography variant="subtitle2">
+                A. NAME OF DAIRY OR BUSINESS OPERATING THE DAIRY:
+              </Typography>
+            </Grid>
+            <Grid item xs={9}>
+              <TextField disabled
+                value="Da Farm"
+                fullWidth
+              />
+            </Grid>
 
-          <Grid item xs={6} align="left">
-            <TextField disabled
-              value="20723 Geer RD"
-              label="Physical address of dairy"
-              helperText="Number and Street"
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField disabled
-              value="Hilmar"
-              helperText="City"
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField disabled
-              value="Merced"
-              helperText="County"
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <TextField disabled
-              value="95324"
-              helperText="Zip Code"
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={2}>
-            <Typography variant="caption">
-              Street and nearest cross street (if no address):
-            </Typography>
-          </Grid>
-          <Grid item xs={10}>
-            <TextField disabled
-              value=""
-              fullWidth
-            />
-          </Grid>
+            <Grid item xs={6} align="left">
+              <TextField disabled
+                value="20723 Geer RD"
+                label="Physical address of dairy"
+                helperText="Number and Street"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField disabled
+                value="Hilmar"
+                helperText="City"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField disabled
+                value="Merced"
+                helperText="County"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <TextField disabled
+                value="95324"
+                helperText="Zip Code"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={2}>
+              <Typography variant="caption">
+                Street and nearest cross street (if no address):
+              </Typography>
+            </Grid>
+            <Grid item xs={10}>
+              <TextField disabled
+                value=""
+                fullWidth
+              />
+            </Grid>
 
-          <Grid item xs={2}>
-            <Typography variant="caption">
-              Date facility was originally placed in operation:
-            </Typography>
-          </Grid>
-          <Grid item xs={2}>
-            <TextField disabled
-              value="01/01/1921"
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={8}></Grid>
+            <Grid item xs={2}>
+              <Typography variant="caption">
+                Date facility was originally placed in operation:
+              </Typography>
+            </Grid>
+            <Grid item xs={2}>
+              <TextField disabled
+                value="01/01/1921"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={8}></Grid>
 
-          <Grid item xs={3}>
-            <Typography variant="caption">
-              Regional Water Quality Control Board Basin Plan designation:
-            </Typography>
-          </Grid>
-          <Grid item xs={3}>
-            <TextField disabled
-              value="San Joaquin River Basin"
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={6}></Grid>
+            <Grid item xs={3}>
+              <Typography variant="caption">
+                Regional Water Quality Control Board Basin Plan designation:
+              </Typography>
+            </Grid>
+            <Grid item xs={3}>
+              <TextField disabled
+                value="San Joaquin River Basin"
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={6}></Grid>
 
-          <Grid item xs={12}>
-            <Typography variant="caption">
-              County Assessor Parcel Number(s) for dairy facility:
-            </Typography>
+            <Grid item xs={12}>
+              <Typography variant="caption">
+                County Assessor Parcel Number(s) for dairy facility:
+              </Typography>
+            </Grid>
+            <Grid item container xs={12} style={{ marginLeft: "10px" }}>
+              {
+                PARCELS.map((parcel, i) => {
+                  return (
+                    <Grid item xs={2}>
+                      <Typography variant="caption">
+                        {parcel}
+                      </Typography>
+                    </Grid>
+                  )
+                })
+              }
+            </Grid>
+
           </Grid>
-          <Grid item container xs={12} style={{ marginLeft: "10px" }}>
-            {
-              PARCELS.map((parcel, i) => {
-                return (
-                  <Grid item xs={2}>
-                    <Typography variant="caption">
-                      {parcel}
-                    </Typography>
-                  </Grid>
-                )
-              })
-            }
+          <Grid item container xs={12} id="B" justifyContent="flex-end" alignItems="flex-end">
+            <Grid item xs={12}>
+              <Typography variant="subtitle2">
+                B. OPERATORS
+              </Typography>
+            </Grid>
+            <Grid item container xs={12}>
+              {
+                OwnOperators.map((ownOperator, i) => {
+                  return (
+                    <OwnerOperator key={`aroo${i}`}
+                      info={ownOperator}
+                    />
+                  )
+                })
+              }
+            </Grid>
+            <Grid item xs={12}>
+              <HerdInformation />
+            </Grid>
+            <Grid item xs={12}>
+              <ManureGenerated />
+            </Grid>
+
+
+
+
+
+
+
           </Grid>
 
         </Grid>
-        <Grid item container xs={12} id="A" justifyContent="flex-end" alignItems="flex-end">
-          <Grid item xs={12}>
-            <Typography variant="subtitle2">
-              B. OPERATORS
-            </Typography>
-          </Grid>
-          <Grid item container xs={12}>
-            {
-              OwnOperators.map((ownOperator, i) => {
-                return (
-                  <OwnerOperator key={`aroo${i}`}
-                    info={ownOperator}
-                  />
-                )
-              })
-            }
-          </Grid>
-          <Grid item xs={12}>
-            <HerdInformation />
-          </Grid>
-          <Grid item xs={12}>
-            <ManureGenerated />
-          </Grid>
-
-
-
-
-
-
-
-        </Grid>
-
       </Grid>
     )
   }

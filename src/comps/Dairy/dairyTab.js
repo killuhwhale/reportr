@@ -4,16 +4,22 @@ import {
 } from '@material-ui/core'
 import {
   DatePicker
-} from '@material-ui/pickers';
+} from '@material-ui/pickers'
 import AddIcon from '@material-ui/icons/Add'
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
-import { withTheme } from '@material-ui/core/styles';
-import { get, getPDF, post } from '../../utils/requests';
+import { withTheme } from '@material-ui/core/styles'
+import Chart from 'chart.js/auto';
+import { get, getPDF, post } from '../../utils/requests'
 import ParcelView from "../Parcel/parcelView"
 import OperatorView from "../Operators/operatorView"
 import AddParcelModal from "../Modals/addParcelModal"
 import AddFieldModal from "../Modals/addFieldModal"
+import pdfMake from "pdfmake/build/pdfmake"
+import pdfFonts from "pdfmake/build/vfs_fonts"
+import dd from "./pdf"
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 const BASE_URL = "http://localhost:3001"
 
@@ -42,6 +48,9 @@ class DairyTab extends Component {
       showAddParcelModal: false,
       showAddFieldModal: false
     }
+    this.canvas = React.createRef()
+    this.chart = null
+    this.charts = {}
   }
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
@@ -93,21 +102,291 @@ class DairyTab extends Component {
     this.setState({ showAddFieldModal: val })
   }
 
-  generatePDF(){
-    
-    console.log("Generating pdf ")
-    getPDF(`${BASE_URL}/api/pdf/${this.state.dairy.pk}`)
-    .then(res => {
-      console.log(res.data)
-      const blob = new Blob([res.data], {type: 'application/pdf'})
-      const link = document.createElement('a')
-      link.href = window.URL.createObjectURL(blob)
-      link.download = `test.pdf`
-      link.click()
+  createCharts() {
+    let nutrientLabels = ["N", "P", "K", "Salt"]
+    let nutrientData = [
+      [// data set 1
+        [0, 51, 5067, 2000054],   // applied
+        [6, 11, 16, 2010],   // anticipated
+        [7, 12, 17, 2020],   // harvested
+      ],
+      [ // data set 2
+        [5, 10, 15, 2000],
+        [6, 11, 16, 2010],
+        [7, 12, 17, 2020],
+      ]
+    ]
+
+    let materialLabels = [
+      'Existing soil nutrient content',
+      'Plowdown credit',
+      'Commercial fertilizer / Other',
+      'Dry Manure',
+      'Process wastewater',
+      'Fresh water',
+      'Atmospheric deposition',
+    ]
+
+    let materialData = [
+      [31,10,52,61,73,84,20550540, "Nitrogen"]
+    ]
+
+    return new Promise((resolve, rej) => {
+      // for fields and a single summery in report
+      let nutrientPromises = nutrientData.map((row, i) => {
+        return this._createBarChart(`nutrientHoriBar${i}`, nutrientLabels, row)
+      })
+
+      // Summarys in report
+      let materialPromises = materialData.map((row, i) => {
+        return this._createHoriBarChart(`materialHoriBar${i}`, materialLabels, row.slice(0,-1), row.slice(-1))
+      })
+
+      Promise.all([...nutrientPromises, ...materialPromises])
+        .then((res) => {
+          console.log(res)
+          resolve(Object.fromEntries(res))
+        })
+        .catch(err => {
+          console.log(err)
+        })
+
     })
-    .catch(err => {
-      console.log(err)
+
+  }
+  onLoadBase64() {
+    return this.chart.toBase64Image()
+  }
+  _createHoriBarChart(key, labels, data, title) {
+    let canvas = document.createElement('canvas')
+    canvas.style.width = '500px'
+    canvas.style.height = '333px'
+    let area = document.getElementById('chartArea')
+    area.appendChild(canvas)
+    console.log("Creating horibarChart")
+    console.log(key, labels, data, title)
+    return new Promise((res, rej) => {
+      let chart = null
+      chart = new Chart(canvas, {
+        type: 'bar',
+        
+        data: {
+          labels: labels, // [x, y, z]
+          datasets: [{
+            label: title,
+            minBarLength: 1,
+            backgroundColor: ['#f00', "#0f0", "#00f", "#af0", "#0fa", "#afa", "#f0f"],
+            data: data
+          }
+          ]
+        },
+        options: {
+          showDatapoints: true,
+          indexAxis: 'y',
+          plugins: {
+            legend: {
+              display: false
+            },
+            title: {
+              display: true,
+              text: title,
+              // padding: {
+              //   top: 10,
+              //   bottom: 30
+              // }
+            },
+            subtitle: {
+              display: true,
+              text: `lbs of ${title} applied`,
+              // padding: {
+              //   top: 10,
+              //   bottom: 30
+              // }
+            },
+            tooltip: {
+              enabled: false
+            },
+          },
+
+          scales: {
+            x: {
+              type: 'logarithmic',
+              color: "#0f0",
+              // position: 'left', // `axis` is determined by the position as `'y'`
+              title:{
+                text: "lbs",
+                display: true
+              },
+              // ticks: {
+              //   // Include a dollar sign in the ticks
+              //   callback: function (value, index, values) {
+              //     return `${value} lbs/ton`
+              //   }
+              // }
+            }
+          },
+          animation: {
+            onComplete: () => {
+              const img = chart.toBase64Image('image/png', 1)
+              area.removeChild(canvas)
+              res([
+                key, img
+              ])
+            }
+          },
+        }
+      })
+     
     })
+  }
+  _createBarChart(key, labels, data) {
+    let canvas = document.createElement('canvas')
+    canvas.style.height = '300px'
+    canvas.style.width = '600px'
+    let area = document.getElementById('chartArea')
+    area.appendChild(canvas)
+    return new Promise((res, rej) => {
+      let chart = null
+      chart = new Chart(canvas, {
+        type: 'bar',
+
+        data: {
+          labels: labels, // [x, y, z]
+          datasets: [{
+            label: "Applied",
+            minBarLength: 1,
+            backgroundColor: ['#f00'],
+            data: data[0]
+          },
+          {
+            label: "Anticipated",
+            minBarLength: 1,
+            backgroundColor: ['#0f0'],
+            data: data[1]
+          },
+          {
+            label: "Harvest",
+            minBarLength: 1,
+            backgroundColor: ['#00f'],
+            data: data[2]
+          }
+          ]
+        },
+        options: {
+          showDatapoints: true,
+          plugins: {
+            
+            title: {
+              display: true,
+              text: 'Nutrient Budget',
+              // padding: {
+              //   top: 10,
+              //   bottom: 30
+              // }
+            },
+            subtitle: {
+              display: true,
+              text: 'lbs/ acre',
+              // padding: {
+              //   top: 10,
+              //   bottom: 30
+              // }
+            },
+            tooltip: {
+              enabled: false
+            },
+          },
+
+          scales: {
+            y: {
+              type: 'logarithmic',
+              color: "#0f0",
+              position: 'left', // `axis` is determined by the position as `'y'`
+              title:{
+                text: "lbs / ACRE",
+                display: true
+              },
+              // ticks: {
+              //   // Include a dollar sign in the ticks
+              //   callback: function (value, index, values) {
+              //     return `${value} lbs/ton`
+              //   }
+              // }
+            }
+          },
+          animation: {
+            onComplete: () => {
+              const img = chart.toBase64Image('image/png', 1)
+              area.removeChild(canvas)
+              res([
+                key, img
+              ])
+            }
+          },
+        }
+      })
+     
+    })
+  }
+
+  generatePDF() {
+    // pdfMake.createPdf(dd(props)).download();
+    pdfMake.fonts = {
+      // download default Roboto font from cdnjs.com
+      Roboto: {
+        normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
+        bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf',
+        italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
+        bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf'
+      }
+    }
+    pdfMake.tableLayouts = {
+      formLayout: {
+        paddingBottom: function (i, node) { return 0; },
+      }
+    }
+    let props = {} // data from db formatted nicely to plugin to pdf
+
+    Chart.register({
+      id: 'testyplugzzz',
+      afterDraw: (chartInstance) => {
+        console.log(chartInstance)
+        var ctx = chartInstance.ctx;
+  
+        // render the value of the chart above the bar
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'bottom';
+        
+        
+        chartInstance.data.datasets.forEach((dataset, di) => {
+          for (var i = 0; i < dataset.data.length; i++) {
+            // console.log(dataset)
+            
+            let bar = chartInstance._metasets[di].data[i]
+            let maxX = chartInstance.scales.x.maxWidth
+            // let maxY = chartInstance.scales.y.maxHeight
+            let numChars = dataset.data[i].toString().length
+            let singleCharLen = 4
+            var xOffset = (500 - bar.x) / 500 < 0.03 ? ((numChars * -singleCharLen) - 10) : 0;
+            console.log(maxX, bar.x)
+            if(chartInstance.scales.x.type === "logarithmic"){
+              ctx.fillText(dataset.data[i], bar.x + xOffset + 10 , bar.y);
+            }else{
+              ctx.fillText(dataset.data[i], bar.x, bar.y);
+
+            }
+          }
+        });
+      }
+    });
+    this.createCharts()
+      .then(images => {
+        console.log(images)
+        pdfMake.createPdf(dd(props, images)).open()
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
   render() {
     return (
@@ -122,9 +401,9 @@ class DairyTab extends Component {
             </Grid>
             <Grid item xs={6} >
               <Tooltip title="Generate Annual Report">
-                <IconButton 
+                <IconButton
                   onClick={this.generatePDF.bind(this)} >
-                  <AddIcon style={{color: this.props.theme.palette.text.primary}}/>
+                  <AddIcon style={{ color: this.props.theme.palette.text.primary }} />
                 </IconButton>
               </Tooltip>
 
@@ -134,12 +413,12 @@ class DairyTab extends Component {
             <Grid item xs={12}>
               <OperatorView
                 dairy={this.state.dairy}
-              
+
               />
             </Grid>
 
 
-            <Grid item container xs={12} style={{marginTop: "64px"}}>
+            <Grid item container xs={12} style={{ marginTop: "64px" }}>
               <Grid item xs={12}>
                 <Typography variant="h2">
                   Address
@@ -154,15 +433,15 @@ class DairyTab extends Component {
                   style={{ width: "100%" }}
                 />
               </Grid>
-              <Grid item container xs={4} style={{position:"relative"}}> 
-                  <div style={{position: 'absolute', top: 0, left: 0}}>
-                    <Typography variant="caption">First Started Operation</Typography>
-                  </div>
-                  <DatePicker 
-                    value={this.state.dairy.began}
-                    onChange={this.handleDateChange.bind(this)} 
-                    style={{width: "100%", justifyContent: "flex-end"}}
-                  />
+              <Grid item container xs={4} style={{ position: "relative" }}>
+                <div style={{ position: 'absolute', top: 0, left: 0 }}>
+                  <Typography variant="caption">First Started Operation</Typography>
+                </div>
+                <DatePicker
+                  value={this.state.dairy.began}
+                  onChange={this.handleDateChange.bind(this)}
+                  style={{ width: "100%", justifyContent: "flex-end" }}
+                />
               </Grid>
               <Grid item xs={4}>
                 <TextField select
@@ -183,7 +462,7 @@ class DairyTab extends Component {
                 </TextField>
               </Grid>
             </Grid>
-            <Grid item container xs={12} style={{marginTop:"16px"}}>
+            <Grid item container xs={12} style={{ marginTop: "16px" }}>
               <Grid item xs={4}>
                 <TextField
                   name='street'
@@ -222,7 +501,7 @@ class DairyTab extends Component {
               </Grid>
 
             </Grid>
-            <Grid item container xs={12} style={{marginTop:"16px"}}>
+            <Grid item container xs={12} style={{ marginTop: "16px" }}>
               <Grid item xs={3}>
                 <TextField
                   name='city'
@@ -269,16 +548,16 @@ class DairyTab extends Component {
                 </TextField>
               </Grid>
               <Grid item xs={12}>
-              <Grid item xs={12} container alignItems="center">
-                <Button variant="outlined" fullWidth color="primary"
-                  onClick={this.props.onUpdate} style={{marginTop:"16px"}}
-                >
-                  Update
-                </Button>
-              </Grid>
+                <Grid item xs={12} container alignItems="center">
+                  <Button variant="outlined" fullWidth color="primary"
+                    onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
+                  >
+                    Update
+                  </Button>
+                </Grid>
               </Grid>
             </Grid>
-            <Grid item container key="parcel_FieldList"align="center" xs={12} style={{marginTop:"24px"}} spacing={2}>
+            <Grid item container key="parcel_FieldList" align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
               <Grid item xs={6}>
                 <Grid item xs={12}>
                   <Typography variant="h4">
@@ -286,10 +565,10 @@ class DairyTab extends Component {
                   </Typography>
                 </Grid>
                 <Tooltip title="Add parcel to dairy">
-                  <Button 
-                    onClick={() => this.toggleParcelModal(true)} 
+                  <Button
+                    onClick={() => this.toggleParcelModal(true)}
                     fullWidth variant="outlined" color="primary"
-                    style={{marginTop:"16px"}}
+                    style={{ marginTop: "16px" }}
                   >
                     <Typography variant="subtitle2">
                       Add Parcel
@@ -297,15 +576,15 @@ class DairyTab extends Component {
                   </Button>
                 </Tooltip>
               </Grid>
-              <Grid item xs={6}>           
+              <Grid item xs={6}>
                 <Typography variant="h4">
                   Fields
                 </Typography>
                 <Tooltip title="Add field to dairy">
-                  <Button 
-                    onClick={() => this.toggleFieldModal(true)} 
+                  <Button
+                    onClick={() => this.toggleFieldModal(true)}
                     fullWidth variant="outlined" color="primary"
-                    style={{marginTop:"16px"}}
+                    style={{ marginTop: "16px" }}
                   >
                     <Typography variant="subtitle2">
                       Add Field
@@ -314,32 +593,34 @@ class DairyTab extends Component {
                 </Tooltip>
               </Grid>
             </Grid>
-            <Grid item container align="center" xs={12} style={{marginTop:"24px"}} spacing={2}>
+            <Grid item container align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
               <ParcelView
                 reportingYr={this.state.reportingYr}
                 dairy={this.state.dairy}
               />
             </Grid>
 
+            <div id="chartArea" style={{ maxHeight: '1px', overflow: 'none' }}>
 
-        <AddParcelModal
-          open={this.state.showAddParcelModal}
-          actionText="Add"
-          cancelText="Cancel"
-          modalText={`Add Parcel to Dairy ${this.state.dairy.title}`}
-          parcel={{ pnumber: "" }}
-          onUpdate={this.onParcelChange.bind(this)}
-          onAction={this.createParcel.bind(this)}
-          onClose={() => this.toggleParcelModal(false)}
-        />
-        <AddFieldModal
-          open={this.state.showAddFieldModal}
-          actionText="Add"
-          cancelText="Cancel"
-          modalText={`Add Field to Dairy ${this.state.dairy.title}`}
-          onAction={this.createField.bind(this)}
-          onClose={() => this.toggleFieldModal(false)}
-        />
+            </div>
+            <AddParcelModal
+              open={this.state.showAddParcelModal}
+              actionText="Add"
+              cancelText="Cancel"
+              modalText={`Add Parcel to Dairy ${this.state.dairy.title}`}
+              parcel={{ pnumber: "" }}
+              onUpdate={this.onParcelChange.bind(this)}
+              onAction={this.createParcel.bind(this)}
+              onClose={() => this.toggleParcelModal(false)}
+            />
+            <AddFieldModal
+              open={this.state.showAddFieldModal}
+              actionText="Add"
+              cancelText="Cancel"
+              modalText={`Add Field to Dairy ${this.state.dairy.title}`}
+              onAction={this.createField.bind(this)}
+              onClose={() => this.toggleFieldModal(false)}
+            />
           </Grid>
           :
           <React.Fragment>
@@ -348,7 +629,7 @@ class DairyTab extends Component {
             </Grid>
           </React.Fragment>
         }
-        
+
       </React.Fragment>
     )
   }
