@@ -296,6 +296,7 @@ const image = (img) => {
     // fit: [150, 150], // fit inside a rect
     width: 425,
     height: 175,
+    margin: [0, 5]
   }
 }
 
@@ -669,6 +670,814 @@ const dairyInformationC = (props) => {
   }
 }
 
+
+const availableNutrientsA = (props) => {
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    stack: [{
+      magin: 0,
+      stack: [ // Header and first row - unindented
+        {
+          magin: 0,
+          table: {
+            widths: ['*'],
+            body: [
+              [{
+                // border: [false, false, false, false],
+                text: 'AVAILABLE NUTRIENTS', alignment: 'center', fontSize: 10
+              }]
+            ]
+          }
+        },
+        {
+          table: {
+            margin: [0, 0],
+            widths: ['auto'],
+            heights: [1],
+            body: [
+              [{// row 1
+                border: [false, false, false, false],
+                text: {
+                  text: 'A. HERD INFORMATION:', bold: true, fontSize: 9,
+                }
+              },
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      margin: [10, 0, 0, 0], // content - indented
+      stack: [
+        {
+          table: {
+            widths: ["20%", "*", "*", "*", "*", "*", "*"],
+            body: [
+              [
+                { // row 1
+                  text: '', fontSize: 8
+                },
+                { // row 1
+                  text: 'Milk Cows', fontSize: 8
+                },
+                { // row 1
+                  text: 'Dry Cows', fontSize: 8
+                },
+                { // row 1
+                  text: 'Bred Heifers (15-24 mo.)', fontSize: 8
+                },
+                { // row 1
+                  text: 'Heifers (7-14 mo. to breeding)', fontSize: 8
+                },
+                { // row 1
+                  text: 'Calves (4-6 mo.)', fontSize: 8
+                },
+                { // row 1
+                  text: 'Calves (0-3 mo.)', fontSize: 8
+                },
+              ],
+              [
+                { // row 2
+                  text: 'Number open confinement'
+                },
+                { // row 2
+                  text: '1'
+                },
+                { // row 2
+                  text: '1'
+                },
+                { // row 2
+                  text: '1'
+                },
+                { // row 2
+                  text: '1'
+                },
+                { // row 2
+                  text: '1'
+                },
+                { // row 2
+                  text: '1'
+                },
+
+              ],
+              [
+                { // row 3
+                  text: 'Number under roof'
+                },
+                { // row 3
+                  text: '1'
+                },
+                { // row 3
+                  text: '1'
+                },
+                { // row 3
+                  text: '1'
+                },
+                { // row 3
+                  text: '1'
+                },
+                { // row 3
+                  text: '1'
+                },
+                { // row 3
+                  text: '1'
+                },
+
+              ],
+              [
+                { // row 4
+                  text: 'Maximum number'
+                },
+                { // row 4
+                  text: '1'
+                },
+                { // row 4
+                  text: '1'
+                },
+                { // row 4
+                  text: '1'
+                },
+                { // row 4
+                  text: '1'
+                },
+                { // row 4
+                  text: '1'
+                },
+                { // row 4
+                  text: '1'
+                },
+
+              ],
+              [
+                { // row 5
+                  text: 'Average number'
+                },
+                { // row 5
+                  text: '1'
+                },
+                { // row 5
+                  text: '1'
+                },
+                { // row 5
+                  text: '1'
+                },
+                { // row 5
+                  text: '1'
+                },
+                { // row 5
+                  text: '1'
+                },
+                { // row 5
+                  text: '1'
+                },
+
+              ],
+              [
+                { // row 6
+                  text: 'Avg live weight (lbs)'
+                },
+                { // row 6
+                  text: '1'
+                },
+                { // row 6
+                  text: '1'
+                },
+                { // row 6
+                  text: '1'
+                },
+                { // row 6
+                  text: '1'
+                },
+                { // row 6
+                  fillColor: "#cecece",
+
+                  text: ''
+                },
+                { // row 6
+                  text: '',
+                  fillColor: "#cecece",
+
+                },
+
+              ]
+
+            ]
+          }
+        },
+        {
+          table: {
+            margin: [0, 0],
+            widths: ['auto', '*'],
+            heights: [1],
+            body: [
+              [{// row 1
+
+                border: [false, false, false, false],
+                text: {
+                  text: 'Predominant milk cow breed:', fontSize: 8,
+
+                }
+              },
+              {
+                border: [false, false, false, true],
+                text: {
+                  text: 'Holstein', fontSize: 9, lineHeight: 0.1
+                }
+              }]
+            ]
+          }
+        },
+        {
+          table: {
+            margin: [0, 0],
+            widths: ['15%', 'auto', '*'],
+            heights: [1],
+            body: [
+              [{// row 1
+
+                border: [false, false, false, false],
+                text: {
+                  text: 'Average milk production:', fontSize: 8,
+
+                }
+              },
+              {
+                border: [false, false, false, true],
+                text: {
+                  text: '75', alignment: 'right', fontSize: 9, lineHeight: 0.1
+                }
+              },
+              {
+                border: [false, false, false, false],
+                text: {
+                  text: 'pounds per cow per day', alignment: "left", fontSize: 9, lineHeight: 0.1
+                }
+              }
+              ]
+            ]
+          }
+        },
+      ]
+    },
+    ]
+  }
+}
+
+
+
+const availableNutrientsB = (props) => {
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    stack: [{
+      magin: 0,
+      stack: [ // Header and first row - unindented
+        {
+          table: {
+            margin: [0, 0],
+            widths: ['auto'],
+            heights: [1],
+            body: [
+              [{// row 1
+                border: [false, false, false, false],
+                text: {
+                  text: 'B. MANURE GENERATED:', bold: true, fontSize: 9,
+                }
+              },
+              ]
+            ]
+          }
+        }
+      ]
+    },
+    {
+      margin: [10, 0, 0, 0], // content - indented
+      stack: [
+        {
+          table: {
+            widths: ["20%", "10%", "*"],
+            body: [
+              [
+                {
+                  border: [false],
+                  text: {
+                    text: 'Total manure excreted by the herd:',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false, false, false, true],
+                  text: {
+                    text: '70,026.15',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false],
+                  text: {
+                    text: 'tons per reporting period',
+                    italics: true,
+                    fontSize: 9,
+                  }
+                }
+              ],
+            ]
+          }
+        },
+        {
+          table: {
+            widths: ['21%', "10%", '15%', "26%", '10%', '*'],
+            body: [
+              [
+                {
+                  border: [false],
+                  text: {
+                    text: 'Total nitrogen from manure:',
+                    alignment: 'left',
+                  },
+                  fontSize: 9,
+                },
+                {
+                  border: [false, false, false, true],
+                  text: {
+                    text: '881,742.55',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false],
+                  text: {
+                    text: 'lbs per reporting period',
+                    italics: true,
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false],
+                  text: {
+                    text: 'After ammonia losses (30% loss applied):',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false, false, false, true],
+                  text: {
+                    text: '617,219.79',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false],
+                  text: {
+                    text: 'lbs per reporting period',
+                    italics: true,
+                    fontSize: 9,
+                  }
+                },
+              ]
+            ]
+          }
+        },
+        {
+          table: {
+            widths: ['20%', '10%', '*'],
+            body: [
+              [
+                {
+                  border: [false],
+                  text: {
+                    text: 'Total phosphorus from manure:',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false, false, false, true],
+                  text: {
+                    text: '145,025.47',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false],
+                  text: {
+                    text: 'lbs per reporting period',
+                    italics: true,
+                    fontSize: 9,
+                  }
+                }
+              ],
+              [
+                {
+                  border: [false],
+                  text: {
+                    text: 'Total potassium from manure:',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false, false, false, true],
+                  text: {
+                    text: '400,422.21',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false],
+                  text: {
+                    text: 'lbs per reporting period',
+                    italics: true,
+                    fontSize: 9,
+                  }
+                }
+              ],
+              [
+                {
+                  border: [false],
+                  text: {
+                    text: 'Total salt from manure:',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false, false, false, true],
+                  text: {
+                    text: '1,037,061.00',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false],
+                  text: {
+                    text: 'lbs per reporting period',
+                    italics: true,
+                    fontSize: 9,
+                  }
+                }
+              ],
+            ]
+          }
+        }
+      ]
+    },
+    ]
+  }
+}
+
+const availableNutrientsC = (props) => {
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    columns: [
+      {
+        magin: 0,
+        stack: [ // Header and first row - unindented
+          {
+            table: {
+              margin: [0, 0],
+              widths: ['auto'],
+              heights: [1],
+              body: [
+                [{// row 1
+                  border: [false, false, false, false],
+                  text: {
+                    text: 'C. PROCESS WASTEWATER GENERATED:', bold: true, fontSize: 9,
+                  }
+                },
+                ]
+              ]
+            }
+          },
+          {
+            margin: [10, 0, 0, 0],
+            table: {
+              widths: ["45%", "30%", "*"],
+              body: [
+                [
+                  {
+                    border: [false],
+                    text: {
+                      text: 'Process wastewater generated:',
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false, false, false, true],
+                    text: {
+                      text: '70,026.15',
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false],
+                    text: {
+                      text: 'gallons',
+                      italics: true,
+                      fontSize: 9,
+                    }
+                  }
+                ],
+                [
+                  {
+                    border: [false],
+                    text: {
+                      text: 'Total nitrogen generated:',
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false, false, false, true],
+                    text: {
+                      text: '70,026.15',
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false],
+                    text: {
+                      text: 'gallons',
+                      italics: true,
+                      fontSize: 9,
+                    }
+                  }
+                ],
+                [
+                  {
+                    border: [false],
+                    text: {
+                      text: 'Total phosphorus generated:',
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false, false, false, true],
+                    text: {
+                      text: '70,026.15',
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false],
+                    text: {
+                      text: 'gallons',
+                      italics: true,
+                      fontSize: 9,
+                    }
+                  }
+                ],
+                [
+                  {
+                    border: [false],
+                    text: {
+                      text: 'Total potassium generated:',
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false, false, false, true],
+                    text: {
+                      text: '70,026.15',
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false],
+                    text: {
+                      text: 'gallons',
+                      italics: true,
+                      fontSize: 9,
+                    }
+                  }
+                ],
+                [
+                  {
+                    border: [false],
+                    text: {
+                      text: 'Total salt generated:',
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false, false, false, true],
+                    text: {
+                      text: '70,026.15',
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false],
+                    text: {
+                      text: 'gallons',
+                      italics: true,
+                      fontSize: 9,
+                    }
+                  }
+                ],
+              ]
+            }
+          },
+        ]
+      },
+      {
+        margin: [0, 20, 80, 0], // content - indented
+        width: 300,
+
+        stack: [
+          {
+            table: {
+              widths: ['10%', "30%", '*'],
+
+              body: [
+                [
+                  {
+                    border: [true, true, false, false],
+                    text: {
+                      text: ``,
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false, true, false, false],
+                    text: {
+                      text: `${4 * 1337 * 9}`,
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false, true, true, false],
+                    text: {
+                      text: `gallons applied`,
+                      italics: true,
+                      fontSize: 9,
+                    }
+                  },
+                ],
+                [
+                  {
+                    border: [true, false, false, false],
+                    text: {
+                      text: `+`,
+                      fontSize: 12,
+                    }
+                  },
+                  {
+                    border: [false, false, false, false],
+                    text: {
+                      text: `${3 * 10 ** 7}`,
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false, false, true, false],
+                    text: {
+                      text: `gallons exported`,
+                      italics: true,
+                      fontSize: 9,
+                    }
+                  },
+                ],
+                [
+                  {
+                    border: [true, false, false, true],
+                    text: {
+                      text: `-`,
+                      fontSize: 12,
+                    }
+                  },
+                  {
+                    border: [false, false, false, true],
+                    text: {
+                      text: `${0}`,
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false, false, true, true],
+                    text: {
+                      text: `gallons imported`,
+                      italics: true,
+                      fontSize: 9,
+                    }
+                  },
+                ],
+                [
+                  {
+                    border: [true, false, false, true],
+                    text: {
+                      text: `=`,
+                      fontSize: 12,
+                    }
+                  },
+                  {
+                    border: [false, false, false, true],
+                    text: {
+                      text: `${4 * 1337 * 9}`,
+                      fontSize: 9,
+                    }
+                  },
+                  {
+                    border: [false, false, true, true],
+                    text: {
+                      text: `gallons generated`,
+                      italics: true,
+                      fontSize: 9,
+                    }
+                  },
+                ],
+
+              ]
+            }
+          }
+
+        ]
+      },
+    ]
+  }
+}
+
+const availableNutrientsD = (props) => {
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    stack: [
+      {
+        table: {
+          margin: [0, 0],
+          widths: ['auto'],
+          heights: [1],
+          body: [
+            [{// row 1
+              border: [false, false, false, false],
+              text: {
+                text: 'D. FRESH WATER SOURCES:', bold: true, fontSize: 9,
+              }
+            },
+            ]
+          ]
+        },
+
+      },
+      {
+        margin: [10, 0, 80, 0],
+        table: {
+          widths: ['75%', '25%'],
+          body: [
+            [
+              {// row 1
+                text: {
+                  text: 'Source Description', fontSize: 9,
+                }
+              },
+              {// row 1
+                text: {
+                  text: 'Type', fontSize: 9,
+                }
+              },
+            ],
+            [
+              {
+                text: {
+                  text: 'I5', fontSize: 9,
+                }
+              },
+              {
+                text: {
+                  text: 'Ground Water', fontSize: 9,
+                }
+              },
+            ],
+            [
+              {
+                text: {
+                  text: 'I6', fontSize: 9,
+                }
+              },
+              {
+                text: {
+                  text: 'Ground Water', fontSize: 9,
+                }
+              },
+            ],
+            [
+              {
+                text: {
+                  text: 'I7', fontSize: 9,
+                }
+              },
+              {
+                text: {
+                  text: 'Ground Water', fontSize: 9,
+                }
+              },
+            ],
+          ]
+        }
+      },
+    ]
+  }
+}
+
+
+
+
+
 // Ex:
 // longAddressLine((792-72), {
 //   street: "20723 Geer RD",
@@ -687,9 +1496,13 @@ export default function dd(props, images) {
     dairyInformationA(props),
     dairyInformationB(props),
     dairyInformationC(props),
+    availableNutrientsA(props),
+    availableNutrientsB(props),
+    availableNutrientsC(props),
+    availableNutrientsD(props),
     image(images.nutrientHoriBar0),
     image(images.materialHoriBar0),
-    
+
   ]
 
   return {

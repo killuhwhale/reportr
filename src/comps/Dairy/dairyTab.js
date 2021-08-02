@@ -19,9 +19,21 @@ import pdfMake from "pdfmake/build/pdfmake"
 import pdfFonts from "pdfmake/build/vfs_fonts"
 import dd from "./pdf"
 
+import formats from "../../utils/format"
+import { getByText } from '@testing-library/react'
+
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
 const BASE_URL = "http://localhost:3001"
+const HORIBAR_WIDTH = '600px'
+const HORIBAR_HEIGHT = '300px'
+const BAR_WIDTH = '500px'
+const BAR_HEIGHT = '333px'
+const CHART_BACKGROUND_COLOR = "#ececec"
+const RADIUS = 40
+const PAD = 10
+
+
 
 /**
  * street VARCHAR(100) NOT NULL,
@@ -157,10 +169,11 @@ class DairyTab extends Component {
   onLoadBase64() {
     return this.chart.toBase64Image()
   }
+  
   _createHoriBarChart(key, labels, data, title) {
     let canvas = document.createElement('canvas')
-    canvas.style.width = '500px'
-    canvas.style.height = '333px'
+    canvas.style.width = HORIBAR_WIDTH
+    canvas.style.height = HORIBAR_HEIGHT
     let area = document.getElementById('chartArea')
     area.appendChild(canvas)
     console.log("Creating horibarChart")
@@ -190,7 +203,10 @@ class DairyTab extends Component {
             title: {
               display: true,
               text: title,
-              // padding: {
+              font: {
+                size: 20,
+              },
+              // PADding: {
               //   top: 10,
               //   bottom: 30
               // }
@@ -198,7 +214,10 @@ class DairyTab extends Component {
             subtitle: {
               display: true,
               text: `lbs of ${title} applied`,
-              // padding: {
+              font: {
+                size: 16,
+              },
+              // PADding: {
               //   top: 10,
               //   bottom: 30
               // }
@@ -215,7 +234,10 @@ class DairyTab extends Component {
               // position: 'left', // `axis` is determined by the position as `'y'`
               title:{
                 text: "lbs",
-                display: true
+                display: true,
+                font: {
+                  size: 14
+                }
               },
               // ticks: {
               //   // Include a dollar sign in the ticks
@@ -234,15 +256,50 @@ class DairyTab extends Component {
               ])
             }
           },
-        }
+        },
+        plugins: [
+          {
+            id: 'custom_canvas_background_color',
+            beforeDraw: (chart) => {
+              const ctx = chart.canvas.getContext('2d');
+              ctx.save();
+              ctx.globalCompositeOperation = 'destination-over';
+              ctx.fillStyle = CHART_BACKGROUND_COLOR
+
+              // Top line and top right corner
+              ctx.lineTo(PAD,0, chart.width-PAD, 0) 
+              ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)  
+              
+              // Right wall and bottom right corner
+              ctx.lineTo(chart.width, PAD, chart.width, chart.height-PAD) 
+              ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)  
+              
+              // Bottom line and bottom left corner
+              ctx.lineTo(chart.width - PAD, chart.height,  PAD, chart.height) // right wall
+              ctx.arcTo(0, chart.height,  0, chart.height - PAD, RADIUS)
+
+              // Left wall and top left corner
+              ctx.lineTo(0, chart.height - PAD,  0, PAD) // right wall
+              ctx.arcTo(0, 0, PAD, 0, RADIUS)
+
+              // Close the rectangle....
+              ctx.lineTo(PAD , 0, PAD + 2, 0)
+              
+              ctx.fill()
+              console.log(ctx)
+              ctx.restore();
+            }
+          }
+        ]
       })
      
     })
   }
   _createBarChart(key, labels, data) {
     let canvas = document.createElement('canvas')
-    canvas.style.height = '300px'
-    canvas.style.width = '600px'
+    canvas.style.width = BAR_WIDTH
+    canvas.style.height = BAR_HEIGHT
+    canvas.style.borderRADIUS = "25px"
     let area = document.getElementById('chartArea')
     area.appendChild(canvas)
     return new Promise((res, rej) => {
@@ -275,11 +332,13 @@ class DairyTab extends Component {
         options: {
           showDatapoints: true,
           plugins: {
-            
             title: {
               display: true,
               text: 'Nutrient Budget',
-              // padding: {
+              font: {
+                size: 20,
+              },
+              // PADding: {
               //   top: 10,
               //   bottom: 30
               // }
@@ -287,7 +346,10 @@ class DairyTab extends Component {
             subtitle: {
               display: true,
               text: 'lbs/ acre',
-              // padding: {
+              font: {
+                size: 16,
+              },
+              // PADding: {
               //   top: 10,
               //   bottom: 30
               // }
@@ -303,8 +365,8 @@ class DairyTab extends Component {
               color: "#0f0",
               position: 'left', // `axis` is determined by the position as `'y'`
               title:{
-                text: "lbs / ACRE",
-                display: true
+                text: "lbs / acre",
+                display: true,
               },
               // ticks: {
               //   // Include a dollar sign in the ticks
@@ -323,7 +385,41 @@ class DairyTab extends Component {
               ])
             }
           },
-        }
+        },
+        plugins:[
+          {
+            id: 'custom_canvas_background_color',
+            beforeDraw: (chart) => {
+              const ctx = chart.canvas.getContext('2d');
+              ctx.save();
+              ctx.globalCompositeOperation = 'destination-over';
+              ctx.fillStyle = CHART_BACKGROUND_COLOR;
+
+              // Top line and top right corner
+              ctx.lineTo(PAD,0, chart.width-PAD, 0) 
+              ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)  
+              
+              // Right wall and bottom right corner
+              ctx.lineTo(chart.width, PAD, chart.width, chart.height-PAD) 
+              ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)  
+              
+              // Bottom line and bottom left corner
+              ctx.lineTo(chart.width - PAD, chart.height,  PAD, chart.height) // right wall
+              ctx.arcTo(0, chart.height,  0, chart.height - PAD, RADIUS)
+
+              // Left wall and top left corner
+              ctx.lineTo(0, chart.height - PAD,  0, PAD) // right wall
+              ctx.arcTo(0, 0, PAD, 0, RADIUS)
+
+              // Close the rectangle....
+              ctx.lineTo(PAD , 0, PAD + 2, 0)
+              
+              ctx.fill()
+              console.log(ctx)
+              ctx.restore();
+            }
+          }
+        ]
       })
      
     })
@@ -342,7 +438,7 @@ class DairyTab extends Component {
     }
     pdfMake.tableLayouts = {
       formLayout: {
-        paddingBottom: function (i, node) { return 0; },
+        PADdingBottom: function (i, node) { return 0; },
       }
     }
     let props = {} // data from db formatted nicely to plugin to pdf
