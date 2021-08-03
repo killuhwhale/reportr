@@ -1,138 +1,3 @@
-/*
-    args: props:
-      contains all information for report w/ following structure
-*/
-// const dum__ = {
-//   dairyInfo: {
-//     A: {
-//       address: "",
-//       // ....
-//       parcels: [],
-//     },
-//     B: {
-//       operators: [],
-//       owners: []
-//     }
-//   },
-//   availableNutrients: {
-//     A: {
-//       milk_cows: [0, 0, 0, 0, 0],
-//       //  ...
-//       calves: [0, 0, 0, 0],
-//       predominant_milk_cow_breed: "",
-//       averageMilkProd: 75,
-//     },
-//     B: {
-//       totalManure: 0,
-//       // ...
-//       totalSalt: 0,
-//     },
-//     C: {
-//       processWasteWaterGen: 0,
-//       //  ...
-//       totalSaltGen: 0,
-//     },
-//     D: {
-//       freshWaterSrcs: [{}]
-//     },
-//     E: {
-//       // Tile Drainage
-//     },
-//     F: {
-//       // Nutrient Imports
-//     },
-//     G: {
-//       // Nutrient Exports
-//     },
-//   },
-//   applicationArea: {
-//     A: {
-//       appAreas: [],
-//     },
-//     B: {
-//       fieldCropHarvests: []
-//     }
-//   },
-//   nutrientBudget: {
-//     A: {
-//       // land_apps: []
-//     },
-//     B: {
-//       // nutrient_budget
-//     }
-//   },
-//   nutirentAnalysis: {
-//     A: {
-//       // manure_analysis: []
-//     },
-//     B: {
-//       // process_wastewater_analysis: []
-//     },
-//     C: {
-//       // fresh_water_analysis: []
-//     },
-//     D: {
-//       // soil_analysis: []
-//     },
-//     E: {
-//       // Plant_tissue_analysis: []
-//     },
-//     F: {
-//       // tile drainage analysis
-//     }
-//   },
-//   nutrient_app_removal,bal: {
-//     A:{
-//       // summary pf nutrient apps, potential removal and balance
-//     },
-//     B: {
-//       // Pounds of nutrient applied vs crop removal
-//     },
-//     C:{
-//       // lbs of nutrient apploed by maerial type
-//     }
-//   },
-//   exceptionReporting: {
-//     A: {
-//       // manureProcessWasteDischarges: []
-//     },
-//     B: {
-//       // storm water discharges:[]
-//     },
-//     C: {
-//       // landApp area to surface water disharges: []
-//     }
-//   },
-//   nutrientManagementPlanExportAgreement: {
-//     A: {
-//       nmpStatements: ["","",""]
-//     },
-//     B: {
-//       // exportAgreement true/ false
-//     }
-//   },
-//   notes: {
-//     A: {
-//       // notes: []
-//     }
-//   },
-//   certification: {
-//     A: {
-//       // info: []
-//     }
-//   },
-//   attachments: {
-//     A: {
-//       // required: []
-//     }
-//   }
-
-// }
-
-
-
-// Dummy data
-
 const PARCELS = ["0045-0200-0012-0000", "0045-0200-0020-0000", "0045-0200-0023-0000", "0045-0200-0029-0000", "0045-0200-0033-0000",
   "0045-0200-0034-0000", "0045-0200-0035-0000", "0045-0200-0037-0000", "0045-0200-0060-0000", "0045-0200-0061-0000", "0045-0200-0074-0000", "0045-0230-0025-0000",
   "0045-0230-0066-0000", "0045-0240-0037-0000"]
@@ -180,6 +45,9 @@ const OwnOperators = [
   // },
 
 ]
+const gray = "#eeeeee"
+const darkGray = "#cecece"
+
 const line = (len) => {
   return {
     table: {
@@ -309,7 +177,7 @@ const ownOperatorTable = (key, props) => {
       body: [
         [
           {
-            fillColor: '#eeeeee',
+            fillColor: gray,
             text: `${key}Nylund, Rodney Vz`,
             fontSize: 9
           }
@@ -352,10 +220,10 @@ const dairyInformationA = (props) => {
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [{
-      magin: 0,
+      margin: 0,
       stack: [ // Header and first row - unindented
         {
-          magin: 0,
+          margin: 0,
           table: {
             widths: ['*'],
             body: [
@@ -675,10 +543,10 @@ const availableNutrientsA = (props) => {
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [{
-      magin: 0,
+      margin: 0,
       stack: [ // Header and first row - unindented
         {
-          magin: 0,
+          margin: 0,
           table: {
             widths: ['*'],
             body: [
@@ -719,21 +587,27 @@ const availableNutrientsA = (props) => {
                   text: '', fontSize: 8
                 },
                 { // row 1
+                  fillColor: gray,
                   text: 'Milk Cows', fontSize: 8
                 },
                 { // row 1
+                  fillColor: gray,
                   text: 'Dry Cows', fontSize: 8
                 },
                 { // row 1
+                  fillColor: gray,
                   text: 'Bred Heifers (15-24 mo.)', fontSize: 8
                 },
                 { // row 1
+                  fillColor: gray,
                   text: 'Heifers (7-14 mo. to breeding)', fontSize: 8
                 },
                 { // row 1
+                  fillColor: gray,
                   text: 'Calves (4-6 mo.)', fontSize: 8
                 },
                 { // row 1
+                  fillColor: gray,
                   text: 'Calves (0-3 mo.)', fontSize: 8
                 },
               ],
@@ -850,13 +724,13 @@ const availableNutrientsA = (props) => {
                   text: '1'
                 },
                 { // row 6
-                  fillColor: "#cecece",
+                  fillColor: darkGray,
 
                   text: ''
                 },
                 { // row 6
                   text: '',
-                  fillColor: "#cecece",
+                  fillColor: darkGray,
 
                 },
 
@@ -930,7 +804,7 @@ const availableNutrientsB = (props) => {
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [{
-      magin: 0,
+      margin: 0,
       stack: [ // Header and first row - unindented
         {
           table: {
@@ -955,7 +829,7 @@ const availableNutrientsB = (props) => {
       stack: [
         {
           table: {
-            widths: ["20%", "10%", "*"],
+            widths: ["21%", "10%", "*"],
             body: [
               [
                 {
@@ -986,7 +860,7 @@ const availableNutrientsB = (props) => {
         },
         {
           table: {
-            widths: ['21%', "10%", '15%', "26%", '10%', '*'],
+            widths: ['22%', "10%", '15%', "26%", '10%', '*'],
             body: [
               [
                 {
@@ -1040,7 +914,7 @@ const availableNutrientsB = (props) => {
         },
         {
           table: {
-            widths: ['20%', '10%', '*'],
+            widths: ['21%', '10%', '*'],
             body: [
               [
                 {
@@ -1128,7 +1002,7 @@ const availableNutrientsC = (props) => {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     columns: [
       {
-        magin: 0,
+        margin: 0,
         stack: [ // Header and first row - unindented
           {
             table: {
@@ -1421,11 +1295,13 @@ const availableNutrientsD = (props) => {
           body: [
             [
               {// row 1
+                fillColor: gray,
                 text: {
                   text: 'Source Description', fontSize: 9,
                 }
               },
               {// row 1
+                fillColor: gray,
                 text: {
                   text: 'Type', fontSize: 9,
                 }
@@ -1455,16 +1331,1054 @@ const availableNutrientsD = (props) => {
                 }
               },
             ],
+            // [
+            //   {
+            //     text: {
+            //       text: 'I7', fontSize: 9,
+            //     }
+            //   },
+            //   {
+            //     text: {
+            //       text: 'Ground Water', fontSize: 9,
+            //     }
+            //   },
+            // ],
+          ]
+        }
+      },
+    ]
+  }
+}
+
+const availableNutrientsE = (props) => {
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    stack: [
+      {
+        table: {
+          margin: [0, 0],
+          widths: ['auto'],
+          heights: [1],
+          body: [
+            [{// row 1
+              border: [false, false, false, false],
+              text: {
+                text: 'E. SUBSURFACE (TILE) DRAINAGE SOURCES:', bold: true, fontSize: 9,
+              }
+            },
+            ]
+          ]
+        },
+
+      },
+      {
+        margin: [10, 0, 80, 0],
+        table: {
+          widths: ['*'],
+          body: [
+            [
+              {// row 1
+                border: [false],
+                text: {
+                  text: 'No subsurface (tile) drainage sources entered.', fontSize: 9,
+                }
+              }
+            ]
+          ]
+        }
+      },
+    ]
+  }
+}
+
+const availableNutrientsFTableRow = (props) => {
+  return [
+    {// row 1
+      text: {
+        text: '05/20/2020', fontSize: 8,
+      }
+    },
+    {// row 
+      text: {
+        text: 'UN32', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: '41.61 ton', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: 'Dry-weight', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: '32.0000', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: '0.000000', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: '0.000000', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: '0.000000', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: 'Salt (%)', fontSize: 8,
+      }
+    },
+  ]
+}
+const availableNutrientsF = (props) => {
+  let importRowData = [{}, {}, {}, {}]
+  let importRows = importRowData.map(row => {
+    return availableNutrientsFTableRow(row)
+  })
+
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    stack: [
+      {
+        table: {
+          margin: [0, 0],
+          widths: ['auto'],
+          heights: [1],
+          body: [
+            [{// row 1
+              border: [false, false, false, false],
+              text: {
+                text: 'F. NUTRIENT IMPORTS:', bold: true, fontSize: 9,
+              }
+            },
+            ],
+          ]
+        },
+
+      },
+      {
+        margin: [10, 0, 80, 0],
+        table: {
+          widths: ['*'],
+          body: [
+            [
+              {// row 1
+                border: [false],
+                text: {
+                  text: 'No dry manure nutrient imports entered.', fontSize: 9,
+                }
+              }
+            ],
+            [
+              {// row 1
+                border: [false],
+                text: {
+                  text: 'No process wastewater nutrient imports entered.', fontSize: 9,
+                }
+              }
+            ]
+          ]
+        }
+      },
+      {
+        margin: [10, 0, 80, 0],
+        table: {
+          widths: ['10%', '20%', '15%', '15%', '8%', '8%', '8%', '8%', '8%',],
+          body: [
+            [
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'Date', fontSize: 9,
+                }
+              },
+              {// row 
+                fillColor: gray,
+                text: {
+                  text: 'Material Type/ Description', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'Quantity', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'Reporting basis', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'Moisture (%)', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'N (%)', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'P (%)', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'K (%)', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'Salt (%)', fontSize: 9,
+                }
+              },
+            ],
+            ...importRows
+          ]
+        }
+      },
+      {
+        margin: [10, 5, 0, 0],
+        table: {
+          widths: ['25%', '10%', '10%', '10%', '10%', '35%',],
+          body: [
+            [
+              {// row 
+                fillColor: gray,
+                text: {
+                  text: 'Material Type', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'N (%)', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'P (%)', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'K (%)', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'Salt (%)', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+            ],
+            [
+              {// row 
+                text: {
+                  text: 'Commercial fertilizer / Other', fontSize: 9,
+                }
+              },
+              {// row 1
+                text: {
+                  text: '26,603.77', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+            ],
+            [
+              {// row 
+                text: {
+                  text: 'Dru Manure', fontSize: 9,
+                }
+              },
+              {// row 1
+                text: {
+                  text: '26,603.77', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+            ],
+            [
+              {// row 
+                text: {
+                  text: 'Process wastewater', fontSize: 9,
+                }
+              },
+              {// row 1
+                text: {
+                  text: '26,603.77', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+            ],
+            [
+              {// row 
+                fillColor: gray,
+                text: {
+                  text: 'Total Import for all materials', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: '26,603.77', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+
+                }
+              },
+            ],
+
+          ]
+        }
+      },
+    ]
+  }
+}
+const availableNutrientsGSolidTableRow = (props) => {
+  return [
+    {// row 1
+      text: {
+        text: '05/20/2020', fontSize: 8,
+        alignment: 'center',
+      }
+    },
+    {// row 
+      text: {
+        text: 'Corral Solids', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: '1,898.00 ton', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: 'Dry-weight', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '56.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '0.0000', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '19,400.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '5,280.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '21,800.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '0.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '0.00', fontSize: 8,
+        alignment: "right",
+      }
+    }
+  ]
+}
+const availableNutrientsGLiquidTableRow = (props) => {
+  return [
+    {// row 1
+      text: {
+        text: '05/20/2020', fontSize: 8,
+        alignment: 'center',
+      }
+    },
+    {// row 
+      text: {
+        text: 'Corral Solids', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: '1,898.00 gal', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '484.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '336.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '0.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '0.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '71.90', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '997.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '0.00', fontSize: 8,
+        alignment: "right",
+      }
+    },
+    {// row 1
+      text: {
+        text: '8,800.00', fontSize: 8,
+        alignment: "right",
+      }
+    }
+  ]
+}
+const availableNutrientsG = (props) => {
+  let exportRowData = [{}, {}, {}, {}]
+  let exportSolidRows = exportRowData.map(row => {
+    return availableNutrientsGSolidTableRow(row)
+  })
+  let exportLiquidRows = exportRowData.map(row => {
+    return availableNutrientsGLiquidTableRow(row)
+  })
+
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    stack: [
+      {
+        table: {
+          widths: ['auto'],
+          heights: [1],
+          body: [
+            [{// row 1
+              border: [false, false, false, false],
+              text: {
+                text: 'G. NUTRIENT EXPORTS:', bold: true, fontSize: 9,
+              }
+            },
+            ],
+          ]
+        },
+
+      },
+      {
+        margin: [10, 5, 18, 0],
+        table: {
+          widths: ['7%', '13%', '9%', '10%', '8%', '12%', '6%', '6%', '6%', '8%', '5%', '*'],
+          body: [
             [
               {
+                fillColor: gray,
                 text: {
-                  text: 'I7', fontSize: 9,
+                  text: "Date", fontSize: 9,
                 }
               },
               {
+                fillColor: gray,
                 text: {
-                  text: 'Ground Water', fontSize: 9,
+                  text: "Material type", fontSize: 9,
                 }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "Quantity", fontSize: 9,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "Reporting basis", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "Moisture (%)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "Density (lbs/cu ft)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "N (mg/kg)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "P (mg/kg)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "K (mg/kg)", fontSize: 8,
+                }
+              },
+
+              {
+                fillColor: gray,
+                text: {
+                  text: "Salt (mg/kg)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "TFS (%)", fontSize: 8,
+                }
+              },
+            ],
+            ...exportSolidRows
+          ]
+        }
+      },
+      {
+        margin: [10, 5, 18, 0],
+        table: {
+          widths: ['7%', '13%', '9%', '10%', '8%', '12%', '6%', '6%', '6%', '8%', '5%', '*'],
+          body: [
+            [
+              {
+                fillColor: gray,
+                text: {
+                  text: "Date", fontSize: 9,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "Material type", fontSize: 9,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "Quantity", fontSize: 9,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "Kjeldahl-N (mg/L)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "Ammonia-N (mg/L)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "Nitrate-N (mg/L)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "N (mg/L)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "P (mg/L)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "K (mg/L)", fontSize: 8,
+                }
+              },
+
+              {
+                fillColor: gray,
+                text: {
+                  text: "EC (µmhos/cm)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: "TDS (mg/L)", fontSize: 8,
+                }
+              },
+            ],
+            ...exportLiquidRows
+          ]
+        }
+      },
+      {
+        margin: [10, 5, 5, 10],
+        table: {
+          widths: ['25%', '10%', '10%', '10%', '10%', '34%',],
+          body: [
+            [
+              {// row 
+                fillColor: gray,
+                text: {
+                  text: 'Material Type', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'N (%)', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'P (%)', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'K (%)', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: 'Salt (%)', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+            ],
+
+            [
+              {// row 
+                text: {
+                  text: 'Dry Manure', fontSize: 9,
+                }
+              },
+              {// row 1
+                text: {
+                  text: '26,603.77', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+            ],
+            [
+              {// row 
+                text: {
+                  text: 'Process wastewater', fontSize: 9,
+                }
+              },
+              {// row 1
+                text: {
+                  text: '26,603.77', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+            ],
+            [
+              {// row 
+                fillColor: gray,
+                text: {
+                  text: 'Total Import for all materials', fontSize: 9,
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: '26,603.77', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+                }
+              },
+              {// row 1
+                fillColor: gray,
+                text: {
+                  text: '0.00', fontSize: 9,
+                  alignment: 'right',
+
+                }
+              },
+            ],
+
+          ]
+        }
+      },
+    ]
+  }
+}
+const applicationAreaATableRow = (props) => {
+  return [
+    { // row 1
+      text: 'Field 1337', fontSize: 8
+    },
+    { // row 1
+      text: '37', fontSize: 8,
+      alignment: 'right',
+    },
+    { // row 1
+      text: '22', fontSize: 8,
+      alignment: 'right',
+    },
+    { // row 1
+      text: '2', fontSize: 8,
+      alignment: 'right',
+    },
+    { // row 1
+      text: 'Process Wastewater', fontSize: 8
+    },
+    { // row 1
+      text: '1234-4321-2314-1423', fontSize: 8
+    },
+  ]
+}
+const applicationAreaA = (props) => {
+  const areas = [{}, {}, {}, {}]
+  let rows = areas.map(row => {
+    return applicationAreaATableRow(row)
+  })
+
+  return {
+    margin: 0,
+    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    stack: [
+      {
+        margin: 0,
+        stack: [ // Header and first row - unindented
+          {
+            margin: 0,
+            table: {
+              widths: ['*',"10"],
+              body: [
+                [{
+                  // border: [false, false, false, false],
+                  text: 'APPLICATION AREA', alignment: 'center', fontSize: 10
+                }]
+              ]
+            }
+          },
+          {
+            table: {
+              margin: [0, 0],
+              widths: ['auto', '10'],
+              heights: [1],
+              body: [
+                [{// row 1
+                  border: [false, false, false, false],
+                  text: {
+                    text: 'A. LIST OF LAND APPLICATION AREAS:', bold: true, fontSize: 9,
+                  }
+                },
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      {
+        margin: [10, 0, 0, 0], // content - indented
+        table: {
+          widths: ["25%", "10%", "10%", "10%", "20%", "22%"],
+          body: [
+            [
+              { // row 1
+                fillColor: gray,
+                text: 'Field Name', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: 'Controlled acres', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: 'Cropable acres', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: 'Total harvests', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: 'Type of waste applied', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: 'Parcel Number', fontSize: 8
+              },
+            ],
+            ...rows,
+            [
+              { // row 1
+                fillColor: gray,
+                text: 'Totals for areas that were used for applications', fontSize: 7
+              },
+              { // row 1
+                fillColor: gray,
+                text: '583', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '485', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '20', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '', fontSize: 8
+              },
+            ],
+            [
+              { // row 1
+                fillColor: gray,
+                text: 'Totals for areas that were not used for applications', fontSize: 7
+              },
+              { // row 1
+                fillColor: gray,
+                text: '20', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '18', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '1', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '', fontSize: 8
+              },
+            ],
+            [
+              { // row 1
+                fillColor: gray,
+                text: 'Land application area totals', fontSize: 7
+              },
+              { // row 1
+                fillColor: gray,
+                text: '603', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '503', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '21', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '', fontSize: 8
+              },
+              { // row 1
+                fillColor: gray,
+                text: '', fontSize: 8
               },
             ],
           ]
@@ -1474,8 +2388,477 @@ const availableNutrientsD = (props) => {
   }
 }
 
+const applicationAreaBFieldHarvestTableSubTableRow  = (props) => {
+  return [
+    {
+      text: {
+        text: props.harvestDate,
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: '440.00 ton',
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: 'As-is',
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: '',
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: '71.00',
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: '5,450.00',
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: '1,040.00',
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: '12,200.00',
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: '',
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: '9.52',
+        fontSize: 8,
+      }
+    },
+  ]
+}
 
+// For each field, this shows each crops plant date, and corresponding harvests
+const applicationAreaBFieldHarvestTableSubTable = (props) => {
+ let dummyHarvestDates = [{harvestDate: "08/29/2020"}, {harvestDate: "12/27/2020"}]
+  let rows = dummyHarvestDates.map(harvestEvent => {
+    return applicationAreaBFieldHarvestTableSubTableRow(harvestEvent)
+  })
+  return [{
+    margin: [5, 1, 5, 0],
+    border: [true, false, true, false],
+    colSpan: 2,
+    
+    table: {
+      widths: ['*'],
+      body: [
+        [
+          {
+            fillColor: gray,
+            text: {
+              text: '01/01/2020: Almond, in shell',
+              fontSize: 9,
+            }
+          }
+        ],
+        [
+          {
+            border: [true, false, true, false],
+            layout: 'formLayout',
+            table: {
+              widths: ['5%', '50%', '10%', '10%', '10%', '10%',],
+              body: [
+                [
+                  {
+                    border: [false, false, false, false],
+                    text: {
+                      text: 'Crop:',
+                      fontSize: 8,
+                      alignment: 'left',
+                    }
+                  },
+                  {
+                    border: [false, false, false, true],
+                    text: {
+                      text: 'Almond, in shell:',
+                      fontSize: 8,
+                    }
+                  },
+                  {
+                    border: [false, false, false, false],
+                    text: {
+                      text: 'Acres planted:',
+                      fontSize: 8,
+                    }
+                  },
+                  {
+                    border: [false, false, false, true],
+                    text: {
+                      text: '18:',
+                      fontSize: 8,
+                    }
+                  },
+                  {
+                    border: [false, false, false, false],
+                    text: {
+                      text: 'Plant date:',
+                      fontSize: 8,
+                    }
+                  },
+                  {
+                    border: [false, false, false, true],
+                    text: {
+                      text: '01/01/2020',
+                      fontSize: 8,
+                    }
+                  }
 
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            border: [true, false, true, false],
+            table: {
+              widths: ['10%','10%','10%','12%','9%','9%','10%','10%','10%','10%'],
+              body: [
+                [
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Harvest date',
+                      fontSize: 8
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Yield',
+                      fontSize: 8
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Reporting Basis',
+                      fontSize: 8
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Density (lbs/cu ft)',
+                      fontSize: 8
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Moisture (%)',
+                      fontSize: 8
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'N (mg/kg)',
+                      fontSize: 8
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'P (mg/kg)',
+                      fontSize: 8
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'K (mg/kg)',
+                      fontSize: 8
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Salt (mg/kg)',
+                      fontSize: 8
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'TFS (%)',
+                      fontSize: 8
+                    }
+                  },
+                ],
+                ...rows,
+              ]
+            }
+          }
+        ],
+        [
+          {
+            margin: [0,0,138,0],
+            border: [true, false, true, true],
+            table:{
+              widths: ['22%','15%','15%','16%','16%','16%'],
+              body: [
+                [
+                  {
+                    text: {
+                      text: '',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Yield (tons/acre)',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Total N (lbs/acre)',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Total P (lbs/acre)',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Total K (lbs/acre)',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Total Salt (lbs/acre)',
+                      fontSize: 8,
+                    },
+                  },
+                  
+                ],
+                [
+                  {
+                    text: {
+                      text: 'Anticipated harvest content',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    text: {
+                      text: '28.00',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    text: {
+                      text: '224.00',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    text: {
+                      text: '42.00',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    text: {
+                      text: '184.0',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    text: {
+                      text: '0.00',
+                      fontSize: 8,
+                    },
+                  },
+                ],
+                [
+                  {
+                    border: [true, true, true, true],
+                    text: {
+                      text: 'Total actual harvest content',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    border: [true, true, true, true],
+                    text: {
+                      text: '28.00',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    border: [true, true, true, true],
+                    text: {
+                      text: '224.00',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    border: [true, true, true, true],
+                    text: {
+                      text: '42.00',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    border: [true, true, true, true],
+                    text: {
+                      text: '184.0',
+                      fontSize: 8,
+                    },
+                  },
+                  {
+                    border: [true, true, true, true],
+                    text: {
+                      text: '0.00',
+                      fontSize: 8,
+                    },
+                  },
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  }]
+}
+
+const applicationAreaBFieldHarvestTable = (props) => {
+  // list of objects
+  let events = props.map(event => {
+    return applicationAreaBFieldHarvestTableSubTable(event) // returns list of table objects
+  })
+
+  return {
+    margin: [0, 0, 0, 0],
+    pageBreak: 'before',
+    stack: [
+      {
+        margin: [10, 0, 0, 10],
+        table: {
+          widths: ['8%', '91%', "*"],
+          body: [
+            [
+              {
+                border: [true, true, false, true],
+                fillColor: gray,
+                text: {
+                  text: 'Field 1',
+                  fontSize: 10,
+                }
+              }, {text:'', fillColor: gray, border: [false, true, true, true]}
+
+            ],
+            [
+              {
+                border: [true, false, false, false],
+                text: {
+                  text: 'Field name:',
+                  fontSize: 10,
+                  alignment: 'right'
+                }
+              },
+              {
+                border: [false, false, true, true],
+                text: {
+                  text: 'Field 1',
+                  fontSize: 9,
+                }
+              }
+            ],
+            ...events,
+            [{text:'', border: [true, false, true, true], colSpan: 2}]
+          ]
+        }
+      },
+      // ...events,
+    ]
+  }
+}
+
+const applicationAreaB = (props) => {
+
+  let fieldHarvests = [ //fields
+    [ //events for a field
+      {}, {}
+    ],
+    [
+      {}
+    ],
+    [
+      {}
+    ],
+    [
+      {}
+    ],
+    [
+      {}
+    ]
+  ]
+  // stack of table for each field
+  let harvestTable = fieldHarvests.map((fieldHarvests) => {
+    return applicationAreaBFieldHarvestTable(fieldHarvests) // returns a table for a field with multiple field harvest events
+  })
+
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    stack: [
+      {
+        table: {
+          margin: [0, 0],
+          widths: ['*'],
+          heights: [1],
+          body: [
+            [{// row 1
+              border: [false, false, false, false],
+              text: {
+                text: 'B. CROPS AND HARVETS:', bold: true, fontSize: 9,
+              }
+            },
+            ],
+            
+          ]
+        }
+      },
+      ...harvestTable,
+    ]
+  }
+}
 
 
 // Ex:
@@ -1493,15 +2876,20 @@ const availableNutrientsD = (props) => {
  */
 export default function dd(props, images) {
   const body = [
-    dairyInformationA(props),
-    dairyInformationB(props),
-    dairyInformationC(props),
-    availableNutrientsA(props),
-    availableNutrientsB(props),
-    availableNutrientsC(props),
-    availableNutrientsD(props),
-    image(images.nutrientHoriBar0),
-    image(images.materialHoriBar0),
+    // dairyInformationA(props),
+    // dairyInformationB(props),
+    // dairyInformationC(props),
+    // availableNutrientsA(props),
+    // availableNutrientsB(props),
+    // availableNutrientsC(props),
+    // availableNutrientsD(props),
+    // availableNutrientsE(props),
+    // availableNutrientsF(props),
+    // availableNutrientsG(props),
+    applicationAreaA(props),
+    applicationAreaB(props),
+    // image(images.nutrientHoriBar0),
+    // image(images.materialHoriBar0),
 
   ]
 
