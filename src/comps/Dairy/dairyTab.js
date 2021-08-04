@@ -286,7 +286,6 @@ class DairyTab extends Component {
               ctx.lineTo(PAD , 0, PAD + 2, 0)
               
               ctx.fill()
-              console.log(ctx)
               ctx.restore();
             }
           }
@@ -415,7 +414,6 @@ class DairyTab extends Component {
               ctx.lineTo(PAD , 0, PAD + 2, 0)
               
               ctx.fill()
-              console.log(ctx)
               ctx.restore();
             }
           }
@@ -446,17 +444,14 @@ class DairyTab extends Component {
     Chart.register({
       id: 'testyplugzzz',
       afterDraw: (chartInstance) => {
-        console.log(chartInstance)
         var ctx = chartInstance.ctx;
-  
         // render the value of the chart above the bar
         ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-        
+        ctx.textBaseline = 'bottom';        
         
         chartInstance.data.datasets.forEach((dataset, di) => {
           for (var i = 0; i < dataset.data.length; i++) {
-            // console.log(dataset)
+            // rewrite text if it is too close to edge for hoizontal bar chart
             
             let bar = chartInstance._metasets[di].data[i]
             let maxX = chartInstance.scales.x.maxWidth
@@ -464,7 +459,6 @@ class DairyTab extends Component {
             let numChars = dataset.data[i].toString().length
             let singleCharLen = 4
             var xOffset = (500 - bar.x) / 500 < 0.03 ? ((numChars * -singleCharLen) - 10) : 0;
-            console.log(maxX, bar.x)
             if(chartInstance.scales.x.type === "logarithmic"){
               ctx.fillText(dataset.data[i], bar.x + xOffset + 10 , bar.y);
             }else{

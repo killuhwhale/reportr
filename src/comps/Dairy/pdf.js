@@ -170,7 +170,7 @@ const image = (img) => {
 
 const ownOperatorTable = (key, props) => {
   return {
-    id: key,
+    headlineLevel: key,
     table: {
       widths: ["*"],
 
@@ -207,7 +207,7 @@ const ownOperatorTable = (key, props) => {
         }],
         [
           {
-            id: key,
+            headlineLevel: key,
             border: [false], // empty row for margin between list of tables.
             text: ` `, fontSize: 4
           }
@@ -531,7 +531,6 @@ const dairyInformationC = (props) => {
             },
             layout: 'noBorders'
           }
-          ownOperatorTable(`ownerTable${i}`, {})
         })
       }
     ]
@@ -542,17 +541,19 @@ const dairyInformationC = (props) => {
 const availableNutrientsA = (props) => {
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
+    headlineLevel: "availableNutrients1",
+
     stack: [{
-      margin: 0,
       stack: [ // Header and first row - unindented
         {
-          margin: 0,
           table: {
-            widths: ['*'],
+            widths: ['98%'],
             body: [
               [{
                 // border: [false, false, false, false],
-                text: 'AVAILABLE NUTRIENTS', alignment: 'center', fontSize: 10
+                text: {
+                  text: 'AVAILABLE NUTRIENTS', alignment: 'center', fontSize: 10
+                }
               }]
             ]
           }
@@ -579,8 +580,9 @@ const availableNutrientsA = (props) => {
       margin: [10, 0, 0, 0], // content - indented
       stack: [
         {
+
           table: {
-            widths: ["20%", "*", "*", "*", "*", "*", "*"],
+            widths: ["25%", "10%", "10%", "15%", "20%", "10%", "10%"],
             body: [
               [
                 { // row 1
@@ -709,6 +711,8 @@ const availableNutrientsA = (props) => {
               ],
               [
                 { // row 6
+                  headlineLevel: "availableNutrients1",
+
                   text: 'Avg live weight (lbs)'
                 },
                 { // row 6
@@ -740,10 +744,10 @@ const availableNutrientsA = (props) => {
           }
         },
         {
+          headlineLevel: "availableNutrients0",
+          margin: [0, 5, 0, 5],
           table: {
-            margin: [0, 0],
-            widths: ['auto', '*'],
-            heights: [1],
+            widths: ['15%', '85%'],
             body: [
               [{// row 1
 
@@ -756,38 +760,39 @@ const availableNutrientsA = (props) => {
               {
                 border: [false, false, false, true],
                 text: {
-                  text: 'Holstein', fontSize: 9, lineHeight: 0.1
+                  text: 'Holstein', fontSize: 9
                 }
               }]
             ]
           }
         },
         {
+          headlineLevel: "availableNutrients0",
           table: {
-            margin: [0, 0],
-            widths: ['15%', 'auto', '*'],
-            heights: [1],
+            widths: ['15%', '5%', '80%'],
             body: [
-              [{// row 1
+              [
+                {// row 1
 
-                border: [false, false, false, false],
-                text: {
-                  text: 'Average milk production:', fontSize: 8,
+                  border: [false, false, false, false],
+                  text: {
+                    text: 'Average milk production:', fontSize: 8,
 
+                  }
+                },
+                {
+                  border: [false, false, false, true],
+                  text: {
+                    text: '75', alignment: 'right', fontSize: 9
+                  }
+                },
+                {
+
+                  border: [false, false, false, false],
+                  text: {
+                    text: 'pounds per cow per day', alignment: "left", fontSize: 9, lineHeight: 0.1
+                  }
                 }
-              },
-              {
-                border: [false, false, false, true],
-                text: {
-                  text: '75', alignment: 'right', fontSize: 9, lineHeight: 0.1
-                }
-              },
-              {
-                border: [false, false, false, false],
-                text: {
-                  text: 'pounds per cow per day', alignment: "left", fontSize: 9, lineHeight: 0.1
-                }
-              }
               ]
             ]
           }
@@ -1000,6 +1005,7 @@ const availableNutrientsB = (props) => {
 const availableNutrientsC = (props) => {
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
+    headlineLevel: "availableNutrientsC",
     columns: [
       {
         margin: 0,
@@ -1234,6 +1240,7 @@ const availableNutrientsC = (props) => {
                 ],
                 [
                   {
+                    headlineLevel: "availableNutrientsC",
                     border: [true, false, false, true],
                     text: {
                       text: `=`,
@@ -1445,15 +1452,71 @@ const availableNutrientsF = (props) => {
   let importRows = importRowData.map(row => {
     return availableNutrientsFTableRow(row)
   })
-
+  let importRowsBody = [
+    [
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Date', fontSize: 9,
+        }
+      },
+      {// row 
+        fillColor: gray,
+        text: {
+          text: 'Material Type/ Description', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Quantity', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Reporting basis', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Moisture (%)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'N (%)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'P (%)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'K (%)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Salt (%)', fontSize: 9,
+        }
+      },
+    ],
+    ...importRows
+  ]
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [
       {
         table: {
-          margin: [0, 0],
-          widths: ['auto'],
-          heights: [1],
+          widths: ['100%'],
           body: [
             [{// row 1
               border: [false, false, false, false],
@@ -1467,13 +1530,12 @@ const availableNutrientsF = (props) => {
 
       },
       {
-        margin: [10, 0, 80, 0],
         table: {
-          widths: ['*'],
+          widths: ['100%'],
           body: [
             [
               {// row 1
-                border: [false],
+                border: [false, false, false, false],
                 text: {
                   text: 'No dry manure nutrient imports entered.', fontSize: 9,
                 }
@@ -1491,68 +1553,10 @@ const availableNutrientsF = (props) => {
         }
       },
       {
-        margin: [10, 0, 80, 0],
+        margin: [10, 0, 0, 0],
         table: {
-          widths: ['10%', '20%', '15%', '15%', '8%', '8%', '8%', '8%', '8%',],
-          body: [
-            [
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'Date', fontSize: 9,
-                }
-              },
-              {// row 
-                fillColor: gray,
-                text: {
-                  text: 'Material Type/ Description', fontSize: 9,
-                }
-              },
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'Quantity', fontSize: 9,
-                }
-              },
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'Reporting basis', fontSize: 9,
-                }
-              },
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'Moisture (%)', fontSize: 9,
-                }
-              },
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'N (%)', fontSize: 9,
-                }
-              },
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'P (%)', fontSize: 9,
-                }
-              },
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'K (%)', fontSize: 9,
-                }
-              },
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'Salt (%)', fontSize: 9,
-                }
-              },
-            ],
-            ...importRows
-          ]
+          widths: ['10%', '15%', '10%', '10%', '10%', '5%', '5%', '5%', '5%', "10%"],
+          body: importRowsBody
         }
       },
       {
@@ -1805,6 +1809,7 @@ const availableNutrientsGSolidTableRow = (props) => {
 const availableNutrientsGLiquidTableRow = (props) => {
   return [
     {// row 1
+
       text: {
         text: '05/20/2020', fontSize: 8,
         alignment: 'center',
@@ -1864,7 +1869,9 @@ const availableNutrientsGLiquidTableRow = (props) => {
       }
     },
     {// row 1
+      headlineLevel: "rowAvailableNutrientsGLiquidTableRow",
       text: {
+        headlineLevel: "rowAvailableNutrientsGLiquidTableRow",
         text: '8,800.00', fontSize: 8,
         alignment: "right",
       }
@@ -1902,7 +1909,7 @@ const availableNutrientsG = (props) => {
       {
         margin: [10, 5, 18, 0],
         table: {
-          widths: ['7%', '13%', '9%', '10%', '8%', '12%', '6%', '6%', '6%', '8%', '5%', '*'],
+          widths: ['7%', '13%', '9%', '10%', '8%', '12%', '6%', '6%', '6%', '8%', '5%'],
           body: [
             [
               {
@@ -1980,7 +1987,7 @@ const availableNutrientsG = (props) => {
       {
         margin: [10, 5, 18, 0],
         table: {
-          widths: ['7%', '13%', '9%', '10%', '8%', '12%', '6%', '6%', '6%', '8%', '5%', '*'],
+          widths: ['7%', '13%', '9%', '10%', '8%', '12%', '6%', '6%', '6%', '8%', '5%'],
           body: [
             [
               {
@@ -2051,7 +2058,9 @@ const availableNutrientsG = (props) => {
                 }
               },
             ],
-            ...exportLiquidRows
+            ...exportLiquidRows,
+
+
           ]
         }
       },
@@ -2235,16 +2244,15 @@ const applicationAreaA = (props) => {
   })
 
   return {
-    margin: 0,
     // pageBreak: 'before', // super useful soltion just dont need on the first one
+
     stack: [
       {
-        margin: 0,
-        stack: [ // Header and first row - unindented
+        columns: [ // Header and first row - unindented
           {
-            margin: 0,
+            width: "98%",
             table: {
-              widths: ['*',"10"],
+              widths: ['100%'],
               body: [
                 [{
                   // border: [false, false, false, false],
@@ -2253,11 +2261,14 @@ const applicationAreaA = (props) => {
               ]
             }
           },
+        ]
+      },
+      {
+        columns: [
           {
+            width: "98%",
             table: {
-              margin: [0, 0],
-              widths: ['auto', '10'],
-              heights: [1],
+              widths: ['100%'],
               body: [
                 [{// row 1
                   border: [false, false, false, false],
@@ -2272,123 +2283,137 @@ const applicationAreaA = (props) => {
         ]
       },
       {
-        margin: [10, 0, 0, 0], // content - indented
-        table: {
-          widths: ["25%", "10%", "10%", "10%", "20%", "22%"],
-          body: [
-            [
-              { // row 1
-                fillColor: gray,
-                text: 'Field Name', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: 'Controlled acres', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: 'Cropable acres', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: 'Total harvests', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: 'Type of waste applied', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: 'Parcel Number', fontSize: 8
-              },
-            ],
-            ...rows,
-            [
-              { // row 1
-                fillColor: gray,
-                text: 'Totals for areas that were used for applications', fontSize: 7
-              },
-              { // row 1
-                fillColor: gray,
-                text: '583', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '485', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '20', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '', fontSize: 8
-              },
-            ],
-            [
-              { // row 1
-                fillColor: gray,
-                text: 'Totals for areas that were not used for applications', fontSize: 7
-              },
-              { // row 1
-                fillColor: gray,
-                text: '20', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '18', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '1', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '', fontSize: 8
-              },
-            ],
-            [
-              { // row 1
-                fillColor: gray,
-                text: 'Land application area totals', fontSize: 7
-              },
-              { // row 1
-                fillColor: gray,
-                text: '603', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '503', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '21', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '', fontSize: 8
-              },
-              { // row 1
-                fillColor: gray,
-                text: '', fontSize: 8
-              },
-            ],
-          ]
-        }
+        columns: [
+          {
+            width: "98%",
+            margin: [10, 0, 0, 0],
+            table: {
+              widths: ["25%", "10%", "10%", "10%", "20%", "25%"],
+              body: [
+                [
+                  { // row 1
+                    fillColor: gray,
+                    text: 'Field Name', fontSize: 8
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: 'Controlled acres', fontSize: 8
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: 'Cropable acres', fontSize: 8
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: 'Total harvests', fontSize: 8
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: 'Type of waste applied', fontSize: 8
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: 'Parcel Number', fontSize: 8
+                  },
+                ],
+                ...rows,
+                [
+                  { // row 1
+                    fillColor: gray,
+                    text: 'Totals for areas that were used for applications', fontSize: 7
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '583', fontSize: 8,
+                    alignment: 'right'
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '485', fontSize: 8,
+                    alignment: 'right'
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '20', fontSize: 8,
+                    alignment: 'right'
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '', fontSize: 8
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '', fontSize: 8
+                  },
+                ],
+                [
+                  { // row 1
+                    fillColor: gray,
+                    text: 'Totals for areas that were not used for applications', fontSize: 7
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '20', fontSize: 8,
+                    alignment: 'right'
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '18', fontSize: 8,
+                    alignment: 'right'
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '1', fontSize: 8,
+                    alignment: 'right'
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '', fontSize: 8
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '', fontSize: 8
+                  },
+                ],
+                [
+                  { // row 1
+                    fillColor: gray,
+                    text: 'Land application area totals', fontSize: 7
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '603', fontSize: 8,
+                    alignment: 'right'
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '503', fontSize: 8,
+                    alignment: 'right'
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '21', fontSize: 8,
+                    alignment: 'right'
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '', fontSize: 8
+                  },
+                  { // row 1
+                    fillColor: gray,
+                    text: '', fontSize: 8
+                  },
+                ],
+              ]
+            }
+          }
+        ]
       },
     ]
   }
 }
 
-const applicationAreaBFieldHarvestTableSubTableRow  = (props) => {
+const applicationAreaBFieldHarvestTableSubTableRow = (props) => {
   return [
     {
       text: {
@@ -2455,7 +2480,7 @@ const applicationAreaBFieldHarvestTableSubTableRow  = (props) => {
 
 // For each field, this shows each crops plant date, and corresponding harvests
 const applicationAreaBFieldHarvestTableSubTable = (props) => {
- let dummyHarvestDates = [{harvestDate: "08/29/2020"}, {harvestDate: "12/27/2020"}]
+  let dummyHarvestDates = [{ harvestDate: "08/29/2020" }, { harvestDate: "12/27/2020" }]
   let rows = dummyHarvestDates.map(harvestEvent => {
     return applicationAreaBFieldHarvestTableSubTableRow(harvestEvent)
   })
@@ -2463,9 +2488,9 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
     margin: [5, 1, 5, 0],
     border: [true, false, true, false],
     colSpan: 2,
-    
+
     table: {
-      widths: ['*'],
+      widths: ['100%'],
       body: [
         [
           {
@@ -2537,7 +2562,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
           {
             border: [true, false, true, false],
             table: {
-              widths: ['10%','10%','10%','12%','9%','9%','10%','10%','10%','10%'],
+              widths: ['10%', '10%', '10%', '12%', '9%', '9%', '10%', '10%', '10%', '9%', "1%"],
               body: [
                 [
                   {
@@ -2618,10 +2643,10 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
         ],
         [
           {
-            margin: [0,0,138,0],
+            margin: [0, 0, 138, 0],
             border: [true, false, true, true],
-            table:{
-              widths: ['22%','15%','15%','16%','16%','16%'],
+            table: {
+              widths: ['22%', '15%', '15%', '16%', '16%', '16%'],
               body: [
                 [
                   {
@@ -2665,7 +2690,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                       fontSize: 8,
                     },
                   },
-                  
+
                 ],
                 [
                   {
@@ -2763,50 +2788,49 @@ const applicationAreaBFieldHarvestTable = (props) => {
   let events = props.map(event => {
     return applicationAreaBFieldHarvestTableSubTable(event) // returns list of table objects
   })
-
-  return {
-    margin: [0, 0, 0, 0],
-    pageBreak: 'before',
-    stack: [
+  let body = [
+    [
       {
-        margin: [10, 0, 0, 10],
-        table: {
-          widths: ['8%', '91%', "*"],
-          body: [
-            [
-              {
-                border: [true, true, false, true],
-                fillColor: gray,
-                text: {
-                  text: 'Field 1',
-                  fontSize: 10,
-                }
-              }, {text:'', fillColor: gray, border: [false, true, true, true]}
+        border: [true, true, false, true],
+        fillColor: gray,
+        text: {
+          text: 'Field 1',
+          fontSize: 10,
+        }
+      }, { text: '', fillColor: gray, border: [false, true, true, true] } // empty cell
 
-            ],
-            [
-              {
-                border: [true, false, false, false],
-                text: {
-                  text: 'Field name:',
-                  fontSize: 10,
-                  alignment: 'right'
-                }
-              },
-              {
-                border: [false, false, true, true],
-                text: {
-                  text: 'Field 1',
-                  fontSize: 9,
-                }
-              }
-            ],
-            ...events,
-            [{text:'', border: [true, false, true, true], colSpan: 2}]
-          ]
+    ],
+    [
+      {
+        border: [true, false, false, false],
+        text: {
+          text: 'Field name:',
+          fontSize: 10,
+          alignment: 'right'
         }
       },
-      // ...events,
+      {
+        border: [false, false, true, true],
+        text: {
+          text: 'Field 1',
+          fontSize: 9,
+        }
+      }
+    ],
+    ...events,
+    [{ text: '', border: [true, false, true, true], colSpan: 2 }] // empty row
+  ]
+  return {
+    // pageBreak: 'before',
+    columns: [
+      {
+        width: "98%",
+        margin: [10, 0, 0, 10],
+        table: {
+          widths: ['8%', '92%'],
+          body: body
+        }
+      },
     ]
   }
 }
@@ -2839,27 +2863,403 @@ const applicationAreaB = (props) => {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [
       {
-        table: {
-          margin: [0, 0],
-          widths: ['*'],
-          heights: [1],
-          body: [
-            [{// row 1
-              border: [false, false, false, false],
-              text: {
-                text: 'B. CROPS AND HARVETS:', bold: true, fontSize: 9,
-              }
-            },
-            ],
-            
-          ]
-        }
+        columns: [
+          {
+            width: "98%",
+            table: {
+              widths: ['100%'],
+              body: [
+                [{// row 1
+                  border: [false, false, false, false],
+                  text: {
+                    text: 'B. CROPS AND HARVETS:', bold: true, fontSize: 9,
+                  }
+                },
+                ],
+
+              ]
+            }
+          }
+        ]
       },
       ...harvestTable,
     ]
   }
 }
 
+
+const nutrientBudgetA = (props) => {
+  const fieldCropApplications = [
+    {
+      title: "Field 1",
+      plant_date: "11/01/2019",
+      croptitle: "Oats, silage-soft dough",
+      applications: [
+        {
+          applicationdate: "10/10/2019",
+          sources: [
+            {
+              sourcetitle: "UN32"
+            }
+          ]
+        },
+        {
+          applicationdate: "11/11/2019",
+          sources: [
+            {
+              sourcetitle: "UN69"
+            }
+          ]
+        },
+      ]
+    }
+  ]
+
+  let tables = fieldCropApplications.map(fieldCropApp => {
+    let rows = []
+    fieldCropApp.applications.forEach(app => {
+      
+      
+      const innerRows = app.sources.map(source => {
+        return [
+          {
+            text: {
+              text: source.sourcetitle, fontSize: 8,
+            }
+          },
+          {
+            text: {
+              text: 'Solid commerical fertilizer', fontSize: 8,
+            }
+          },
+          {
+            text: {
+              text: '16.00', fontSize: 8,
+            }
+          },
+          {
+            text: {
+              text: '0.00', fontSize: 8,
+            }
+          },
+          {
+            text: {
+              text: '0.00', fontSize: 8,
+            }
+          },
+          {
+            text: {
+              text: '0.00', fontSize: 8,
+            }
+          },
+          {
+            text: {
+              text: '2,754,000.00 gal', fontSize: 8,
+            }
+          },
+        ]      
+      }) 
+
+
+      rows.push( [// regular row
+        {
+          text: {
+            text: app.applicationdate, fontSize: 8,
+          }
+        },
+        {
+          text: {
+            text: 'Sidedress', fontSize: 8,
+          }
+        },
+        {
+          text: {
+            text: 'No precipitation', fontSize: 8,
+          }
+        },
+        {
+          text: {
+            text: 'No precipitation', fontSize: 8,
+          }
+        },
+        {
+          text: {
+            text: 'No precipitation', fontSize: 8,
+          }
+        },
+      ],)
+      rows.push( [// table
+        {
+          colSpan: 5,
+          table: {
+            widths: ['25%','20%','10%','10%','10%','10%','15%'],
+            body: [
+              [// header
+                {
+                  fillColor: gray,
+                  text: {
+                    text: 'Source description', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: 'Material Type', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: 'N', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: 'P', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: 'K', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: 'Salt', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: 'Amount', fontSize: 8,
+                  }
+                },
+              ],// rows
+              ...innerRows,
+              [// fotter totals
+                {
+                  fillColor: gray,
+                  text: {
+                    text: 'Application event totals', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: ' ', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: '0.00', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: '0.00', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: '0.00', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: '2,371.69', fontSize: 8,
+                  }
+                },
+                {
+                  fillColor: gray,
+                  text: {
+                    text: " ", fontSize: 8,
+                  }
+                },
+              ],
+            ]
+          }
+        }
+      ])
+    })
+    console.log(rows)
+
+    return {
+      width: "98%",
+      margin: [10, 0, 0, 0],
+      table: {
+        widths: ["100%"],
+        body: [
+          [ // each row is a table with  application dat table where ea row is a table of the entry
+            { // row 1
+              fillColor: gray,
+              text: 'Field 1 - 11/01/01/2019: Oats, silage-soft dough', fontSize: 8
+            },
+          ],
+          [
+            {
+              stack: [
+                {
+                  columns: [
+                    {
+                      table: {
+                        widths: ["10%", '65%', '10%', '15%'],
+                        body: [
+                          [
+                            {
+                              border: [false, false, false, false],
+                              text: {
+                                text: 'Field name:', fontSize: 8,
+                              }
+                            },
+                            {
+                              border: [false, false, false, true],
+                              colSpan: 3,
+                              text: {
+                                text: 'Field 1', fontSize: 8,
+                              }
+                            }
+                          ],
+                          [
+                            {
+                              border: [false, false, false, false],
+                              text: {
+                                text: 'Crop:', fontSize: 8,
+                              }
+                            },
+                            {
+                              border: [false, false, false, true],
+                              text: {
+                                text: 'Corn, silage:', fontSize: 8,
+                              }
+                            },
+                            {
+                              border: [false, false, false, false],
+                              text: {
+                                text: 'Plant date:', fontSize: 8,
+                                alignment: 'right',
+                              }
+                            },
+                            {
+                              border: [false, false, false, true],
+                              text: {
+                                text: '05/07/202:', fontSize: 8,
+                              }
+                            }
+
+                          ]
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  columns: [
+                    {
+                      margin: [0, 5, 0, 5],
+                      table: {
+                        widths: ["10%", '30%', '20%', '20%', '20%'],
+                        body: [
+                          [
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: 'Application date', fontSize: 8,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: 'Application method', fontSize: 8,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: 'Precipitation 24 hours prior:', fontSize: 8,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: 'Precipitation during application', fontSize: 8,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: 'Precipitation 24 hours following', fontSize: 8,
+                              }
+                            }
+
+                          ],
+                          ...rows,
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+
+        ]
+      }
+    }
+  })
+
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first on
+    stack: [
+      {
+        columns: [ // Header and first row - unindented
+          {
+            width: "98%",
+            table: {
+              widths: ['100%'],
+              body: [
+                [{
+                  // border: [false, false, false, false],
+                  text: 'Nutrient Budget', alignment: 'center', fontSize: 10
+                }]
+              ]
+            }
+          },
+        ]
+      },
+      {
+        columns: [
+          {
+            width: "98%",
+            table: {
+              widths: ['100%'],
+              body: [
+                [{// row 1
+                  border: [false, false, false, false],
+                  text: {
+                    text: 'A.LAND APPLICATIONS:', bold: true, fontSize: 9,
+                  }
+                },
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      {
+        columns: [
+          ...tables
+        ]
+      },
+    ]
+  }
+}
 
 // Ex:
 // longAddressLine((792-72), {
@@ -2876,20 +3276,22 @@ const applicationAreaB = (props) => {
  */
 export default function dd(props, images) {
   const body = [
-    // dairyInformationA(props),
-    // dairyInformationB(props),
-    // dairyInformationC(props),
-    // availableNutrientsA(props),
-    // availableNutrientsB(props),
-    // availableNutrientsC(props),
-    // availableNutrientsD(props),
-    // availableNutrientsE(props),
-    // availableNutrientsF(props),
-    // availableNutrientsG(props),
+    dairyInformationA(props),
+    dairyInformationB(props),
+    dairyInformationC(props),
+    // 'text\n\n\n\n\n\n\n\nZ',
+    availableNutrientsA(props),   // bind last two rows and last row of table together...
+    availableNutrientsB(props),  // bind this section together
+    availableNutrientsC(props), // bind this section together
+    availableNutrientsD(props),
+    availableNutrientsE(props),
+    availableNutrientsF(props),
+    availableNutrientsG(props),
     applicationAreaA(props),
     applicationAreaB(props),
-    // image(images.nutrientHoriBar0),
-    // image(images.materialHoriBar0),
+    nutrientBudgetA(props),
+    image(images.nutrientHoriBar0),
+    image(images.materialHoriBar0),
 
   ]
 
@@ -2968,10 +3370,34 @@ export default function dd(props, images) {
     },
     content: body,
     pageBreakBefore: function (currentNode, followingNodesOnPage, nodesOnNextPage, previousNodesOnPage) {
-      if (currentNode.id) {
-        let childNodes = nodesOnNextPage.filter(el => el.id === currentNode.id)
+      // If node has a headline and its not header or footer
+      if (currentNode.headlineLevel && currentNode.headlineLevel.length > 0 && ['header', 'footer'].indexOf(currentNode.headlineLevel) < 0) {
+        // if the row is the last one and there are more of them, break before...
+        let childNodes = nodesOnNextPage.filter(el => el.headlineLevel === currentNode.headlineLevel)
+
+        // // If its a table row, only break on last one
+        // if( currentNode.headlineLevel.substring(0,3) === "row"){
+
+        //   console.log("HeadlineLevel: ", currentNode.headlineLevel)
+        //   console.log("Number of nodes on next page",childNodes.length)
+        //   console.log("Num of nodes left of on page", followingNodesOnPage.length )
+        //   if(followingNodesOnPage.length < 0){
+
+        //     return childNodes.length > 0
+        //   }else{
+        //     // its a row but not the last one
+        //     return false
+        //   }
+
+        // }
+        // // This is not a row item...
+
         return childNodes.length > 0
+
       }
+
+
+
       // Header element and foot elemtn of a table or long entity need to have match keys under the ID.
       return false;
     }
