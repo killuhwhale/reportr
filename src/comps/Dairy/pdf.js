@@ -156,14 +156,14 @@ const nameTelephoneLine = (props) => {
     }
   }
 }
-const image = (img) => {
+const image = (img, w, h) => {
   return {
     // you'll most often use dataURI images on the browser side
     // if no width/height/fit is provided, the original size will be used
     image: img,
     // fit: [150, 150], // fit inside a rect
-    width: 425,
-    height: 175,
+    width: w,
+    height: h,
     margin: [0, 5]
   }
 }
@@ -487,7 +487,7 @@ const dairyInformationB = (props) => {
         margin: [0, 5, 0, 5],
         stack: [
           {
-            text: 'B. Operators', bold: true, fontSize: 9
+            text: 'B. OPERATORS', bold: true, fontSize: 9
           }
         ]
       },
@@ -515,7 +515,7 @@ const dairyInformationC = (props) => {
         margin: [0, 5, 0, 5],
         stack: [
           {
-            text: 'C. Owners', bold: true, fontSize: 9
+            text: 'C. OWNERS', bold: true, fontSize: 9
           }
         ]
       },
@@ -537,10 +537,9 @@ const dairyInformationC = (props) => {
   }
 }
 
-
 const availableNutrientsA = (props) => {
   return {
-    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    pageBreak: 'before', // super useful soltion just dont need on the first one
     headlineLevel: "availableNutrients1",
 
     stack: [{
@@ -802,9 +801,6 @@ const availableNutrientsA = (props) => {
     ]
   }
 }
-
-
-
 const availableNutrientsB = (props) => {
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
@@ -1001,7 +997,6 @@ const availableNutrientsB = (props) => {
     ]
   }
 }
-
 const availableNutrientsC = (props) => {
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
@@ -1273,7 +1268,6 @@ const availableNutrientsC = (props) => {
     ]
   }
 }
-
 const availableNutrientsD = (props) => {
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
@@ -1356,7 +1350,6 @@ const availableNutrientsD = (props) => {
     ]
   }
 }
-
 const availableNutrientsE = (props) => {
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
@@ -1397,7 +1390,6 @@ const availableNutrientsE = (props) => {
     ]
   }
 }
-
 const availableNutrientsFTableRow = (props) => {
   return [
     {// row 1
@@ -2212,6 +2204,8 @@ const availableNutrientsG = (props) => {
     ]
   }
 }
+
+
 const applicationAreaATableRow = (props) => {
   return [
     { // row 1
@@ -2244,7 +2238,7 @@ const applicationAreaA = (props) => {
   })
 
   return {
-    // pageBreak: 'before', // super useful soltion just dont need on the first one
+    pageBreak: 'before', // super useful soltion just dont need on the first one
 
     stack: [
       {
@@ -2252,12 +2246,12 @@ const applicationAreaA = (props) => {
           {
             width: "98%",
             table: {
-              widths: ['100%'],
+              widths: ['98%'],
               body: [
                 [{
                   // border: [false, false, false, false],
                   text: 'APPLICATION AREA', alignment: 'center', fontSize: 10
-                }]
+                }],
               ]
             }
           },
@@ -2268,7 +2262,7 @@ const applicationAreaA = (props) => {
           {
             width: "98%",
             table: {
-              widths: ['100%'],
+              widths: ['98%'],
               body: [
                 [{// row 1
                   border: [false, false, false, false],
@@ -2283,12 +2277,12 @@ const applicationAreaA = (props) => {
         ]
       },
       {
+        margin: [10, 0, 0, 10],
         columns: [
           {
             width: "98%",
-            margin: [10, 0, 0, 0],
             table: {
-              widths: ["25%", "10%", "10%", "10%", "20%", "25%"],
+              widths: ["25%", "10%", "10%", "10%", "20%", "23%"],
               body: [
                 [
                   { // row 1
@@ -2412,7 +2406,6 @@ const applicationAreaA = (props) => {
     ]
   }
 }
-
 const applicationAreaBFieldHarvestTableSubTableRow = (props) => {
   return [
     {
@@ -2477,7 +2470,6 @@ const applicationAreaBFieldHarvestTableSubTableRow = (props) => {
     },
   ]
 }
-
 // For each field, this shows each crops plant date, and corresponding harvests
 const applicationAreaBFieldHarvestTableSubTable = (props) => {
   let dummyHarvestDates = [{ harvestDate: "08/29/2020" }, { harvestDate: "12/27/2020" }]
@@ -2490,7 +2482,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
     colSpan: 2,
 
     table: {
-      widths: ['100%'],
+      widths: ['98%'],
       body: [
         [
           {
@@ -2562,7 +2554,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
           {
             border: [true, false, true, false],
             table: {
-              widths: ['10%', '10%', '10%', '12%', '9%', '9%', '10%', '10%', '10%', '9%', "1%"],
+              widths: ['10%', '10%', '10%', '12%', '9%', '9%', '10%', '10%', '10%', '9%'],
               body: [
                 [
                   {
@@ -2646,7 +2638,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
             margin: [0, 0, 138, 0],
             border: [true, false, true, true],
             table: {
-              widths: ['22%', '15%', '15%', '16%', '16%', '16%'],
+              widths: ['22%', '14%', '14%', '16%', '16%', '16%'],
               body: [
                 [
                   {
@@ -2782,7 +2774,6 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
     }
   }]
 }
-
 const applicationAreaBFieldHarvestTable = (props) => {
   // list of objects
   let events = props.map(event => {
@@ -2827,14 +2818,13 @@ const applicationAreaBFieldHarvestTable = (props) => {
         width: "98%",
         margin: [10, 0, 0, 10],
         table: {
-          widths: ['8%', '92%'],
+          widths: ['8%', '90%'],
           body: body
         }
       },
     ]
   }
 }
-
 const applicationAreaB = (props) => {
 
   let fieldHarvests = [ //fields
@@ -2867,7 +2857,7 @@ const applicationAreaB = (props) => {
           {
             width: "98%",
             table: {
-              widths: ['100%'],
+              widths: ['98%'],
               body: [
                 [{// row 1
                   border: [false, false, false, false],
@@ -2887,13 +2877,14 @@ const applicationAreaB = (props) => {
   }
 }
 
+
 const nutrientBudgetBTable = (props, images) => {
   let data = [{}, {}, {}]
-  return data.map(tableData => {
+  return data.map((tableData, i) => {
     return {
       columns: [
         {// Main Table
-          pageBreak: 'before',
+          pageBreak: i == 0 ? '' : 'before',
           table: {
             widths: ['98%'],
             body: [
@@ -2952,7 +2943,7 @@ const nutrientBudgetBTable = (props, images) => {
               [{
                 border: [true, false, true, false],
                 columns: [
-                  image(images.nutrientHoriBar0),
+                  image(images.nutrientHoriBar0, 475, 175),
                 ]
               }
               ],
@@ -3940,7 +3931,7 @@ const nutrientBudgetA = (props) => {
   })
 
   return {
-    // pageBreak: 'before', // super useful soltion just dont need on the first on
+    pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
       {
         columns: [ // Header and first row - unindented
@@ -3989,7 +3980,7 @@ const nutrientBudgetA = (props) => {
 const nutrientBudgetB = (props, images) => {
   const tables = nutrientBudgetBTable(props, images)
   return {
-    // pageBreak: 'before', // super useful soltion just dont need on the first on
+    pageBreak: 'before',
     stack: [
       {
         columns: [
@@ -4015,8 +4006,351 @@ const nutrientBudgetB = (props, images) => {
   }
 }
 
-
 const nutrientAnalysisA = (props) => {
+  const manureAnalyses = [{}, {}, {}, {}]
+  const tables = manureAnalyses.map(analysis => {
+    return {
+      margin: [10, 0, 0, 5],
+      table: {
+        widths: ['100%'],
+        body: [
+          [
+            {// row 1
+              fillColor: gray,
+              text: {
+                text: 'Maciel Manure', bold: true, fontSize: 9,
+              }
+            },
+          ],
+          [
+            {
+              border: [true, false, true, false],
+              table: {
+                widths: ['25%', '75%'],
+                body: [
+                  [
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "Sample source and description:", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "Maciel Manure", fontSize: 8,
+                      }
+                    }
+                  ],
+                ]
+              }
+            }
+          ],
+          [
+            {
+              border: [true, false, true, false],
+              table: {
+                widths: ['8%', '10%', '8%', '10%', '13%', '15%', '13%', '15%'],
+                body: [
+                  [
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "Sample date:", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "11/12/2019", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "Material type:", fontSize: 8,
+                        alignment: 'right',
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "Corral solids", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "Source of analysis:", fontSize: 8,
+                        alignment: 'right',
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "Lab analysis", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "Method of Reporting:", fontSize: 8,
+                        alignment: 'right',
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "Dry-weight", fontSize: 8,
+                      }
+                    }
+                  ],
+                ]
+              }
+            }
+          ],
+          [
+            {
+              border: [true, false, true, false],
+              table: {
+                widths: ['5%', '10%'],
+                body: [
+                  [
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "Moisture:", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "31.6%", fontSize: 8,
+                        alignment: 'right',
+                      }
+                    }
+                  ],
+                ]
+              }
+            }
+          ],
+          [
+            {
+              border: [true, false, true, true],
+              table: {
+                widths: ['5%', '10%', '10%', '10%', '10%', '10%', '10%', '10%', '10%', '10%', '5%',],
+                body: [
+                  [
+                    {
+                      text: {
+                        text: "", fontSize: 8,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Total N (mg/kg)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Total P (mg/kg)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Total K (mg/kg)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Calcium (mg/kg)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Magnesium (mg/kg)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Sodium (mg/kg)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Sulfur (mg/kg)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Chloride (mg/kg)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Total Salt (mg/kg)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "TFS(%)", fontSize: 7,
+                      }
+                    }
+                  ],
+                  [
+                    {
+                      text: {
+                        text: "Value", fontSize: 8, bold: true,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "11,900.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "2,910.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "7,130.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: " ", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: " 0.01", fontSize: 7,
+                      }
+                    }
+                  ],
+                  [
+                    {
+                      text: {
+                        text: "DL", fontSize: 8, bold: true,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "11,900.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "2,910.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "7,130.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: " ", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: " 0.01", fontSize: 7,
+                      }
+                    }
+                  ],
+                ]
+              }
+            }
+          ]
+
+        ]
+      }
+    }
+  })
+
   return {
     pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -4038,362 +4372,2226 @@ const nutrientAnalysisA = (props) => {
           widths: ['100%'],
           body: [
             [{
-              border: [false,false,false,false],
+              border: [false, false, false, false],
               // border: [false, false, false, false],
-              text: 'A. Manure Analyses', fontSize: 10
+              text: 'A. Manure Analyses', fontSize: 10, bold: true,
             }]
           ]
         }
       },
-      {
-        margin: [10,0,0,0],
-        table: {
-          widths: ['100%'],
-          body: [
-            [
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'Maciel Manure', bold: true, fontSize: 9,
-                }
-              },
-            ],
-            [
-              {
-                border: [true, false, true, false],
-                table: {
-                  widths: ['25%', '75%'],
-                  body: [
-                    [
-                      {
-                        border: [false, false, false, false],
-                        text: {
-                          text: "Sample source and description:", fontSize: 8,
-                        }
-                      },
-                      {
-                        border: [false, false, false, true],
-                        text: {
-                          text: "Maciel Manure", fontSize: 8,
-                        }
-                      }
-                    ],
-                  ]
-                }
-              }
-            ],
-            [
-              {
-                border: [true, false, true, false],
-                table: {
-                  widths: ['8%','10%', '8%','10%', '13%','15%', '13%','15%'],
-                  body: [
-                    [
-                      {
-                        border: [false, false, false, false],
-                        text: {
-                          text: "Sample date:", fontSize: 8,
-                        }
-                      },
-                      {
-                        border: [false, false, false, true],
-                        text: {
-                          text: "11/12/2019", fontSize: 8,
-                        }
-                      },
-                      {
-                        border: [false, false, false, false],
-                        text: {
-                          text: "Material type:", fontSize: 8,
-                          alignment: 'right',
-                        }
-                      },
-                      {
-                        border: [false, false, false, true],
-                        text: {
-                          text: "Corral solids", fontSize: 8,
-                        }
-                      },
-                      {
-                        border: [false, false, false, false],
-                        text: {
-                          text: "Source of analysis:", fontSize: 8,
-                          alignment: 'right',
-                        }
-                      },
-                      {
-                        border: [false, false, false, true],
-                        text: {
-                          text: "Lab analysis", fontSize: 8,
-                        }
-                      },
-                      {
-                        border: [false, false, false, false],
-                        text: {
-                          text: "Method of Reporting:", fontSize: 8,
-                          alignment: 'right',
-                        }
-                      },
-                      {
-                        border: [false, false, false, true],
-                        text: {
-                          text: "Dry-weight", fontSize: 8,
-                        }
-                      }
-                    ],
-                  ]
-                }
-              }
-            ],
-            [
-              {
-                border: [true, false, true, false],
-                table: {
-                  widths: ['5%','10%'],
-                  body: [
-                    [
-                      {
-                        border: [false, false, false, false],
-                        text: {
-                          text: "Moisture:", fontSize: 8,
-                        }
-                      },
-                      {
-                        border: [false, false, false, true],
-                        text: {
-                          text: "31.6%", fontSize: 8,
-                          alignment: 'right',
-                        }
-                      }
-                    ],
-                  ]
-                }
-              }
-            ],
-            [
-              {
-                border: [true, false, true, true],
-                table: {
-                  widths: ['5%','10%','10%','10%','10%','10%','10%','10%','10%','10%','5%',],
-                  body: [
-                    [
-                      {
-                        text: {
-                          text: "", fontSize: 8,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Total N (mg/kg)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Total P (mg/kg)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Total K (mg/kg)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Calcium (mg/kg)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Magnesium (mg/kg)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Sodium (mg/kg)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Sulfur (mg/kg)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Chloride (mg/kg)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Total Salt (mg/kg)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "TFS(%)", fontSize: 7,
-                        }
-                      }
-                    ],
-                    [
-                      {
-                        text: {
-                          text: "Value", fontSize: 8, bold: true,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "11,900.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "2,910.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "7,130.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "0.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "0.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "0.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "0.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "0.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: " ", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: " 0.01", fontSize: 7,
-                        }
-                      }
-                    ],
-                    [
-                      {
-                        text: {
-                          text: "DL", fontSize: 8, bold: true,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "11,900.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "2,910.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "7,130.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "0.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "0.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "0.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "0.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "0.00", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: " ", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: " 0.01", fontSize: 7,
-                        }
-                      }
-                    ],
-                  ]
-                }
-              }
-            ]
-
-          ]
-        }
-      },
+      ...tables
 
 
 
     ]
   }
 }
+const nutrientAnalysisB = (props) => {
+  const processWastewaterAnalyses = [{}, {}, {}, {}]
+  const tables = processWastewaterAnalyses.map((analysis, i) => {
+    return {
+      headlineLevel: `processWastewaterAnalyses${i}`,
+      margin: [10, 0, 0, 5],
+      table: {
+        widths: ['98%'],
+        body: [
+          [
+            {// row 1
+              fillColor: gray,
+              text: {
+                text: '4th Qtr WW', bold: true, fontSize: 9,
+              }
+            },
+          ],
+          [
+            {
+              border: [true, false, true, false],
+              table: {
+                widths: ['25%', '73%'],
+                body: [
+                  [
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "Sample source and description:", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "4th Qtr WW", fontSize: 8,
+                      }
+                    }
+                  ],
+                ]
+              }
+            }
+          ],
+          [
+            {
+              border: [true, false, true, false],
+              table: {
+                widths: ['8%', '10%', '8%', '10%', '13%', '15%', '8%', '20%'],
+                body: [
+                  [
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "Sample date:", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "11/12/2019", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "Material type:", fontSize: 8,
+                        alignment: 'right',
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "Corral solids", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "Source of analysis:", fontSize: 8,
+                        alignment: 'right',
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "Lab analysis", fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: "pH:", fontSize: 8,
+                        alignment: 'right',
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: "7", fontSize: 8,
+                      }
+                    }
+                  ],
+                ]
+              }
+            }
+          ],
+          [
+            { // 16 cols, 18% dist
+              border: [true, false, true, true],
+              table: {
+                widths: ['4%', '8%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '5%', '5%', '6%', '6%', '8%', '5%'],
+                body: [
+                  [
+                    {
+                      text: {
+                        text: "", fontSize: 8,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Kjeldahl-N (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "NH4-N (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "NH3-N (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Nitrate-N (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Total P (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Total K (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Calcium (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Magnes. (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Sodium (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Bicarb. (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Carb, (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Sulfate (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "Chloride (mg/L)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "EC (µmhos/cm)", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "TDS (mg/L)", fontSize: 7,
+                      }
+                    },
+
+                  ],
+                  [
+                    {
+                      text: {
+                        text: "Value", fontSize: 8, bold: true,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "11,900.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "2,910.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "7,130.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: " ", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: " 0.01", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "2,000,000.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                  ],
+                  [
+                    {
+                      text: {
+                        text: "DL", fontSize: 8, bold: true,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "11,900.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "2,910.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "7,130.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: " ", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: " 0.01", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                    {
+                      headlineLevel: `processWastewaterAnalyses${i}`,
+                      fillColor: gray,
+                      text: {
+                        text: "0.00", fontSize: 7,
+                      }
+                    },
+                  ],
+                ]
+              }
+            }
+          ]
+
+        ]
+      }
+    }
+  })
+
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first on
+    stack: [
+      {
+        width: "98%",
+        table: {
+          widths: ['98%'],
+          body: [
+            [{
+              border: [false, false, false, false],
+              // border: [false, false, false, false],
+              text: 'B. PROCESS WASTEWATER ANALYSES', fontSize: 10, bold: true,
+            }]
+          ]
+        }
+      },
+      ...tables
 
 
 
+    ]
+  }
+}
+const nutrientAnalysisC = (props) => {
+  const freshWaterAnalyses = [{}, {}, {}, {}]
+  const tables = freshWaterAnalyses.map((analysis, i) => {
+    return {
+      headlineLevel: `freshWaterAnalyses${i}`,
+      margin: [10, 0, 0, 5],
+      table: {
+        widths: ['98%'],
+        body: [
+          [
+            {// row 1
+              fillColor: gray,
+              text: {
+                text: 'I5', bold: true, fontSize: 9,
+              }
+            },
+          ],
+          [
+            {
+              border: [true, false, true, true],
+              table: {
+                widths: ['20%', '73%'],
+                body: [
+                  [
+                    {
+                      border: [true, true, false, true],
+                      fillColor: gray,
+                      text: {
+                        text: 'Irrigation water', alignment: 'left',
+                        fontSize: 9,
+                      }
+                    },
+                    {
+                      border: [false, true, true, true],
+                      fillColor: gray,
+                      text: ' '
+                    }
+                  ],
+                  [
+                    {
+                      border: [true, false, false, false],
+                      text: {
+                        text: "Sample source and description:", fontSize: 8, alignment: 'right'
+                      }
+                    },
+                    {
+                      border: [false, false, true, true],
+                      text: {
+                        text: "4th Qtr WW", fontSize: 8,
+                        alignment: 'left'
+                      }
+                    }
+                  ],
+                  [
+                    {
+                      colSpan: 2,
+                      border: [true, false, true, false],
+                      table: {
+                        widths: ['21%', '10%', '13%', '15%',],
+                        body: [
+                          [
+                            {
+                              border: [false, false, false, false],
+                              text: {
+                                text: "Sample date:", fontSize: 8,
+                                alignment: 'right',
+                              }
+                            },
+                            {
+                              border: [false, false, false, true],
+                              text: {
+                                text: "11/12/2019", fontSize: 8,
+                              }
+                            },
+                            {
+                              border: [false, false, false, false],
+                              text: {
+                                text: "Source of analysis:", fontSize: 8,
+                                alignment: 'right',
+                              }
+                            },
+                            {
+                              border: [false, false, false, true],
+                              text: {
+                                text: "Lab analysis", fontSize: 8,
+                              }
+                            },
+                          ],
+                        ]
+                      }
+                    }, { text: ' ' }
+                  ],
+                  [
+                    {
+                      colSpan: 2,
+                      border: [true, false, true, true],
+                      table: {
+                        widths: ['4%', '8%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '5%', '6%'],
+                        body: [
+                          [
+                            {
+                              text: {
+                                text: "", fontSize: 8,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Nitrate-N (mg/L)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Total P (mg/L)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Total K (mg/L)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Calcium (mg/L)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Magnes. (mg/L)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Sodium (mg/L)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Bicarb. (mg/L)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Carb, (mg/L)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Sulfate (mg/L)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Chloride (mg/L)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "EC (µmhos/cm)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "TDS (mg/L)", fontSize: 7,
+                              }
+                            },
+
+                          ],
+                          [
+                            {
+                              text: {
+                                text: "Value", fontSize: 8, bold: true,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: " ", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: " 0.01", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "2,000,000.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                          ],
+                          [
+                            {
+                              text: {
+                                text: "DL", fontSize: 8, bold: true,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: " ", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: " 0.01", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              headlineLevel: `freshWaterAnalyses${i}`,
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                          ],
+                        ]
+                      }
+                    }, { text: ' ' }
+                  ]
+                ]
+              }
+            }
+          ]
+
+        ]
+      }
+    }
+  })
+
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first on
+    stack: [
+      {
+        width: "98%",
+        table: {
+          widths: ['98%'],
+          body: [
+            [{
+              border: [false, false, false, false],
+              // border: [false, false, false, false],
+              text: 'C. FRESH WATER ANALYSES', fontSize: 10, bold: true,
+            }]
+          ]
+        }
+      },
+      ...tables
+
+
+
+    ]
+  }
+}
+const nutrientAnalysisD = (props) => {
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first on
+    stack: [
+      {
+        width: "98%",
+        table: {
+          widths: ['100%'],
+          body: [
+            [{
+              border: [false, false, false, false],
+              // border: [false, false, false, false],
+              text: 'D. SOIL ANALYSES', fontSize: 10, bold: true,
+            }],
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: 'No soil analyses entered.', fontSize: 7, italics: true }
+              }
+            ]
+          ]
+        }
+      },
+
+
+    ]
+  }
+}
+const nutrientAnalysisE = (props) => {
+  const soilAnalyses = [{}, {}, {}, {}]
+  const tables = soilAnalyses.map((analysis, i) => {
+    return {
+      headlineLevel: `soilAnalyses${i}`,
+      margin: [10, 0, 0, 5],
+      table: {
+        widths: ['98%'],
+        body: [
+          [
+            {// row 1
+              fillColor: gray,
+              text: {
+                text: 'Field 1 - 11/01/2019: Oats, silage-soft dough', bold: true, fontSize: 9,
+              }
+            },
+          ],
+          [
+            {
+              border: [true, false, true, true],
+              table: {
+                widths: ['20%', '73%'],
+                body: [
+                  [
+                    {
+                      border: [true, true, false, true],
+                      fillColor: gray,
+                      text: {
+                        text: 'Oats', alignment: 'left',
+                        fontSize: 9,
+                      }
+                    },
+                    {
+                      border: [false, true, true, true],
+                      fillColor: gray,
+                      text: ''
+                    }
+                  ],
+                  [
+                    {
+                      border: [true, false, false, false],
+                      text: {
+                        text: "Sample source and description:", fontSize: 8, alignment: 'right'
+                      }
+                    },
+                    {
+                      border: [false, false, true, true],
+                      text: {
+                        text: "4th Qtr WW", fontSize: 8,
+                        alignment: 'left'
+                      }
+                    }
+                  ],
+                  [
+                    {
+                      colSpan: 2,
+                      border: [true, false, true, false],
+                      table: {
+                        widths: ['21%', '10%', '13%', '15%', '20%', '20%'],
+                        body: [
+                          [
+                            {
+                              border: [false, false, false, false],
+                              text: {
+                                text: "Sample date:", fontSize: 8,
+                                alignment: 'right',
+                              }
+                            },
+                            {
+                              border: [false, false, false, true],
+                              text: {
+                                text: "11/12/2019", fontSize: 8,
+                              }
+                            },
+                            {
+                              border: [false, false, false, false],
+                              text: {
+                                text: "Source of analysis:", fontSize: 8,
+                                alignment: 'right',
+                              }
+                            },
+                            {
+                              border: [false, false, false, true],
+                              text: {
+                                text: "Lab analysis", fontSize: 8,
+                              }
+                            },
+                            {
+                              border: [false, false, false, false],
+                              text: {
+                                text: "Method of Reporting:", fontSize: 8,
+                                alignment: 'right',
+                              }
+                            },
+                            {
+                              border: [false, false, false, true],
+                              text: {
+                                text: "As-is", fontSize: 8,
+                              }
+                            },
+                          ],
+                        ]
+                      }
+                    }, { text: '' }
+                  ],
+                  [
+                    {
+                      colSpan: 2,
+                      border: [true, false, true, false],
+                      table: {
+                        widths: ["20%", '20%', '20%'],
+                        body: [
+                          [
+                            {
+                              border: [false, false, false, false],
+                              width: "40%",
+                              text: {
+                                text: "Moisture:", fontSize: 8,
+                                alignment: 'right',
+                              }
+                            },
+                            {
+                              border: [false, false, false, true],
+                              text: {
+                                text: "72.2%", fontSize: 8,
+                                alignment: 'left',
+                              }
+                            },
+                            {
+                              border: [false, false, false, false], text: ''
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    { text: '' }
+                  ],
+                  [
+                    {
+                      colSpan: 2,
+                      border: [true, false, true, true],
+                      margin: [10, 0, 0, 0],
+                      table: {
+                        widths: ['4%', '10%', '10%', '10%', '10%', '10%'],
+                        body: [
+                          [
+                            {
+                              text: {
+                                text: "", fontSize: 8,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Total N (mg/kg)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Total P (mg/kg)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Total K (mg/kg)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "Total salt (mg/kg)", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "TFS (%)", fontSize: 7,
+                              }
+                            },
+
+
+                          ],
+                          [
+                            {
+                              text: {
+                                text: "Value", fontSize: 8, bold: true,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+
+                          ],
+                          [
+                            {
+                              text: {
+                                text: "DL", fontSize: 8, bold: true,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                            {
+                              headlineLevel: `soilAnalyses${i}`,
+                              fillColor: gray,
+                              text: {
+                                text: "0.00", fontSize: 7,
+                              }
+                            },
+                          ],
+                        ]
+                      }
+                    }, { text: '' }
+                  ]
+                ]
+              }
+            }
+          ]
+
+        ]
+      }
+    }
+  })
+
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first on
+    stack: [
+      {
+        width: "98%",
+        table: {
+          widths: ['98%'],
+          body: [
+            [{
+              border: [false, false, false, false],
+              // border: [false, false, false, false],
+              text: 'E. PLANT TISSUE ANALYSES', fontSize: 10, bold: true,
+            }]
+          ]
+        }
+      },
+      ...tables
+
+
+
+    ]
+  }
+}
+const nutrientAnalysisF = (props) => {
+  return {
+    // pageBreak: 'before', // super useful soltion just dont need on the first on
+    stack: [
+      {
+        width: "98%",
+        table: {
+          widths: ['100%'],
+          body: [
+            [{
+              border: [false, false, false, false],
+              // border: [false, false, false, false],
+              text: 'F. SUBSURFACE (TILE) DRAINAGE ANALYSES', fontSize: 10, bold: true,
+            }],
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: 'No subsurface (tile) drainage analyses entered.', fontSize: 7, italics: true }
+              }
+            ]
+          ]
+        }
+      },
+
+
+    ]
+  }
+}
+
+//  naprbal NUTRIENT APPLICATIONS, POTENTIAL REMOVAL, AND BALANCE
+const naprbalA = (props) => {
+  return {
+    pageBreak: 'before', // super useful soltion just dont need on the first on
+    stack: [
+      {
+        width: "98%",
+        table: {
+          widths: ['98%'],
+          body: [
+            [{
+              // border: [false, false, false, false],
+              text: 'NUTRIENT APPLICATIONS, POTENTIAL REMOVAL, AND BALANCE', alignment: 'center', fontSize: 10
+            }]
+          ]
+        }
+      },
+      {
+        width: "98%",
+        table: {
+          widths: ['100%'],
+          body: [
+            [{
+              border: [false, false, false, false],
+              // border: [false, false, false, false],
+              text: 'A. SUMMARY OF NUTRIENT APPLICATIONS, POTENTIAL REMOVAL, AND BALANCE', fontSize: 10, bold: true,
+            }]
+          ]
+        }
+      },
+      {
+        width: "98%",
+        margin: [10, 0, 0, 0],
+        table: {
+          widths: ['20%', '15%', '15%', '15%', '15%'],
+          body: [
+            [
+              {
+                text: ''
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: 'Total N (lbs)', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: 'Total P (lbs)', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: 'Total K (lbs)', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
+                  text: 'Total salt (lbs)', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, false],
+                text: 'Existing soil nutrient content', fontSize: 8,
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '2,552,416.54', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, false],
+                text: 'Plowdown credit', fontSize: 8,
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, false],
+                text: 'Commerical fertilizer /Other', fontSize: 8,
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, false],
+                text: 'Dry Manure', fontSize: 8,
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, false],
+                text: 'Process wastewater', fontSize: 8,
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, false],
+                text: 'Fresh water', fontSize: 8,
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, true],
+                text: 'Atmospheric deposition', fontSize: 8,
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, false],
+                text: 'Total nutrients applied', fontSize: 8,
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, false],
+                text: 'Anticipated crop nutrient removal', fontSize: 8,
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, true],
+                text: 'Actual crop nutrient removal', fontSize: 8,
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, false],
+                text: 'Nutrient balance', fontSize: 8,
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, false],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+            [
+              {
+                border: [true, false, true, true],
+                text: 'Applied to removed ratio', fontSize: 8,
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+              {
+                border: [true, false, true, true],
+                text: {
+                  text: '0.00', fontSize: 8, alignment: 'right',
+                }
+              },
+            ],
+
+          ]
+        }
+      },
+
+
+
+
+    ]
+  }
+}
+const naprbalB = (props, images) => {
+  return {
+    stack: [
+      {
+        width: "98%",
+        table: {
+          widths: ['100%'],
+          body: [
+            [{
+              border: [false, false, false, false],
+              // border: [false, false, false, false],
+              text: 'B. POUNDS OF NUTRIENT APPLIED VS. CROP REMOVAL', fontSize: 10, bold: true,
+            }]
+          ]
+        }
+      },
+      {
+        margin: [10, 0, 0, 0],
+        columns: [
+          {
+            width: '90%',
+            stack: [
+              image(images.nutrientHoriBar1, 475, 175),
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+const naprbalC = (props, images) => {
+  return {
+    pageBreak: 'before', // super useful soltion just dont need on the first on
+    stack: [
+      {
+        width: "98%",
+        table: {
+          widths: ['100%'],
+          body: [
+            [{
+              border: [false, false, false, false],
+              // border: [false, false, false, false],
+              text: 'C. POUNDS OF NUTRIENT APPLIED BY MATERIAL TYPE', fontSize: 10, bold: true,
+            }]
+          ]
+        }
+      },
+      {
+        margin: [10, 0, 0, 0],
+        stack: [
+          {
+            columns: [
+              {
+                width: '50%',
+                stack: [
+                  image(images.materialHoriBar0, 350, 175),
+                ]
+              },
+              {
+                width: '50%',
+                stack: [
+                  image(images.materialHoriBar0, 350, 175),
+                ]
+              }
+            ]
+          },
+          {
+            columns: [
+              {
+                width: '50%',
+                stack: [
+                  image(images.materialHoriBar0, 350, 175),
+                ]
+              },
+              {
+                width: '50%',
+                stack: [
+                  image(images.materialHoriBar0, 350, 175),
+                ]
+              }
+            ]
+          },
+        ]
+      }
+    ]
+  }
+}
+const exceptionReportingABC = (props) => {
+  return {
+    pageBreak: 'before', // super useful soltion just dont need on the first on
+    stack: [
+      {
+        table: {
+          widths: ['98%'],
+          body: [
+            [{
+              // border: [false, false, false, false],
+              text: 'EXCEPTION REPORTING', alignment: 'center', fontSize: 10
+            }]
+          ]
+        }
+      },
+      {
+        table: {
+          widths: ['98%'],
+          body: [
+            [
+              {
+                border: [false, false, false, false],
+                // border: [false, false, false, false],
+                text: { text: 'A. MANURE, PROCESS WASTEWATER, AND OTHER DAIRY WASTE DISCHARGES', fontSize: 10, bold: true, }
+              },
+
+            ],
+            [
+              {
+                border: [false, false, false, false],
+                // border: [false, false, false, false],
+                text: {
+                  text: "The following is a summary of all manure and process wastewater discharges from the production area to surface water or to land areas (land application areas or otherwise)" +
+                    " when not in accordance with the facility's Nutrient Management Plan.", fontSize: 8
+                }
+              }
+            ],
+            [
+              {
+                border: [false, false, false, false],
+                // border: [false, false, false, false],
+                text: { text: "No manure or process wastewater discharges occurred during the reporting period", fontSize: 7, italics: true, }
+              }
+            ],
+          ]
+        }
+      },
+      {
+        table: {
+          widths: ['98%'],
+          body: [
+            [
+              {
+                border: [false, false, false, false],
+                // border: [false, false, false, false],
+                text: { text: 'B. STORM WATER DISCHARGES', fontSize: 10 }
+              },
+
+            ],
+            [
+              {
+                border: [false, false, false, false],
+                // border: [false, false, false, false],
+                text: {
+                  text: "The following is a summary of all storm water discharges from the production area to surface water during the reporting period when not in accordance with the facility 's Nutrient" +
+                    " Management Plan.", fontSize: 8
+                }
+              }
+            ],
+            [
+              {
+                border: [false, false, false, false],
+                // border: [false, false, false, false],
+                text: { text: "No stormwater discharges occurred during the reporting period.", fontSize: 7, italics: true, }
+              }
+            ],
+          ]
+        }
+      },
+      {
+        table: {
+          widths: ['98%'],
+          body: [
+            [
+              {
+                border: [false, false, false, false],
+                // border: [false, false, false, false],
+                text: { text: 'C. LAND APPLICATION AREA TO SURFACE WATER DISCHARGES', fontSize: 10 }
+              },
+
+            ],
+            [
+              {
+                border: [false, false, false, false],
+                // border: [false, false, false, false],
+                text: {
+                  text: "The following is a summary of all discharges from the land application area to surface water that have occurred during the reporting period when not in accordance with the" +
+                    " facility's Nutrient Management Plan.", fontSize: 8
+                }
+              }
+            ],
+            [
+              {
+                border: [false, false, false, false],
+                // border: [false, false, false, false],
+                text: { text: "No land application area to surface water discharges occurred during the reporting period", fontSize: 7, italics: true, }
+              }
+            ],
+          ]
+        }
+      },
+    ]
+  }
+}
+
+//  nmpeaStatements NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS
+const nmpeaStatementsAB = (props) => {
+  const q1 = `Was the facility's NMP updated in the reporting period?`
+  const q2 = `Was the facility's NMP developed by a certified nutrient management planner
+  (specialist) as specified in Attachment C of the General Order?`
+  const q3 = `Was the facility's NMP approved by a certified nutrient management planner
+  (specialist) as specified in Attachment C of the General Order?`
+  const q4 = `Are there any written agreements with third parties to receive manure or process
+  wastewater that are new or were revised within the reporting period?`
+
+  return {
+    stack: [
+      {
+        table: {
+          widths: ['98%'],
+          body: [
+            [{
+              text: 'NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS', alignment: 'center', fontSize: 10
+            }]
+          ]
+        }
+      },
+      {
+        table: {
+          widths: ['100%'],
+          body: [
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: 'A. NUTRIENT MANAGEMENT PLAN STATEMENTS', fontSize: 10, bold: true, }
+              },
+            ],
+          ]
+        }
+      },
+      {
+        table: {
+          widths: ['30%', '30%', '30%'],
+          body: [
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: q1, fontSize: 10 }
+              },
+              {
+                border: [false, false, false, true],
+                text: { text: 'No', fontSize: 10 }
+              },
+              {
+                border: [false, false, false, false],
+                text: { text: ' ', fontSize: 10 }
+              },
+            ],
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: q2, fontSize: 10 }
+              },
+              {
+                border: [false, false, false, true],
+                text: { text: 'Yes', fontSize: 10 }
+              },
+              {
+                border: [false, false, false, false],
+                text: { text: ' ', fontSize: 10 }
+              },
+            ],
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: q3, fontSize: 10 }
+              },
+              {
+                border: [false, false, false, true],
+                text: { text: 'Yes', fontSize: 10 }
+              },
+              {
+                border: [false, false, false, false],
+                text: { text: ' ', fontSize: 10 }
+              },
+            ],
+          ]
+        }
+      },
+      {
+        table: {
+          widths: ['100%'],
+          body: [
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: 'B. EXPORT AGREEMENT STATEMENT', fontSize: 10 }
+              },
+            ],
+          ]
+        }
+      },
+      {
+        table: {
+          widths: ['30%', '30%', '30%'],
+          body: [
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: q4, fontSize: 10 }
+              },
+              {
+                border: [false, false, false, true],
+                text: { text: 'No', fontSize: 10 }
+              },
+              {
+                border: [false, false, false, false],
+                text: { text: ' ', fontSize: 10 }
+              },
+            ],
+
+          ]
+        }
+      },
+    ]
+  }
+}
+
+const notesA = (props) => {
+  const noNotesText = `No notes entered for this annual report.`
+
+  return {
+    pageBreak: 'before',
+    stack: [
+      {
+        table: {
+          widths: ['98%'],
+          body: [
+            [{
+              text: 'ADDITIONAL NOTES', alignment: 'center', fontSize: 10,
+            }]
+          ]
+        }
+      },
+      {
+        table: {
+          widths: ['100%'],
+          body: [
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: 'A. NOTES', fontSize: 10, bold: true }
+              },
+            ],
+            [
+              {
+                border: [false, false, false, false],
+                text: {
+                  text: noNotesText, fontSize: 6, italics: true
+                }
+              }
+            ],
+          ]
+        }
+      },
+    ]
+  }
+}
+const certificationA = (props) => {
+  const certiText = `I certify under penalty of law that I have personally examined and am familiar with the information submitted in this document and all attachments and that, based on my inquiry
+  of those individuals immediately responsible for obtaining the information, I believe that the information is true, accurate, and complete. I am aware that there are significant
+  penalties for submitting false information, including the possibility of fine and imprisonment.`
+
+  return {
+    pageBreak: 'before',
+    stack: [
+      {
+        table: {
+          widths: ['98%'],
+          body: [
+            [{
+              text: 'CERTIFICATION', alignment: 'center', fontSize: 10,
+            }]
+          ]
+        }
+      },
+      {
+        table: {
+          widths: ['100%'],
+          body: [
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: 'A. CERTIFICATION', fontSize: 10, bold: true }
+              },
+            ],
+            [
+              {
+                border: [false, false, false, false],
+                margin: [10, 0, 0, 0],
+                text: {
+                  text: certiText, fontSize: 8, italics: true
+                }
+              }
+            ],
+          ]
+        }
+      },
+      {
+        margin: [10, 30, 0, 0],
+        stack: [
+          line(600),
+        ]
+      },
+      {
+        margin: [10, 0, 0, 0],
+        columns:
+          [
+            {
+              width: "50%",
+              text: {
+                text: 'SIGNATURE OF OWNER OF FACILITY ', fontSize: 7,
+              }
+            },
+            {
+              width: "50%",
+              text: {
+                text: 'SIGNATURE OF OPERATOR OF FACILITY', fontSize: 7,
+              }
+            },
+          ],
+      },
+      {
+        margin: [10, 15, 0, 0],
+        columns:
+          [
+            {
+              width: "50%",
+              text: {
+                text: 'Rodney V Nylund ', fontSize: 7,
+              }
+            },
+            {
+              width: "50%",
+              text: {
+                text: 'SAME AS OWNER', fontSize: 7,
+              }
+            },
+          ],
+      },
+      {
+        margin: [10, 0, 0, 0],
+        stack: [
+          line(600),
+        ]
+      },
+      {
+        margin: [10, 0, 0, 0],
+        columns:
+          [
+            {
+              width: "50%",
+              text: {
+                text: 'PRINT OR TYPE NAMEY ', fontSize: 7,
+              }
+            },
+            {
+              width: "50%",
+              text: {
+                text: 'PRINT OR TYPE NAME', fontSize: 7,
+              }
+            },
+          ],
+      },
+      {
+        margin: [10, 15, 0, 0],
+        stack: [
+          line(600),
+        ]
+      },
+      {
+        margin: [10, 0, 0, 0],
+        columns:
+          [
+            {
+              width: "50%",
+              text: {
+                text: 'DATE ', fontSize: 7,
+              }
+            },
+            {
+              width: "50%",
+              text: {
+                text: 'DATE', fontSize: 7,
+              }
+            },
+          ],
+      }
+    ]
+  }
+}
+const attachmentsA = (props) => {
+  const s1 = `Provide an Annual Dairy Facility Assessment (an update to the Preliminary Dairy Facility Assessment in Attachment A) for each reporting period. On the PDFA Final
+  page, click on the ADFA Report button to generate an ADFA report after updating information as needed .`
+  const s2 = `Provide copies of all manure/process wastewater tracking manifests for the reporting period, signed by both the owner/operator and the hauler.`
+  const s3 = `Provide records documenting any corrective actions taken to correct deficiencies noted as a result of the inspections required in the Monitoring Requirements of the
+  General Order. Deficiencies not corrected in 30 days must be accompanied by an explanation of the factors preventing immediate correction.`
+  const s4 = `Dischargers that monitor supply wells or subsurface (tile) drainage systems, or that have monitoring well systems must submit monitoring results as directed in the
+  General Order, Groundwater Reporting Section starting on page MRP-13.`
+  const s5 = `Dischargers that are required to monitor storm water more frequently than required in the General Order must submit monitoring results as directed in the General Order,
+  Storm Water Reporting Section on page MRP-14.`
+  
+
+  return {
+    pageBreak: 'before',
+    stack: [
+      {
+        table: {
+          widths: ['98%'],
+          body: [
+            [{
+              text: 'ATTACHMENTS', alignment: 'center', fontSize: 10,
+            }]
+          ]
+        }
+      },
+      {
+        table: {
+          widths: ['100%'],
+          body: [
+            [
+              {
+                border: [false, false, false, false],
+                text: { text: 'A. REQUIRED ATTACHMENTS', fontSize: 10, bold: true }
+              },
+            ],
+          ]
+        }
+      },
+      
+      {
+        margin: [10,0,0,0],
+        stack: [
+          {
+            text: {
+              text: 'Annual Dairy Facility Assessment', fontSize: 10
+            }
+          },
+          line(650),
+          {
+            margin: [5,0,0,5],
+            text: {
+              text: s1, fontSize: 8
+            }
+          },
+          {
+            text: {
+              text: 'Manure/Process Wastewater Tracking Manifests', fontSize: 10
+            }
+          },
+          line(650),
+          {
+            margin: [5,0,0,5],
+            text: {
+              text: s2, fontSize: 8
+            }
+          },
+          {
+            text: {
+              text: 'Corrective Actions Documents', fontSize: 10
+            }
+          },
+          line(650),
+          {
+            margin: [5,0,0,5],
+            text: {
+              text: s3, fontSize: 8
+            }
+          },
+          {
+            text: {
+              text: 'Groundwater Monitoring', fontSize: 10
+            }
+          },
+          line(650),
+          {
+            margin: [5,0,0,5],
+            text: {
+              text: s4, fontSize: 8
+            }
+          },
+          {
+            text: {
+              text: 'Storm Water Monitoring', fontSize: 10
+            }
+          },
+          line(650),
+          {
+            margin: [5,0,0,5],
+            text: {
+              text: s5, fontSize: 8
+            }
+          },
+        ]
+      }
+    ]
+  }
+}
 // Ex:
 // longAddressLine((792-72), {
 //   street: "20723 Geer RD",
@@ -4408,6 +6606,7 @@ const nutrientAnalysisA = (props) => {
  *  
  */
 export default function dd(props, images) {
+  console.log(images)
   const body = [
     dairyInformationA(props),
     dairyInformationB(props),
@@ -4426,8 +6625,19 @@ export default function dd(props, images) {
     nutrientBudgetA(props),
     nutrientBudgetB(props, images),
     nutrientAnalysisA(props),
-
-    image(images.materialHoriBar0),
+    nutrientAnalysisB(props),
+    nutrientAnalysisC(props),
+    nutrientAnalysisD(props),
+    nutrientAnalysisE(props),
+    nutrientAnalysisF(props),
+    naprbalA(props),
+    naprbalB(props, images),
+    naprbalC(props, images),
+    exceptionReportingABC(props),
+    nmpeaStatementsAB(props),
+    notesA(props),
+    certificationA(props),
+    attachmentsA(props),
 
   ]
 
