@@ -184,6 +184,56 @@ CREATE TABLE IF NOT EXISTS TSVs(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+
+CREATE TABLE IF NOT EXISTS field_crop_app(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  field_crop_id INT NOT NULL,
+  app_date timestamp,
+  app_method VARCHAR(150),
+  precip_before VARCHAR(50),
+  precip_during VARCHAR(50),
+  precip_after VARCHAR(50),
+  UNIQUE(dairy_id, field_crop_id, app_date),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field_crop
+    FOREIGN KEY(field_crop_id) 
+	  REFERENCES field_crop(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+
+);
+
+
+CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  field_crop_app_id INT NOT NULL,
+  
+  material_type VARCHAR(150),
+  source_desc VARCHAR(150),
+  amount_applied INT,
+  totalKN NUMERIC(9,3),
+  ammoniumN NUMERIC(9,3),
+  unionizedAmmoniumN NUMERIC(9,3),
+  nitrateN NUMERIC(9,3),
+  totalP NUMERIC(9,3),
+  totalK NUMERIC(9,3),
+  totalTDS NUMERIC(9,3),
+
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field_crop_app
+    FOREIGN KEY(field_crop_app_id) 
+	  REFERENCES field_crop_app(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+
+);
+
 -- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Alfalfa Haylage',21,70,1,0.09,0.7,0);
 -- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Alfalfa hay',8,10,3,0.27,2.1,0);
 -- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Almond in shell',0,0,6.5,1.1,7.05,0);

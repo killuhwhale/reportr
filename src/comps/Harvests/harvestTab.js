@@ -60,7 +60,6 @@ class HarvestTab extends Component {
   getAllFieldCrops() {
     get(`${BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
         this.setState({ field_crops: res })
       })
       .catch(err => {
@@ -103,8 +102,6 @@ class HarvestTab extends Component {
         }
       }
     })
-
-    console.log("Grouped", grouped)
     return grouped
   }
 

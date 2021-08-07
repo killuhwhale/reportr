@@ -423,6 +423,151 @@ module.exports = {
       callback
     )
   },
+
+
+  insertFieldCropApplication: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      format(`INSERT INTO field_crop_app(
+        dairy_id, field_crop_id, app_date, app_method, precip_before, precip_during, precip_after
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplication: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT 
+           fca.pk,
+           fca.app_date,
+           fca.app_method,
+           fca.precip_before,
+           fca.precip_during,
+           fca.precip_after,
+           
+           c.title as croptitle,
+           f.title as fieldtitle,
+           fc.plant_date,
+           fc.acres_planted,
+           fc.typical_yield,
+           fc.moisture as typical_moisture,
+           fc.n as typical_n,
+           fc.p as typical_p,
+           fc.k as typical_k,
+           fc.salt as typical_salt
+
+        FROM field_crop_app fca
+        JOIN field_crop fc
+        ON fc.pk = fca.field_crop_id
+        JOIN fields f
+        ON f.pk = fc.field_id
+        JOIN crops c
+        ON c.pk = fc.crop_id
+        WHERE 
+          fca.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  updateFieldCropApplication: (values, callback) => {
+    return pool.query(`UPDATE field_crop_app SET
+      app_date = $1,
+      app_method = $2,
+      precip_before = $3,
+      precip_during = $4,
+      precip_after = $5,
+      WHERE pk=$6`,
+      values,
+      callback
+    )
+  },
+  rmFieldCropApplication: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+
+
+  // field_crop_app_id, material_type, source_desc, amount_applied, totalKN, ammoniumN, unionizedAmmoniumN, nitrateN, totalP, totalK, totalTDS, 
+
+  insertFieldCropApplicationProcessWastewater: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      format(`INSERT INTO field_crop_app_process_wastewater(
+        dairy_id, field_crop_app_id, material_type, source_desc, amount_applied, totalKN, ammoniumN, unionizedAmmoniumN, nitrateN, totalP, totalK, totalTDS
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationProcessWastewater: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT 
+           fcapww.pk,
+           fcapww.field_crop_app_id,
+           fcapww.material_type,
+           fcapww.source_desc,
+           fcapww.amount_applied,
+           fcapww.totalKN,
+           fcapww.ammoniumN,
+           fcapww.unionizedAmmoniumN,
+           fcapww.nitrateN,
+           fcapww.ammoniumN,
+           fcapww.totalP,
+           fcapww.totalK,
+           fcapww.totalTDS,
+
+           fca. app_date,
+           fca. app_method,
+           
+           c.title as croptitle,
+           f.title as fieldtitle,
+           fc.plant_date,
+           fc.acres_planted,
+           fc.typical_yield,
+           fc.moisture as typical_moisture,
+           fc.n as typical_n,
+           fc.p as typical_p,
+           fc.k as typical_k,
+           fc.salt as typical_salt
+
+        FROM field_crop_app_process_wastewater fcapww
+        
+        JOIN field_crop_app fca
+        ON fca.pk = fcapww.field_crop_app_id
+        
+        JOIN field_crop fc
+        ON fc.pk = fca.field_crop_id
+
+        
+        JOIN fields f
+        ON f.pk = fc.field_id
+        
+        JOIN crops c
+        ON c.pk = fc.crop_id
+        WHERE 
+        fcapww.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+ rmFieldCropApplicationProcessWastewater: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_process_wastewater where pk = %L", id),
+      [],
+      callback
+    )
+  },
   
 }
 

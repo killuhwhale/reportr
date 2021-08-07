@@ -47,10 +47,8 @@ class HerdTab extends Component {
   // If no Dairy create empty default by proving dairy_pk
   // If no Dairy show button to create a herd
   getHerds() {
-    console.log(this.state.dairy)
     get(`${BASE_URL}/api/herds/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
         if (res.test) {
           return;
         }
