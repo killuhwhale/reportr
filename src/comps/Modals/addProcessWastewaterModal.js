@@ -60,7 +60,7 @@ class AddProcessWastewaterModal extends Component {
                     name='app_event_idx'
                     onChange={this.props.onChange.bind(this)}
                     // value={this.state.createProcessWastewaterObj.app_event_idx}
-                    label="Field"
+                    label="Application Event - Field name / App date / App method"
                     style={{ width: "100%" }}
                     SelectProps={{
                       native: true,
@@ -69,7 +69,7 @@ class AddProcessWastewaterModal extends Component {
                     {this.props.fieldCropAppEvents.length > 0 ?
                       this.props.fieldCropAppEvents.map((event, i) => {
                         return (
-                          <option key={`ppwwae${i}`} value={i}>{event.app_date} / {event.app_method}</option>
+                          <option key={`ppwwae${i}`} value={i}>{event.fieldtitle} / {event.app_date} / {event.app_method}</option>
                         )
                       })
                       :
@@ -134,9 +134,9 @@ class AddProcessWastewaterModal extends Component {
                 </Grid>
                 <Grid item xs={4}>
                   <TextField
-                    name='totalKN'
+                    name='n_con'
                     onChange={this.props.onChange.bind(this)}
-                    value={this.state.createProcessWastewaterObj.totalKN}
+                    value={this.state.createProcessWastewaterObj.n_con}
                     label="Total Kjeldahl-nitrogen concentration"
                     style={{ width: "100%" }}
                     SelectProps={{
@@ -184,9 +184,9 @@ class AddProcessWastewaterModal extends Component {
 
                 <Grid item xs={4}>
                   <TextField
-                    name='totalP'
+                    name='p_con'
                     onChange={this.props.onChange.bind(this)}
-                    value={this.state.createProcessWastewaterObj.totalP}
+                    value={this.state.createProcessWastewaterObj.p_con}
                     label="Total phosphorus"
                     style={{ width: "100%" }}
                     SelectProps={{
@@ -196,9 +196,9 @@ class AddProcessWastewaterModal extends Component {
                 </Grid>
                 <Grid item xs={4}>
                   <TextField
-                    name='totalK'
+                    name='k_con'
                     onChange={this.props.onChange.bind(this)}
-                    value={this.state.createProcessWastewaterObj.totalK}
+                    value={this.state.createProcessWastewaterObj.k_con}
                     label="Total potassium"
                     style={{ width: "100%" }}
                     SelectProps={{
@@ -208,10 +208,51 @@ class AddProcessWastewaterModal extends Component {
                 </Grid>
                 <Grid item xs={4}>
                   <TextField
-                    name='totalTDS'
+                    name='tds'
                     onChange={this.props.onChange.bind(this)}
-                    value={this.state.createProcessWastewaterObj.totalTDS}
+                    value={this.state.createProcessWastewaterObj.tds}
                     label="Total dissolved solids"
+                    style={{ width: "100%" }}
+                    SelectProps={{
+                      native: true,
+                    }}
+                  />
+                </Grid>
+                    
+                <Grid item xs={4}><hr /></Grid>
+                <Grid item xs={4}><hr /></Grid>
+                <Grid item xs={4}>
+                  <TextField
+                    name='totalN'
+                    onChange={this.props.onChange.bind(this)}
+                    value={this.state.createProcessWastewaterObj.totalN}
+                    label="N lbs/acre"
+                    style={{ width: "100%" }}
+                    SelectProps={{
+                      native: true,
+                    }}
+                  />
+                </Grid>
+
+                <Grid item xs={4}>
+                  <TextField
+                    name='totalP'
+                    onChange={this.props.onChange.bind(this)}
+                    value={this.state.createProcessWastewaterObj.totalP}
+                    label="P lbs/acre"
+                    style={{ width: "100%" }}
+                    SelectProps={{
+                      native: true,
+                    }}
+                  />
+                </Grid>
+
+                <Grid item xs={4}>
+                  <TextField
+                    name='totalK'
+                    onChange={this.props.onChange.bind(this)}
+                    value={this.state.createProcessWastewaterObj.totalK}
+                    label="K lbs/acre"
                     style={{ width: "100%" }}
                     SelectProps={{
                       native: true,

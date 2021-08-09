@@ -318,7 +318,7 @@ class HarvestTab extends Component {
 
     // Create a set of fields to ensure duplicates are not attempted.
     let fields = this.createFieldSet(rows)   
-    this.uploadTSVToDB() // remove this when done testing, do this after the data was successfully create in DB
+    
 
 
 
@@ -332,11 +332,10 @@ class HarvestTab extends Component {
         Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
           .then(res => {
             console.log("Completed Results")
+            this.uploadTSVToDB() // remove this when done testing, do this after the data was successfully create in DB
             console.log(res)
             this.toggleShowUploadCSV(false)
             this.getAllFieldCropHarvests()
-            // If successful store tsv data
-            // this.uploadTSVToDB()     // TODO() remove once done testing
 
           })
           .catch(err => {
@@ -408,7 +407,7 @@ class HarvestTab extends Component {
       // Get Field and Crop
       Promise.all([
         this.lazyGet('fields', field_title, fieldData),
-        get(`${BASE_URL}/api/crops/${crop_title}`)
+        get(`${BASE_URL}/api/crops/${crop_title}`) // list of crops in DB are predefined based on spreadsheet. HARDCODED
       ])
         .then(res => {
           let fieldObj = res[0][0] // res = [res1, res2], res1=[data]
@@ -462,6 +461,11 @@ class HarvestTab extends Component {
                     k: actual_k,
                     tfs: tfs
                   }
+
+
+
+
+                  
                   post(`${BASE_URL}/api/field_crop_harvest/create`, field_crop_harvest_data)
                     .then(field_crop_harvest_res => {
                       resolve(field_crop_harvest_res)

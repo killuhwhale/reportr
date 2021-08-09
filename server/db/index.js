@@ -501,7 +501,7 @@ module.exports = {
     console.log(values)
     return pool.query(
       format(`INSERT INTO field_crop_app_process_wastewater(
-        dairy_id, field_crop_app_id, material_type, source_desc, amount_applied, totalKN, ammoniumN, unionizedAmmoniumN, nitrateN, totalP, totalK, totalTDS
+        dairy_id, field_crop_app_id, material_type, source_desc, amount_applied, n_con, ammoniumN, unionizedAmmoniumN, nitrateN, p_con, k_con, tds, ec, totalN, totalP, totalK 
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -517,14 +517,20 @@ module.exports = {
            fcapww.material_type,
            fcapww.source_desc,
            fcapww.amount_applied,
-           fcapww.totalKN,
+           fcapww.n_con,
            fcapww.ammoniumN,
            fcapww.unionizedAmmoniumN,
            fcapww.nitrateN,
            fcapww.ammoniumN,
+           fcapww.p_con,
+           fcapww.k_con,
+           fcapww.ec,
+           fcapww.tds,
+           fcapww.totalN,
            fcapww.totalP,
            fcapww.totalK,
-           fcapww.totalTDS,
+
+
 
            fca. app_date,
            fca. app_method,
@@ -565,6 +571,15 @@ module.exports = {
     return pool.query(
       format("DELETE FROM field_crop_app_process_wastewater where pk = %L", id),
       [],
+      callback
+    )
+  },
+  searchFieldCropApplicationsByFieldCropIDAppDate: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      "SELECT * FROM field_crop_app where field_crop_id = $1 and app_date = $2 and dairy_id = $3",
+      values,
       callback
     )
   },

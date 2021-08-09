@@ -529,7 +529,7 @@ app.post("/api/field_crop_app/create", (req, res) => {
     (err, result) => {
       
       if(!err){
-        res.json(result)
+        res.json(result.rows)
         // res.json({"test": "Created field_crop_harvest successfully"});
         return;    
       }
@@ -585,15 +585,19 @@ app.post("/api/field_crop_app/delete", (req, res) => {
 // field_crop_app_id, material_type, source_desc, amount_applied, totalKN, ammoniumN, unionizedAmmoniumN, nitrateN, totalP, totalK, totalTDS, 
 app.post("/api/field_crop_app_process_wastewater/create", (req, res) => {
   console.log("Creating....", req.body)
-  const { dairy_id, app_event_id: field_crop_app_id, material_type, source_desc, amount_applied, totalKN, ammoniumN, unionizedAmmoniumN, nitrateN, totalP, totalK, totalTDS  } = req.body
+  const { 
+    dairy_id, field_crop_app_id, material_type, source_desc, amount_applied, n_con,
+     ammoniumN, unionizedAmmoniumN, nitrateN, p_con, k_con, tds, ec, totalN, totalP, totalK
+  } = req.body
   db.insertFieldCropApplicationProcessWastewater(
     [
-      dairy_id, field_crop_app_id, material_type, source_desc, amount_applied, totalKN, ammoniumN, unionizedAmmoniumN, nitrateN, totalP, totalK, totalTDS
+      dairy_id, field_crop_app_id, material_type, source_desc, amount_applied, n_con,
+       ammoniumN, unionizedAmmoniumN, nitrateN, p_con, k_con, tds, ec, totalN, totalP, totalK 
     ],
     (err, result) => {
       
       if(!err){
-        res.json(result)
+        res.json(result.rows)
         return;    
       }
       console.log(err)
@@ -659,6 +663,24 @@ app.get("/api/search/field_crop/:field_id/:crop_id/:plant_date/:dairy_id", (req,
 });
 
 
+
+app.get("/api/search/field_crop_app/:field_crop_id/:app_date/:dairy_pk", (req, res) => {
+	db.searchFieldCropApplicationsByFieldCropIDAppDate(
+    [
+    req.params.field_crop_id,
+    req.params.app_date,
+    req.params.dairy_pk,
+  ], 
+  (err, result) => {
+    if(!err){
+      
+      res.json(result.rows)
+      return;    
+    }
+    console.log(err)
+    res.json({"test": "Search all field_crop_app unsuccessful"});
+  })
+});
 
 
 // app.post("/api/postImage", (req, res) => {

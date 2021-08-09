@@ -78,7 +78,11 @@ class NutrientApplicationTab extends Component {
   getFieldCropAppEvents() {
     get(`${BASE_URL}/api/field_crop_app/${this.state.dairy.pk}`)
       .then(res => {
-        this.setState({ fieldCropAppEvents: res })
+        res.sort((a, b) => {
+          return `${a.fieldtitle} ${a.app_date} ${a.app_method}` > `${b.fieldtitle} ${b.app_date} ${b.app_method}` ? 1 : -1
+        }) 
+        
+        this.setState({ fieldCropAppEvents: res})
       })
       .catch(err => {
         console.log(err)
@@ -156,47 +160,47 @@ class NutrientApplicationTab extends Component {
       let field_pk = field.pk
       _field_crops = this.state.field_crops[field_pk]
     }
-   
+
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 && this.state.fields.length > 0 && Object.keys(this.state.field_crops).length > 0 ?
           <Grid item xs={12} container>
             <Grid item xs={12}>
-              <Typography variant="h1">Nutrient Applications</Typography>
-              <Button variant="outlined" color="primary"
+              <Typography variant="h1">Nutrient Applications 
+                <Typography variant="subtitle1" component="span"> ({this.state.fieldCropAppEvents.length})</Typography>
+              </Typography>
+              </Grid>
+
+              <Grid item xs={12} align="center">
+              
+              <Button variant="outlined" color="primary" fullWidth
                 onClick={() => this.toggleShowAddFieldCropAppModal(true)}>
                 Create New Application Event
               </Button>
             </Grid>
 
-            {this.state.fieldCropAppEvents.length > 0 ?
-              <React.Fragment>
-                <Grid item xs={12}>
-                  <Typography variant="h3">Process Wastewater</Typography>
-                  <ProcessWastewater
-                    dairy_id={this.state.dairy.pk}
-                    fieldCropAppEvents={this.state.fieldCropAppEvents}
-                  />
+            <Grid item xs={12} style={{marginTop: "30px"}}>
+              <Typography variant="h2">Process Wastewater</Typography>
+              <ProcessWastewater
+                dairy_id={this.state.dairy.pk}
+                fieldCropAppEvents={this.state.fieldCropAppEvents}
+              />
 
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h3">Fresh Water</Typography>
+            </Grid>
+            <Grid item xs={12} style={{marginTop: "30px"}}>
+              <Typography variant="h2">Fresh Water</Typography>
 
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h3">Solid Manure</Typography>
+            </Grid>
+            <Grid item xs={12} style={{marginTop: "30px"}}>
+              <Typography variant="h2">Solid Manure</Typography>
 
-                </Grid>
-                <Grid item xs={12}>
+            </Grid>
+            <Grid item xs={12} style={{marginTop: "30px"}}>
 
-                  <Typography variant="h3">Fertilizer</Typography>
-                </Grid>
+              <Typography variant="h2">Fertilizer</Typography>
+            </Grid>
 
-              </React.Fragment>
-              :
-              <React.Fragment><Typography>No Application events created, yet.</Typography></React.Fragment>
 
-            }
 
 
 

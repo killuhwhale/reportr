@@ -215,13 +215,19 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater(
   material_type VARCHAR(150),
   source_desc VARCHAR(150),
   amount_applied INT,
-  totalKN NUMERIC(9,3),
+  n_con NUMERIC(9,3), -- same value in sheet and in Merced.app: total Kjeldahl-nitrogen, N (PPM)
+  p_con NUMERIC(9,3), -- same value in sheet and in Merced.app: total phosphorus, P (PPM)
+  k_con NUMERIC(9,3), -- same value in sheet and in Merced.app: total potassium, K (PPM)
+  ec NUMERIC(9,3),
+  tds NUMERIC(9,3), -- same value in sheet and in Merced.app: total disolved solids, P (mg/L)
   ammoniumN NUMERIC(9,3),
   unionizedAmmoniumN NUMERIC(9,3),
   nitrateN NUMERIC(9,3),
+  UNIQUE(dairy_id, field_crop_app_id, amount_applied),
+  -- From sheet, precalcualted, and is used in Annual Report Table.
+  totalN NUMERIC(9,3),
   totalP NUMERIC(9,3),
   totalK NUMERIC(9,3),
-  totalTDS NUMERIC(9,3),
 
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
