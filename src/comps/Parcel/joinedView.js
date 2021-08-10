@@ -12,7 +12,7 @@ const BASE_URL = "http://localhost:3001"
 
 
 
-class ParcelView extends Component {
+class JoinedView extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -94,4 +94,4 @@ class ParcelView extends Component {
   }
 }
 
-export default ParcelView = withRouter(withTheme(ParcelView))
+export default JoinedView = withRouter(withTheme(JoinedView))

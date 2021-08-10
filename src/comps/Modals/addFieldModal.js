@@ -70,8 +70,9 @@ class AddFieldModal extends Component{
 								</Typography>
 							</Grid>
 							<Grid item xs={12}>
-                <FieldForm
+                <FieldForm 
                   field={this.state.field}
+									titleEditable={true}
                   onUpdate={this.onUpdate.bind(this)}
                 />
 							</Grid>

@@ -5,10 +5,10 @@ import {
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import DeleteIcon from '@material-ui/icons/Delete'
-import ParcelNumber from "../Parcel/parcelNumber"
+import ParcelNumber from "./parcelNumber"
 import FieldForm from "../Field/fieldForm"
 import FieldParcelJoinModal from "../Modals/fieldParcelJoinModal"
-import JoinedView from "../Parcel/joinedView"
+import JoinedView from "./joinedView"
 import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { get, post } from "../../utils/requests"
@@ -25,8 +25,8 @@ class ParcelView extends Component {
     this.state = {
       reportingYr: props.reportingYr,
       dairy: props.dairy,
-      parcels: [],
-      fields: [],
+      parcels: props.parcels,
+      fields: props.fields,
       field_parcels: [],
       curUpdateParcels: {},  // pk of parcel to update: parcel object with all updated info
       curUpdateFields: {},
@@ -43,26 +43,9 @@ class ParcelView extends Component {
     return props
   }
   componentDidMount() {
-    this.getAllParcels()
-    this.getAllFields()
     this.getAllFieldParcels()
   }
-  getAllParcels() {
-    get(`${BASE_URL}/api/parcels/${this.state.dairy.pk}`)
-      .then(res => {
-        // console.log(res)
-        this.setState({ parcels: res })
-      })
-      .catch(err => { console.log(err) })
-  }
-  getAllFields() {
-    get(`${BASE_URL}/api/fields/${this.state.dairy.pk}`)
-      .then(res => {
-        // console.log(res)
-        this.setState({ fields: res })
-      })
-      .catch(err => { console.log(err) })
-  }
+ 
   onParcelNumberUpdate(parcel_pk, num) {
     let parcels = this.state.curUpdateParcels
     parcels[parcel_pk] = {
@@ -134,7 +117,7 @@ class ParcelView extends Component {
       .catch(err => { console.log(err) })
   }
 
-  toggleFieldParcelModal(val) {
+  toggleShowJoinFieldParcelModal(val) {
     this.setState({ showJoinFieldParcelModal: val })
   }
   onFieldParcelChange(ev) {
@@ -154,8 +137,7 @@ class ParcelView extends Component {
     })
       .then(res => {
         console.log(res)
-        //append the row obj to the list of
-        console.log("Try forcing child components to refresh - unmount/ remount")
+        this.toggleShowJoinFieldParcelModal(false)
         this.getAllFieldParcels()
       })
       .catch(err => {
@@ -182,7 +164,7 @@ class ParcelView extends Component {
     post(`${BASE_URL}/api/parcels/delete`, {pk : this.state.curDelParcel.pk})
     .then(res => {
       console.log(res)
-      this.getAllParcels()
+      this.props.onParcelDelete()
       this.toggleDeleteParcelModal(false)
     })
   }
@@ -191,7 +173,7 @@ class ParcelView extends Component {
     post(`${BASE_URL}/api/fields/delete`, {pk : this.state.curDelField.pk})
     .then(res => {
       console.log(res)
-      this.getAllFields()
+      this.props.onFieldDelete()
       this.toggleDeleteFieldModal(false)
     })
   }
@@ -250,6 +232,7 @@ class ParcelView extends Component {
                   <Grid item xs={11}>
                     <FieldForm 
                       field={field}
+                      titleEditable={false}
                       onUpdate={this.onFieldUpdate.bind(this)}
                     />
                   </Grid>
@@ -291,7 +274,7 @@ class ParcelView extends Component {
           />
           <Tooltip title="Join Field & Parcel">
             <Button
-              onClick={() => this.toggleFieldParcelModal(true)}
+              onClick={() => this.toggleShowJoinFieldParcelModal(true)}
               variant="outlined" color="primary" fullWidth
             >
               <Typography variant="subtitle1">
@@ -311,7 +294,7 @@ class ParcelView extends Component {
           curJoinParcelIdx={this.state.curJoinParcelIdx}
           onChange={this.onFieldParcelChange.bind(this)}
           onAction={this.createJoinFieldParcel.bind(this)}
-          onClose={() => this.toggleFieldParcelModal(false)}
+          onClose={() => this.toggleShowJoinFieldParcelModal(false)}
         />
         <ActionCancelModal
           open={this.state.showDeleteParcelModal}

@@ -9,17 +9,32 @@ export const lazyGet = (endpoint, value, data, dairy_pk) => {
   return new Promise((resolve, rej) => {
     get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
       .then(res => {
+        
+        // If not found, Attempt to create
         if (Object.keys(res).length == 0) {
-          // Create Object
           post(`${BASE_URL}/api/${endpoint}/create`, data)
             .then(result => {
               console.log("Created from lazyget: ", result)
-              resolve(result)
+              
+              // If there is an error response from server.
+              if(result.test){
+                console.log("Create failed, race conditon happened. Attempting to re-fetch")
+                get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
+                .then(secondResult => {
+                  console.log("Found entry after failing to create entry")
+                  // Found entry, on second attempt.
+                  resolve(secondResult)
+                })
+              }else{
+                // Created entry, returning result
+                resolve(result)
+              }
             })
             .catch(error => {
               rej(error)
             })
         } else {
+          // Found entry, returning result
           resolve(res)
         }
       })
@@ -67,8 +82,8 @@ export const createFieldSet = (rows) => {
   // Create a set of fields to ensure duplicates are not attempted.
   rows.forEach(row => {
     const [
-      field_title, acres_planted, cropable, acres
-    ] = row.slice(0, 4)
+      app_date, field_title, acres_planted, cropable, acres
+    ] = row.slice(0, 5)
     if (!fieldSet.has(field_title)) {
       fields.push([field_title, acres, cropable])
       fieldSet.add(field_title)
@@ -215,11 +230,13 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, table) => {
             k: typical_k,
             salt: salt
           }
-
+          
           // Now lazily get field_crop
           lazyGet('field_crop', field_crop_search_url, field_crop_data, dairy_pk)
             .then(field_crop_res => {
               const fieldCropObj = field_crop_res[0]
+
+
 
               // Here we have access to a valid field_crop, which is used in 
               //field_crop_app, 
@@ -271,6 +288,7 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, table) => {
             .catch(field_crop_err => {
               rej(field_crop_err)
               console.log(field_crop_err)
+              console.log('field_crop', field_crop_search_url, field_crop_data, dairy_pk)
             })
         } else {
           rej(res)

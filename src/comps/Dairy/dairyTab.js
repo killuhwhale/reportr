@@ -11,7 +11,7 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import Chart from 'chart.js/auto';
 import { get, getPDF, post } from '../../utils/requests'
-import ParcelView from "../Parcel/parcelView"
+import ParcelAndFieldView from "../Parcel/parcelAndFieldView"
 import OperatorView from "../Operators/operatorView"
 import AddParcelModal from "../Modals/addParcelModal"
 import AddFieldModal from "../Modals/addFieldModal"
@@ -58,7 +58,9 @@ class DairyTab extends Component {
       reportingYr: props.reportingYr,
       dairy: props.dairy,
       showAddParcelModal: false,
-      showAddFieldModal: false
+      showAddFieldModal: false,
+      fields: [],
+      parcels: [],
     }
     this.canvas = React.createRef()
     this.chart = null
@@ -66,6 +68,10 @@ class DairyTab extends Component {
   }
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
+  }
+  componentDidMount(){
+    this.getAllFields()
+    this.getAllParcels()
   }
   onChange(ev) {
     const { name, value } = ev.target
@@ -87,6 +93,7 @@ class DairyTab extends Component {
       .then(res => {
         console.log(res)
         this.toggleParcelModal(false)
+        this.getAllParcels()
       })
       .catch(err => {
         console.log(err)
@@ -104,6 +111,7 @@ class DairyTab extends Component {
       .then(res => {
         console.log(res)
         this.toggleFieldModal(false)
+        this.getAllFields()
       })
       .catch(err => {
         console.log(err)
@@ -113,7 +121,26 @@ class DairyTab extends Component {
   toggleFieldModal(val) {
     this.setState({ showAddFieldModal: val })
   }
+  getAllParcels() {
+    get(`${BASE_URL}/api/parcels/${this.state.dairy.pk}`)
+      .then(res => {
+        // console.log(res)
+        this.setState({ parcels: res })
+      })
+      .catch(err => { console.log(err) })
+  }
+  getAllFields() {
+    get(`${BASE_URL}/api/fields/${this.state.dairy.pk}`)
+      .then(res => {
+        // console.log(res)
+        this.setState({ fields: res })
+      })
+      .catch(err => { console.log(err) })
+  }
 
+
+
+  // Annual Report Section 
   createCharts() {
     let nutrientLabels = ["N", "P", "K", "Salt"]
     let nutrientData = [
@@ -684,9 +711,13 @@ class DairyTab extends Component {
               </Grid>
             </Grid>
             <Grid item container align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
-              <ParcelView
+              <ParcelAndFieldView
                 reportingYr={this.state.reportingYr}
                 dairy={this.state.dairy}
+                fields={this.state.fields}
+                parcels={this.state.parcels}
+                onFieldDelete={this.getAllFields.bind(this)}
+                onParcelDelete={this.getAllParcels.bind(this)}
               />
             </Grid>
 

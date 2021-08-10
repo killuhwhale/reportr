@@ -56,7 +56,7 @@ class FieldForm extends Component {
     return(
       <Grid item container xs={12}>
         <Grid item xs={4} style={{marginTop: "16px"}}>
-          <TextField disabled
+          <TextField disabled={!this.props.titleEditable}
             name='title'  
             value={this.state.field.title}
             onChange={this.onChange.bind(this)}

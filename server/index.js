@@ -194,7 +194,7 @@ app.post("/api/parcels/update", (req, res) => {
 });
 app.post("/api/parcels/delete", (req, res) => {
   console.log("Deleting....", req.body.pk)
-  db.rmField(req.body.pk, (err, result) => {
+  db.rmParcel(req.body.pk, (err, result) => {
     
     if(!err){
       res.json({"test": "Deleted parcel successfully"});
