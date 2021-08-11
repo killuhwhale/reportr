@@ -13,13 +13,16 @@ import { withTheme } from '@material-ui/core/styles'
 import formats from "../../utils/format"
 
 import UploadFieldCropAppProcessWastewaterTSVModal from "../Modals/uploadFieldCropAppProcessWastewaterTSVModal"
+import ViewTSVsModal from "../Modals/viewTSVsModal"
 
 import AddProcessWastewaterModal from "../Modals/addProcessWastewaterModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
 
-import { lazyGet, readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow } from "../../utils/TSV"
+import {
+  readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
+ } from "../../utils/TSV"
 
 const BASE_URL = "http://localhost:3001"
 const MATERIAL_TYPES = [
@@ -27,8 +30,6 @@ const MATERIAL_TYPES = [
   'Process wastewater',
   'Process wastewater sludge',
 ]
-
-const _numCols = 24 // number of columns in each data row, needs to be the first set of columns.
 
 /** View for Process Wastewater Entry in DB */
 const ProcessWastewaterAppEvent = (props) => {
@@ -192,13 +193,16 @@ class ProcessWastewater extends Component {
     this.state = {
       dairy_id: props.dairy_id,
       fieldCropAppEvents: props.fieldCropAppEvents,
-      showAddProcessWastewaterModal: false,
       field_crop_app_process_wastewater: props.field_crop_app_process_wastewater, // This should come from parent so it updates well, 
+      tsvType: props.tsvType,
+      numCols: props.numCols,
+      showAddProcessWastewaterModal: false,
       showConfirmDeleteProcessWastewaterModal: false,
       showUploadFieldCropAppProcessWastewateTSVModal: false,
       deleteProcessWastewaterObj: {},
       tsvText: "",
       uploadedFilename: "",
+      showViewTSVsModal: false,
       createProcessWastewaterObj: {
         dairy_id: 0,
         app_event_idx: 0,
@@ -291,7 +295,7 @@ class ProcessWastewater extends Component {
     }
   }
 
-  /** TSV: toggle, onChange, onUpload */
+  /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppProcessWastewateTSVModal(val) {
     this.setState({ showUploadFieldCropAppProcessWastewateTSVModal: val })
   }
@@ -306,27 +310,24 @@ class ProcessWastewater extends Component {
   }
   onUploadFieldCropAppProcessWastewateTSV() {
     // 24 columns from TSV
-
     let dairy_pk = this.state.dairy_id
-    let rows = processTSVText(this.state.tsvText, _numCols) // extract rows from Text of tsv file TODO()
+    let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
 
     // Create a set of fields to ensure duplicates are not attempted.
     let fields = createFieldSet(rows)
 
-
     createFieldsFromTSV(fields, dairy_pk)      // Create fields before proceeding
       .then(createFieldRes => {
         let result_promises = rows.map((row, i) => {
-          return createDataFromTSVListRow(row, i, dairy_pk, 'field_crop_app_process_wastewater')    // Create entries for ea row in TSV file
+          return createDataFromTSVListRow(row, i, dairy_pk, this.state.tsvType)    // Create entries for ea row in TSV file
         })
 
         Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
           .then(res => {
             console.log("Completed uploading Process Wastewater TSV")
-            // this.uploadTSVToDB() TODO()implement this function // remove this when done testing, do this after the data was successfully create in DB
+            uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType) 
             this.toggleShowUploadFieldCropAppProcessWastewateTSVModal(false)
             this.props.onProcessWastewaterTSVUpload()
-
           })
           .catch(err => {
             console.log("Error with all promises")
@@ -337,19 +338,34 @@ class ProcessWastewater extends Component {
         console.log(createFieldErr)
       })
   }
+  toggleViewTSVsModal(val){
+    this.setState({showViewTSVsModal: val})
+  }
  
   render() {
     return (
       <Grid item xs={12} container >
         <Grid item xs={12} align="right">
-          <Button color="secondary" variant="outlined"
+          <Button color="primary" variant="outlined"
             onClick={() => this.toggleShowUploadFieldCropAppProcessWastewateTSVModal(true)}
           >
             Upload TSV
           </Button>
+          <Button color="secondary" variant="outlined"
+            onClick={() => this.toggleViewTSVsModal(true)}
+          >
+            View Uploaded TSVs
+          </Button>
         </Grid>
 
-
+        <ViewTSVsModal
+          open={this.state.showViewTSVsModal}
+          actionText={"" /* no action text*/}
+          cancelText="Close"
+          dairy_id={this.state.dairy_id}
+          tsvType={this.state.tsvType}
+          onClose={() => this.toggleViewTSVsModal(false)}
+        />
         <UploadFieldCropAppProcessWastewaterTSVModal
           open={this.state.showUploadFieldCropAppProcessWastewateTSVModal}
           actionText="Add"

@@ -14,6 +14,7 @@ class ViewTSVsModal extends Component {
     this.state = {
       open: props.open,
       dairy_id: props.dairy_id,
+      tsvType: props.tsvType,
       tsvs: [],
       checkedForTSVs: false,
       showDeleteTSV: false,
@@ -37,7 +38,7 @@ class ViewTSVsModal extends Component {
     }
   }
   getAllTSVs() {
-    get(`${BASE_URL}/api/tsv/${this.state.dairy_id}`)
+    get(`${BASE_URL}/api/tsv/${this.state.dairy_id}/${this.state.tsvType}`)
       .then(res => {
         this.setState({
           hasTSVs: res.length > 0,
@@ -54,42 +55,71 @@ class ViewTSVsModal extends Component {
   }
   deleteTSV() {
     console.log("Deleteing tsv", this.state.curDeleteObj)
-    post(`${BASE_URL}/api/tsv/delete`, {pk: this.state.curDeleteObj.pk})
-    .then(res => {
-      console.log(res)
-      this.toggleShowDeleteTSV(false)
-      this.getAllTSVs()
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  
+    post(`${BASE_URL}/api/tsv/delete`, { pk: this.state.curDeleteObj.pk })
+      .then(res => {
+        console.log(res)
+        this.toggleShowDeleteTSV(false)
+        this.getAllTSVs()
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
   }
 
-  downloadTSV(tsv){
+  printTSV() {
+
+    let frame = document.getElementById('tsvPrintFrame')
+
+    if(frame){
+      frame.src = `/tsv/${this.state.dairy_id}/${this.state.tsvType}`;                   // Set source.
+      
+    } else{
+      frame = document.createElement('iframe')
+      frame.id = "tsvPrintFrame"
+      frame.style.visibility = 'hidden';                // Hide the frame.
+      frame.src = `/tsv/${this.state.dairy_id}/${this.state.tsvType}`;                   // Set source.
+      document.body.appendChild(frame);  // Add the frame to the web page.
+    }
+
+    // frame.contentWindow.focus();       // Set focus.
+    // frame.contentWindow.print();       // Print it.
+  }
+
+  downloadTSV(tsv) {
+    
     console.log("Downloading TSV", tsv)
 
     let element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(tsv.data));
     element.setAttribute('download', tsv.title);
-  
+
     element.style.display = 'none';
     document.body.appendChild(element);
-  
+
     element.click();
-  
+
     document.body.removeChild(element);
-  
-   
-    
+
+
+
   }
 
+  onModalClose(){
+    let frame = document.getElementById('tsvPrintFrame')
 
-  render(){
+    if(frame){
+      document.body.removeChild(frame)
+    }
+    
+    this.props.onClose()
+  }
+
+  render() {
     return (
       <Modal
         open={this.state.open}
-        onClose={this.props.onClose}
+        onClose={this.onModalClose.bind(this)}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description">
         <div style={{
@@ -106,7 +136,7 @@ class ViewTSVsModal extends Component {
           >
             <Paper style={{ height: "75vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <Grid item container xs={12}>
-                <Grid item xs={12} style={{marginBottom: "16px"}}>
+                <Grid item xs={12} style={{ marginBottom: "16px" }}>
                   <Typography variant="h2" color="secondary">
                     TSVs
                   </Typography>
@@ -120,13 +150,13 @@ class ViewTSVsModal extends Component {
                             {tsv.title}
                           </Grid>
                           <Grid item xs={1} align="right">
-                            <Tooltip title="Download TSV file">
-                              <IconButton onClick={() => this.downloadTSV(tsv)}>
-                                <AddIcon style={{color: this.props.theme.palette.text.primary}} />
+                            <Tooltip title="Print TSV file">
+                              <IconButton onClick={ this.printTSV.bind(this) }>
+                                <AddIcon style={{ color: this.props.theme.palette.text.primary }} />
                               </IconButton>
                             </Tooltip>
                           </Grid>
-                          <Grid item xs={1}align="center">
+                          <Grid item xs={1} align="center">
                             <Tooltip title="Delete TSV file">
                               <IconButton onClick={() => this.onDeleteTSV(tsv)}>
                                 <DeleteIcon color="error" />

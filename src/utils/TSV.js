@@ -4,7 +4,16 @@ export default function mTea() { }
 const BASE_URL = "http://localhost:3001"
 
 
+export const PROCESS_WASTEWATER = 'process_wastewater'
 
+export const TSV_INFO = {
+  [PROCESS_WASTEWATER]: {
+     numCols: 24, // 24 columns in process_wastewater spreadsheet/ TSV
+     tsvType: PROCESS_WASTEWATER
+  }, 
+} 
+
+// ### Common functions     ###################################################################
 export const lazyGet = (endpoint, value, data, dairy_pk) => {
   return new Promise((resolve, rej) => {
     get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
@@ -43,11 +52,33 @@ export const lazyGet = (endpoint, value, data, dairy_pk) => {
       })
   })
 }
-
 export const readTSV = (file, callback) => {
   const reader = new FileReader()
   reader.addEventListener('load', callback);
   reader.readAsText(file)
+}
+/** Uploads TSV file to DB by dairy_id and TSV type
+ *  - Each Dairy per reporting year, will have a TSV file for Production Records(Harvests), Nutrient Applications, Imports/Exports
+ */
+
+export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
+  console.log("Uploading TSV to DB", uploadedFilename, tsvText)
+  return new Promise((res, rej) =>{
+    post(`${BASE_URL}/api/tsv/create`, {
+        title: uploadedFilename,
+        data: tsvText,
+        tsvType: tsvType,
+        dairy_id: dairy_id
+      })
+      .then(result => {
+        console.log("Uploaded to DB: ", result)
+        res(result)
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })  
 }
 /**
  * where callback == (ev) => {
@@ -75,7 +106,6 @@ export const processTSVText = (csvText, numCols) => {
   })
   return rows
 }
-
 export const createFieldSet = (rows) => {
   let fields = []
   let fieldSet = new Set()
@@ -91,7 +121,6 @@ export const createFieldSet = (rows) => {
   })
   return fields
 }
-
 /**
  *  TSV files rely upon existing fields, crops, and field_crop entities to successfully create 
  *      field_crop_harvest, AND all nutrient applications where a field_crop_app will need to be created prior to
@@ -124,44 +153,20 @@ export const createFieldsFromTSV = (fields, dairy_pk) => {
   })
   return Promise.all(promises)
 }
+// ##############################################################################################
 
-
-const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
-  const [
-    source_desc, app_rate, run_time, amount_applied, app_rate_per_acre, n_con, p_con, k_con, ec_con, tds_con, n, p, k
-  ] = row.slice(11, row.length)
-  
-
-  const process_wastewater_data = {
-    dairy_id: dairy_pk,
-    field_crop_app_id: field_crop_app.pk,
-    material_type: 'Process wastewater',  // TODO() Figure out if they need to change this ever. two options: [process wasterwater, process wastewater sludge]
-    source_desc: source_desc,
-
-    amount_applied: amount_applied.replaceAll(",", ""),
-    n_con: n_con.replaceAll(",", ""),
-    p_con: p_con.replaceAll(",", ""),
-    k_con: k_con.replaceAll(",", ""),
-    ec: ec_con.replaceAll(",", ""),
-    tds: tds_con.replaceAll(",", ""),
-    // TODO() findout how  ammonium-nitrogen concentration is calculated.
-    ammoniumN: 1337,          // These come from the little side table (which comes form the labs), default: I actually dont know how this value is calculated
-    unionizedAmmoniumN: 1337, // These come from the little side table (which comes form the labs), default 0
-    nitrateN: 1337,           // These come from the little side table (which comes form the labs), default 0
-    totalN: n.replaceAll(",", ""),
-    totalP: p.replaceAll(",", ""),
-    totalK: k.replaceAll(",", ""),
-  }
-
-  
-
-  return post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data)
-  
-}
-
-
-// Nutrient applications
-export const createDataFromTSVListRow = (row, i, dairy_pk, table) => {
+/** Nutrient applications
+ * 
+ * @param {*} row: The row from the TSV contianing data
+ * @param {*} i : index of row
+ * @param {*} dairy_pk: The current dairys pk in the dairy table.
+ * @param {*} table: The specific nutrient application table that the data will be stored in
+ *    -  options: ['process_wastewater', 'fresh_water', 'solid_manure', 'commerical_fertilizer']
+ *    - This will call a function insert the data after the neccessary data is created.
+ *        - Neccessary data: fields, field_crop, field_crop_app 
+ * @returns 
+ */
+export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
   // console.log("Creating db entreis for data:: ", row)
   // Spreadsheet Row Headers
   // Field	Acres_Planted	cropable	Total_Acres		Crop	Plant_Date	Harvest_Dates	Expected_Yield(Tons/Acre)	
@@ -188,8 +193,6 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, table) => {
       dairy_id: dairy_pk
     }
   }
-
-
   /**
     * 
     *  For all TSV sheets, the data relies on a Field, Field_crop, Field_crop_app. 
@@ -235,9 +238,6 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, table) => {
           lazyGet('field_crop', field_crop_search_url, field_crop_data, dairy_pk)
             .then(field_crop_res => {
               const fieldCropObj = field_crop_res[0]
-
-
-
               // Here we have access to a valid field_crop, which is used in 
               //field_crop_app, 
               const field_crop_app_search_url = `${fieldCropObj.pk}/${encodeURIComponent(app_date)}`
@@ -269,21 +269,15 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, table) => {
 
 
 
-                  if(table === "field_crop_app_process_wastewater"){
+                  if(tsvType === PROCESS_WASTEWATER){
                     resolve(createProcessWastewaterApplication(row, field_crop_appObj, dairy_pk))
-                   
-                  
+                  }else if(tsvType === "field_crop_app_freshwater"){
+                    return
                   }
-
                 })
                 .catch(field_crop_app_err => {
                   console.log(field_crop_app_err)
                 })
-
-
-
-
-
             })
             .catch(field_crop_err => {
               rej(field_crop_err)
@@ -307,4 +301,36 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, table) => {
 
 }
 
+/** Process Wastewater */
+const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
+  const [
+    source_desc, app_rate, run_time, amount_applied, app_rate_per_acre, n_con, p_con, k_con, ec_con, tds_con, n, p, k
+  ] = row.slice(11, row.length)
+  
 
+  const process_wastewater_data = {
+    dairy_id: dairy_pk,
+    field_crop_app_id: field_crop_app.pk,
+    material_type: 'Process wastewater',  // TODO() Figure out if they need to change this ever. two options: [process wasterwater, process wastewater sludge]
+    source_desc: source_desc,
+
+    amount_applied: amount_applied.replaceAll(",", ""),
+    n_con: n_con.replaceAll(",", ""),
+    p_con: p_con.replaceAll(",", ""),
+    k_con: k_con.replaceAll(",", ""),
+    ec: ec_con.replaceAll(",", ""),
+    tds: tds_con.replaceAll(",", ""),
+    // TODO() findout how  ammonium-nitrogen concentration is calculated.
+    ammoniumN: 1337,          // These come from the little side table (which comes form the labs), default: I actually dont know how this value is calculated
+    unionizedAmmoniumN: 1337, // These come from the little side table (which comes form the labs), default 0
+    nitrateN: 1337,           // These come from the little side table (which comes form the labs), default 0
+    totalN: n.replaceAll(",", ""),
+    totalP: p.replaceAll(",", ""),
+    totalK: k.replaceAll(",", ""),
+  }
+
+  
+
+  return post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data)
+  
+}

@@ -13,7 +13,7 @@ import ProcessWastewater from "./processWastewater"
 import AddFieldCropApplicationModal from "../Modals/addFieldCropApplicationModal"
 import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
-
+import { TSV_INFO, PROCESS_WASTEWATER, } from '../../utils/TSV'
 
 const BASE_URL = "http://localhost:3001"
 const PRECIPITATIONS = [
@@ -25,7 +25,6 @@ const PRECIPITATIONS = [
   "Hail",
   "Snow",
 ]
-
 const APP_METHODS = [
   'No till (plowdown credit)',
   'Plow/disc',
@@ -211,7 +210,7 @@ class NutrientApplicationTab extends Component {
           })
         })
 
-        console.log("Seeting  process wastewaters...", process_wastewater_by_fieldtitle)
+        console.log("Seeting  process wastewaters...", process_wastewater_by_fieldtitle, res)
         this.setState({ field_crop_app_process_wastewater: process_wastewater_by_fieldtitle })
       })
       .catch(err => {
@@ -280,6 +279,8 @@ class NutrientApplicationTab extends Component {
                 fieldCropAppEvents={this.state.fieldCropAppEvents}
                 onProcessWastewaterTSVUpload={this.onProcessWastewaterTSVUpload.bind(this)}
                 field_crop_app_process_wastewater={this.state.field_crop_app_process_wastewater}
+                tsvType={TSV_INFO[PROCESS_WASTEWATER].tsvType}
+                numCols={TSV_INFO[PROCESS_WASTEWATER].numCols}
               />
 
             </Grid>

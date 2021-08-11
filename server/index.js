@@ -32,9 +32,8 @@ app.use(cors({
 
 app.post("/api/tsv/create", (req, res) => {
   console.log("Inserting....",)
-  const { dairy_id, title, data } = req.body
-  db.insertTSV([dairy_id, title, data], (err, result) => {
-    
+  const { dairy_id, title, data, tsvType } = req.body
+  db.insertTSV([dairy_id, title, data, tsvType], (err, result) => {
     if(!err){
       res.json({"test": "Inserted TSV successfully"});
       return;    
@@ -44,8 +43,8 @@ app.post("/api/tsv/create", (req, res) => {
   })
 });
 
-app.get("/api/tsv/:dairy_id", (req, res) => {
-	db.getTSVs(req.params.dairy_id, 
+app.get("/api/tsv/:dairy_id/:tsvType", (req, res) => {
+	db.getTSVs(req.params.dairy_id, req.params.tsvType,
   (err, result) => {
     if(!err){
       

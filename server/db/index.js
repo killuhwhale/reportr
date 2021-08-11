@@ -403,16 +403,16 @@ module.exports = {
     console.log(values)
     return pool.query(
       format(`INSERT INTO TSVs(
-        dairy_id, title, data
+        dairy_id, title, data, tsvType
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
     )
   },
-  getTSVs: (dairy_id, callback) => {
+  getTSVs: (dairy_id, tsvType, callback) => {
     return pool.query(
-      format("SELECT * FROM TSVs where dairy_id = %L", dairy_id),
-      [],
+      "SELECT * FROM TSVs where dairy_id = $1 and tsvType = $2",
+      [dairy_id, tsvType],
       callback
     )
   },
@@ -423,8 +423,6 @@ module.exports = {
       callback
     )
   },
-
-
   insertFieldCropApplication: (values, callback) => {
     console.log("Values in DB Pool query")
     console.log(values)

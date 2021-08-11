@@ -15,8 +15,8 @@ import apptheme from "./css/apptheme"
 import pdftheme from "./css/lightTheme"
 
 import HomePage from "./pages/homePage"
-import AnnualReport from "./pages/annualReport"
-
+import TSVPrint from "./pages/tsvPrint"
+import { TSV_INFO } from "./utils/TSV"
 
 const BackgroundGrid = withStyles(theme => ({
   root: {
@@ -31,6 +31,14 @@ const BackgroundGrid = withStyles(theme => ({
 const breakPoints = ['xs', 'sm', 'md', 'lg', 'xl']
 let darkTheme = responsiveFontSizes(createTheme(apptheme), breakPoints)
 let pdfTheme = responsiveFontSizes(createTheme(pdftheme), breakPoints)
+
+
+
+
+
+
+
+
 
 export default class App extends React.Component {
   constructor(props) {
@@ -85,12 +93,21 @@ export default class App extends React.Component {
 
             <switch>
               <ThemeProvider theme={pdfTheme}>
-                <Route path="/annualReport/:dairy_id"
-                  render={props => (
-                    <AnnualReport
-                      dairy_id={props.match.params.dairy_id}
-                      onAlert={this.onAlert.bind(this)} />
-                  )}
+                <Route path="/tsv/:dairy_id/:tsvType"
+                  render={props => {
+                    console.log("WTF", TSV_INFO[props.match.params.tsvType], props.match.params.tsvType)
+
+                    return (
+                      
+                      <TSVPrint
+                        dairy_id={props.match.params.dairy_id}
+                        tsvType={props.match.params.tsvType}
+                        numCols={TSV_INFO[props.match.params.tsvType].numCols}
+                        onAlert={this.onAlert.bind(this)} />
+                    )
+                  
+                  }
+                }
                 />
               </ThemeProvider>
             </switch>

@@ -302,7 +302,8 @@ class HarvestTab extends Component {
     post(`${BASE_URL}/api/tsv/create`, {
       title: this.state.uploadedFilename,
       data: this.state.csvText,
-      dairy_id: this.state.dairy.pk
+      dairy_id: this.state.dairy.pk,
+      tsvType: "harvest",
     })
     .then(res => {
       console.log("Uploaded to DB: ", res)
@@ -547,6 +548,7 @@ class HarvestTab extends Component {
           actionText="Upload"
           cancelText="Close"
           dairy_id={this.state.dairy.pk}
+          tsvType="harvest"
           onClose={() => this.toggleShowTSVsModal(false)}
         />
 

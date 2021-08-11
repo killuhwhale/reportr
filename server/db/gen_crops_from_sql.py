@@ -354,7 +354,7 @@ for i, crop in enumerate(_split[::7]):
   k = _split[row + 5].strip()
   salt = _split[row + 6].strip() if _split[row + 6].strip() else 0 
 
-  stmt = f"INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('{title.replace(''',''', '''''')}',{typical_yield},{moisture},{n},{p},{k},{salt});"
+  stmt = f"INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('{title.replace(''',''', '''''')}',{typical_yield},{moisture},{round(float(n)*20, 2)},{round(float(p)*20, 2)},{round(float(k)*20, 2)},{round(float(salt)*20, 2)});"
   print(stmt)
 
 

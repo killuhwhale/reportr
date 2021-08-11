@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS herds(
 CREATE TABLE IF NOT EXISTS crops(
   pk SERIAL PRIMARY KEY,
   title VARCHAR(30),
-  typical_yield INT,-- tons
+  typical_yield INT,-- tons, pg 44 annual report, Anticipated removal == typical_yield * [n,p,k] * 2; [n,p,k]*2 is the lbs/ton yield.
   moisture INT, -- stored as a percent 10 == 10%
   n NUMERIC(8,6), -- stored as a raw value e.g 0.0175 == 1.75%, basica default (percet in standard form, lbs/tons)
   p NUMERIC(8,6), 
@@ -177,7 +177,8 @@ CREATE TABLE IF NOT EXISTS TSVs(
   dairy_id INT NOT NULL,
   title VARCHAR(100) NOT NULL,
   data TEXT,
-  UNIQUE(dairy_id, title),
+  tsvType VARCHAR(30),
+  UNIQUE(dairy_id, tsvType),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
 	  REFERENCES dairies(pk)
@@ -239,6 +240,58 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater(
     ON UPDATE CASCADE ON DELETE CASCADE
 
 );
+
+
+
+-- From Sheet
+    -- Application Date	Field 	Acres	cropable	Total Acres	Crop	Plant Date
+    -- Source Description (IW,C,R,D)	Application Rate (GPM)	Run Time (Hours)
+    -- Total Gallons Applied	Rain Day Prior to Event	Rain Day of Event	Rain Day After Event
+    -- Application Rate per acre (Gallons/acre)	N (PPM)	EC (umhos/cm)	TDS (mg/L)	Lbs/Acre N
+-- Annul Report Requirements
+  -- Source desc, material type, N (lbs / acre), P(lbs / acre), K(lbs / acre), Salt, Amount gals
+
+CREATE TABLE IF NOT EXISTS field_crop_app_freshwater(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  field_crop_app_id INT NOT NULL,
+  
+  material_type VARCHAR(150),
+  source_desc VARCHAR(150),
+  amount_applied INT,
+  n_con NUMERIC(9,3), -- same value in sheet and in Merced.app: total Kjeldahl-nitrogen, N (PPM)
+  p_con NUMERIC(9,3), -- same value in sheet and in Merced.app: total phosphorus, P (PPM)
+  k_con NUMERIC(9,3), -- same value in sheet and in Merced.app: total potassium, K (PPM)
+  ec NUMERIC(9,3),
+  tds NUMERIC(9,3), -- same value in sheet and in Merced.app: total disolved solids, P (mg/L)
+  ammoniumN NUMERIC(9,3),
+  unionizedAmmoniumN NUMERIC(9,3),
+  nitrateN NUMERIC(9,3),
+  UNIQUE(dairy_id, field_crop_app_id, amount_applied),
+  -- From sheet, precalcualted, and is used in Annual Report Table.
+  totalN NUMERIC(9,3),
+  totalP NUMERIC(9,3),
+  totalK NUMERIC(9,3),
+
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field_crop_app
+    FOREIGN KEY(field_crop_app_id) 
+	  REFERENCES field_crop_app(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+
+);
+-- TODO TOMORROW MORNING UPDATE THESE VALUES 
+-- EX: -- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES
+--                                            ('Oats silage-soft dough',16,70,0.5,0.08,0.415,0);
+-- Change to: double each n, p, k which means multiply each value by 10 and double it, or by 20.
+-- -- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)
+--                                        VALUES('Oats silage-soft dough',16,70,10.0,1.6,8.3,0);
+
+
+
 
 -- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Alfalfa Haylage',21,70,1,0.09,0.7,0);
 -- INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('Alfalfa hay',8,10,3,0.27,2.1,0);
