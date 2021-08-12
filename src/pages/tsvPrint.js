@@ -117,7 +117,7 @@ class TSVPrint extends Component {
         {
           this.state.aboveHeader.length > 0 &&
           this.state.header.length > 0 ?
-          
+          <TableContainer component={Paper}>
           <StyledTable size='small'>
                 
                 <TableHead>
@@ -162,6 +162,7 @@ class TSVPrint extends Component {
                 </TableBody>
                
               </StyledTable>
+              </TableContainer>
             
 
             :

@@ -43,3 +43,9 @@
 body{
   -webkit-print-color-adjust:exact;
 }
+
+@media print {
+  @page {
+    size: A2;
+  }
+}

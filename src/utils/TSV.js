@@ -8,7 +8,7 @@ export const PROCESS_WASTEWATER = 'process_wastewater'
 
 export const TSV_INFO = {
   [PROCESS_WASTEWATER]: {
-    numCols: 35, // 32 columns in process_wastewater spreadsheet/ TSV
+    numCols: 32, // 32 columns in process_wastewater spreadsheet/ TSV
     tsvType: PROCESS_WASTEWATER
   },
 }
@@ -299,14 +299,40 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
 
 }
 
+const _checkEmpty = (val) => {
+  // If value is empty, return 0 to avoid error in DB.
+  return val.length > 0 ? val : 0
+}
+
 /** Process Wastewater */
 const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
   /** Row k -> 
    * 
    */
   const [
-    sample_date, sample_desc, sample_data_src, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con, ec, tds, ph, app_desc, material_type, app_rate, run_time, amount_applied, app_rate_per_acre, totalN, totalP, totalK
+    sample_date,
+    sample_desc,
+    sample_data_src,
+    kn_con,
+    nh4_con,
+    nh3_con,
+    no3_con,
+    p_con,
+    k_con,
+    ec,
+    tds,
+    ph,
+    app_desc,
+    material_type,
+    app_rate,
+    run_time,
+    amount_applied,
+    app_rate_per_acre,
+    totalN,
+    totalP,
+    totalK
   ] = row.slice(11, TSV_INFO[PROCESS_WASTEWATER].numCols)
+
 
 
   const process_wastewater_analysis_data = {
@@ -314,40 +340,41 @@ const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
     sample_date,
     sample_desc,
     sample_data_src,
-    kn_con: kn_con.replaceAll(',', ''),
-    nh4_con: nh4_con.replaceAll(',', ''),
-    nh3_con: nh3_con.replaceAll(',', ''),
-    no3_con: no3_con.replaceAll(',', ''),
-    p_con: p_con.replaceAll(',', ''),
-    k_con: k_con.replaceAll(',', ''),
-    ec: ec.replaceAll(',', ''),
-    tds: tds.replaceAll(',', ''),
-    ph: ph.replaceAll(',', ''),
+    kn_con: _checkEmpty(kn_con.replaceAll(',', '')),
+    nh4_con: _checkEmpty(nh4_con.replaceAll(',', '')),
+    nh3_con: _checkEmpty(nh3_con.replaceAll(',', '')),
+    no3_con: _checkEmpty(no3_con.replaceAll(',', '')),
+    p_con: _checkEmpty(p_con.replaceAll(',', '')),
+    k_con: _checkEmpty(k_con.replaceAll(',', '')),
+    ec: _checkEmpty(ec.replaceAll(',', '')),
+    tds: _checkEmpty(tds.replaceAll(',', '')),
+    ph: _checkEmpty(ph.replaceAll(',', '')),
   }
   // dairy_id, sample_date, sample_desc
   const field_crop_app_process_wastewater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}`
-  
+
   return new Promise((resolve, rej) => {
     // Need to lazyget process_wastewater_analysis
     lazyGet('field_crop_app_process_wastewater_analysis', field_crop_app_process_wastewater_analysis_search_url, process_wastewater_analysis_data, dairy_pk)
-    .then(res => {
-      const process_wastewater_data = {
-        dairy_id: dairy_pk,
-        field_crop_app_id: field_crop_app.pk,
-        field_crop_app_process_wastewater_analysis_id: res[0].pk,
-        app_desc,
-        material_type,
-        amount_applied: amount_applied.replaceAll(',', ''),
-        totalN: totalN.replaceAll(',', ''),
-        totalP: totalP.replaceAll(',', ''),
-        totalK: totalK.replaceAll(',', '')
-      }
-      resolve(post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data))
-    })
-    .catch(err => {
-      console.log(err)
-      rej(err)
-    })
+      .then(res => {
+        const process_wastewater_data = {
+          dairy_id: dairy_pk,
+          field_crop_app_id: field_crop_app.pk,
+          field_crop_app_process_wastewater_analysis_id: res[0].pk,
+          app_desc,
+          material_type,
+          amount_applied: amount_applied.replaceAll(',', ''),
+          totalN: _checkEmpty(totalN.replaceAll(',', '')),
+          totalP: _checkEmpty(totalP.replaceAll(',', '')),
+          totalK: _checkEmpty(totalK.replaceAll(',', '')),
+        }
+        resolve(post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data))
+
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
   })
 
 }
