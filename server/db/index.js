@@ -489,8 +489,59 @@ module.exports = {
       callback
     )
   },
+  searchFieldCropApplicationsByFieldCropIDAppDate: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      "SELECT * FROM field_crop_app where field_crop_id = $1 and app_date = $2 and dairy_id = $3",
+      values,
+      callback
+    )
+  },
 
-
+  insertFieldCropApplicationProcessWastewaterAnalysis: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      format(`
+        INSERT INTO field_crop_app_process_wastewater_analysis( 
+          dairy_id, sample_date, sample_desc, sample_data_src, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con, ec, tds, ph 
+        ) VALUES (%L)  RETURNING *`,
+        values,
+      ),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationProcessWastewaterAnalysis: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT  *
+          FROM field_crop_app_process_wastewater_analysis 
+          WHERE 
+          dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmFieldCropApplicationProcessWastewaterAnalysis: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_process_wastewater_analysis where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      `SELECT * FROM field_crop_app_process_wastewater_analysis
+       where sample_date = $1 and sample_desc = $2 and dairy_id = $3`,
+      values,
+      callback
+    )
+  },
 
   // field_crop_app_id, material_type, source_desc, amount_applied, totalKN, ammoniumN, unionizedAmmoniumN, nitrateN, totalP, totalK, totalTDS, 
 
@@ -499,7 +550,15 @@ module.exports = {
     console.log(values)
     return pool.query(
       format(`INSERT INTO field_crop_app_process_wastewater(
-        dairy_id, field_crop_app_id, material_type, source_desc, amount_applied, n_con, ammoniumN, unionizedAmmoniumN, nitrateN, p_con, k_con, tds, ec, totalN, totalP, totalK 
+        dairy_id,
+        field_crop_app_id,
+        field_crop_app_process_wastewater_analysis_id,
+        material_type,
+        app_desc,
+        amount_applied,
+        totalN,
+        totalP,
+        totalK
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -510,44 +569,51 @@ module.exports = {
       format(
         // nitrateN, totalP, totalK, totalTDS
         `SELECT 
-           fcapww.pk,
-           fcapww.field_crop_app_id,
-           fcapww.material_type,
-           fcapww.source_desc,
-           fcapww.amount_applied,
-           fcapww.n_con,
-           fcapww.ammoniumN,
-           fcapww.unionizedAmmoniumN,
-           fcapww.nitrateN,
-           fcapww.ammoniumN,
-           fcapww.p_con,
-           fcapww.k_con,
-           fcapww.ec,
-           fcapww.tds,
-           fcapww.totalN,
-           fcapww.totalP,
-           fcapww.totalK,
+          fcapww.pk,
+          fcapww.dairy_id,
+          fcapww.field_crop_app_id,
+          fcapww.field_crop_app_process_wastewater_analysis_id,
+          fcapww.material_type,
+          fcapww.app_desc,
+          fcapww.amount_applied,
+          fcapww.totalN,
+          fcapww.totalP,
+          fcapww.totalK,
 
+          fcapwwa.sample_date,
+          fcapwwa.sample_desc,
+          fcapwwa.sample_data_src,
+          fcapwwa.kn_con,
+          fcapwwa.nh4_con,
+          fcapwwa.nh3_con,
+          fcapwwa.no3_con,
+          fcapwwa.p_con,
+          fcapwwa.k_con,
+          fcapwwa.ec,
+          fcapwwa.tds,
+          fcapwwa.ph,
 
-
-           fca. app_date,
-           fca. app_method,
-           
-           c.title as croptitle,
-           f.title as fieldtitle,
-           fc.plant_date,
-           fc.acres_planted,
-           fc.typical_yield,
-           fc.moisture as typical_moisture,
-           fc.n as typical_n,
-           fc.p as typical_p,
-           fc.k as typical_k,
-           fc.salt as typical_salt
+          fca. app_date,
+          fca. app_method,
+          
+          c.title as croptitle,
+          f.title as fieldtitle,
+          fc.plant_date,
+          fc.acres_planted,
+          fc.typical_yield,
+          fc.moisture as typical_moisture,
+          fc.n as typical_n,
+          fc.p as typical_p,
+          fc.k as typical_k,
+          fc.salt as typical_salt
 
         FROM field_crop_app_process_wastewater fcapww
         
         JOIN field_crop_app fca
         ON fca.pk = fcapww.field_crop_app_id
+
+        JOIN field_crop_app_process_wastewater_analysis fcapwwa
+        ON fcapwwa.pk = fcapww.field_crop_app_process_wastewater_analysis_id
         
         JOIN field_crop fc
         ON fc.pk = fca.field_crop_id
@@ -565,22 +631,14 @@ module.exports = {
       callback
     )
   },
- rmFieldCropApplicationProcessWastewater: (id, callback) => {
+  rmFieldCropApplicationProcessWastewater: (id, callback) => {
     return pool.query(
       format("DELETE FROM field_crop_app_process_wastewater where pk = %L", id),
       [],
       callback
     )
   },
-  searchFieldCropApplicationsByFieldCropIDAppDate: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
-    return pool.query(
-      "SELECT * FROM field_crop_app where field_crop_id = $1 and app_date = $2 and dairy_id = $3",
-      values,
-      callback
-    )
-  },
   
+
 }
 

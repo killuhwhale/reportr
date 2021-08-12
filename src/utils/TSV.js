@@ -8,38 +8,39 @@ export const PROCESS_WASTEWATER = 'process_wastewater'
 
 export const TSV_INFO = {
   [PROCESS_WASTEWATER]: {
-     numCols: 24, // 24 columns in process_wastewater spreadsheet/ TSV
-     tsvType: PROCESS_WASTEWATER
-  }, 
-} 
+    numCols: 35, // 32 columns in process_wastewater spreadsheet/ TSV
+    tsvType: PROCESS_WASTEWATER
+  },
+}
 
 // ### Common functions     ###################################################################
 export const lazyGet = (endpoint, value, data, dairy_pk) => {
   return new Promise((resolve, rej) => {
     get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
       .then(res => {
-        
+
         // If not found, Attempt to create
         if (Object.keys(res).length == 0) {
           post(`${BASE_URL}/api/${endpoint}/create`, data)
             .then(result => {
               console.log("Created from lazyget: ", result)
-              
+
               // If there is an error response from server.
-              if(result.test){
+              if (result.test) {
                 console.log("Create failed, race conditon happened. Attempting to re-fetch")
                 get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
-                .then(secondResult => {
-                  console.log("Found entry after failing to create entry")
-                  // Found entry, on second attempt.
-                  resolve(secondResult)
-                })
-              }else{
+                  .then(secondResult => {
+                    console.log("Found entry after failing to create entry", secondResult)
+                    // Found entry, on second attempt.
+                    resolve(secondResult)
+                  })
+              } else {
                 // Created entry, returning result
                 resolve(result)
               }
             })
             .catch(error => {
+              console.log(error)
               rej(error)
             })
         } else {
@@ -63,13 +64,13 @@ export const readTSV = (file, callback) => {
 
 export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
   console.log("Uploading TSV to DB", uploadedFilename, tsvText)
-  return new Promise((res, rej) =>{
+  return new Promise((res, rej) => {
     post(`${BASE_URL}/api/tsv/create`, {
-        title: uploadedFilename,
-        data: tsvText,
-        tsvType: tsvType,
-        dairy_id: dairy_id
-      })
+      title: uploadedFilename,
+      data: tsvText,
+      tsvType: tsvType,
+      dairy_id: dairy_id
+    })
       .then(result => {
         console.log("Uploaded to DB: ", result)
         res(result)
@@ -78,7 +79,7 @@ export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
         console.log(err)
         rej(err)
       })
-  })  
+  })
 }
 /**
  * where callback == (ev) => {
@@ -179,12 +180,11 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
 
   /**
    * The first 11 columns must be this on each application event sheet, process WW, FW, SM and Commerical Fertilizer applications
+   * - Data required to create or find: Field, field_crop and frield_crop_app
    */
   const [app_date, field_title, acres_planted, cropable, acres, crop_title, plant_date,
     precip_before, precip_during, precip_after, app_method] = row.slice(0, 11)
 
-  // console.log("Extracted data", app_date, field_title, acres_planted, cropable, acres, crop_title, plant_date,
-    // precip_before, precip_during, precip_after, app_method)
   let fieldData = {
     data: {
       title: field_title,
@@ -204,133 +204,150 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
       lazyGet('fields', field_title, fieldData, dairy_pk),
       get(`${BASE_URL}/api/crops/${crop_title}`) // list of crops in DB are predefined based on spreadsheet. HARDCODED
     ])
-    .then(res => {
-      let fieldObj = res[0][0] // res = [res1, res2], res1=[data]
-      let cropObj = res[1][0]
+      .then(res => {
+        let fieldObj = res[0][0] // res = [res1, res2], res1=[data]
+        let cropObj = res[1][0]
 
-      if (fieldObj) {
-        // console.log(`Found Field: ${fieldObj.title} for row ${i}`, fieldObj)
-        if (cropObj) {
-          // console.log(`Found Crop: ${cropObj.title} for row ${i}`, cropObj)
-          // Get Field_Crop, possibly created
-          // Now we can create a field_crop with:
-          //    fieldObj, cropObj, and [from testRow[i] -> ]plant_date[6], acres_planted[1], [from crops -> ]typical_yield, moisture, n, p, k, salt
-          const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
-          let field_crop_search_url = `${fieldObj.pk}/${cropObj.pk}/${encodeURIComponent(plant_date)}`
+        if (fieldObj) {
+          if (cropObj) {
+            // Get Field_Crop, possibly created
+            // Now we can create a field_crop with:
+            //    fieldObj, cropObj, and [from testRow[i] -> ]plant_date[6], acres_planted[1], [from crops -> ]typical_yield, moisture, n, p, k, salt
+            const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
+            let field_crop_search_url = `${fieldObj.pk}/${cropObj.pk}/${encodeURIComponent(plant_date)}`
 
-          // Process wastewater annual report section reports n, p, k in lbs/acre, not their concentration in [mg/L or PPM]
+            // Process wastewater annual report section reports n, p, k in lbs/acre, not their concentration in [mg/L or PPM]
 
-          let field_crop_data = {
-            dairy_id: dairy_pk,
-            field_id: fieldObj.pk,
-            crop_id: cropObj.pk,
-            plant_date: plant_date,
-            acres_planted: acres_planted,
-            typical_yield: typical_yield,
-            moisture: typical_moisture,
-            n: typical_n,
-            p: typical_p,
-            k: typical_k,
-            salt: salt
+            let field_crop_data = {
+              dairy_id: dairy_pk,
+              field_id: fieldObj.pk,
+              crop_id: cropObj.pk,
+              plant_date: plant_date,
+              acres_planted: acres_planted,
+              typical_yield: typical_yield,
+              moisture: typical_moisture,
+              n: typical_n,
+              p: typical_p,
+              k: typical_k,
+              salt: salt
+            }
+
+            // Now lazily get field_crop
+            lazyGet('field_crop', field_crop_search_url, field_crop_data, dairy_pk)
+              .then(field_crop_res => {
+                const fieldCropObj = field_crop_res[0]
+                // Here we have access to a valid field_crop, which is used in 
+                //field_crop_app, 
+                const field_crop_app_search_url = `${fieldCropObj.pk}/${encodeURIComponent(app_date)}`
+                const field_crop_app_data = {
+                  dairy_id: dairy_pk,
+                  field_crop_id: fieldCropObj.pk,
+                  app_date: app_date,
+                  app_method: app_method, // allow these to be updated
+                  precip_before: precip_before,
+                  precip_during: precip_during,
+                  precip_after: precip_after,
+                }
+
+                lazyGet('field_crop_app', field_crop_app_search_url, field_crop_app_data, dairy_pk)
+                  .then(field_crop_app => {
+                    const field_crop_appObj = field_crop_app[0]
+                    // console.log("Field crop app", field_crop_appObj)
+                    /**
+                     * #######################################################################
+                     *  Create any nutrient applications here....
+                     *  fieldObj
+                     *  cropObj
+                     *  field_cropObj
+                     *  field_crop_appObj
+                     * 
+                     * 
+                     * #######################################################################
+                     */
+
+
+
+                    if (tsvType === PROCESS_WASTEWATER) {
+                      resolve(createProcessWastewaterApplication(row, field_crop_appObj, dairy_pk))
+                    } else if (tsvType === "field_crop_app_freshwater") {
+                      return
+                    }
+                  })
+                  .catch(field_crop_app_err => {
+                    console.log(field_crop_app_err)
+                  })
+              })
+              .catch(field_crop_err => {
+                rej(field_crop_err)
+                console.log(field_crop_err)
+                console.log('field_crop', field_crop_search_url, field_crop_data, dairy_pk)
+              })
+          } else {
+            rej(res)
+            console.log("No crop object found in DB")
           }
-          
-          // Now lazily get field_crop
-          lazyGet('field_crop', field_crop_search_url, field_crop_data, dairy_pk)
-            .then(field_crop_res => {
-              const fieldCropObj = field_crop_res[0]
-              // Here we have access to a valid field_crop, which is used in 
-              //field_crop_app, 
-              const field_crop_app_search_url = `${fieldCropObj.pk}/${encodeURIComponent(app_date)}`
-              const field_crop_app_data = {
-                dairy_id: dairy_pk,
-                field_crop_id: fieldCropObj.pk,
-                app_date: app_date,
-                app_method: app_method, // allow these to be updated
-                precip_before: precip_before,
-                precip_during: precip_during,
-                precip_after: precip_after,
-              }
-
-              lazyGet('field_crop_app', field_crop_app_search_url, field_crop_app_data, dairy_pk)
-                .then(field_crop_app => {
-                  const field_crop_appObj = field_crop_app[0]
-                  // console.log("Field crop app", field_crop_appObj)
-                  /**
-                   * #######################################################################
-                   *  Create any nutrient applications here....
-                   *  fieldObj
-                   *  cropObj
-                   *  field_cropObj
-                   *  field_crop_appObj
-                   * 
-                   * 
-                   * #######################################################################
-                   */
-
-
-
-                  if(tsvType === PROCESS_WASTEWATER){
-                    resolve(createProcessWastewaterApplication(row, field_crop_appObj, dairy_pk))
-                  }else if(tsvType === "field_crop_app_freshwater"){
-                    return
-                  }
-                })
-                .catch(field_crop_app_err => {
-                  console.log(field_crop_app_err)
-                })
-            })
-            .catch(field_crop_err => {
-              rej(field_crop_err)
-              console.log(field_crop_err)
-              console.log('field_crop', field_crop_search_url, field_crop_data, dairy_pk)
-            })
         } else {
           rej(res)
-          console.log("No crop object found in DB")
+          console.log("No field  object found in DB")
         }
-      } else {
-        rej(res)
-        console.log("No field  object found in DB")
-      }
-    })
-    .catch(err => {
-      rej(err)
-      console.log(err)
-    })
+      })
+      .catch(err => {
+        rej(err)
+        console.log(err)
+      })
   })
 
 }
 
 /** Process Wastewater */
 const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
+  /** Row k -> 
+   * 
+   */
   const [
-    source_desc, app_rate, run_time, amount_applied, app_rate_per_acre, n_con, p_con, k_con, ec_con, tds_con, n, p, k
-  ] = row.slice(11, row.length)
-  
+    sample_date, sample_desc, sample_data_src, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con, ec, tds, ph, app_desc, material_type, app_rate, run_time, amount_applied, app_rate_per_acre, totalN, totalP, totalK
+  ] = row.slice(11, TSV_INFO[PROCESS_WASTEWATER].numCols)
 
-  const process_wastewater_data = {
+
+  const process_wastewater_analysis_data = {
     dairy_id: dairy_pk,
-    field_crop_app_id: field_crop_app.pk,
-    material_type: 'Process wastewater',  // TODO() Figure out if they need to change this ever. two options: [process wasterwater, process wastewater sludge]
-    source_desc: source_desc,
-
-    amount_applied: amount_applied.replaceAll(",", ""),
-    n_con: n_con.replaceAll(",", ""),
-    p_con: p_con.replaceAll(",", ""),
-    k_con: k_con.replaceAll(",", ""),
-    ec: ec_con.replaceAll(",", ""),
-    tds: tds_con.replaceAll(",", ""),
-    // TODO() findout how  ammonium-nitrogen concentration is calculated.
-    ammoniumN: 1337,          // These come from the little side table (which comes form the labs), default: I actually dont know how this value is calculated
-    unionizedAmmoniumN: 1337, // These come from the little side table (which comes form the labs), default 0
-    nitrateN: 1337,           // These come from the little side table (which comes form the labs), default 0
-    totalN: n.replaceAll(",", ""),
-    totalP: p.replaceAll(",", ""),
-    totalK: k.replaceAll(",", ""),
+    sample_date,
+    sample_desc,
+    sample_data_src,
+    kn_con: kn_con.replaceAll(',', ''),
+    nh4_con: nh4_con.replaceAll(',', ''),
+    nh3_con: nh3_con.replaceAll(',', ''),
+    no3_con: no3_con.replaceAll(',', ''),
+    p_con: p_con.replaceAll(',', ''),
+    k_con: k_con.replaceAll(',', ''),
+    ec: ec.replaceAll(',', ''),
+    tds: tds.replaceAll(',', ''),
+    ph: ph.replaceAll(',', ''),
   }
-
+  // dairy_id, sample_date, sample_desc
+  const field_crop_app_process_wastewater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}`
   
+  return new Promise((resolve, rej) => {
+    // Need to lazyget process_wastewater_analysis
+    lazyGet('field_crop_app_process_wastewater_analysis', field_crop_app_process_wastewater_analysis_search_url, process_wastewater_analysis_data, dairy_pk)
+    .then(res => {
+      const process_wastewater_data = {
+        dairy_id: dairy_pk,
+        field_crop_app_id: field_crop_app.pk,
+        field_crop_app_process_wastewater_analysis_id: res[0].pk,
+        app_desc,
+        material_type,
+        amount_applied: amount_applied.replaceAll(',', ''),
+        totalN: totalN.replaceAll(',', ''),
+        totalP: totalP.replaceAll(',', ''),
+        totalK: totalK.replaceAll(',', '')
+      }
+      resolve(post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data))
+    })
+    .catch(err => {
+      console.log(err)
+      rej(err)
+    })
+  })
 
-  return post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data)
-  
 }

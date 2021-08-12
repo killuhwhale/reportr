@@ -47,9 +47,9 @@ const ProcessWastewaterAppEvent = (props) => {
       {
         process_wastewaters.map((wastewater, i) => {
           let {
-            source_desc, material_type, n_con, p_con, k_con, tds, ec, ammoniumn, unionizedammoniumn, nitraten,
-            totaln, totalp, totalk, amount_applied, app_date, croptitle, plant_date
+            app_desc, material_type, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con, tds, ec, ph, totaln, totalp, totalk, amount_applied, app_date, croptitle, plant_date
           } = wastewater
+          console.log("Wastewater", wastewater)
           return (
             <Grid item container xs={12} key={`pwwviews${i}`} component={Paper} elevation={6} style={{ marginBottom: "30px" }}>
               <Grid item container xs={12}>
@@ -68,7 +68,7 @@ const ProcessWastewaterAppEvent = (props) => {
                 <Grid item container xs={12}>
                   <Grid item xs={6}>
                     <Typography variant="subtitle2">
-                      {source_desc} | Material Type: {material_type}
+                      {app_desc} | Material Type: {material_type}
                     </Typography>
                   </Grid>
 
@@ -92,7 +92,7 @@ const ProcessWastewaterAppEvent = (props) => {
                 <Grid item xs={3}>
                   <TextField disabled
                     label="Kjeldahl- nitrogen"
-                    value={n_con}
+                    value={kn_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
@@ -116,19 +116,19 @@ const ProcessWastewaterAppEvent = (props) => {
                 <Grid item xs={3}>
                   <TextField disabled
                     label="Ammonium-nitrogen"
-                    value={ammoniumn}
+                    value={nh4_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
                   <TextField disabled
                     label="Un-ionized ammonia-nitrogen"
-                    value={unionizedammoniumn}
+                    value={nh3_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
                   <TextField disabled
                     label="Nitrate-nitrogen"
-                    value={nitraten}
+                    value={no3_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
