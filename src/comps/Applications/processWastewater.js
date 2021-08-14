@@ -12,7 +12,7 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import formats from "../../utils/format"
 
-import UploadFieldCropAppProcessWastewaterTSVModal from "../Modals/uploadFieldCropAppProcessWastewaterTSVModal"
+import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
 import AddProcessWastewaterModal from "../Modals/addProcessWastewaterModal"
@@ -270,7 +270,7 @@ class ProcessWastewater extends Component {
       .then(res => {
         console.log(res)
         this.toggleShowAddProcessWastewaterModal(false)
-        this.getFieldCropAppProcessWastewater()
+        this.props.getFieldCropAppProcessWastewater()
       })
       .catch(err => {
         console.log(err)
@@ -289,7 +289,7 @@ class ProcessWastewater extends Component {
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteProcessWastewaterModal(false)
-          this.getFieldCropAppProcessWastewater()
+          this.props.getFieldCropAppProcessWastewater()
         })
         .catch(err => {
           console.log(err)
@@ -329,7 +329,8 @@ class ProcessWastewater extends Component {
             console.log("Completed uploading Process Wastewater TSV")
             uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType) 
             this.toggleShowUploadFieldCropAppProcessWastewateTSVModal(false)
-            this.props.onProcessWastewaterTSVUpload()
+            this.props.getFieldCropAppEvents()
+            this.props.getFieldCropAppProcessWastewater()
           })
           .catch(err => {
             console.log("Error with all promises")
@@ -368,7 +369,7 @@ class ProcessWastewater extends Component {
           tsvType={this.state.tsvType}
           onClose={() => this.toggleViewTSVsModal(false)}
         />
-        <UploadFieldCropAppProcessWastewaterTSVModal
+        <UploadTSVModal
           open={this.state.showUploadFieldCropAppProcessWastewateTSVModal}
           actionText="Add"
           cancelText="Cancel"

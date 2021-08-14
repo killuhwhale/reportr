@@ -10,6 +10,7 @@ import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import ProcessWastewater from "./processWastewater"
+import Freshwater from "./freshwater"
 import AddFieldCropApplicationModal from "../Modals/addFieldCropApplicationModal"
 import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
@@ -51,6 +52,9 @@ class NutrientApplicationTab extends Component {
       fields: [],
       field_crops: {},
       fieldCropAppEvents: [],
+      fieldCropAppFreshwaterSources: [],
+      fieldCropAppFreshwaterAnalyses: [],
+      fieldCropAppFreshwaters: [],
       field_crop_app_process_wastewater: {}, // obj, holds lists of process_wastewater by Field Title, then sorted by app date.
       createFieldCropAppObj: {
         dairy_id: props.dairy.pk,
@@ -61,6 +65,7 @@ class NutrientApplicationTab extends Component {
         precip_during_idx: 0,
         precip_after_idx: 0,
       },
+
       tabs: {
         0: "show",
         1: "hide",
@@ -123,6 +128,34 @@ class NutrientApplicationTab extends Component {
         })
         this.setState({ field_crops: field_crop_lists })
       })
+  }
+  getFieldCropAppFreshwaterSource(){
+    get(`${BASE_URL}/api/field_crop_app_freshwater_source/${this.state.dairy.pk}`)
+    .then(res => {
+      this.setState({fieldCropAppFreshwaterSources: res})
+    })
+    .catch( err => {
+      console.log(err)
+    })
+  }
+
+  getFieldCropAppFreshwaterAnalysis(){
+    get(`${BASE_URL}/api/field_crop_app_freshwater_analysis/${this.state.dairy.pk}`)
+    .then(res => {
+      this.setState({fieldCropAppFreshwaterAnalyses: res})
+    })
+    .catch( err => {
+      console.log(err)
+    })
+  }
+  getFieldCropAppFreshwater(){
+    get(`${BASE_URL}/api/field_crop_app_freshwater/${this.state.dairy.pk}`)
+    .then(res => {
+      this.setState({fieldCropAppFreshwaters: res})
+    })
+    .catch( err => {
+      console.log(err)
+    })
   }
 
   /** Field Application Event
@@ -217,10 +250,6 @@ class NutrientApplicationTab extends Component {
         console.log(err)
       })
   }
-  onProcessWastewaterTSVUpload() {
-    this.getFieldCropAppEvents()
-    this.getFieldCropAppProcessWastewater()
-  }
 
 
 
@@ -277,7 +306,8 @@ class NutrientApplicationTab extends Component {
               <ProcessWastewater
                 dairy_id={this.state.dairy.pk}
                 fieldCropAppEvents={this.state.fieldCropAppEvents}
-                onProcessWastewaterTSVUpload={this.onProcessWastewaterTSVUpload.bind(this)}
+                getFieldCropAppEvents={this.getFieldCropAppEvents.bind(this)}
+                getFieldCropAppProcessWastewater={this.getFieldCropAppProcessWastewater.bind(this)}
                 field_crop_app_process_wastewater={this.state.field_crop_app_process_wastewater}
                 tsvType={TSV_INFO[PROCESS_WASTEWATER].tsvType}
                 numCols={TSV_INFO[PROCESS_WASTEWATER].numCols}
@@ -285,7 +315,18 @@ class NutrientApplicationTab extends Component {
 
             </Grid>
             <Grid item xs={12} style={{ marginTop: "30px" }} className={`${this.state.tabs[1]}`}>
-              <Typography variant="h2">Fresh Water</Typography>
+              <Freshwater
+                dairy_id={this.state.dairy.pk}
+                fieldCropAppEvents={this.state.fieldCropAppEvents}
+                fieldCropAppFreshwaterSources={this.state.fieldCropAppFreshwaterSources}
+                fieldCropAppFreshwaterAnalyses={this.state.fieldCropAppFreshwaterAnalyses}
+                fieldCropAppFreshwaters={this.state.fieldCropAppFreshwaters}
+                getFieldCropAppFreshwaterSource={this.getFieldCropAppFreshwaterSource.bind(this)}
+                getFieldCropAppFreshwaterAnalysis={this.getFieldCropAppFreshwaterAnalysis.bind(this)}
+                getFieldCropAppFreshwaterSource={this.getFieldCropAppFreshwater.bind(this)}
+                getFieldCropAppEvents={this.getFieldCropAppEvents.bind(this)}
+
+              />
 
             </Grid>
             <Grid item xs={12} style={{ marginTop: "30px" }} className={`${this.state.tabs[2]}`}>

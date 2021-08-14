@@ -543,8 +543,6 @@ module.exports = {
     )
   },
 
-  // field_crop_app_id, material_type, source_desc, amount_applied, totalKN, ammoniumN, unionizedAmmoniumN, nitrateN, totalP, totalK, totalTDS, 
-
   insertFieldCropApplicationProcessWastewater: (values, callback) => {
     console.log("Values in DB Pool query")
     console.log(values)
@@ -639,6 +637,185 @@ module.exports = {
     )
   },
   
+
+
+  insertFieldCropApplicationFreshwaterSource: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      format(`INSERT INTO field_crop_app_freshwater_source(
+        dairy_id,
+        src_desc,
+        src_type
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationFreshwaterSource: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT *
+        FROM field_crop_app_freshwater_source
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmFieldCropApplicationFreshwaterSource: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_freshwater_source where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  searchFieldCropAppFreshwaterSource: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      `SELECT * FROM field_crop_app_freshwater_source
+       where src_desc = $1 and src_type = $2 and dairy_id = $3`,
+      values,
+      callback
+    )
+  },
+
+  insertFieldCropApplicationFreshwaterAnalysis: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      format(`INSERT INTO field_crop_app_freshwater_analysis(
+        dairy_id,
+        fresh_water_source_id,
+        sample_date,
+        sample_desc,
+        src_of_analysis,
+        n_con,
+        nh4_con, 
+        no2_con,
+        ca_con,
+        mg_con,
+        na_con,
+        hco3_con,
+        co3_con,
+        so4_con,
+        cl_con,
+        ec, 
+        tds,
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationFreshwaterAnalysis: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT *
+        FROM field_crop_app_freshwater_analysis
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmFieldCropApplicationFreshwaterAnalysis: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_freshwater_analysis where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  searchFieldCropAppFreshwaterAnalysis: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      `SELECT * FROM field_crop_app_freshwater_source
+       where sample_date = $1 and sample_desc = $2 and src_of_analysis = $3 and fresh_water_source_id = $4 and dairy_id = $5`,
+      values,
+      callback
+    )
+  },
+
+  insertFieldCropApplicationFreshwater: (values, callback) => {
+    console.log("Values in DB Pool query")
+    console.log(values)
+    return pool.query(
+      format(`INSERT INTO field_crop_app_freshwater(
+        dairy_id,
+        field_crop_app_id,
+        field_crop_app_freshwater_analysis_id,
+        app_rate,
+        run_time,
+        amount_applied,
+        amt_applied_per_acre,
+        totalN,
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationFreshwater: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT 
+          sample_date,
+          src_desc,
+          src_type,
+          sample_desc,
+          src_of_analysis,
+          n_con,
+          nh4_con, 
+          no2_con,
+          ca_con,
+          mg_con,
+          na_con,
+          hco3_con,
+          co3_con,
+          so4_con,
+          cl_con,
+          ec, 
+          tds,
+          app_rate,
+          run_time,
+          amount_applied,
+          amt_applied_per_acre,
+          totalN
+        
+        
+        FROM field_crop_app_freshwater fcfw
+
+        JOIN field_crop_app fca
+        ON fca.pk = fcfw.field_crop_app_id
+
+        JOIN field_crop_app_freshwater_analysis fcafwa
+        ON fcafwa.pk = fcfw.field_crop_app_freshwater_analysis_id
+
+        JOIN field_crop_app_freshwater_source fcafws
+        ON fcafws.pk = fcafwa.fresh_water_source_id
+
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmFieldCropApplicationFreshwater: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_freshwater where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+
+
 
 }
 

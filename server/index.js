@@ -576,7 +576,6 @@ app.post("/api/field_crop_app/delete", (req, res) => {
 });
 
 
-// field_crop_app_id, material_type, source_desc, amount_applied, totalKN, ammoniumN, unionizedAmmoniumN, nitrateN, totalP, totalK, totalTDS, 
 app.post("/api/field_crop_app_process_wastewater_analysis/create", (req, res) => {
   console.log("Creating....", req.body)
   const {
@@ -647,8 +646,6 @@ app.post("/api/field_crop_app_process_wastewater_analysis/delete", (req, res) =>
 });
 
 
-
-// field_crop_app_id, material_type, source_desc, amount_applied, totalKN, ammoniumN, unionizedAmmoniumN, nitrateN, totalP, totalK, totalTDS, 
 app.post("/api/field_crop_app_process_wastewater/create", (req, res) => {
   console.log("Creating....", req.body)
   const {
@@ -711,8 +708,196 @@ app.post("/api/field_crop_app_process_wastewater/delete", (req, res) => {
 });
 
 
-// Search used for lazy gets.
+app.post("/api/field_crop_app_freshwater_source/create", (req, res) => {
+  console.log("Creating....", req.body)
+  const {
+    dairy_id,
+    src_desc,
+    src_type,
+  } = req.body
+  db.insertFieldCropApplicationFreshwaterSource(
+    [
+      dairy_id,
+      src_desc,
+      src_type
+    ],
+    (err, result) => {
 
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created field_crop_app_freshwater_source unsuccessful" });
+    }
+  )
+});
+app.get("/api/field_crop_app_freshwater_source/:dairy_id", (req, res) => {
+  db.getFieldCropApplicationFreshwaterSource(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all field_crop_app_freshwater_source unsuccessful" });
+    })
+});
+app.post("/api/field_crop_app_freshwater_source/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmFieldCropApplicationFreshwaterSource(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted field_crop_app_freshwater_source successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted field_crop_app_freshwater_source unsuccessful" });
+  })
+});
+
+app.post("/api/field_crop_app_freshwater_analysis/create", (req, res) => {
+  console.log("Creating....", req.body)
+  const {
+    dairy_id,
+    fresh_water_source_id,
+    sample_date,
+    sample_desc,
+    src_of_analysis,
+    n_con,
+    nh4_con, 
+    no2_con,
+    ca_con,
+    mg_con,
+    na_con,
+    hco3_con,
+    co3_con,
+    so4_con,
+    cl_con,
+    ec, 
+    tds
+  } = req.body
+  db.insertFieldCropApplicationFreshwaterAnalysis(
+    [
+      dairy_id,
+      fresh_water_source_id,
+      sample_date,
+      sample_desc,
+      src_of_analysis,
+      n_con,
+      nh4_con, 
+      no2_con,
+      ca_con,
+      mg_con,
+      na_con,
+      hco3_con,
+      co3_con,
+      so4_con,
+      cl_con,
+      ec, 
+      tds,
+    ],
+    (err, result) => {
+
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created field_crop_app_freshwater_analysis unsuccessful" });
+    }
+  )
+});
+app.get("/api/field_crop_app_freshwater_analysis/:dairy_id", (req, res) => {
+  db.getFieldCropApplicationFreshwaterAnalysis(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all field_crop_app_freshwater_analysis unsuccessful" });
+    })
+});
+app.post("/api/field_crop_app_freshwater_analysis/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmFieldCropApplicationFreshwaterAnalysis(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted field_crop_app_freshwater_analysis successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted field_crop_app_freshwater_analysis unsuccessful" });
+  })
+});
+
+app.post("/api/field_crop_app_freshwater/create", (req, res) => {
+  console.log("Creating....", req.body)
+  const {
+    dairy_id,
+    field_crop_app_id,
+    field_crop_app_freshwater_analysis_id,
+    app_rate,
+    run_time,
+    amount_applied,
+    amt_applied_per_acre,
+    totalN
+  } = req.body
+  db.insertFieldCropApplicationFreshwater(
+    [
+      dairy_id,
+      field_crop_app_id,
+      field_crop_app_freshwater_analysis_id,
+      app_rate,
+      run_time,
+      amount_applied,
+      amt_applied_per_acre,
+      totalN
+    ],
+    (err, result) => {
+
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created field_crop_app_freshwater unsuccessful" });
+    }
+  )
+});
+app.get("/api/field_crop_app_freshwater/:dairy_id", (req, res) => {
+  db.getFieldCropApplicationFreshwater(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all field_crop_app_freshwater unsuccessful" });
+    })
+});
+app.post("/api/field_crop_app_freshwater/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmFieldCropApplicationFreshwater(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted field_crop_app_freshwater successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted field_crop_app_freshwater unsuccessful" });
+  })
+});
+
+
+
+
+
+// Search used for lazy gets.
 app.get("/api/search/fields/:title/:dairy_id", (req, res) => {
   db.searchFieldsByTitle([req.params.title, req.params.dairy_id],
     (err, result) => {
@@ -725,8 +910,6 @@ app.get("/api/search/fields/:title/:dairy_id", (req, res) => {
       res.json({ "test": "Get all field_crop_harvest unsuccessful" });
     })
 });
-// Bad comment, i dont fully understand anymore :(
-// dairy_id is here because lazyGet uses it for the url but we dont need it here.
 app.get("/api/search/field_crop/:field_id/:crop_id/:plant_date/:dairy_id", (req, res) => {
   db.searchFieldCropsByFieldCropPlantdate([
     req.params.field_id, req.params.crop_id, req.params.plant_date],
@@ -740,9 +923,6 @@ app.get("/api/search/field_crop/:field_id/:crop_id/:plant_date/:dairy_id", (req,
       res.json({ "test": "Get all field_crop_harvest unsuccessful" });
     })
 });
-
-
-
 app.get("/api/search/field_crop_app/:field_crop_id/:app_date/:dairy_pk", (req, res) => {
   db.searchFieldCropApplicationsByFieldCropIDAppDate(
     [
@@ -760,7 +940,6 @@ app.get("/api/search/field_crop_app/:field_crop_id/:app_date/:dairy_pk", (req, r
       res.json({ "test": "Search all field_crop_app unsuccessful" });
     })
 });
-
 app.get("/api/search/field_crop_app_process_wastewater_analysis/:sample_date/:sample_desc/:dairy_pk", (req, res) => {
   db.searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc(
     [
@@ -779,20 +958,60 @@ app.get("/api/search/field_crop_app_process_wastewater_analysis/:sample_date/:sa
     })
 });
 
+// src_desc, src_type
+app.get("/api/search/field_crop_freshwater_source/:src_desc/:src_type/:dairy_pk", (req, res) => {
+  db.searchFieldCropAppFreshwaterSource(
+    [
+      req.params.src_desc,
+      req.params.src_type,
+      req.params.dairy_pk,
+    ],
+    (err, result) => {
+      if (!err) {
 
-// app.post("/api/postImage", (req, res) => {
-//   console.log(req.files.images)
-//   res.json(req.files.images)
-//   // Data from
-//     // name: '47BD6C6C-0E6C-4104-8B2D-05CF89481C1C.heic',
-//     // data: <Buffer 00 00 00 24 66 74 79 70 68 65 69 63 00 00 00 00 6d 69 66 31 4d 69 50 72 6d 69 61 66 4d 69 48 42 68 65 69 63 00 00 0d 34 6d 65 74 61 00 00 00 00 00 00 ... 460289 more bytes>,
-//     // size: 460339,
-//     // encoding: '7bit',
-//     // tempFilePath: '',
-//     // truncated: false,
-//     // mimetype: 'image/heic',
-//   // res.json({"test": `Sent test data: ${req.body.data}`})
-// })
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Search all field_crop_app_freshwater unsuccessful" });
+    })
+});
+// sample_date, sample_desc, src_of_analysis, fresh_water_source_id
+app.get("/api/search/field_crop_freshwater_analysis/:sample_date/:sample_desc/:src_of_analysis/:fresh_water_source_id/:dairy_pk", (req, res) => {
+  db.searchFieldCropAppFreshwaterAnalysis(
+    [
+      req.params.sample_date,
+      req.params.sample_desc,
+      req.params.src_of_analysis,
+      req.params.fresh_water_source_id,
+      req.params.dairy_pk,
+    ],
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Search all field_crop_app_freshwater unsuccessful" });
+    })
+});
+
+////////////////////////////////
+
+app.post("/api/postImage", (req, res) => {
+  console.log(req.files.images)
+  res.json(req.files.images)
+  // Data from
+    // name: '47BD6C6C-0E6C-4104-8B2D-05CF89481C1C.heic',
+    // data: <Buffer 00 00 00 24 66 74 79 70 68 65 69 63 00 00 00 00 6d 69 66 31 4d 69 50 72 6d 69 61 66 4d 69 48 42 68 65 69 63 00 00 0d 34 6d 65 74 61 00 00 00 00 00 00 ... 460289 more bytes>,
+    // size: 460339,
+    // encoding: '7bit',
+    // tempFilePath: '',
+    // truncated: false,
+    // mimetype: 'image/heic',
+  // res.json({"test": `Sent test data: ${req.body.data}`})
+})
 
 http.listen(3001, () => {
   console.log('listening on *:3001');

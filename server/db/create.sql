@@ -262,45 +262,86 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater(
 
 
 -- From Sheet
-    -- Application Date	Field 	Acres	cropable	Total Acres	Crop	Plant Date
-    -- Source Description (IW,C,R,D)	Application Rate (GPM)	Run Time (Hours)
-    -- Total Gallons Applied	Rain Day Prior to Event	Rain Day of Event	Rain Day After Event
-    -- Application Rate per acre (Gallons/acre)	N (PPM)	EC (umhos/cm)	TDS (mg/L)	Lbs/Acre N
+--     Application Date	Field 	Acres	cropable	Total Acres	Crop	Plant Date
+--     Source Description (IW,C,R,D)	Application Rate (GPM)	Run Time (Hours)
+--     Total Gallons Applied	Rain Day Prior to Event	Rain Day of Event	Rain Day After Event
+--     Application Rate per acre (Gallons/acre)	N (PPM)	EC (umhos/cm)	TDS (mg/L)	Lbs/Acre N
 -- Annul Report Requirements
-  -- Source desc, material type, N (lbs / acre), P(lbs / acre), K(lbs / acre), Salt, Amount gals
+--   Source desc, material type, N (lbs / acre), P(lbs / acre), K(lbs / acre), Salt, Amount gals
 
--- CREATE TABLE IF NOT EXISTS field_crop_app_freshwater(
---   pk SERIAL PRIMARY KEY,
---   dairy_id INT NOT NULL,
---   field_crop_app_id INT NOT NULL,
+-- Source
+CREATE TABLE IF NOT EXISTS field_crop_app_freshwater_source(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  src_desc VARCHAR(50),
+  src_type VARCHAR(50),
+  UNIQUE(dairy_id, src_desc),
+   CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS field_crop_app_freshwater_analysis(
+   pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  fresh_water_source_id INT NOT NULL,
+  sample_date TIMESTAMP NOT NULL,
   
---   material_type VARCHAR(150),
---   source_desc VARCHAR(150),
---   amount_applied INT,
---   n_con NUMERIC(9,3), -- same value in sheet and in Merced.app: total Kjeldahl-nitrogen, N (PPM)
---   p_con NUMERIC(9,3), -- same value in sheet and in Merced.app: total phosphorus, P (PPM)
---   k_con NUMERIC(9,3), -- same value in sheet and in Merced.app: total potassium, K (PPM)
---   ec NUMERIC(9,3),
---   tds NUMERIC(9,3), -- same value in sheet and in Merced.app: total disolved solids, P (mg/L)
---   ammoniumN NUMERIC(9,3),
---   unionizedAmmoniumN NUMERIC(9,3),
---   nitrateN NUMERIC(9,3),
---   UNIQUE(dairy_id, field_crop_app_id, amount_applied),
---   -- From sheet, precalcualted, and is used in Annual Report Table.
---   totalN NUMERIC(9,3),
---   totalP NUMERIC(9,3),
---   totalK NUMERIC(9,3),
+  sample_desc VARCHAR(50),
+  src_of_analysis VARCHAR(50),
+  n_con NUMERIC(9,3),
+  nh4_con NUMERIC(9,3), 
+  no2_con NUMERIC(9,3),
+  ca_con NUMERIC(9,3),
+  mg_con NUMERIC(9,3),
+  na_con NUMERIC(9,3),
+  hco3_con NUMERIC(9,3),
+  co3_con NUMERIC(9,3),
+  so4_con NUMERIC(9,3),
+  cl_con NUMERIC(9,3),
+  ec NUMERIC(9,3), 
+  tds NUMERIC(9,3),
+  UNIQUE(dairy_id, fresh_water_source_id, sample_date, sample_desc, src_of_analysis),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+    REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_fresh_water_source
+    FOREIGN KEY(fresh_water_source_id) 
+    REFERENCES field_crop_app_freshwater_source(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
 
---   CONSTRAINT fk_dairy
---     FOREIGN KEY(dairy_id) 
--- 	  REFERENCES dairies(pk)
---     ON UPDATE CASCADE ON DELETE CASCADE,
---   CONSTRAINT fk_field_crop_app
---     FOREIGN KEY(field_crop_app_id) 
--- 	  REFERENCES field_crop_app(pk)
---     ON UPDATE CASCADE ON DELETE CASCADE
+);
 
--- );
+CREATE TABLE IF NOT EXISTS field_crop_app_freshwater(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  field_crop_app_id INT NOT NULL,
+  field_crop_app_freshwater_analysis_id INT NOT NULL,
+  
+  app_rate NUMERIC(9,3),
+  run_time NUMERIC(9,3),
+  amount_applied NUMERIC(9,3),
+  amt_applied_per_acre NUMERIC(9,3),
+  totalN NUMERIC(9,3),
+
+  UNIQUE(dairy_id, field_crop_app_id, amount_applied),
+
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field_crop_app
+    FOREIGN KEY(field_crop_app_id) 
+	  REFERENCES field_crop_app(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field_crop_app_freshwater_analysis
+    FOREIGN KEY(field_crop_app_freshwater_analysis_id) 
+	  REFERENCES field_crop_app_freshwater_analysis(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+
+);
 
 
 
