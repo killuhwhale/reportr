@@ -1,7 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-
+reportrr-acc7e126c616.json
 reportrrGCloudKey.json
+server/fbkey.json
+server/.evn
 # dependencies
 /node_modules
 /.pnp
