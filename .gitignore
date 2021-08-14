@@ -2,10 +2,11 @@
 
 reportrr-acc7e126c616.json
 reportrrGCloudKey.json
-server/fbkey.json
-server/.evn
+/server/fbkey.json
+/server/.evn
 # dependencies
 /node_modules
+/server/node_modules
 /.pnp
 .pnp.js
 
