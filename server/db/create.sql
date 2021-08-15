@@ -104,10 +104,10 @@ CREATE TABLE IF NOT EXISTS crops(
   title VARCHAR(30),
   typical_yield INT,-- tons, pg 44 annual report, Anticipated removal == typical_yield * [n,p,k] * 2; [n,p,k]*2 is the lbs/ton yield.
   moisture INT, -- stored as a percent 10 == 10%
-  n NUMERIC(8,6), -- stored as a raw value e.g 0.0175 == 1.75%, basica default (percet in standard form, lbs/tons)
-  p NUMERIC(8,6), 
-  k NUMERIC(8,6),
-  salt NUMERIC(8,6),
+  n NUMERIC(10,3), -- stored as a raw value e.g 0.0175 == 1.75%, basica default (percet in standard form, lbs/tons)
+  p NUMERIC(10,3), 
+  k NUMERIC(10,3),
+  salt NUMERIC(10,3),
   UNIQUE(title)
 );
 
@@ -120,10 +120,10 @@ CREATE TABLE IF NOT EXISTS field_crop(
   acres_planted NUMERIC(6,2),
   typical_yield NUMERIC(6,2), -- tons/ acre 
   moisture NUMERIC(6,2), -- stored as a percent 10 == 10%
-  n NUMERIC(8,6), -- Concentration by default data, lb/ton 
-  p NUMERIC(8,6), 
-  k NUMERIC(8,6),
-  salt NUMERIC(8,6),
+  n NUMERIC(10,3), -- Concentration by default data, lb/ton 
+  p NUMERIC(10,3), 
+  k NUMERIC(10,3),
+  salt NUMERIC(10,3),
   UNIQUE(dairy_id, field_id, crop_id, plant_date),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
@@ -259,23 +259,13 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater(
 
 
 
-
-
--- From Sheet
---     Application Date	Field 	Acres	cropable	Total Acres	Crop	Plant Date
---     Source Description (IW,C,R,D)	Application Rate (GPM)	Run Time (Hours)
---     Total Gallons Applied	Rain Day Prior to Event	Rain Day of Event	Rain Day After Event
---     Application Rate per acre (Gallons/acre)	N (PPM)	EC (umhos/cm)	TDS (mg/L)	Lbs/Acre N
--- Annul Report Requirements
---   Source desc, material type, N (lbs / acre), P(lbs / acre), K(lbs / acre), Salt, Amount gals
-
 -- Source
 CREATE TABLE IF NOT EXISTS field_crop_app_freshwater_source(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
-  src_desc VARCHAR(50),
-  src_type VARCHAR(50),
-  UNIQUE(dairy_id, src_desc),
+  src_desc VARCHAR(50) NOT NULL,
+  src_type VARCHAR(50) NOT NULL,
+  UNIQUE(dairy_id, src_desc, src_type),
    CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
 	  REFERENCES dairies(pk)
@@ -288,8 +278,8 @@ CREATE TABLE IF NOT EXISTS field_crop_app_freshwater_analysis(
   fresh_water_source_id INT NOT NULL,
   sample_date TIMESTAMP NOT NULL,
   
-  sample_desc VARCHAR(50),
-  src_of_analysis VARCHAR(50),
+  sample_desc VARCHAR(50) NOT NULL,
+  src_of_analysis VARCHAR(50) NOT NULL,
   n_con NUMERIC(9,3),
   nh4_con NUMERIC(9,3), 
   no2_con NUMERIC(9,3),
@@ -320,13 +310,13 @@ CREATE TABLE IF NOT EXISTS field_crop_app_freshwater(
   field_crop_app_id INT NOT NULL,
   field_crop_app_freshwater_analysis_id INT NOT NULL,
   
-  app_rate NUMERIC(9,3),
+  app_rate NUMERIC(12,3),
   run_time NUMERIC(9,3),
-  amount_applied NUMERIC(9,3),
-  amt_applied_per_acre NUMERIC(9,3),
-  totalN NUMERIC(9,3),
+  amount_applied NUMERIC(15,3) NOT NULL,
+  amt_applied_per_acre NUMERIC(12,3),
+  totalN NUMERIC(9,3) NOT NULL,
 
-  UNIQUE(dairy_id, field_crop_app_id, amount_applied),
+  UNIQUE(dairy_id, field_crop_app_id, field_crop_app_freshwater_analysis_id),
 
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 

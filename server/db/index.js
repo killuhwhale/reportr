@@ -31,8 +31,8 @@ module.exports = {
     )
   },
   insertDairy: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format("INSERT INTO dairies(title, reporting_yr) VALUES (%L)", values),
       [],
@@ -57,8 +57,8 @@ module.exports = {
     )
   },
   insertField: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format("INSERT INTO fields(title, acres, cropable, dairy_id) VALUES (%L) RETURNING *", values),
       [],
@@ -90,8 +90,8 @@ module.exports = {
     )
   },
   insertParcel: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format("INSERT INTO parcels(pnumber, dairy_id) VALUES (%L)", values),
       [],
@@ -121,8 +121,8 @@ module.exports = {
     )
   },
   insertFieldParcel: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format("INSERT INTO field_parcel(dairy_id, field_id, parcel_id) VALUES (%L)", values),
       [],
@@ -158,8 +158,8 @@ module.exports = {
     )
   },
   insertOperator: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format(`INSERT INTO operators(
         dairy_id, title, primary_phone, secondary_phone,
@@ -201,8 +201,8 @@ module.exports = {
     )
   },
   insertHerd: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format(`INSERT INTO herds(
         dairy_id) VALUES (%L)`, values),
@@ -232,8 +232,8 @@ module.exports = {
     )
   },
   insertFieldCrop: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format(`INSERT INTO field_crop(
         dairy_id, field_id, crop_id, plant_date, acres_planted, typical_yield, moisture, n,p,k,salt
@@ -308,8 +308,8 @@ module.exports = {
     )
   },
   insertFieldCropHarvest: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format(`INSERT INTO field_crop_harvest(
         dairy_id, field_crop_id, harvest_date, density, basis, actual_yield, moisture, n,p,k,tfs
@@ -381,8 +381,8 @@ module.exports = {
     )
   },
   searchFieldsByTitle: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       "SELECT * FROM fields where title = $1 and dairy_id = $2",
       values,
@@ -390,8 +390,8 @@ module.exports = {
     )
   },
   searchFieldCropsByFieldCropPlantdate: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       "SELECT * FROM field_crop where field_id = $1 and crop_id = $2 and plant_date = $3",
       values,
@@ -399,8 +399,6 @@ module.exports = {
     )
   },
   insertTSV: (values, callback) => {
-    console.log("Values in DB Pool query TSV")
-    console.log(values)
     return pool.query(
       format(`INSERT INTO TSVs(
         dairy_id, title, data, tsvType
@@ -424,8 +422,8 @@ module.exports = {
     )
   },
   insertFieldCropApplication: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format(`INSERT INTO field_crop_app(
         dairy_id, field_crop_id, app_date, app_method, precip_before, precip_during, precip_after
@@ -490,8 +488,8 @@ module.exports = {
     )
   },
   searchFieldCropApplicationsByFieldCropIDAppDate: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       "SELECT * FROM field_crop_app where field_crop_id = $1 and app_date = $2 and dairy_id = $3",
       values,
@@ -500,8 +498,8 @@ module.exports = {
   },
 
   insertFieldCropApplicationProcessWastewaterAnalysis: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format(`
         INSERT INTO field_crop_app_process_wastewater_analysis( 
@@ -533,8 +531,8 @@ module.exports = {
     )
   },
   searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       `SELECT * FROM field_crop_app_process_wastewater_analysis
        where sample_date = $1 and sample_desc = $2 and dairy_id = $3`,
@@ -544,8 +542,8 @@ module.exports = {
   },
 
   insertFieldCropApplicationProcessWastewater: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format(`INSERT INTO field_crop_app_process_wastewater(
         dairy_id,
@@ -640,8 +638,8 @@ module.exports = {
 
 
   insertFieldCropApplicationFreshwaterSource: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format(`INSERT INTO field_crop_app_freshwater_source(
         dairy_id,
@@ -673,8 +671,8 @@ module.exports = {
     )
   },
   searchFieldCropAppFreshwaterSource: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       `SELECT * FROM field_crop_app_freshwater_source
        where src_desc = $1 and src_type = $2 and dairy_id = $3`,
@@ -684,8 +682,8 @@ module.exports = {
   },
 
   insertFieldCropApplicationFreshwaterAnalysis: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format(`INSERT INTO field_crop_app_freshwater_analysis(
         dairy_id,
@@ -704,7 +702,7 @@ module.exports = {
         so4_con,
         cl_con,
         ec, 
-        tds,
+        tds
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -731,10 +729,10 @@ module.exports = {
     )
   },
   searchFieldCropAppFreshwaterAnalysis: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
-      `SELECT * FROM field_crop_app_freshwater_source
+      `SELECT * FROM field_crop_app_freshwater_analysis
        where sample_date = $1 and sample_desc = $2 and src_of_analysis = $3 and fresh_water_source_id = $4 and dairy_id = $5`,
       values,
       callback
@@ -742,8 +740,8 @@ module.exports = {
   },
 
   insertFieldCropApplicationFreshwater: (values, callback) => {
-    console.log("Values in DB Pool query")
-    console.log(values)
+    
+    
     return pool.query(
       format(`INSERT INTO field_crop_app_freshwater(
         dairy_id,
@@ -753,7 +751,7 @@ module.exports = {
         run_time,
         amount_applied,
         amt_applied_per_acre,
-        totalN,
+        totalN
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -785,8 +783,13 @@ module.exports = {
           run_time,
           amount_applied,
           amt_applied_per_acre,
-          totalN
-        
+          totalN,
+
+          f.title as fieldtitle,
+          c.title as croptitle,
+          fc.plant_date,
+
+          fca.app_date
         
         FROM field_crop_app_freshwater fcfw
 
@@ -799,8 +802,17 @@ module.exports = {
         JOIN field_crop_app_freshwater_source fcafws
         ON fcafws.pk = fcafwa.fresh_water_source_id
 
+        JOIN field_crop fc
+        ON fc.pk = fca.field_crop_id
+
+        JOIN fields f
+        ON f.pk = fc.field_id
+
+        JOIN crops c
+        ON c.pk = fc.crop_id
+
         WHERE 
-        dairy_id = %L
+        fcfw.dairy_id = %L
         `, dairy_id),
       [],
       callback

@@ -31,7 +31,7 @@ app.use(cors({
 }));
 
 app.post("/api/tsv/create", (req, res) => {
-  console.log("Inserting....",)
+  
   const { dairy_id, title, data, tsvType } = req.body
   db.insertTSV([dairy_id, title, data, tsvType], (err, result) => {
     if (!err) {
@@ -80,7 +80,6 @@ app.get("/api/dairies/:reportingYear", (req, res) => {
     })
 });
 app.post("/api/dairies/create", (req, res) => {
-  console.log("INserting....", req.body.title, req.body.reportingYr)
   db.insertDairy([req.body.title, req.body.reportingYr], (err, result) => {
 
     if (!err) {
@@ -709,12 +708,16 @@ app.post("/api/field_crop_app_process_wastewater/delete", (req, res) => {
 
 
 app.post("/api/field_crop_app_freshwater_source/create", (req, res) => {
-  console.log("Creating....", req.body)
   const {
     dairy_id,
     src_desc,
     src_type,
   } = req.body
+  console.log("Creating field_crop_app_freshwater_source ....", [
+    dairy_id,
+    src_desc,
+    src_type
+  ])
   db.insertFieldCropApplicationFreshwaterSource(
     [
       dairy_id,
@@ -835,7 +838,7 @@ app.post("/api/field_crop_app_freshwater_analysis/delete", (req, res) => {
 });
 
 app.post("/api/field_crop_app_freshwater/create", (req, res) => {
-  console.log("Creating....", req.body)
+  console.log("Creating.... fresh water", req.body)
   const {
     dairy_id,
     field_crop_app_id,
@@ -869,6 +872,7 @@ app.post("/api/field_crop_app_freshwater/create", (req, res) => {
   )
 });
 app.get("/api/field_crop_app_freshwater/:dairy_id", (req, res) => {
+  
   db.getFieldCropApplicationFreshwater(req.params.dairy_id,
     (err, result) => {
       if (!err) {
@@ -959,7 +963,7 @@ app.get("/api/search/field_crop_app_process_wastewater_analysis/:sample_date/:sa
 });
 
 // src_desc, src_type
-app.get("/api/search/field_crop_freshwater_source/:src_desc/:src_type/:dairy_pk", (req, res) => {
+app.get("/api/search/field_crop_app_freshwater_source/:src_desc/:src_type/:dairy_pk", (req, res) => {
   db.searchFieldCropAppFreshwaterSource(
     [
       req.params.src_desc,
@@ -977,7 +981,7 @@ app.get("/api/search/field_crop_freshwater_source/:src_desc/:src_type/:dairy_pk"
     })
 });
 // sample_date, sample_desc, src_of_analysis, fresh_water_source_id
-app.get("/api/search/field_crop_freshwater_analysis/:sample_date/:sample_desc/:src_of_analysis/:fresh_water_source_id/:dairy_pk", (req, res) => {
+app.get("/api/search/field_crop_app_freshwater_analysis/:sample_date/:sample_desc/:src_of_analysis/:fresh_water_source_id/:dairy_pk", (req, res) => {
   db.searchFieldCropAppFreshwaterAnalysis(
     [
       req.params.sample_date,

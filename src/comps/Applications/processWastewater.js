@@ -392,8 +392,7 @@ class ProcessWastewater extends Component {
 
             <Grid item xs={12}>
               {Object.keys(this.state.field_crop_app_process_wastewater).length > 0 ?
-                Object.keys(this.state.field_crop_app_process_wastewater)
-                .sort((a, b) => a.fieldtitle > b.fieldtitle ? -1 : 1)
+                Object.keys(this.state.field_crop_app_process_wastewater).sort()
                 .map((field_crop_app_id, i) => {
                   let process_wastewaters = this.state.field_crop_app_process_wastewater[field_crop_app_id]
                   return (

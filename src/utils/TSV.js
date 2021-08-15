@@ -21,7 +21,9 @@ export const lazyGet = (endpoint, value, data, dairy_pk) => {
   return new Promise((resolve, rej) => {
     get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
       .then(res => {
-
+        if(endpoint == "field_crop_app_freshwater_source" ){
+          console.log("TEXTY CHECKYYYYY", res)
+        }
         // If not found, Attempt to create
         if (Object.keys(res).length == 0) {
           post(`${BASE_URL}/api/${endpoint}/create`, data)
@@ -30,10 +32,14 @@ export const lazyGet = (endpoint, value, data, dairy_pk) => {
 
               // If there is an error response from server.
               if (result.test) {
+                
                 console.log("Create failed, race conditon happened. Attempting to re-fetch")
                 get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
                   .then(secondResult => {
                     console.log("Found entry after failing to create entry", secondResult)
+                    if(secondResult.length == 0){
+                      console.log(endpoint, value, data)
+                    }
                     // Found entry, on second attempt.
                     resolve(secondResult)
                   })
@@ -98,6 +104,7 @@ export const processTSVText = (csvText, numCols) => {
   let started = false
   let rows = []
   lines.forEach((line, i) => {
+    console.log("Line", line)
     let cols = line.split("\t").slice(0, numCols)
     if (cols[0]) { // skips rows without info in col 0
       if (started) {
@@ -108,6 +115,7 @@ export const processTSVText = (csvText, numCols) => {
       }
     }
   })
+  console.log(rows)
   return rows
 }
 export const createFieldSet = (rows) => {
@@ -173,6 +181,7 @@ const prepareFieldCrop = (field_title, crop_title, cropable, acres, dairy_pk) =>
       dairy_id: dairy_pk
     }
   }
+
   return new Promise((resolve, rej) => {
     Promise.all([
       lazyGet('fields', field_title, fieldData, dairy_pk),
@@ -222,7 +231,7 @@ const getFieldCrop = (commonRowData, dairy_pk) => {
                 reject(err)
               })
           } else {
-            console.log("Crop not valid.")
+            console.log("Crop not valid.", crop_title)
           }
         } else {
           console.log("Field not valid.")
@@ -294,9 +303,9 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
           resolve(createProcessWastewaterApplication(row, field_crop_app, dairy_pk)) // Creates analysis and application_event
         } else if (tsvType === FRESHWATER) {
           // Creates source, analysis and event
-          createFreshwaterApplication(row, field_crop_app, dairy_pk)
+          resolve(createFreshwaterApplication(row, field_crop_app, dairy_pk))
         }
-        
+
       })
       .catch(field_crop_app_err => {
         console.log(field_crop_app_err)
@@ -305,177 +314,187 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
   })
 }
 
-const _checkEmpty = (val) => {
-    // If value is empty, return 0 to avoid error in DB.
-    return val.length > 0 ? val : 0
+export const checkEmpty = (val) => {
+  // If value is empty, return 0 to avoid error in DB.
+  return val.length > 0 ? val.replaceAll(',','') : 0
 }
 
-  /** Creates field_crop_app_process_wastewater(app event) && field_crop_app_process_wastewater_analysis
-   * 
-   * @param {*} row: List of all columns from TSV row.
-   * @param {*} field_crop_app: Object from DB with current data from row.
-   * @param {*} dairy_pk: The primary key of the current dairy.
-   * @returns The created field_crop_app_process_wastewater.
-   */
-  const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
-    const [
-      sample_date,
-      sample_desc,
-      sample_data_src,
-      kn_con,
-      nh4_con,
-      nh3_con,
-      no3_con,
-      p_con,
-      k_con,
-      ec,
-      tds,
-      ph,
-      app_desc,
-      material_type,
-      app_rate,
-      run_time,
-      amount_applied,
-      app_rate_per_acre,
-      totalN,
-      totalP,
-      totalK
-    ] = row.slice(11, TSV_INFO[PROCESS_WASTEWATER].numCols)
-    const process_wastewater_analysis_data = {
-      dairy_id: dairy_pk,
-      sample_date,
-      sample_desc,
-      sample_data_src,
-      kn_con: _checkEmpty(kn_con.replaceAll(',', '')),
-      nh4_con: _checkEmpty(nh4_con.replaceAll(',', '')),
-      nh3_con: _checkEmpty(nh3_con.replaceAll(',', '')),
-      no3_con: _checkEmpty(no3_con.replaceAll(',', '')),
-      p_con: _checkEmpty(p_con.replaceAll(',', '')),
-      k_con: _checkEmpty(k_con.replaceAll(',', '')),
-      ec: _checkEmpty(ec.replaceAll(',', '')),
-      tds: _checkEmpty(tds.replaceAll(',', '')),
-      ph: _checkEmpty(ph.replaceAll(',', '')),
-    }
-    // dairy_id, sample_date, sample_desc
-    const field_crop_app_process_wastewater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}`
-    return new Promise((resolve, rej) => {
-      // Need to lazyget process_wastewater_analysis
-      lazyGet('field_crop_app_process_wastewater_analysis', field_crop_app_process_wastewater_analysis_search_url, process_wastewater_analysis_data, dairy_pk)
-        .then(res => {
-          const process_wastewater_data = {
-            dairy_id: dairy_pk,
-            field_crop_app_id: field_crop_app.pk,
-            field_crop_app_process_wastewater_analysis_id: res[0].pk,
-            app_desc,
-            material_type,
-            amount_applied: amount_applied.replaceAll(',', ''),
-            totalN: _checkEmpty(totalN.replaceAll(',', '')),
-            totalP: _checkEmpty(totalP.replaceAll(',', '')),
-            totalK: _checkEmpty(totalK.replaceAll(',', '')),
-          }
-          resolve(post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data))
+/** Creates field_crop_app_process_wastewater(app event) && field_crop_app_process_wastewater_analysis
+ * 
+ * @param {*} row: List of all columns from TSV row.
+ * @param {*} field_crop_app: Object from DB with current data from row.
+ * @param {*} dairy_pk: The primary key of the current dairy.
+ * @returns The created field_crop_app_process_wastewater.
+ */
+const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
+  const [
+    sample_date,
+    sample_desc,
+    sample_data_src,
+    kn_con,
+    nh4_con,
+    nh3_con,
+    no3_con,
+    p_con,
+    k_con,
+    ec,
+    tds,
+    ph,
+    app_desc,
+    material_type,
+    app_rate,
+    run_time,
+    amount_applied,
+    app_rate_per_acre,
+    totalN,
+    totalP,
+    totalK
+  ] = row.slice(11, TSV_INFO[PROCESS_WASTEWATER].numCols)
+  const process_wastewater_analysis_data = {
+    dairy_id: dairy_pk,
+    sample_date,
+    sample_desc,
+    sample_data_src,
+    kn_con: checkEmpty(kn_con.replaceAll(',', '')),
+    nh4_con: checkEmpty(nh4_con.replaceAll(',', '')),
+    nh3_con: checkEmpty(nh3_con.replaceAll(',', '')),
+    no3_con: checkEmpty(no3_con.replaceAll(',', '')),
+    p_con: checkEmpty(p_con.replaceAll(',', '')),
+    k_con: checkEmpty(k_con.replaceAll(',', '')),
+    ec: checkEmpty(ec.replaceAll(',', '')),
+    tds: checkEmpty(tds.replaceAll(',', '')),
+    ph: checkEmpty(ph.replaceAll(',', '')),
+  }
+  // dairy_id, sample_date, sample_desc
+  const field_crop_app_process_wastewater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}`
+  return new Promise((resolve, rej) => {
+    // Need to lazyget process_wastewater_analysis
+    lazyGet('field_crop_app_process_wastewater_analysis', field_crop_app_process_wastewater_analysis_search_url, process_wastewater_analysis_data, dairy_pk)
+      .then(res => {
+        const process_wastewater_data = {
+          dairy_id: dairy_pk,
+          field_crop_app_id: field_crop_app.pk,
+          field_crop_app_process_wastewater_analysis_id: res[0].pk,
+          app_desc,
+          material_type,
+          amount_applied: amount_applied.replaceAll(',', ''),
+          totalN: checkEmpty(totalN.replaceAll(',', '')),
+          totalP: checkEmpty(totalP.replaceAll(',', '')),
+          totalK: checkEmpty(totalK.replaceAll(',', '')),
+        }
+        resolve(post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data))
 
-        })
-        .catch(err => {
-          console.log(err)
-          rej(err)
-        })
-    })
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
+}
+
+
+const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
+  
+
+  const [
+    sample_date,
+    src_desc,
+    src_type,
+    sample_desc,
+    src_of_analysis,
+    n_con,
+    nh4_con,
+    no2_con,
+    ca_con,
+    mg_con,
+    na_con,
+    hco3_con,
+    co3_con,
+    so4_con,
+    cl_con,
+    ec,
+    tds,
+    app_rate,
+    run_time,
+    amount_applied,
+    amt_applied_per_acre,
+    totalN
+
+  ] = row.slice(11, TSV_INFO[FRESHWATER].numCols)
+
+  // dairy_id, sample_date, sample_desc
+  const field_crop_app_freshwater_source_search_url = `${encodeURIComponent(src_desc)}/${encodeURIComponent(src_type)}`
+  const freshwater_source_data = {
+    dairy_id: dairy_pk,
+    src_desc,
+    src_type
   }
 
-
-  const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
-    const [
-      sample_date,
-      src_desc,
-      src_type,
-      sample_desc,
-      src_of_analysis,
-      n_con,
-      nh4_con, 
-      no2_con,
-      ca_con,
-      mg_con,
-      na_con,
-      hco3_con,
-      co3_con,
-      so4_con,
-      cl_con,
-      ec, 
-      tds,
-      app_rate,
-      run_time,
-      amount_applied,
-      amt_applied_per_acre,
-      totalN
-      
-    ] = row.slice(11, TSV_INFO[FRESHWATER].numCols)
-
-    // dairy_id, sample_date, sample_desc
-    const field_crop_app_freshwater_source_search_url = `${encodeURIComponent(src_desc)}/${encodeURIComponent(src_type)}`
-    const freshwater_source_data = {}
-    
-    
-    // Get Source
-    return new Promise((resolve, rej) => {
-      // lazyget freshwater_source
-      lazyGet('field_crop_app_freshwater_source', field_crop_app_freshwater_source_search_url, freshwater_source_data, dairy_pk)
+  // Get Source
+  return new Promise((resolve, rej) => {
+    // lazyget freshwater_source
+    lazyGet('field_crop_app_freshwater_source', field_crop_app_freshwater_source_search_url, freshwater_source_data, dairy_pk)
       .then(field_crop_app_freshwater_source_res => {
-        let fresh_water_source_obj = field_crop_app_freshwater_source_res[0]
-        let fresh_water_source_id = fresh_water_source_obj.pk
+        if(field_crop_app_freshwater_source_res.length > 0){
+          let fresh_water_source_obj = field_crop_app_freshwater_source_res[0]
+          let fresh_water_source_id = fresh_water_source_obj.pk
+  
+  
+          // lazyget freshwater_analysis , sample_date, sample_desc, src_of_analysis, fresh_water_source_id
+          const field_crop_app_freshwater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${src_of_analysis}/${fresh_water_source_id}`
+          const freshwater_analysis_data = {
+            dairy_id: dairy_pk,
+            fresh_water_source_id: fresh_water_source_obj.pk,
+            sample_date,
+            src_desc,
+            src_type,
+            sample_desc,
+            src_of_analysis,
+            n_con: checkEmpty(n_con),
+            nh4_con: checkEmpty(nh4_con),
+            no2_con: checkEmpty(no2_con),
+            ca_con: checkEmpty(ca_con),
+            mg_con: checkEmpty(mg_con),
+            na_con: checkEmpty(na_con),
+            hco3_con: checkEmpty(hco3_con),
+            co3_con: checkEmpty(co3_con),
+            so4_con: checkEmpty(so4_con),
+            cl_con: checkEmpty(cl_con),
+            ec: checkEmpty(ec),
+            tds: checkEmpty(tds),
+  
+          }
+  
+          lazyGet('field_crop_app_freshwater_analysis', field_crop_app_freshwater_analysis_search_url, freshwater_analysis_data, dairy_pk)
+            .then(freshwater_analysis_res => {
+              let freshwater_analysis_obj = freshwater_analysis_res[0]
+              const freshwater_data = {
+                dairy_id: dairy_pk,
+                field_crop_app_id: field_crop_app.pk,
+                field_crop_app_freshwater_analysis_id: freshwater_analysis_obj.pk,
+                app_rate: checkEmpty(app_rate),
+                run_time: checkEmpty(run_time),
+                amount_applied: checkEmpty(amount_applied),
+                amt_applied_per_acre: checkEmpty(amt_applied_per_acre),
+                totalN: checkEmpty(totalN)
+              }
+  
+              resolve(post(`${BASE_URL}/api/field_crop_app_freshwater/create`, freshwater_data))
+            })
 
-
-        // lazyget freshwater_analysis , sample_date, sample_desc, src_of_analysis, fresh_water_source_id
-        const field_crop_app_freshwater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${src_of_analysis}/${fresh_water_source_id}`
-        const freshwater_analysis_data = {
-          dairy_id: dairy_pk,
-          fresh_water_source_id: fresh_water_source_obj.pk,
-          sample_date,
-          src_desc,
-          src_type,
-          sample_desc,
-          src_of_analysis,
-          n_con,
-          nh4_con, 
-          no2_con,
-          ca_con,
-          mg_con,
-          na_con,
-          hco3_con,
-          co3_con,
-          so4_con,
-          cl_con,
-          ec, 
-          tds,
-
+        }else{
+          console.log("Error with reading pk", row)
         }
 
-        lazyGet('field_crop_app_freshwater_analysis', field_crop_app_freshwater_analysis_search_url, freshwater_analysis_data, dairy_pk)
-        .then(freshwater_analysis_res => {
-          let freshwater_analysis_obj = freshwater_analysis_res[0]
-          const freshwater_data ={
-            dairy_id: dairy_pk,
-            field_crop_app_id: field_crop_app.pk,
-            field_crop_app_freshwater_analysis_id: freshwater_analysis_obj.pk,
-            app_rate,
-            run_time,
-            amount_applied,
-            amt_applied_per_acre,
-            totalN
-          }
-
-          resolve(post(`${BASE_URL}/api/field_crop_app_freshwater/create`, freshwater_data))
-        })
 
 
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
 
-        })
-        .catch(err => {
-          console.log(err)
-          rej(err)
-        })
-    })
 
-
-  }
+}
 

@@ -14,7 +14,7 @@ import Freshwater from "./freshwater"
 import AddFieldCropApplicationModal from "../Modals/addFieldCropApplicationModal"
 import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
-import { TSV_INFO, PROCESS_WASTEWATER, } from '../../utils/TSV'
+import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, } from '../../utils/TSV'
 
 const BASE_URL = "http://localhost:3001"
 const PRECIPITATIONS = [
@@ -42,6 +42,26 @@ const APP_METHODS = [
   'Towed hose',
   'Other',
 ]
+
+const groupBySortBy = (list, groupBy, sortBy) => {
+  let grouped = {}
+  list.forEach(item => {
+    let key = `${item[groupBy]}`
+    if (grouped[key]) {
+      grouped[key].push(item)
+    } else {
+      grouped[key] = [item]
+    }
+  })
+
+  // Sort each list by sortBy 
+  Object.keys(grouped).forEach(key => {
+    grouped[key].sort((a, b) => {
+      return a[sortBy] > b[sortBy] ? 1 : -1
+    })
+  })
+  return grouped
+}
 
 class NutrientApplicationTab extends Component {
   constructor(props) {
@@ -83,6 +103,9 @@ class NutrientApplicationTab extends Component {
     this.getFieldCrops()
     this.getFieldCropAppEvents()
     this.getFieldCropAppProcessWastewater()
+    this.getFieldCropAppFreshwaterSource()
+    this.getFieldCropAppFreshwaterAnalysis()
+    this.getFieldCropAppFreshwater()
   }
   handleTabChange(ev, index) {
     let tabs = this.state.tabs
@@ -129,33 +152,34 @@ class NutrientApplicationTab extends Component {
         this.setState({ field_crops: field_crop_lists })
       })
   }
-  getFieldCropAppFreshwaterSource(){
+  getFieldCropAppFreshwaterSource() {
     get(`${BASE_URL}/api/field_crop_app_freshwater_source/${this.state.dairy.pk}`)
-    .then(res => {
-      this.setState({fieldCropAppFreshwaterSources: res})
-    })
-    .catch( err => {
-      console.log(err)
-    })
+      .then(res => {
+        this.setState({ fieldCropAppFreshwaterSources: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
-  getFieldCropAppFreshwaterAnalysis(){
+  getFieldCropAppFreshwaterAnalysis() {
     get(`${BASE_URL}/api/field_crop_app_freshwater_analysis/${this.state.dairy.pk}`)
-    .then(res => {
-      this.setState({fieldCropAppFreshwaterAnalyses: res})
-    })
-    .catch( err => {
-      console.log(err)
-    })
+      .then(res => {
+        this.setState({ fieldCropAppFreshwaterAnalyses: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
-  getFieldCropAppFreshwater(){
+  getFieldCropAppFreshwater() {
     get(`${BASE_URL}/api/field_crop_app_freshwater/${this.state.dairy.pk}`)
-    .then(res => {
-      this.setState({fieldCropAppFreshwaters: res})
-    })
-    .catch( err => {
-      console.log(err)
-    })
+      .then(res => {
+        let fieldCropAppFreshwaters = groupBySortBy(res, 'fieldtitle', 'app_date')
+        this.setState({ fieldCropAppFreshwaters:  fieldCropAppFreshwaters})
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   /** Field Application Event
@@ -226,24 +250,7 @@ class NutrientApplicationTab extends Component {
         // list of process, sort by app event
         // Group by field, sort by application date.
 
-        let process_wastewater_by_fieldtitle = {}
-        res.forEach(wastewater => {
-          let key = `${wastewater.fieldtitle}`
-          if (process_wastewater_by_fieldtitle[key]) {
-            process_wastewater_by_fieldtitle[key].push(wastewater)
-          } else {
-            process_wastewater_by_fieldtitle[key] = [wastewater]
-          }
-        })
-        // Sort each list in each key by Fieldtitle
-
-        Object.keys(process_wastewater_by_fieldtitle).forEach(key => {
-          process_wastewater_by_fieldtitle[key].sort((a, b) => {
-            return a.app_date > b.app_date ? 1 : -1
-          })
-        })
-
-        console.log("Seeting  process wastewaters...", process_wastewater_by_fieldtitle, res)
+        let process_wastewater_by_fieldtitle = groupBySortBy(res, 'fieldtitle', 'app_date')
         this.setState({ field_crop_app_process_wastewater: process_wastewater_by_fieldtitle })
       })
       .catch(err => {
@@ -317,13 +324,15 @@ class NutrientApplicationTab extends Component {
             <Grid item xs={12} style={{ marginTop: "30px" }} className={`${this.state.tabs[1]}`}>
               <Freshwater
                 dairy_id={this.state.dairy.pk}
+                tsvType={TSV_INFO[FRESHWATER].tsvType}
+                numCols={TSV_INFO[FRESHWATER].numCols}
                 fieldCropAppEvents={this.state.fieldCropAppEvents}
                 fieldCropAppFreshwaterSources={this.state.fieldCropAppFreshwaterSources}
                 fieldCropAppFreshwaterAnalyses={this.state.fieldCropAppFreshwaterAnalyses}
                 fieldCropAppFreshwaters={this.state.fieldCropAppFreshwaters}
                 getFieldCropAppFreshwaterSource={this.getFieldCropAppFreshwaterSource.bind(this)}
                 getFieldCropAppFreshwaterAnalysis={this.getFieldCropAppFreshwaterAnalysis.bind(this)}
-                getFieldCropAppFreshwaterSource={this.getFieldCropAppFreshwater.bind(this)}
+                getFieldCropAppFreshwater={this.getFieldCropAppFreshwater.bind(this)}
                 getFieldCropAppEvents={this.getFieldCropAppEvents.bind(this)}
 
               />
