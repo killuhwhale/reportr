@@ -7,6 +7,7 @@ const BASE_URL = "http://localhost:3001"
 export const PROCESS_WASTEWATER = 'process_wastewater'
 export const FRESHWATER = 'field_crop_app_freshwater'
 export const SOLIDMANURE = 'field_crop_app_solidmanure'
+export const FERTILIZER = 'field_crop_app_fertilizer'
 export const TSV_INFO = {
   [PROCESS_WASTEWATER]: {
     numCols: 32, // 32 columns in process_wastewater spreadsheet/ TSV
@@ -19,6 +20,10 @@ export const TSV_INFO = {
   [SOLIDMANURE]: {
     numCols: 33,
     tsvType: SOLIDMANURE
+  },
+  [FERTILIZER]: {
+    numCols: 21,
+    tsvType: FERTILIZER
   },
 }
 

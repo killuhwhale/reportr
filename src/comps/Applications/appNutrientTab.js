@@ -12,10 +12,11 @@ import { withTheme } from '@material-ui/core/styles'
 import ProcessWastewater from "./processWastewater"
 import Freshwater from "./freshwater"
 import Solidmanure from "./solidmanure"
+import Fertilizer from "./fertilizer"
 import AddFieldCropApplicationModal from "../Modals/addFieldCropApplicationModal"
 import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
-import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, } from '../../utils/TSV'
+import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, } from '../../utils/TSV'
 
 const BASE_URL = "http://localhost:3001"
 const PRECIPITATIONS = [
@@ -47,7 +48,9 @@ const APP_METHODS = [
 const REPORTING_METHODS  = ['dry-weight', 'as-is']
 const SOURCE_OF_ANALYSES = ['Lab Analysis', 'Other/ estimated']
 const MATERIAL_TYPES = ['Separator solids', 'Corral solids', "Scraped material", 'Bedding', 'Compost']
- 
+
+const NUTRIENT_IMPORT_MATERIAL_TYPES = ['Commercial fertilizer/ Other: Liquid commercial fertilizer','Commercial fertilizer/ Other: Solid commercial fertilizer','Commercial fertilizer/ Other: Other liquid nutrient source','Commercial fertilizer/ Other: Other solid nutrient source','Dry manure: Separator solids','Dry manure: Corral solids','Dry manure: Scraped material','Dry manure: Bedding','Dry manure: Compost','Process wastewater','Process wastewater: Process wastewater sludge']
+
 const groupBySortBy = (list, groupBy, sortBy) => {
   let grouped = {}
   list.forEach(item => {
@@ -81,7 +84,9 @@ class NutrientApplicationTab extends Component {
       fieldCropAppFreshwaterAnalyses: [],
       fieldCropAppFreshwaters: [],
       fieldCropAppSolidmanureAnalyses: [],
-      fieldCropAppSolidmanures: [],
+      fieldCropAppSolidmanures: {},
+      fieldCropAppFertilizers: {},
+      nutrientImports: [],
       field_crop_app_process_wastewater: {}, // obj, holds lists of process_wastewater by Field Title, then sorted by app date.
       createFieldCropAppObj: {
         dairy_id: props.dairy.pk,
@@ -220,6 +225,26 @@ class NutrientApplicationTab extends Component {
       .catch(err => {
         console.log(err)
       })
+  }
+  getFieldCropAppFertilizer(){
+    get(`${BASE_URL}/api/field_crop_app_fertilizer/${this.state.dairy.pk}`)
+    .then(res => {
+      let fieldCropAppSolidmanures = groupBySortBy(res, 'fieldtitle', 'app_date')
+      this.setState({ fieldCropAppFertilizers:  fieldCropAppSolidmanures})
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+  getNutrientImport(){
+    get(`${BASE_URL}/api/nutrient_import/${this.state.dairy.pk}`)
+    .then(res => {
+      
+      this.setState({ nutrientImports:  res})
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }
 
   /** Field Application Event
@@ -379,6 +404,20 @@ class NutrientApplicationTab extends Component {
             <Grid item xs={12} style={{ marginTop: "30px" }} className={`${this.state.tabs[3]}`}>
 
               <Typography variant="h2">Fertilizer</Typography>
+              <Fertilizer
+                dairy_id={this.state.dairy.pk}
+                tsvType={TSV_INFO[FERTILIZER].tsvType}
+                numCols={TSV_INFO[FERTILIZER].numCols}
+                fieldCropAppEvents={this.state.fieldCropAppEvents}                
+                nutrientImports={this.state.nutrientImports}
+                fieldCropAppFertilizers={this.state.fieldCropAppFertilizers}
+                NUTRIENT_IMPORT_MATERIAL_TYPES={NUTRIENT_IMPORT_MATERIAL_TYPES}
+                REPORTING_METHODS={REPORTING_METHODS}
+                getFieldCropAppFertilizer={this.getFieldCropAppFertilizer.bind(this)}
+                getNutrientImport={this.getNutrientImport.bind(this)}
+                getFieldCropAppEvents={this.getFieldCropAppEvents.bind(this)}
+
+              />
             </Grid>
 
 

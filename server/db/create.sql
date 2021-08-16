@@ -185,7 +185,8 @@ CREATE TABLE IF NOT EXISTS field_crop_app(
   precip_before VARCHAR(50),
   precip_during VARCHAR(50),
   precip_after VARCHAR(50),
-  UNIQUE(dairy_id, field_crop_id, app_date),
+  UNIQUE(dairy_id, field_crop_id, app_date), -- TODO() Need to update to include app_method, affects searching for lazyget since it look searches by unique fields.
+  -- If a field receives a Commerical Fertilizer and Freshwater on the same day, they will have different App_methods and both should be created. CLARIFY
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
 	  REFERENCES dairies(pk)
@@ -323,7 +324,7 @@ CREATE TABLE IF NOT EXISTS field_crop_app_freshwater(
 );
 
 CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure_analysis(
-   pk SERIAL PRIMARY KEY,
+  pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
   sample_desc VARCHAR(50) NOT NULL,
   sample_date TIMESTAMP NOT NULL,
@@ -379,6 +380,73 @@ CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure(
 	  REFERENCES field_crop_app_solidmanure_analysis(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 
+);
+
+--  Material type will be the key to tying to nutrient applications
+-- E.g. commerical fertilizer is an nutrient application that is from a nutrient import.
+-- So, we need an entry from here when creating a field_crop_app_fertilizer entry. 
+--    We will search this table by material_type=
+CREATE TABLE IF NOT EXISTS nutrient_import(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+ 
+  import_desc VARCHAR(100) NOT NULL,
+  import_date TIMESTAMP NOT NULL,
+  material_type VARCHAR(100) NOT NULL,
+  amount_imported NUMERIC(10,2) NOT NULL,
+   -- Commercial fertilizer/ Other: Liquid commercial fertilizer,
+  -- Commercial fertilizer/ Other: Solid commercial fertilizer,
+  -- Commercial fertilizer/ Other: Other liquid nutrient source,
+  -- Commercial fertilizer/ Other: Other solid nutrient source,
+  -- Dry manure: Separator solids,
+  -- Dry manure: Corral solids,
+  -- Dry manure: Scraped material,
+  -- Dry manure: Bedding,
+  -- Dry manure: Compost,
+  -- Process wastewater,
+  -- Process wastewater" Process wastewater sludge,
+  method_of_reporting VARCHAR(100) NOT NULL,
+  moisture  NUMERIC(10,2),
+  n_con NUMERIC(10,2),
+  p_con NUMERIC(10,2),
+  k_con NUMERIC(10,2),
+  salt_con NUMERIC(10,2),
+  
+  
+  UNIQUE(dairy_id, import_date, material_type, import_desc),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS field_crop_app_fertilizer(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  field_crop_app_id INT NOT NULL,
+  nutrient_import_id INT NOT NULL,
+
+  amount_applied  NUMERIC(10,2), -- not current used in annual report be information is here.
+
+  n_lbs_acre NUMERIC(10,2),
+  p_lbs_acre NUMERIC(10,2),
+  k_lbs_acre NUMERIC(10,2),
+  salt_lbs_acre NUMERIC(10,2),
+  
+
+  UNIQUE(dairy_id, field_crop_app_id),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field_crop_app
+    FOREIGN KEY(field_crop_app_id) 
+	  REFERENCES field_crop_app(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_nutrient_import
+    FOREIGN KEY(nutrient_import_id) 
+	  REFERENCES nutrient_import(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 

@@ -360,7 +360,7 @@ class Solidmanure extends Component {
 
         Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
           .then(res => {
-            console.log("Completed uploading Process Wastewater TSV")
+            console.log("Completed uploading Solidmanure TSV")
             uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
             this.toggleShowUploadFieldCropAppSolidmanureTSVModal(false)
             this.props.getFieldCropAppSolidmanure()

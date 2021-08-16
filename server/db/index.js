@@ -970,6 +970,133 @@ module.exports = {
   },
 
 
+  insertNutrientImport: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO nutrient_import(
+        dairy_id,
+        import_desc,
+        import_date,
+        material_type,
+        amount_imported,
+        method_of_reporting,
+        moisture,
+        n_con,
+        p_con,
+        k_con,
+        salt_con
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getNutrientImport: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT *
+        FROM nutrient_import
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmNutrientImport: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM nutrient_import where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  searchNutrientImport: (values, callback) => {
+    
+    return pool.query(
+      `SELECT * FROM nutrient_import
+       where import_date = $1 and material_type = $2 and import_desc = $3 and dairy_id = $4`,
+      values,
+      callback
+    )
+  },
+
+
+  insertFieldCropApplicationFertilizer: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO field_crop_app_fertilizer(
+        dairy_id,
+        field_crop_app_id,
+        nutrient_import_id,
+        amount_applied,
+        n_lbs_acre,
+        p_lbs_acre,
+        k_lbs_acre,
+        salt_lbs_acre 
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationFertilizer: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT 
+        
+        fcaf.n_lbs_acre,
+        fcaf.p_lbs_acre,
+        fcaf.k_lbs_acre,
+        fcaf.salt_lbs_acre,
+
+        ni.import_desc,
+        ni.import_date,
+        ni.material_type,
+        ni.amount_imported,
+        ni.moisture,
+        ni.n_con,
+        ni.p_con,
+        ni.k_con,
+        ni.salt_con,
+
+        f.title as fieldtitle,
+        c.title as croptitle,
+        fc.plant_date,
+        fca.app_date
+        
+
+
+        FROM field_crop_app_fertilizer fcaf
+
+        JOIN field_crop_app fca
+        ON fca.pk = fcaf.field_crop_app_id
+
+        JOIN nutrient_import ni
+        ON ni.pk = fcaf.nutrient_import_id
+
+
+        JOIN field_crop fc
+        ON fc.pk = fca.field_crop_id
+
+        JOIN fields f
+        ON f.pk = fc.field_id
+
+        JOIN crops c
+        ON c.pk = fc.crop_id
+
+
+
+        WHERE 
+        fcaf.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmFieldCropApplicationFertilizer: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_fertilizer where pk = %L", id),
+      [],
+      callback
+    )
+  },
 
 
 }
