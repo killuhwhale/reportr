@@ -761,7 +761,6 @@ app.post("/api/field_crop_app_freshwater_source/delete", (req, res) => {
 });
 
 app.post("/api/field_crop_app_freshwater_analysis/create", (req, res) => {
-  console.log("Creating....", req.body)
   const {
     dairy_id,
     fresh_water_source_id,
@@ -838,7 +837,6 @@ app.post("/api/field_crop_app_freshwater_analysis/delete", (req, res) => {
 });
 
 app.post("/api/field_crop_app_freshwater/create", (req, res) => {
-  console.log("Creating.... fresh water", req.body)
   const {
     dairy_id,
     field_crop_app_id,
@@ -896,6 +894,155 @@ app.post("/api/field_crop_app_freshwater/delete", (req, res) => {
     res.json({ "test": "Deleted field_crop_app_freshwater unsuccessful" });
   })
 });
+
+
+app.post("/api/field_crop_app_solidmanure_analysis/create", (req, res) => {
+  
+  const {
+    dairy_id,
+    sample_desc,
+    sample_date,
+    material_type,
+    src_of_analysis,
+    moisture,
+    method_of_reporting,
+    n_con,
+    p_con,
+    k_con,
+    ca_con,
+    mg_con,
+    na_con,
+    s_con,
+    cl_con,
+    tfs
+  } = req.body
+  db.insertFieldCropApplicationSolidmanureAnalysis(
+    [
+      dairy_id,
+      sample_desc,
+      sample_date,
+      material_type,
+      src_of_analysis,
+      moisture,
+      method_of_reporting,
+      n_con,
+      p_con,
+      k_con,
+      ca_con,
+      mg_con,
+      na_con,
+      s_con,
+      cl_con,
+      tfs
+    ],
+    (err, result) => {
+
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created field_crop_app_freshwater unsuccessful" });
+    }
+  )
+});
+app.get("/api/field_crop_app_solidmanure_analysis/:dairy_id", (req, res) => {
+  
+  db.getFieldCropApplicationSolidmanureAnalysis(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all field_crop_app_solidmanure_analysis unsuccessful" });
+    })
+});
+app.post("/api/field_crop_app_solidmanure_analysis/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmFieldCropApplicationSolidmanureAnalysis(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted field_crop_app_solidmanure_analysis successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted field_crop_app_solidmanure_analysis unsuccessful" });
+  })
+});
+
+
+app.post("/api/field_crop_app_solidmanure/create", (req, res) => {
+  console.log("Creating.... solid manure", req.body)
+  const {
+    dairy_id,
+    field_crop_app_id,
+    field_crop_app_solidmanure_analysis_id,
+    src_desc,
+    amount_applied,
+    amt_applied_per_acre,
+    n_lbs_acre,
+    p_lbs_acre,
+    k_lbs_acre,
+    salt_lbs_acre 
+  } = req.body
+  db.insertFieldCropApplicationSolidmanure(
+    [
+      dairy_id,
+      field_crop_app_id,
+      field_crop_app_solidmanure_analysis_id,
+      src_desc,
+      amount_applied,
+      amt_applied_per_acre,
+      n_lbs_acre,
+      p_lbs_acre,
+      k_lbs_acre,
+      salt_lbs_acre 
+    ],
+    (err, result) => {
+
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created field_crop_app_freshwater unsuccessful" });
+    }
+  )
+});
+app.get("/api/field_crop_app_solidmanure/:dairy_id", (req, res) => {
+  
+  db.getFieldCropApplicationSolidmanure(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all field_crop_app_solidmanure unsuccessful" });
+    })
+});
+app.post("/api/field_crop_app_solidmanure_/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmFieldCropApplicationSolidmanure(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted field_crop_app_solidmanure successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted field_crop_app_solidmanure unsuccessful" });
+  })
+});
+
+
+
+
+
+
+
 
 
 
@@ -998,6 +1145,27 @@ app.get("/api/search/field_crop_app_freshwater_analysis/:sample_date/:sample_des
       }
       console.log(err)
       res.json({ "test": "Search all field_crop_app_freshwater unsuccessful" });
+    })
+});
+
+
+// sample_date, sample_desc, src_of_analysis
+app.get("/api/search/field_crop_app_solidmanure_analysis/:sample_date/:sample_desc/:src_of_analysis/:dairy_pk", (req, res) => {
+  db.searchFieldCropAppSolidmanureAnalysis(
+    [
+      req.params.sample_date,
+      req.params.sample_desc,
+      req.params.src_of_analysis,
+      req.params.dairy_pk,
+    ],
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Search all field_crop_app_solidmanure_analysis unsuccessful" });
     })
 });
 

@@ -416,8 +416,6 @@ class Freshwater extends Component {
             // uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
             this.toggleShowUploadFieldCropAppFreshwateTSVModal(false)
             this.props.getFieldCropAppFreshwater()
-            this.props.getFieldCropAppFreshwaterSource()
-            this.props.getFieldCropAppFreshwaterAnalysis()
           })
           .catch(err => {
             console.log("Error with all promises")
@@ -468,169 +466,166 @@ class Freshwater extends Component {
           onChange={this.onUploadFieldCropAppFreshwateTSVModalChange.bind(this)}
           onClose={() => this.toggleShowUploadFieldCropAppFreshwateTSVModal(false)}
         />
-        {this.state.fieldCropAppEvents.length > 0 ? // Render Add Process Wastewater
-          <React.Fragment>
-
-            <Grid item xs={12} align="right">
-              <Button color="secondary" variant="outlined"
-                onClick={() => this.toggleShowAddFreshwaterSourceModal(true)}
-              >
-                Add freshwater source
-              </Button>
-            </Grid>
-            <Grid item xs={12} align="right">
-              <Button color="secondary" variant="outlined"
-                onClick={() => this.toggleShowAddFreshwaterAnalysisModal(true)}
-              >
-                Add freshwater analysis
-              </Button>
-            </Grid>
-            <Grid item xs={12} align="right">
-              <Button color="secondary" variant="outlined"
-                onClick={() => this.toggleShowAddFreshwaterModal(true)}
-              >
-                Add freshwater to application event
-              </Button>
-            </Grid>
 
 
-            <Grid item xs={12}>
-              {this.state.fieldCropAppFreshwaterSources.length > 0 ?
-                <React.Fragment>
-                  <Typography variant="h5">Sources</Typography>
-                  <Grid item container xs={12}>
-                    {
-                      this.state.fieldCropAppFreshwaterSources.map((source, i) => {
-                        return (
-                          <FreshwaterSource key={`fcafwsview${i}`}
-                            source={source}
-                            onConfirmFreshwaterSourceDelete={this.onConfirmFreshwaterSourceDelete.bind(this)}
-                          />
-                        )
-                      })
-                    }
-                  </Grid>
-                </React.Fragment>
-                :
-                <React.Fragment></React.Fragment>
+        <Grid item xs={12} align="right">
+          <Button color="secondary" variant="outlined"
+            onClick={() => this.toggleShowAddFreshwaterSourceModal(true)}
+          >
+            Add freshwater source
+          </Button>
+        </Grid>
+        <Grid item xs={12} align="right">
+          <Button color="secondary" variant="outlined"
+            onClick={() => this.toggleShowAddFreshwaterAnalysisModal(true)}
+          >
+            Add freshwater analysis
+          </Button>
+        </Grid>
+        <Grid item xs={12} align="right">
+          <Button color="secondary" variant="outlined"
+            onClick={() => this.toggleShowAddFreshwaterModal(true)}
+          >
+            Add freshwater to application event
+          </Button>
+        </Grid>
 
-              }
 
-            </Grid>
-
-            <Grid item xs={12}>
-              {this.state.fieldCropAppFreshwaterAnalyses.length > 0 ?
-                <React.Fragment>
-                  <Typography variant="h5">Analyses</Typography>
-                  <Grid item container xs={12}>
-                    {
-                      this.state.fieldCropAppFreshwaterAnalyses.map((analysis, i) => {
-                        return (
-                          <FreshwaterAnalysis key={`fcafwaview${i}`}
-                            analysis={analysis}
-                            onConfirmFreshwaterAnalysisDelete={this.onConfirmFreshwaterAnalysisDelete.bind(this)}
-                          />
-                        )
-                      })
-                    }
-                  </Grid>
-                </React.Fragment>
-                :
-                <React.Fragment></React.Fragment>
-
-              }
-
-            </Grid>
-
-            <Grid item xs={12}>
-              {Object.keys(this.state.fieldCropAppFreshwaters).length > 0 ?
-
-                Object.keys(this.state.fieldCropAppFreshwaters)
-                  .sort((a, b) => a.fieldtitle > b.fieldtitle ? -1 : 1)
-                  .map((field_crop_app_id, i) => {
-                    let freshwaters = this.state.fieldCropAppFreshwaters[field_crop_app_id]
+        <Grid item xs={12}>
+          {this.state.fieldCropAppFreshwaterSources.length > 0 ?
+            <React.Fragment>
+              <Typography variant="h5">Sources</Typography>
+              <Grid item container xs={12}>
+                {
+                  this.state.fieldCropAppFreshwaterSources.map((source, i) => {
                     return (
-                      <FreshwaterAppEvent key={`ppwwviewrow${i}`}
-                        freshwaters={freshwaters}
-                        onDelete={this.onConfirmFreshwaterDelete.bind(this)}
+                      <FreshwaterSource key={`fcafwsview${i}`}
+                        source={source}
+                        onConfirmFreshwaterSourceDelete={this.onConfirmFreshwaterSourceDelete.bind(this)}
                       />
                     )
                   })
-                :
-                <React.Fragment></React.Fragment>
-              }
-            </Grid>
+                }
+              </Grid>
+            </React.Fragment>
+            :
+            <React.Fragment></React.Fragment>
 
-            <ActionCancelModal
-              open={this.state.showConfirmDeleteFreshwaterSourceModal}
-              actionText="Delete"
-              cancelText="Cancel"
-              modalText={`Delete Freshwater source ${this.state.deleteFreshwaterSourceObj.src_desc} - ${this.state.deleteFreshwaterSourceObj.src_type}?`}
+          }
 
-              onAction={this.onFreshwaterSourceDelete.bind(this)}
-              onClose={() => this.toggleShowConfirmDeleteFreshwaterSourceModal(false)}
-            />
-            <ActionCancelModal
-              open={this.state.showConfirmDeleteFreshwaterAnalysisModal}
-              actionText="Delete"
-              cancelText="Cancel"
-              modalText={`Delete Freshwater for ${this.state.deleteFreshwaterAnalysisObj.sample_date} - ${this.state.deleteFreshwaterAnalysisObj.sample_desc}?`}
+        </Grid>
 
-              onAction={this.onFreshwaterAnalysisDelete.bind(this)}
-              onClose={() => this.toggleShowConfirmDeleteFreshwaterAnalysisModal(false)}
-            />
-            <ActionCancelModal
-              open={this.state.showConfirmDeleteFreshwaterModal}
-              actionText="Delete"
-              cancelText="Cancel"
-              modalText={`Delete Freshwater for ${this.state.deleteFreshwaterObj.app_date}?`}
+        <Grid item xs={12}>
+          {this.state.fieldCropAppFreshwaterAnalyses.length > 0 ?
+            <React.Fragment>
+              <Typography variant="h5">Analyses</Typography>
+              <Grid item container xs={12}>
+                {
+                  this.state.fieldCropAppFreshwaterAnalyses.map((analysis, i) => {
+                    return (
+                      <FreshwaterAnalysis key={`fcafwaview${i}`}
+                        analysis={analysis}
+                        onConfirmFreshwaterAnalysisDelete={this.onConfirmFreshwaterAnalysisDelete.bind(this)}
+                      />
+                    )
+                  })
+                }
+              </Grid>
+            </React.Fragment>
+            :
+            <React.Fragment></React.Fragment>
 
-              onAction={this.onFreshwaterDelete.bind(this)}
-              onClose={() => this.toggleShowConfirmDeleteFreshwaterModal(false)}
-            />
+          }
+
+        </Grid>
+
+        <Grid item xs={12}>
+          {Object.keys(this.state.fieldCropAppFreshwaters).length > 0 ?
+
+            Object.keys(this.state.fieldCropAppFreshwaters)
+              .sort((a, b) => a.fieldtitle > b.fieldtitle ? -1 : 1)
+              .map((field_crop_app_id, i) => {
+                let freshwaters = this.state.fieldCropAppFreshwaters[field_crop_app_id]
+                return (
+                  <FreshwaterAppEvent key={`ppwwviewrow${i}`}
+                    freshwaters={freshwaters}
+                    onDelete={this.onConfirmFreshwaterDelete.bind(this)}
+                  />
+                )
+              })
+            :
+            <React.Fragment></React.Fragment>
+          }
+        </Grid>
+
+        <ActionCancelModal
+          open={this.state.showConfirmDeleteFreshwaterSourceModal}
+          actionText="Delete"
+          cancelText="Cancel"
+          modalText={`Delete Freshwater source ${this.state.deleteFreshwaterSourceObj.src_desc} - ${this.state.deleteFreshwaterSourceObj.src_type}?`}
+
+          onAction={this.onFreshwaterSourceDelete.bind(this)}
+          onClose={() => this.toggleShowConfirmDeleteFreshwaterSourceModal(false)}
+        />
+        <ActionCancelModal
+          open={this.state.showConfirmDeleteFreshwaterAnalysisModal}
+          actionText="Delete"
+          cancelText="Cancel"
+          modalText={`Delete Freshwater for ${this.state.deleteFreshwaterAnalysisObj.sample_date} - ${this.state.deleteFreshwaterAnalysisObj.sample_desc}?`}
+
+          onAction={this.onFreshwaterAnalysisDelete.bind(this)}
+          onClose={() => this.toggleShowConfirmDeleteFreshwaterAnalysisModal(false)}
+        />
+        <ActionCancelModal
+          open={this.state.showConfirmDeleteFreshwaterModal}
+          actionText="Delete"
+          cancelText="Cancel"
+          modalText={`Delete Freshwater for ${this.state.deleteFreshwaterObj.app_date}?`}
+
+          onAction={this.onFreshwaterDelete.bind(this)}
+          onClose={() => this.toggleShowConfirmDeleteFreshwaterModal(false)}
+        />
 
 
-            <AddFreshwaterSourceModal
-              open={this.state.showAddFreshwaterSourceModal}
-              actionText="Add"
-              cancelText="Cancel"
-              modalText={`Add freshwater source`}
+        <AddFreshwaterSourceModal
+          open={this.state.showAddFreshwaterSourceModal}
+          actionText="Add"
+          cancelText="Cancel"
+          modalText={`Add freshwater source`}
 
-              createFreshwaterSourceObj={this.state.createFreshwaterSourceObj}
+          createFreshwaterSourceObj={this.state.createFreshwaterSourceObj}
 
-              onAction={this.createFreshwaterSource.bind(this)}
-              onChange={this.onCreateFreshwaterSourceChange.bind(this)}
-              onClose={() => this.toggleShowAddFreshwaterSourceModal(false)}
-            />
-            <AddFreshwaterAnalysisModal
-              open={this.state.showAddFreshwaterAnalysisModal}
-              actionText="Add"
-              cancelText="Cancel"
-              modalText={`Add freshwater analysis`}
-              SOURCE_OF_ANALYSES={SOURCE_OF_ANALYSES}
-              createFreshwaterAnalysisObj={this.state.createFreshwaterAnalysisObj}
-              fieldCropAppFreshwaterSources={this.state.fieldCropAppFreshwaterSources}
-              onAction={this.createFreshwaterAnalysis.bind(this)}
-              onChange={this.onCreateFreshwaterAnalysisChange.bind(this)}
-              onClose={() => this.toggleShowAddFreshwaterAnalysisModal(false)}
-            />
-            <AddFreshwaterModal
-              open={this.state.showAddFreshwaterModal}
-              actionText="Add"
-              cancelText="Cancel"
-              modalText={`Add freshwater app event`}
+          onAction={this.createFreshwaterSource.bind(this)}
+          onChange={this.onCreateFreshwaterSourceChange.bind(this)}
+          onClose={() => this.toggleShowAddFreshwaterSourceModal(false)}
+        />
+        <AddFreshwaterAnalysisModal
+          open={this.state.showAddFreshwaterAnalysisModal}
+          actionText="Add"
+          cancelText="Cancel"
+          modalText={`Add freshwater analysis`}
+          SOURCE_OF_ANALYSES={SOURCE_OF_ANALYSES}
+          createFreshwaterAnalysisObj={this.state.createFreshwaterAnalysisObj}
+          fieldCropAppFreshwaterSources={this.state.fieldCropAppFreshwaterSources}
+          onAction={this.createFreshwaterAnalysis.bind(this)}
+          onChange={this.onCreateFreshwaterAnalysisChange.bind(this)}
+          onClose={() => this.toggleShowAddFreshwaterAnalysisModal(false)}
+        />
+        <AddFreshwaterModal
+          open={this.state.showAddFreshwaterModal}
+          actionText="Add"
+          cancelText="Cancel"
+          modalText={`Add freshwater app event`}
 
-              createFreshwaterObj={this.state.createFreshwaterObj}
-              fieldCropAppFreshwaterAnalyses={this.state.fieldCropAppFreshwaterAnalyses}
-              fieldCropAppEvents={this.state.fieldCropAppEvents}
-              onAction={this.createFreshwater.bind(this)}
-              onChange={this.onCreateFreshwaterChange.bind(this)}
-              onClose={() => this.toggleShowAddFreshwaterModal(false)}
-            />
-          </React.Fragment>
-          :
-          <React.Fragment></React.Fragment>
-        }
+          createFreshwaterObj={this.state.createFreshwaterObj}
+          fieldCropAppFreshwaterAnalyses={this.state.fieldCropAppFreshwaterAnalyses}
+          fieldCropAppEvents={this.state.fieldCropAppEvents}
+          onAction={this.createFreshwater.bind(this)}
+          onChange={this.onCreateFreshwaterChange.bind(this)}
+          onClose={() => this.toggleShowAddFreshwaterModal(false)}
+        />
+
+
 
       </Grid>
     )

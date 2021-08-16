@@ -6,6 +6,7 @@ const BASE_URL = "http://localhost:3001"
 
 export const PROCESS_WASTEWATER = 'process_wastewater'
 export const FRESHWATER = 'field_crop_app_freshwater'
+export const SOLIDMANURE = 'field_crop_app_solidmanure'
 export const TSV_INFO = {
   [PROCESS_WASTEWATER]: {
     numCols: 32, // 32 columns in process_wastewater spreadsheet/ TSV
@@ -15,28 +16,29 @@ export const TSV_INFO = {
     numCols: 33,
     tsvType: FRESHWATER
   },
+  [SOLIDMANURE]: {
+    numCols: 33,
+    tsvType: SOLIDMANURE
+  },
 }
 
 export const lazyGet = (endpoint, value, data, dairy_pk) => {
   return new Promise((resolve, rej) => {
     get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
       .then(res => {
-        if(endpoint == "field_crop_app_freshwater_source" ){
-          console.log("TEXTY CHECKYYYYY", res)
-        }
         // If not found, Attempt to create
         if (Object.keys(res).length == 0) {
           post(`${BASE_URL}/api/${endpoint}/create`, data)
             .then(result => {
-              console.log("Created from lazyget: ", result)
+              // console.log("Created from lazyget: ", result)
 
               // If there is an error response from server.
               if (result.test) {
                 
-                console.log("Create failed, race conditon happened. Attempting to re-fetch")
+                // console.log("Create failed, race conditon happened. Attempting to re-fetch")
                 get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
                   .then(secondResult => {
-                    console.log("Found entry after failing to create entry", secondResult)
+                    // console.log("Found entry after failing to create entry", secondResult)
                     if(secondResult.length == 0){
                       console.log(endpoint, value, data)
                     }
@@ -104,7 +106,6 @@ export const processTSVText = (csvText, numCols) => {
   let started = false
   let rows = []
   lines.forEach((line, i) => {
-    console.log("Line", line)
     let cols = line.split("\t").slice(0, numCols)
     if (cols[0]) { // skips rows without info in col 0
       if (started) {
@@ -304,6 +305,9 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
         } else if (tsvType === FRESHWATER) {
           // Creates source, analysis and event
           resolve(createFreshwaterApplication(row, field_crop_app, dairy_pk))
+        }else if (tsvType === SOLIDMANURE) {
+          // Creates source, analysis and event
+          resolve(createSolidmanureApplication(row, field_crop_app, dairy_pk))
         }
 
       })
@@ -497,4 +501,96 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
 
 
 }
+
+const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
+  
+
+  const [
+    sample_date,
+    sample_desc,
+    src_desc,
+    material_type,
+    src_of_analysis,
+    method_of_reporting,
+    amount_applied,
+    amt_applied_per_acre,
+    moisture,
+    n_con,
+    p_con,
+    k_con,
+    ca_con,
+    mg_con,
+    na_con,
+    s_con,
+    cl_con,
+    tfs,
+    n_lbs_acre,
+    p_lbs_acre,
+    k_lbs_acre,
+    salt_lbs_acre 
+
+  ] = row.slice(11, TSV_INFO[FRESHWATER].numCols)
+
+  // dairy_id, sample_date, sample_desc
+  const field_crop_app_solidmanure_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${encodeURIComponent(src_of_analysis)}`
+  const solidmanure_analysis_data = {
+    dairy_id: dairy_pk,
+    sample_desc,
+    sample_date,
+    material_type,
+    src_of_analysis,
+    moisture: checkEmpty(moisture),
+    method_of_reporting,
+    n_con: checkEmpty(n_con),
+    p_con: checkEmpty(p_con),
+    k_con: checkEmpty(k_con),
+    ca_con: checkEmpty(ca_con),
+    mg_con: checkEmpty(mg_con),
+    na_con: checkEmpty(na_con),
+    s_con: checkEmpty(s_con),
+    cl_con: checkEmpty(cl_con),
+    tfs: checkEmpty(tfs)
+  }
+
+  // Get Source
+  return new Promise((resolve, rej) => {
+    // lazyget freshwater_source
+    lazyGet('field_crop_app_solidmanure_analysis', field_crop_app_solidmanure_analysis_search_url, solidmanure_analysis_data, dairy_pk)
+      .then(field_crop_app_solidmanure_analysis_res => {
+        if(field_crop_app_solidmanure_analysis_res.length > 0){
+          let solidmanure_analysis_obj = field_crop_app_solidmanure_analysis_res[0]
+          let solidmanure_analysis_id = solidmanure_analysis_obj.pk
+  
+  
+          const solidmanure_data = {
+            dairy_id: dairy_pk,
+            field_crop_app_id: field_crop_app.pk,
+            field_crop_app_solidmanure_analysis_id: solidmanure_analysis_id,
+            src_desc,
+            amount_applied: checkEmpty(amount_applied),
+            amt_applied_per_acre: checkEmpty(amt_applied_per_acre),
+            n_lbs_acre: checkEmpty(n_lbs_acre),
+            p_lbs_acre: checkEmpty(p_lbs_acre),
+            k_lbs_acre: checkEmpty(k_lbs_acre),
+            salt_lbs_acre: checkEmpty(salt_lbs_acre) 
+          }
+
+          resolve(post(`${BASE_URL}/api/field_crop_app_solidmanure/create`, solidmanure_data))
+
+        }else{
+          console.log("Error with reading pk for solidmanure analysis", row)
+        }
+
+
+
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
+
+
+}
+
 

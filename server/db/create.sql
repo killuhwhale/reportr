@@ -77,8 +77,6 @@ CREATE TABLE IF NOT EXISTS operators(
     FOREIGN KEY(dairy_id) 
 	  REFERENCES dairies(pk)
 );
-
-
 CREATE TABLE IF NOT EXISTS herds(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -110,7 +108,6 @@ CREATE TABLE IF NOT EXISTS crops(
   salt NUMERIC(10,3),
   UNIQUE(title)
 );
-
 CREATE TABLE IF NOT EXISTS field_crop(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -138,7 +135,6 @@ CREATE TABLE IF NOT EXISTS field_crop(
 	  REFERENCES crops(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
-
 
 -- Concentration conversion factors:
 -- Display mg/kg == x 10,000
@@ -168,7 +164,6 @@ CREATE TABLE IF NOT EXISTS field_crop_harvest(
     ON UPDATE CASCADE ON DELETE CASCADE
 
 );
-
 CREATE TABLE IF NOT EXISTS TSVs(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -181,7 +176,6 @@ CREATE TABLE IF NOT EXISTS TSVs(
 	  REFERENCES dairies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS field_crop_app(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -202,7 +196,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app(
     ON UPDATE CASCADE ON DELETE CASCADE
 
 );
-
 CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater_analysis(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -226,8 +219,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater_analysis(
     ON UPDATE CASCADE ON DELETE CASCADE
 
 );
-
-
 CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -256,8 +247,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater(
     ON UPDATE CASCADE ON DELETE CASCADE
 
 );
-
-
 
 -- Source
 CREATE TABLE IF NOT EXISTS field_crop_app_freshwater_source(
@@ -333,6 +322,64 @@ CREATE TABLE IF NOT EXISTS field_crop_app_freshwater(
 
 );
 
+CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure_analysis(
+   pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  sample_desc VARCHAR(50) NOT NULL,
+  sample_date TIMESTAMP NOT NULL,
+  -- Material Types: separator solids, corral solids, Scraped material, bedding, compost
+  material_type VARCHAR(100) NOT NULL,
+  src_of_analysis VARCHAR(50) NOT NULL,
+  moisture NUMERIC(5,2) NOT NULL,
+  method_of_reporting VARCHAR(50) NOT NULL,
+  n_con NUMERIC(9,3),
+  p_con NUMERIC(9,3),
+  k_con NUMERIC(9,3),
+  
+  ca_con NUMERIC(9,3),
+  mg_con NUMERIC(9,3),
+  na_con NUMERIC(9,3),
+  s_con NUMERIC(9,3), -- sulfur
+  cl_con NUMERIC(9,3),
+
+  tfs NUMERIC(9,3), -- total fixed solids
+  UNIQUE(dairy_id, sample_date, sample_desc, src_of_analysis),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+    REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- Dry Manure aka Solid manure 
+CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  field_crop_app_id INT NOT NULL,
+  field_crop_app_solidmanure_analysis_id INT NOT NULL,
+
+  src_desc VARCHAR(100) NOT NULL,
+  amount_applied NUMERIC(20,2) NOT NULL,
+  amt_applied_per_acre NUMERIC(15,2),
+  n_lbs_acre NUMERIC(10,2),
+  p_lbs_acre NUMERIC(10,2),
+  k_lbs_acre NUMERIC(10,2),
+  salt_lbs_acre NUMERIC(10,2), 
+
+  UNIQUE(dairy_id, field_crop_app_id, field_crop_app_solidmanure_analysis_id),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field_crop_app
+    FOREIGN KEY(field_crop_app_id) 
+	  REFERENCES field_crop_app(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field_crop_app_solidmanure_analysis
+    FOREIGN KEY(field_crop_app_solidmanure_analysis_id) 
+	  REFERENCES field_crop_app_solidmanure_analysis(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+
+);
 
 
 -- CREATE TABLE IF NOT EXISTS water_sources(

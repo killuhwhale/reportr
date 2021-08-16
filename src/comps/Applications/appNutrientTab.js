@@ -11,10 +11,11 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import ProcessWastewater from "./processWastewater"
 import Freshwater from "./freshwater"
+import Solidmanure from "./solidmanure"
 import AddFieldCropApplicationModal from "../Modals/addFieldCropApplicationModal"
 import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
-import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, } from '../../utils/TSV'
+import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, } from '../../utils/TSV'
 
 const BASE_URL = "http://localhost:3001"
 const PRECIPITATIONS = [
@@ -43,6 +44,10 @@ const APP_METHODS = [
   'Other',
 ]
 
+const REPORTING_METHODS  = ['dry-weight', 'as-is']
+const SOURCE_OF_ANALYSES = ['Lab Analysis', 'Other/ estimated']
+const MATERIAL_TYPES = ['Separator solids', 'Corral solids', "Scraped material", 'Bedding', 'Compost']
+ 
 const groupBySortBy = (list, groupBy, sortBy) => {
   let grouped = {}
   list.forEach(item => {
@@ -75,6 +80,8 @@ class NutrientApplicationTab extends Component {
       fieldCropAppFreshwaterSources: [],
       fieldCropAppFreshwaterAnalyses: [],
       fieldCropAppFreshwaters: [],
+      fieldCropAppSolidmanureAnalyses: [],
+      fieldCropAppSolidmanures: [],
       field_crop_app_process_wastewater: {}, // obj, holds lists of process_wastewater by Field Title, then sorted by app date.
       createFieldCropAppObj: {
         dairy_id: props.dairy.pk,
@@ -106,6 +113,8 @@ class NutrientApplicationTab extends Component {
     this.getFieldCropAppFreshwaterSource()
     this.getFieldCropAppFreshwaterAnalysis()
     this.getFieldCropAppFreshwater()
+    this.getFieldCropAppSolidmanureAnalysis()
+    this.getFieldCropAppSolidmanure()
   }
   handleTabChange(ev, index) {
     let tabs = this.state.tabs
@@ -152,6 +161,18 @@ class NutrientApplicationTab extends Component {
         this.setState({ field_crops: field_crop_lists })
       })
   }
+
+  getFieldCropAppProcessWastewater() {
+    get(`${BASE_URL}/api/field_crop_app_process_wastewater/${this.state.dairy.pk}`)
+      .then(res => {
+        let process_wastewater_by_fieldtitle = groupBySortBy(res, 'fieldtitle', 'app_date')
+        this.setState({ field_crop_app_process_wastewater: process_wastewater_by_fieldtitle })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
   getFieldCropAppFreshwaterSource() {
     get(`${BASE_URL}/api/field_crop_app_freshwater_source/${this.state.dairy.pk}`)
       .then(res => {
@@ -161,7 +182,6 @@ class NutrientApplicationTab extends Component {
         console.log(err)
       })
   }
-
   getFieldCropAppFreshwaterAnalysis() {
     get(`${BASE_URL}/api/field_crop_app_freshwater_analysis/${this.state.dairy.pk}`)
       .then(res => {
@@ -176,6 +196,26 @@ class NutrientApplicationTab extends Component {
       .then(res => {
         let fieldCropAppFreshwaters = groupBySortBy(res, 'fieldtitle', 'app_date')
         this.setState({ fieldCropAppFreshwaters:  fieldCropAppFreshwaters})
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  getFieldCropAppSolidmanureAnalysis() {
+    get(`${BASE_URL}/api/field_crop_app_solidmanure_analysis/${this.state.dairy.pk}`)
+      .then(res => {
+        this.setState({ fieldCropAppSolidmanureAnalyses: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  getFieldCropAppSolidmanure() {
+    get(`${BASE_URL}/api/field_crop_app_solidmanure/${this.state.dairy.pk}`)
+      .then(res => {
+        let fieldCropAppSolidmanures = groupBySortBy(res, 'fieldtitle', 'app_date')
+        this.setState({ fieldCropAppSolidmanures:  fieldCropAppSolidmanures})
       })
       .catch(err => {
         console.log(err)
@@ -237,27 +277,6 @@ class NutrientApplicationTab extends Component {
   toggleShowAddFieldCropAppModal(val) {
     this.setState({ showAddFieldCropAppModal: val })
   }
-
-
-  /** Process Wastewater Applications
-   * Process Wastewater Applications
-   * - table anme: field_crop_app_process_wastewater
-   */
-  getFieldCropAppProcessWastewater() {
-    console.log("Getting processwastewaters......")
-    get(`${BASE_URL}/api/field_crop_app_process_wastewater/${this.state.dairy.pk}`)
-      .then(res => {
-        // list of process, sort by app event
-        // Group by field, sort by application date.
-
-        let process_wastewater_by_fieldtitle = groupBySortBy(res, 'fieldtitle', 'app_date')
-        this.setState({ field_crop_app_process_wastewater: process_wastewater_by_fieldtitle })
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
 
 
 
@@ -339,7 +358,22 @@ class NutrientApplicationTab extends Component {
 
             </Grid>
             <Grid item xs={12} style={{ marginTop: "30px" }} className={`${this.state.tabs[2]}`}>
-              <Typography variant="h2">Solid Manure</Typography>
+              
+              <Solidmanure
+                dairy_id={this.state.dairy.pk}
+                tsvType={TSV_INFO[SOLIDMANURE].tsvType}
+                numCols={TSV_INFO[SOLIDMANURE].numCols}
+                fieldCropAppEvents={this.state.fieldCropAppEvents}                
+                fieldCropAppSolidmanureAnalyses={this.state.fieldCropAppSolidmanureAnalyses}
+                fieldCropAppSolidmanures={this.state.fieldCropAppSolidmanures}
+                MATERIAL_TYPES={MATERIAL_TYPES}
+                SOURCE_OF_ANALYSES={SOURCE_OF_ANALYSES}
+                REPORTING_METHODS={REPORTING_METHODS}
+                getFieldCropAppSolidmanureAnalysis={this.getFieldCropAppSolidmanureAnalysis.bind(this)}
+                getFieldCropAppSolidmanure={this.getFieldCropAppSolidmanure.bind(this)}
+                getFieldCropAppEvents={this.getFieldCropAppEvents.bind(this)}
+
+              />
 
             </Grid>
             <Grid item xs={12} style={{ marginTop: "30px" }} className={`${this.state.tabs[3]}`}>

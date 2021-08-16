@@ -826,6 +826,149 @@ module.exports = {
     )
   },
 
+  insertFieldCropApplicationSolidmanureAnalysis: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO field_crop_app_solidmanure_analysis(
+        dairy_id,
+        sample_desc,
+        sample_date,
+        material_type,
+        src_of_analysis,
+        moisture,
+        method_of_reporting,
+        n_con,
+        p_con,
+        k_con,
+        ca_con,
+        mg_con,
+        na_con,
+        s_con,
+        cl_con,
+        tfs
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationSolidmanureAnalysis: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT *
+        FROM field_crop_app_solidmanure_analysis fcasma
+        WHERE 
+        fcasma.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmFieldCropApplicationSolidmanureAnalysis: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_solidmanure_analysis where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  searchFieldCropAppSolidmanureAnalysis: (values, callback) => {
+    
+    return pool.query(
+      `SELECT * FROM field_crop_app_solidmanure_analysis
+       where sample_date = $1 and sample_desc = $2 and src_of_analysis = $3 and dairy_id = $4`,
+      values,
+      callback
+    )
+  },
+
+  insertFieldCropApplicationSolidmanure: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO field_crop_app_solidmanure(
+        dairy_id,
+        field_crop_app_id,
+        field_crop_app_solidmanure_analysis_id,
+        src_desc,
+        amount_applied,
+        amt_applied_per_acre,
+        n_lbs_acre,
+        p_lbs_acre,
+        k_lbs_acre,
+        salt_lbs_acre 
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationSolidmanure: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT 
+        fcasm.src_desc,
+        fcasm.amount_applied,
+        fcasm.amt_applied_per_acre,
+        fcasm.n_lbs_acre,
+        fcasm.p_lbs_acre,
+        fcasm.k_lbs_acre,
+        fcasm.salt_lbs_acre,
+
+        fcasma.sample_desc,
+        fcasma.sample_date,
+        fcasma.material_type,
+        fcasma.src_of_analysis,
+        fcasma.moisture,
+        fcasma.method_of_reporting,
+        fcasma.n_con,
+        fcasma.p_con,
+        fcasma.k_con,
+        fcasma.ca_con,
+        fcasma.mg_con,
+        fcasma.na_con,
+        fcasma.s_con,
+        fcasma.cl_con,
+        fcasma.tfs,
+        
+
+        f.title as fieldtitle,
+        c.title as croptitle,
+        fc.plant_date,
+
+        fca.app_date
+        
+        FROM field_crop_app_solidmanure fcasm
+
+        JOIN field_crop_app fca
+        ON fca.pk = fcasm.field_crop_app_id
+
+        JOIN field_crop_app_solidmanure_analysis fcasma
+        ON fcasma.pk = fcasm.field_crop_app_solidmanure_analysis_id
+
+
+        JOIN field_crop fc
+        ON fc.pk = fca.field_crop_id
+
+        JOIN fields f
+        ON f.pk = fc.field_id
+
+        JOIN crops c
+        ON c.pk = fc.crop_id
+
+
+
+        WHERE 
+        fcasm.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmFieldCropApplicationSolidmanure: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_solidmanure where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
 
 
 
