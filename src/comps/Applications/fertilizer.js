@@ -489,6 +489,8 @@ class Fertilizer extends Component {
 
 
         {/* Here ya go buddy, implement these manana :)
+            You also need to fix your branches, currently updating backup :(
+
         <AddNutrientImportModal
           open={this.state.showAddNutrientImportModal}
           actionText="Add"
