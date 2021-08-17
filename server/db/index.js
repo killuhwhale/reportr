@@ -312,7 +312,23 @@ module.exports = {
     
     return pool.query(
       format(`INSERT INTO field_crop_harvest(
-        dairy_id, field_crop_id, harvest_date, density, basis, actual_yield, moisture, n,p,k,tfs
+        dairy_id,
+        field_crop_id,
+        sample_date,
+        harvest_date,
+        expected_yield_tons_acre,
+        method_of_reporting,
+        actual_yield,
+        src_of_analysis,
+        moisture,
+        n,
+        p,
+        k,
+        tfs,
+        n_lbs_acre,
+        p_lbs_acre,
+        k_lbs_acre,
+        salt_lbs_acre
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -325,13 +341,20 @@ module.exports = {
            fch.pk,
            fch.harvest_date,
            fch.actual_yield,
-           fch.basis,
-           fch.density,
+           fch.method_of_reporting,
            fch.moisture as actual_moisture,
            fch.n as actual_n,
            fch.p as actual_p,
            fch.k as actual_k,
            fch.tfs,
+           fch.sample_date,
+           fch.src_of_analysis,
+           fch.expected_yield_tons_acre,
+           fch.n_lbs_acre,
+           fch.p_lbs_acre,
+           fch.k_lbs_acre,
+           fch.salt_lbs_acre,
+
            c.title as croptitle,
            f.title as fieldtitle,
            fc.plant_date,

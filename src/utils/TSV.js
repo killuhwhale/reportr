@@ -220,7 +220,7 @@ const getFieldCrop = (commonRowData, dairy_pk) => {
               acres_planted: acres_planted,
               typical_yield: typical_yield,
               moisture: typical_moisture,
-              n: typical_n,
+              n: typical_n,  // I now reliaze copying this data is rather pointless.. but takes more work to remove...
               p: typical_p,
               k: typical_k,
               salt: salt
@@ -283,17 +283,21 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
     crop_title,
     plant_date,
     harvest_date,
-    typical_yield,
+    expected_yield_tons_acre,
     actual_yield_tons_per_acre,
-    actual_yield_tons, 
+    actual_yield,
     sample_date,
     src_of_analysis,
-    basis, // Reporting method
-    actual_moisture,
-    actual_n,
-    actual_p,
-    actual_k,
-    tfs
+    method_of_reporting,
+    moisture,
+    n,
+    p,
+    k,
+    tfs,
+    n_lbs_acre,
+    p_lbs_acre,
+    k_lbs_acre,
+    salt_lbs_acre
   ] = row
 
 
@@ -324,21 +328,10 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
       .then(res => {
         let fieldObj = res[0][0] // res = [res1, res2], res1=[data]
         let cropObj = res[1][0]
-
         if (fieldObj) {
-          console.log(`Found Field: ${fieldObj.title} for row ${i}`, fieldObj)
           if (cropObj) {
-            console.log(`Found Crop: ${cropObj.title} for row ${i}`, cropObj)
-            // Get Field_Crop, possibly created
-            // Now we can create a field_crop with:
-            //    fieldObj, cropObj, and [from testRow[i] -> ]plant_date[6], acres_planted[1], [from crops -> ]typical_yield, moisture, n, p, k, salt
             const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
-
-
-            // /api/field_crop/value
-            // /api/
             let field_crop_search_value = `${fieldObj.pk}/${cropObj.pk}/${encodeURIComponent(plant_date)}`
-
             let field_crop_data = {
               dairy_id: dairy_pk,
               field_id: fieldObj.pk,
@@ -356,25 +349,28 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
             lazyGet('field_crop', field_crop_search_value, field_crop_data, dairy_pk)
               .then(field_crop_res => {
                 const fieldCropObj = field_crop_res[0]
-                // TODO() fieldCrobObj might be undefined
-                // Attempt to create harvest event in field_crop_harvest
-                // dairy_id, field_crop_id, harvest_date, density, basis, actual_yield, moisture, n,p,k,tfs
                 const field_crop_harvest_data = {
                   dairy_id: dairy_pk,
-                  // field_id: fieldObj.pk,
                   field_crop_id: fieldCropObj.pk,
-                  harvest_date: harvest_date,
-                  basis: basis,
-                  density: 0, // **this field is not in the sheet
-                  actual_yield: parseFloat(actual_yield_tons),
-                  moisture: actual_moisture,
-                  n: actual_n,
-                  p: actual_p,
-                  k: actual_k,
-                  tfs: tfs
+                  harvest_date,
+                  sample_date,
+                  src_of_analysis,
+                  method_of_reporting,
+                  expected_yield_tons_acre: checkEmpty(expected_yield_tons_acre),
+                  actual_yield: checkEmpty(actual_yield),
+                  moisture: checkEmpty(moisture),
+                  n: checkEmpty(n),
+                  p: checkEmpty(p),
+                  k: checkEmpty(k),
+                  tfs: checkEmpty(tfs),
+                  n_lbs_acre: checkEmpty(n_lbs_acre),
+                  p_lbs_acre: checkEmpty(p_lbs_acre),
+                  k_lbs_acre: checkEmpty(k_lbs_acre),
+                  salt_lbs_acre: checkEmpty(salt_lbs_acre)
+
                 }
 
-
+                console.log("")
                 resolve(post(`${BASE_URL}/api/field_crop_harvest/create`, field_crop_harvest_data))
 
               })

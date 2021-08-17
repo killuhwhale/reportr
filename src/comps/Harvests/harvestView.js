@@ -114,14 +114,7 @@ class HarvestView extends Component {
                                       <Grid item xs={2}>
                                         <TextField disabled
                                           label="Reporting Basis"
-                                          value={harvest.basis}
-                                          style={{ width: "100%" }}
-                                        />
-                                      </Grid>
-                                      <Grid item xs={2}>
-                                        <TextField disabled
-                                          label="Density (lbs/cu ft)"
-                                          value={parseFloat(harvest.density)}
+                                          value={harvest.method_of_reporting}
                                           style={{ width: "100%" }}
                                         />
                                       </Grid>
@@ -161,16 +154,7 @@ class HarvestView extends Component {
                                           style={{ width: "100%" }}
                                         />
                                       </Grid>
-                                      <Grid item xs={2}>
-                                        <TextField disabled
-                                          label="Salt"
-                                          name="salt"
-                                          // value={harvest.salt}
-                                          value="0"
-                                          onChange={(ev) => this.props.onChange(i, harvest, ev)}
-                                          style={{ width: "100%" }}
-                                        />
-                                      </Grid>
+                                     
                                       <Grid item xs={2}>
                                         <TextField
                                           label="TFS (%)"

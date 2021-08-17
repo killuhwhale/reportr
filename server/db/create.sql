@@ -136,6 +136,32 @@ CREATE TABLE IF NOT EXISTS field_crop(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+-- Abandoned... not reused informationn, it is unique to each harvest...
+-- CREATE TABLE IF NOT EXISTS plant_tissue_analysis(
+--   pk SERIAL PRIMARY KEY,
+--   dairy_id INT NOT NULL,
+--   sample_date timestamp NOT NULL,  
+--   src_of_analysis VARCHAR(50) NOT NULL,
+--   method_of_reporting VARCHAR(20), -- reporting method
+  
+--   moisture NUMERIC(6,2), -- stored as a percent 10 == 10%
+--   n_con NUMERIC(8,6), -- Come from lab as a percentage of concentration in mg/kg, divide by .49999899 to convert to lb/ ton conversion factor
+--   p_con NUMERIC(8,6),       -- With the conversions factor in lb/ton we can calculate the required Annual report data
+--   k_con NUMERIC(8,6),       --    totals for N, P K & Salt == yield(tons/acre) * CF (concentration factor in lb/ton) 
+--   tfs_con NUMERIC(8,6), -- total fixed solids
+--   UNIQUE(dairy_id, sample_date, src_of_analysis, method_of_reporting, moisture, n_con),
+--   CONSTRAINT fk_dairy
+--     FOREIGN KEY(dairy_id) 
+-- 	  REFERENCES dairies(pk)
+--     ON UPDATE CASCADE ON DELETE CASCADE,
+--   CONSTRAINT fk_field_crop
+--     FOREIGN KEY(field_crop_id) 
+-- 	  REFERENCES field_crop(pk)
+--     ON UPDATE CASCADE ON DELETE CASCADE
+
+-- );
+
+-- Rename: basis->mehtod_of_reporting, Delete: density
 -- Concentration conversion factors:
 -- Display mg/kg == x 10,000
 -- Display actualy yields == divide by 0.49999899 and then use in the formula
@@ -144,15 +170,21 @@ CREATE TABLE IF NOT EXISTS field_crop_harvest(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
   field_crop_id INT NOT NULL,
-  harvest_date timestamp,
-  basis VARCHAR(20), -- reporting method
-  density NUMERIC(6,2), -- lbs/ ft**3 cubic foot
-  actual_yield NUMERIC(6,2), -- tons -- calculate to find tons/ acres by field_crop.acres_planted 
+  sample_date timestamp NOT NULL,
+  harvest_date timestamp NOT NULL,
+  expected_yield_tons_acre NUMERIC(12,2) NOT NULL,
+  method_of_reporting VARCHAR(20)  NOT NULL, -- reporting method
+  actual_yield NUMERIC(6,2)  NOT NULL, -- tons -- calculate to find tons/ acres by field_crop.acres_planted 
+  src_of_analysis VARCHAR(50) NOT NULL,
   moisture NUMERIC(6,2), -- stored as a percent 10 == 10%
   n NUMERIC(8,6), -- Come from lab as a percentage of concentration in mg/kg, divide by .49999899 to convert to lb/ ton conversion factor
   p NUMERIC(8,6),       -- With the conversions factor in lb/ton we can calculate the required Annual report data
   k NUMERIC(8,6),       --    totals for N, P K & Salt == yield(tons/acre) * CF (concentration factor in lb/ton) 
-  tfs NUMERIC(8,6), -- total fixed solids
+  tfs NUMERIC(8,6), -- total fixed solids,
+  n_lbs_acre NUMERIC(12,2),
+  p_lbs_acre NUMERIC(12,2),
+  k_lbs_acre NUMERIC(12,2),
+  salt_lbs_acre NUMERIC(12,2),
   UNIQUE(dairy_id, field_crop_id, harvest_date),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 

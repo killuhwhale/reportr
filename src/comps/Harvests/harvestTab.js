@@ -21,9 +21,12 @@ import {
 } from "../../utils/TSV"
 
 
-
+const REPORTING_METHODS  = ['dry-weight', 'as-is']
+const SOURCE_OF_ANALYSES = ['Lab Analysis', 'Other/ estimated']
 const BASE_URL = "http://localhost:3001"
 const BASIS = ['As-is', "Dry wt"]
+
+const NUM_COLS = 22
 
 class HarvestTab extends Component {
   constructor(props) {
@@ -41,15 +44,29 @@ class HarvestTab extends Component {
       showViewTSVsModal: false,
       createFieldCropHarvestObj: {
         harvest_date: new Date(),
+        sample_date: new Date(),
         field_crop_idx: 0,
-        basis_idx: 0,
-        density: 0,
+        method_of_reporting_idx: 0,
+        expected_yield_tons_acre: '',
+        src_of_analysis: '',
+        src_of_analysis_idx: 0,
         actual_yield: 0,
         moisture: 0,
         n: 0,
         p: 0,
         k: 0,
-        tfs: 0
+        tfs: 0,
+        n_lbs_acre: 0,
+        p_lbs_acre: 0,
+        k_lbs_acre: 0,
+        salt_lbs_acre: 0
+
+
+
+
+ 
+    
+    
       } // TODO fill out required keys to create object....
     }
   }
@@ -115,30 +132,27 @@ class HarvestTab extends Component {
 
   onCreateFieldCropHarvestChange(ev) {
     let createObj = this.state.createFieldCropHarvestObj
-    if (ev.target) {
-      const { name, value } = ev.target
-      createObj[name] = value
-      this.setState({ createFieldCropHarvestObj: createObj })
-    } else {
-      createObj['harvest_date'] = ev
-      this.setState({ createFieldCropHarvestObj: createObj })
-    }
-
+    const { name, value } = ev.target
+    createObj[name] = value
+    this.setState({ createFieldCropHarvestObj: createObj })
   }
   createFieldCropHarvest() {
     const field_crop_idx = this.state.createFieldCropHarvestObj.field_crop_idx
     console.log("Creating field crop harvest", this.state.field_crops, field_crop_idx)
     const field_crop_id = this.state.field_crops[field_crop_idx].pk
-    const basis_idx = this.state.createFieldCropHarvestObj.basis_idx
-    const basis = BASIS[basis_idx]
-
-    console.log("Create field crop harvest w/ field_crop id: ", field_crop_id, basis)
+    const method_of_reporting_idx = this.state.createFieldCropHarvestObj.method_of_reporting_idx
+    const src_of_analysis_idx = this.state.createFieldCropHarvestObj.src_of_analysis_idx
+    const method_of_reporting = REPORTING_METHODS[method_of_reporting_idx]
+    const src_of_analysis = SOURCE_OF_ANALYSES[src_of_analysis_idx]
+    
+    console.log("Create field crop harvest w/ field_crop id: ", field_crop_id, method_of_reporting)
 
     let data = {
       ...this.state.createFieldCropHarvestObj,
       dairy_id: this.state.dairy.pk,
-      basis: basis,
-      field_crop_id: field_crop_id
+      method_of_reporting,
+      src_of_analysis,
+      field_crop_id
     }
     post(`${BASE_URL}/api/field_crop_harvest/create`, data)
       .then(res => {
@@ -190,9 +204,9 @@ class HarvestTab extends Component {
       let obj = this.state.updateFieldCropHarvestObj[pk]
       // rename
       const {
-        harvest_date, actual_yield, basis, density, actual_moisture: moisture, actual_n: n, actual_p: p, actual_k: k, tfs
+        harvest_date, actual_yield, method_of_reporting, density, actual_moisture: moisture, actual_n: n, actual_p: p, actual_k: k, tfs
       } = obj
-      let data = { harvest_date, actual_yield, basis, density, moisture, n, p, k, tfs, pk }
+      let data = { harvest_date, actual_yield, method_of_reporting, density, moisture, n, p, k, tfs, pk }
       return (
         post(`${BASE_URL}/api/field_crop_harvest/update`, data)
       )
@@ -223,7 +237,7 @@ class HarvestTab extends Component {
   // Triggered when user presses Add btn in Modal
   uploadCSV() {
     console.log("Uploading CSV")
-    let rows = processTSVText(this.state.csvText)
+    let rows = processTSVText(this.state.csvText, NUM_COLS)
 
     // Create a set of fields to ensure duplicates are not attempted.
     let fields = createFieldSet(rows)   
@@ -256,146 +270,8 @@ class HarvestTab extends Component {
 
 
   }
-  /**
-   *  Returns the obj requested or creates and returns it.
-   * 
-   *  endpoint for get must match /api/search/endpoint/value/dairy_id
-   *  endpoint for post must match /api/endpoint/create
-   * 
-   * @param {*} endpoint  the targeted database table == table name
-   * @param {*} value     the value use to search the table
-   * @param {*} data      the data to create the entry if not found
-   * @returns             an entry from a database table
-   */
-  lazyGet(endpoint, value, data = {}) {
-    return new Promise((resolve, rej) => {
-      get(`${BASE_URL}/api/search/${endpoint}/${value}/${this.state.dairy.pk}`)
-        .then(res => {
-          if (Object.keys(res).length == 0) {
-            // Create Object
-            post(`${BASE_URL}/api/${endpoint}/create`, data)
-              .then(result => {
-                resolve(result)
-              })
-              .catch(error => {
-                rej(error)
-              })
-          } else {
-            resolve(res)
-          }
-        })
-        .catch(err => {
-          rej(err)
-        })
-    })
-  }
-  createDataFromCSVListRow(row, i) {
-    console.log("Creating db entreis for data:: ", row)
-    // Spreadsheet Row Headers
-    // Field	Acres_Planted	cropable	Total_Acres		Crop	Plant_Date	Harvest_Dates	Expected_Yield(Tons/Acre)	
-    //  Actual_Yield(Tons/Acre)	Actual_Yield(Total Tons)	Reporting_Method	% Moisture	%N	%P	%K	%TFSSalt(Dry Basis)
-    const [
-      field_title, acres_planted, cropable, acres, crop_title, crop_title1, plant_date, harvest_date, typical_yield, actual_yield_tons_per_acre,
-      actual_yield_tons, basis, actual_moisture, actual_n, actual_p, actual_k, tfs
-    ] = row
-
-
-    let fieldData = {
-      data: {
-        title: field_title,
-        cropable: cropable,
-        acres: acres,
-        dairy_id: this.state.dairy.pk
-      }
-    }
-
-    return new Promise((resolve, rej) => {
-      // Get Field and Crop
-      Promise.all([
-        this.lazyGet('fields', field_title, fieldData),
-        get(`${BASE_URL}/api/crops/${crop_title}`) // list of crops in DB are predefined based on spreadsheet. HARDCODED
-      ])
-        .then(res => {
-          let fieldObj = res[0][0] // res = [res1, res2], res1=[data]
-          let cropObj = res[1][0]
-
-          if (fieldObj) {
-            console.log(`Found Field: ${fieldObj.title} for row ${i}`, fieldObj)
-            if (cropObj) {
-              console.log(`Found Crop: ${cropObj.title} for row ${i}`, cropObj)
-              // Get Field_Crop, possibly created
-              // Now we can create a field_crop with:
-              //    fieldObj, cropObj, and [from testRow[i] -> ]plant_date[6], acres_planted[1], [from crops -> ]typical_yield, moisture, n, p, k, salt
-              const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
-
-
-              // /api/field_crop/value
-              // /api/
-              let field_crop_search_value = `${fieldObj.pk}/${cropObj.pk}/${encodeURIComponent(plant_date)}`
-
-              let field_crop_data = {
-                dairy_id: this.state.dairy.pk,
-                field_id: fieldObj.pk,
-                crop_id: cropObj.pk,
-                plant_date: plant_date,
-                acres_planted: acres_planted,
-                typical_yield: typical_yield,
-                moisture: typical_moisture,
-                n: typical_n,
-                p: typical_p,
-                k: typical_k,
-                salt: salt
-              }
-
-              this.lazyGet('field_crop', field_crop_search_value, field_crop_data)
-                .then(field_crop_res => {
-                  const fieldCropObj = field_crop_res[0]
-                  // TODO() fieldCrobObj might be undefined
-                  // Attempt to create harvest event in field_crop_harvest
-                  // dairy_id, field_crop_id, harvest_date, density, basis, actual_yield, moisture, n,p,k,tfs
-                  const field_crop_harvest_data = {
-                    dairy_id: this.state.dairy.pk,
-                    // field_id: fieldObj.pk,
-                    field_crop_id: fieldCropObj.pk,
-                    harvest_date: harvest_date,
-                    basis: basis,
-                    density: 0, // **this field is not in the sheet
-                    actual_yield: parseFloat(actual_yield_tons),
-                    moisture: actual_moisture,
-                    n: actual_n,
-                    p: actual_p,
-                    k: actual_k,
-                    tfs: tfs
-                  }
-
-
-
-
-                  
-                  post(`${BASE_URL}/api/field_crop_harvest/create`, field_crop_harvest_data)
-                    .then(field_crop_harvest_res => {
-                      resolve(field_crop_harvest_res)
-                    })
-                    .catch(field_crop_harvest_err => {
-                      rej(field_crop_harvest_err)
-                    })
-                })
-                .catch(field_crop_err => {
-                  rej(field_crop_err)
-                })
-            } else {
-              rej(res)
-            }
-          } else {
-            rej(res)
-          }
-        })
-        .catch(err => {
-          rej(err)
-        })
-    })
-
-  }
+  
+ 
 
   toggleShowTSVsModal(val){
     this.setState({showViewTSVsModal: val})
@@ -475,7 +351,8 @@ class HarvestTab extends Component {
           modalText={`Select Field and Planted Crop`}
           field_crops={this.state.field_crops}
           createFieldCropHarvestObj={this.state.createFieldCropHarvestObj}
-          basis={BASIS}
+          REPORTING_METHODS={REPORTING_METHODS}
+          SOURCE_OF_ANALYSES={SOURCE_OF_ANALYSES}
           onAction={this.createFieldCropHarvest.bind(this)}
           onChange={this.onCreateFieldCropHarvestChange.bind(this)}
           onClose={() => this.toggleShowAddFieldCropHarvestModal(false)}

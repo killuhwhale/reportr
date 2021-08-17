@@ -454,10 +454,44 @@ app.post("/api/field_crop/delete", (req, res) => {
 
 app.post("/api/field_crop_harvest/create", (req, res) => {
   console.log("Creating....", req.body)
-  const { dairy_id, field_crop_id, harvest_date, density, basis, actual_yield, moisture, n, p, k, tfs } = req.body
+  const {
+    dairy_id,
+    field_crop_id,
+    sample_date,
+    harvest_date,
+    expected_yield_tons_acre,
+    method_of_reporting,
+    actual_yield,
+    src_of_analysis,
+    moisture,
+    n,
+    p,
+    k,
+    tfs,
+    n_lbs_acre,
+    p_lbs_acre,
+    k_lbs_acre,
+    salt_lbs_acre
+  } = req.body
   db.insertFieldCropHarvest(
     [
-      dairy_id, field_crop_id, harvest_date, density, basis, actual_yield, moisture, n, p, k, tfs
+      dairy_id,
+      field_crop_id,
+      sample_date,
+      harvest_date,
+      expected_yield_tons_acre,
+      method_of_reporting,
+      actual_yield,
+      src_of_analysis,
+      moisture,
+      n,
+      p,
+      k,
+      tfs,
+      n_lbs_acre,
+      p_lbs_acre,
+      k_lbs_acre,
+      salt_lbs_acre
     ],
     (err, result) => {
 
