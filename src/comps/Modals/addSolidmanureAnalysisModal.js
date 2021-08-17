@@ -95,8 +95,6 @@ class AddSolidmanureAnalysisModal extends Component {
                     onChange={this.props.onChange.bind(this)}
                     style={{ width: "100%", justifyContent: "flex-end" }}
                   />
-
-
                 </Grid>
                 <Grid item xs={4}>
                   <TextField

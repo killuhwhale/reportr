@@ -543,7 +543,7 @@ class Freshwater extends Component {
           {Object.keys(this.state.fieldCropAppFreshwaters).length > 0 ?
 
             Object.keys(this.state.fieldCropAppFreshwaters)
-              .sort((a, b) => a.fieldtitle > b.fieldtitle ? -1 : 1)
+              .sort()
               .map((field_crop_app_id, i) => {
                 let freshwaters = this.state.fieldCropAppFreshwaters[field_crop_app_id]
                 return (

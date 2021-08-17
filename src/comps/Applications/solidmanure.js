@@ -458,7 +458,7 @@ class Solidmanure extends Component {
           {Object.keys(this.state.fieldCropAppSolidmanures).length > 0 ?
 
             Object.keys(this.state.fieldCropAppSolidmanures)
-              .sort((a, b) => a.fieldtitle > b.fieldtitle ? -1 : 1)
+              .sort()
               .map((field_crop_app_id, i) => {
                 let solidmanures = this.state.fieldCropAppSolidmanures[field_crop_app_id]
                 return (

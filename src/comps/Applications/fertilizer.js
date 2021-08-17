@@ -16,8 +16,8 @@ import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
 
-// import AddNutrientImportModal from "../Modals/addNutrientImportModal"
-// import AddFertilizerModal from "../Modals/addFertilizerModal"
+import AddNutrientImportModal from "../Modals/addNutrientImportModal"
+import AddFertilizerModal from "../Modals/addFertilizerModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
@@ -39,95 +39,149 @@ const SOURCE_OF_ANALYSES = [
 
 /** View for Process Wastewater Entry in DB */
 const FertilizerAppEvent = (props) => {
-  return (<span>Test FertilizerAppEvent</span>)
-  // return (
-  //   <Grid item container xs={12}>
-  //     <Grid item xs={12}>
-  //       <Typography variant="h4">{props.fertilizers[0].fieldtitle}</Typography>
-  //       <hr />
-  //     </Grid>
-  //     {
-  //       props.fertilizers.map((fertilizer, i) => {
-  //         return (
-  //           <Grid item container xs={12} key={`fwmainview${i}`}>
-  //             <Grid item xs={6}>
-  //               <Typography variant="subtitle1">{fertilizer.croptitle}</Typography>
-  //             </Grid>
-  //             <Grid item xs={6} align="right">
-  //               <Typography variant="subtitle1">Planted: {fertilizer.plant_date}</Typography>
-  //             </Grid>
-  //             <Grid item xs={6}>
-  //               <Typography variant="subtitle2">{fertilizer.sample_desc} | {fertilizer.src_desc}</Typography>
-  //             </Grid>
-  //             <Grid item xs={6} align="right">
-  //               <Typography variant="subtitle2">Applied: {fertilizer.app_date}</Typography>
-  //             </Grid>
-  //             <Grid item container xs={10}>
-  //               <Grid item xs={3}>
-  //                 <TextField disabled
-  //                   label="Amount Applied"
-  //                   value={fertilizer.amount_applied}
-  //                   fullWidth
-  //                 />
-  //               </Grid>
-  //               <Grid item xs={2}>
-  //                 <TextField disabled
-  //                   label="Nitrogen lbs / acre"
-  //                   value={fertilizer.n_lbs_acre}
-  //                 />
-  //               </Grid>
-  //               <Grid item xs={3}>
-  //                 <TextField disabled
-  //                   label="Phosphorus lbs / acre"
-  //                   value={fertilizer.p_lbs_acre}
-  //                   fullWidth
-  //                 />
-  //               </Grid>
-  //               <Grid item xs={2}>
-  //                 <TextField disabled
-  //                   label="Potassium lbs / acre"
-  //                   value={fertilizer.k_lbs_acre}
-  //                 />
-  //               </Grid>
-  //               <Grid item xs={2}>
-  //                 <TextField disabled
-  //                   label="Salt lbs / acre"
-  //                   value={fertilizer.salt_lbs_acre}
-  //                 />
-  //               </Grid>
-  //             </Grid>
-  //             <Grid item container xs={2} justifyContent="center" >
-  //               <Tooltip title="Delete Fertilizer Event">
-  //                 <IconButton onClick={() => props.onConfirmFertilizerDelete(fertilizer)}>
-  //                   <DeleteIcon color="error" />
-  //                 </IconButton>
-  //               </Tooltip>
-  //             </Grid>
+  return (
+    <Grid item container xs={12}>
+      <Grid item xs={12}>
+        <Typography variant="h4">{props.fertilizers[0].fieldtitle}</Typography>
+        <hr />
+      </Grid>
+      {
+        props.fertilizers.map((fertilizer, i) => {
+          return (
+            <Grid item container xs={12} key={`fwmainview${i}`}>
+              <Grid item xs={6}>
+                <Typography variant="subtitle1">{fertilizer.croptitle}</Typography>
+              </Grid>
+              <Grid item xs={6} align="right">
+                <Typography variant="subtitle1">Planted: {fertilizer.plant_date}</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="subtitle2"> Applied:{fertilizer.app_date} | {fertilizer.import_desc}</Typography>
+              </Grid>
+              
+              <Grid item container xs={10}>
+                <Grid item xs={2}>
+                  <TextField disabled
+                    label="Amount applied tons"
+                    value={fertilizer.amount_applied}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField disabled
+                    label="Moisture"
+                    value={fertilizer.moisture}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField disabled
+                    label="Nitrogen lbs / acre"
+                    value={fertilizer.n_lbs_acre}
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField disabled
+                    label="Phosphorus lbs / acre"
+                    value={fertilizer.p_lbs_acre}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField disabled
+                    label="Potassium lbs / acre"
+                    value={fertilizer.k_lbs_acre}
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <TextField disabled
+                    label="Salt lbs / acre"
+                    value={fertilizer.salt_lbs_acre}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item container xs={2} justifyContent="center" >
+                <Tooltip title="Delete Fertilizer Event">
+                  <IconButton onClick={() => props.onConfirmFertilizerDelete(fertilizer)}>
+                    <DeleteIcon color="error" />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
 
-  //           </Grid>
-  //         )
-  //       })
-  //     }
-  //   </Grid>
-  // )
+            </Grid>
+          )
+        })
+      }
+    </Grid>
+  )
 }
 
 const NutrientImport = (props) => {
-  return (<span>Test FertilizerAppEvent</span>)
-  // return (
-  //   <Grid item container xs={6}>
-  //     <Grid item xs={10}>
-  //       <Typography>{props.analysis.sample_date} / {props.analysis.sample_desc}</Typography>
-  //     </Grid>
-  //     <Grid item xs={2}>
-  //       <Tooltip title="Delete Fertilizer Source">
-  //         <IconButton onClick={() => props.onConfirmNutrientImportDelete(props.analysis)}>
-  //           <DeleteIcon color="error" />
-  //         </IconButton>
-  //       </Tooltip>
-  //     </Grid>
-  //   </Grid>
-  // )
+  return (
+    <Grid item container xs={6} alignItems='center'>
+      <Grid item container xs={10} >
+        <Grid item xs={12}>
+          <Typography>{props.nutrientImport.import_date} / {props.nutrientImport.import_desc}</Typography>
+        </Grid>
+        <Grid item container xs={12}>
+        <Grid item xs={6}>
+          <TextField
+            value={props.nutrientImport.amount_imported}
+            label="Amount imported"
+            style={{ width: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField
+            value={props.nutrientImport.material_type}
+            label="Type"
+            style={{ width: "100%" }}
+          />
+        </Grid>
+       
+      </Grid>
+      
+      <Grid item container  xs={12}>
+        <Grid item xs={2}>
+          <TextField
+            value={props.nutrientImport.n_con}
+            label="Nitrogen"
+            style={{ width: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            value={props.nutrientImport.p_con}
+            label="Phosphorus"
+            style={{ width: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            value={props.nutrientImport.k_con}
+            label="Potassium"
+            style={{ width: "100%" }}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            value={props.nutrientImport.salt_con}
+            label="Salt"
+            style={{ width: "100%" }}
+          />
+        </Grid>
+      </Grid>
+      
+      </Grid>
+      <Grid item xs={2} align='center'>
+        <Tooltip title="Delete Fertilizer Source">
+          <IconButton onClick={() => props.onConfirmNutrientImportDelete(props.nutrientImport)}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+    </Grid>
+  )
 
 }
 
@@ -146,6 +200,7 @@ const NutrientImport = (props) => {
 class Fertilizer extends Component {
   constructor(props) {
     super(props)
+    
     this.state = {
       dairy_id: props.dairy_id,
       fieldCropAppEvents: props.fieldCropAppEvents,
@@ -168,7 +223,7 @@ class Fertilizer extends Component {
       createNutrientImportObj: {
         dairy_id: '',
         import_desc: '',
-        import_date: '',
+        import_date: new Date(),
         material_type: '',
         material_type_idx: 0,
         amount_imported: '',
@@ -179,7 +234,7 @@ class Fertilizer extends Component {
         p_con: '',
         k_con: '',
         salt_con: ''
-        
+
       },
       createFertilizerObj: {
         dairy_id: '',
@@ -191,7 +246,7 @@ class Fertilizer extends Component {
         n_lbs_acre: '',
         p_lbs_acre: '',
         k_lbs_acre: '',
-        salt_lbs_acre: '' 
+        salt_lbs_acre: ''
       },
     }
   }
@@ -227,10 +282,10 @@ class Fertilizer extends Component {
     let createObj = this.state.createFertilizerObj
     createObj.dairy_id = this.state.dairy_id
     createObj.field_crop_app_id = this.state.fieldCropAppEvents[createObj.field_crop_app_idx].pk
-    createObj.field_crop_app_fertilizer_analysis_id = this.state.nutrientImports[createObj.field_crop_app_fertilizer_analysis_idx].pk
+    createObj.nutrient_import_id = this.state.nutrientImports[createObj.nutrient_import_idx].pk
 
     createObj.amount_applied = checkEmpty(createObj.amount_applied)
-    createObj.amt_applied_per_acre = checkEmpty(createObj.amt_applied_per_acre)
+
     createObj.n_lbs_acre = checkEmpty(createObj.n_lbs_acre)
     createObj.p_lbs_acre = checkEmpty(createObj.p_lbs_acre)
     createObj.k_lbs_acre = checkEmpty(createObj.k_lbs_acre)
@@ -251,22 +306,16 @@ class Fertilizer extends Component {
   createNutrientImport() {
     let createObj = this.state.createNutrientImportObj
     createObj.dairy_id = this.state.dairy_id
-    createObj.src_of_analysis = this.props.SOURCE_OF_ANALYSES[createObj.src_of_analysis_idx]
-    createObj.material_type = this.props.MATERIAL_TYPES[createObj.material_type_idx]
+    createObj.material_type = this.props.NUTRIENT_IMPORT_MATERIAL_TYPES[createObj.material_type_idx]
     createObj.method_of_reporting = this.props.REPORTING_METHODS[createObj.method_of_reporting_idx]
 
     createObj.moisture = checkEmpty(createObj.moisture)
     createObj.n_con = checkEmpty(createObj.n_con)
     createObj.p_con = checkEmpty(createObj.p_con)
     createObj.k_con = checkEmpty(createObj.k_con)
-    createObj.ca_con = checkEmpty(createObj.ca_con)
-    createObj.mg_con = checkEmpty(createObj.mg_con)
-    createObj.na_con = checkEmpty(createObj.na_con)
-    createObj.s_con = checkEmpty(createObj.s_con)
-    createObj.cl_con = checkEmpty(createObj.cl_con)
-    createObj.tfs = checkEmpty(createObj.tfs)
+    createObj.salt_con = checkEmpty(createObj.salt_con)
 
-    console.log("creating fertilizer event: ", createObj)
+    console.log("creating nutirent import event: ", createObj)
 
     post(`${BASE_URL}/api/nutrient_import/create`, createObj)
       .then(res => {
@@ -373,6 +422,7 @@ class Fertilizer extends Component {
   }
 
   render() {
+    
     return (
       <Grid item xs={12} container >
         <Grid item xs={12} align="right">
@@ -411,7 +461,7 @@ class Fertilizer extends Component {
           <Button color="secondary" variant="outlined"
             onClick={() => this.toggleShowAddNutrientImportModal(true)}
           >
-            Add nutrient import 
+            Add nutrient import
           </Button>
         </Grid>
         <Grid item xs={12} align="right">
@@ -432,7 +482,7 @@ class Fertilizer extends Component {
                   this.state.nutrientImports.map((nutrientImport, i) => {
                     return (
                       <NutrientImport key={`fcafviewni${i}`}
-                      nutrientImport={nutrientImport}
+                        nutrientImport={nutrientImport}
                         onConfirmNutrientImportDelete={this.onConfirmNutrientImportDelete.bind(this)}
                       />
                     )
@@ -447,11 +497,11 @@ class Fertilizer extends Component {
 
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{marginTop: "32px"}}>
           {Object.keys(this.state.fieldCropAppFertilizers).length > 0 ?
 
             Object.keys(this.state.fieldCropAppFertilizers)
-              .sort((a, b) => a.fieldtitle > b.fieldtitle ? -1 : 1)
+              .sort((a, b) => a< b ? -1 : 1)
               .map((field_crop_app_id, i) => {
                 let fertilizers = this.state.fieldCropAppFertilizers[field_crop_app_id]
                 return (
@@ -487,20 +537,22 @@ class Fertilizer extends Component {
         />
 
 
-
-        {/* Here ya go buddy, implement these manana :)
-            You also need to fix your branches, currently updating backup :(
-
         <AddNutrientImportModal
           open={this.state.showAddNutrientImportModal}
           actionText="Add"
           cancelText="Cancel"
           modalText={`Add nutrient import`}
+          NUTRIENT_IMPORT_MATERIAL_TYPES={this.props.NUTRIENT_IMPORT_MATERIAL_TYPES}
+          REPORTING_METHODS={this.props.REPORTING_METHODS}
           createNutrientImportObj={this.state.createNutrientImportObj}
           onAction={this.createNutrientImport.bind(this)}
           onChange={this.onCreateNutrientImportChange.bind(this)}
           onClose={() => this.toggleShowAddNutrientImportModal(false)}
         />
+
+        
+            
+
         <AddFertilizerModal
           open={this.state.showAddFertilizerModal}
           actionText="Add"
@@ -513,7 +565,7 @@ class Fertilizer extends Component {
           onAction={this.createFertilizer.bind(this)}
           onChange={this.onCreateFertilizerChange.bind(this)}
           onClose={() => this.toggleShowAddFertilizerModal(false)}
-        /> */}
+        />
 
 
 

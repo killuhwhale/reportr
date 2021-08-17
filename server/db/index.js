@@ -1040,7 +1040,7 @@ module.exports = {
       format(
         // nitrateN, totalP, totalK, totalTDS
         `SELECT 
-        
+        fcaf.amount_applied,
         fcaf.n_lbs_acre,
         fcaf.p_lbs_acre,
         fcaf.k_lbs_acre,

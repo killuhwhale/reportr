@@ -94,9 +94,6 @@ class AddProcessWastewaterModal extends Component {
                 </Grid>
 
                 <Grid item xs={6}>
-                  
-
-
                   <TextField select
                     name='material_type_idx'
                     onChange={this.props.onChange.bind(this)}

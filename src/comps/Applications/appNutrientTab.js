@@ -120,6 +120,8 @@ class NutrientApplicationTab extends Component {
     this.getFieldCropAppFreshwater()
     this.getFieldCropAppSolidmanureAnalysis()
     this.getFieldCropAppSolidmanure()
+    this.getNutrientImport()
+    this.getFieldCropAppFertilizer()
   }
   handleTabChange(ev, index) {
     let tabs = this.state.tabs

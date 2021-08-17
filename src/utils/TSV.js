@@ -22,7 +22,7 @@ export const TSV_INFO = {
     tsvType: SOLIDMANURE
   },
   [FERTILIZER]: {
-    numCols: 21,
+    numCols: 27,
     tsvType: FERTILIZER
   },
 }
@@ -39,12 +39,12 @@ export const lazyGet = (endpoint, value, data, dairy_pk) => {
 
               // If there is an error response from server.
               if (result.test) {
-                
+
                 // console.log("Create failed, race conditon happened. Attempting to re-fetch")
                 get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
                   .then(secondResult => {
                     // console.log("Found entry after failing to create entry", secondResult)
-                    if(secondResult.length == 0){
+                    if (secondResult.length == 0) {
                       console.log(endpoint, value, data)
                     }
                     // Found entry, on second attempt.
@@ -172,11 +172,8 @@ export const createFieldsFromTSV = (fields, dairy_pk) => {
   return Promise.all(promises)
 }
 
-/** Lazily prepares the DB entries needed for field_crop entry.
+/** Following three methods help create or find data for rows associated with nutrient applications.
  * 
- * @param {str} field_title: Title of Field, will be lazily created
- * @param {str} crop_title: Title of the crop, already exists in DB
- * @returns If successful, reutrns a list of field, crop objects from the DB.
  */
 const prepareFieldCrop = (field_title, crop_title, cropable, acres, dairy_pk) => {
   let fieldData = {
@@ -272,6 +269,136 @@ const getFieldCropApp = (commonRowData, dairy_pk) => {
   })
 }
 
+/** Creates field_crop_harvest by creating or finding the data for each row
+ * 
+ */
+export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
+  console.log("Creating db entreis for data:: ", row)
+  // Spreadsheet headers (used db col names)
+  const [
+    field_title,
+    acres_planted,
+    cropable,
+    acres,
+    crop_title,
+    plant_date,
+    harvest_date,
+    typical_yield,
+    actual_yield_tons_per_acre,
+    actual_yield_tons, 
+    sample_date,
+    src_of_analysis,
+    basis, // Reporting method
+    actual_moisture,
+    actual_n,
+    actual_p,
+    actual_k,
+    tfs
+  ] = row
+
+
+  // Added columns to spreadsheet
+  // Harvests will now have a plant tissue analysis tied to it
+  // Need to lazily create a harvest
+  // Neeed backend for this
+  // Sql Table: field_crop_harvest_plant_tissue_analysis
+  // Sql Index: insert, get, delete, search
+  // server Index: create, get, delete, search
+
+
+  let fieldData = {
+    data: {
+      title: field_title,
+      cropable: cropable,
+      acres: acres,
+      dairy_id: dairy_pk
+    }
+  }
+
+  return new Promise((resolve, rej) => {
+    // Get Field and Crop
+    Promise.all([
+      lazyGet('fields', field_title, fieldData, dairy_pk),
+      get(`${BASE_URL}/api/crops/${crop_title}`) // list of crops in DB are predefined based on spreadsheet. HARDCODED
+    ])
+      .then(res => {
+        let fieldObj = res[0][0] // res = [res1, res2], res1=[data]
+        let cropObj = res[1][0]
+
+        if (fieldObj) {
+          console.log(`Found Field: ${fieldObj.title} for row ${i}`, fieldObj)
+          if (cropObj) {
+            console.log(`Found Crop: ${cropObj.title} for row ${i}`, cropObj)
+            // Get Field_Crop, possibly created
+            // Now we can create a field_crop with:
+            //    fieldObj, cropObj, and [from testRow[i] -> ]plant_date[6], acres_planted[1], [from crops -> ]typical_yield, moisture, n, p, k, salt
+            const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
+
+
+            // /api/field_crop/value
+            // /api/
+            let field_crop_search_value = `${fieldObj.pk}/${cropObj.pk}/${encodeURIComponent(plant_date)}`
+
+            let field_crop_data = {
+              dairy_id: dairy_pk,
+              field_id: fieldObj.pk,
+              crop_id: cropObj.pk,
+              plant_date: plant_date,
+              acres_planted: acres_planted,
+              typical_yield: typical_yield,
+              moisture: typical_moisture,
+              n: typical_n,
+              p: typical_p,
+              k: typical_k,
+              salt: salt
+            }
+
+            lazyGet('field_crop', field_crop_search_value, field_crop_data, dairy_pk)
+              .then(field_crop_res => {
+                const fieldCropObj = field_crop_res[0]
+                // TODO() fieldCrobObj might be undefined
+                // Attempt to create harvest event in field_crop_harvest
+                // dairy_id, field_crop_id, harvest_date, density, basis, actual_yield, moisture, n,p,k,tfs
+                const field_crop_harvest_data = {
+                  dairy_id: dairy_pk,
+                  // field_id: fieldObj.pk,
+                  field_crop_id: fieldCropObj.pk,
+                  harvest_date: harvest_date,
+                  basis: basis,
+                  density: 0, // **this field is not in the sheet
+                  actual_yield: parseFloat(actual_yield_tons),
+                  moisture: actual_moisture,
+                  n: actual_n,
+                  p: actual_p,
+                  k: actual_k,
+                  tfs: tfs
+                }
+
+
+                resolve(post(`${BASE_URL}/api/field_crop_harvest/create`, field_crop_harvest_data))
+
+              })
+              .catch(field_crop_err => {
+                rej(field_crop_err)
+              })
+          } else {
+            rej(res)
+          }
+        } else {
+          rej(res)
+        }
+      })
+      .catch(err => {
+        rej(err)
+      })
+  })
+
+}
+
+
+
+
+
 /** Nutrient applications
  * 
  * @param {*} row: The row from the TSV contianing data
@@ -310,9 +437,13 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
         } else if (tsvType === FRESHWATER) {
           // Creates source, analysis and event
           resolve(createFreshwaterApplication(row, field_crop_app, dairy_pk))
-        }else if (tsvType === SOLIDMANURE) {
+        } else if (tsvType === SOLIDMANURE) {
           // Creates source, analysis and event
           resolve(createSolidmanureApplication(row, field_crop_app, dairy_pk))
+        }
+        else if (tsvType === FERTILIZER) {
+          // Creates Nutrient Import, Fertilizer
+          resolve(createFertilizerApplication(row, field_crop_app, dairy_pk))
         }
 
       })
@@ -325,7 +456,7 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
 
 export const checkEmpty = (val) => {
   // If value is empty, return 0 to avoid error in DB.
-  return val.length > 0 ? val.replaceAll(',','') : 0
+  return val.length > 0 ? val.replaceAll(',', '') : 0
 }
 
 /** Creates field_crop_app_process_wastewater(app event) && field_crop_app_process_wastewater_analysis
@@ -403,7 +534,7 @@ const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
 
 
 const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
-  
+
 
   const [
     sample_date,
@@ -444,11 +575,11 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
     // lazyget freshwater_source
     lazyGet('field_crop_app_freshwater_source', field_crop_app_freshwater_source_search_url, freshwater_source_data, dairy_pk)
       .then(field_crop_app_freshwater_source_res => {
-        if(field_crop_app_freshwater_source_res.length > 0){
+        if (field_crop_app_freshwater_source_res.length > 0) {
           let fresh_water_source_obj = field_crop_app_freshwater_source_res[0]
           let fresh_water_source_id = fresh_water_source_obj.pk
-  
-  
+
+
           // lazyget freshwater_analysis , sample_date, sample_desc, src_of_analysis, fresh_water_source_id
           const field_crop_app_freshwater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${src_of_analysis}/${fresh_water_source_id}`
           const freshwater_analysis_data = {
@@ -471,9 +602,9 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
             cl_con: checkEmpty(cl_con),
             ec: checkEmpty(ec),
             tds: checkEmpty(tds),
-  
+
           }
-  
+
           lazyGet('field_crop_app_freshwater_analysis', field_crop_app_freshwater_analysis_search_url, freshwater_analysis_data, dairy_pk)
             .then(freshwater_analysis_res => {
               let freshwater_analysis_obj = freshwater_analysis_res[0]
@@ -487,11 +618,11 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
                 amt_applied_per_acre: checkEmpty(amt_applied_per_acre),
                 totalN: checkEmpty(totalN)
               }
-  
+
               resolve(post(`${BASE_URL}/api/field_crop_app_freshwater/create`, freshwater_data))
             })
 
-        }else{
+        } else {
           console.log("Error with reading pk", row)
         }
 
@@ -508,7 +639,7 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
 }
 
 const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
-  
+
 
   const [
     sample_date,
@@ -532,7 +663,7 @@ const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
     n_lbs_acre,
     p_lbs_acre,
     k_lbs_acre,
-    salt_lbs_acre 
+    salt_lbs_acre
 
   ] = row.slice(11, TSV_INFO[FRESHWATER].numCols)
 
@@ -562,11 +693,11 @@ const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
     // lazyget freshwater_source
     lazyGet('field_crop_app_solidmanure_analysis', field_crop_app_solidmanure_analysis_search_url, solidmanure_analysis_data, dairy_pk)
       .then(field_crop_app_solidmanure_analysis_res => {
-        if(field_crop_app_solidmanure_analysis_res.length > 0){
+        if (field_crop_app_solidmanure_analysis_res.length > 0) {
           let solidmanure_analysis_obj = field_crop_app_solidmanure_analysis_res[0]
           let solidmanure_analysis_id = solidmanure_analysis_obj.pk
-  
-  
+
+
           const solidmanure_data = {
             dairy_id: dairy_pk,
             field_crop_app_id: field_crop_app.pk,
@@ -577,13 +708,93 @@ const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
             n_lbs_acre: checkEmpty(n_lbs_acre),
             p_lbs_acre: checkEmpty(p_lbs_acre),
             k_lbs_acre: checkEmpty(k_lbs_acre),
-            salt_lbs_acre: checkEmpty(salt_lbs_acre) 
+            salt_lbs_acre: checkEmpty(salt_lbs_acre)
           }
 
           resolve(post(`${BASE_URL}/api/field_crop_app_solidmanure/create`, solidmanure_data))
 
-        }else{
+        } else {
           console.log("Error with reading pk for solidmanure analysis", row)
+        }
+
+
+
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
+
+
+}
+
+const createFertilizerApplication = (row, field_crop_app, dairy_pk) => {
+
+
+  const [
+    import_desc,
+    import_date,
+    material_type,
+    amount_imported,
+    method_of_reporting,
+    amt_applied_per_acre,
+    amount_applied,
+    moisture,
+    n_con,
+    p_con,
+    k_con,
+    salt_con,
+    n_lbs_acre,
+    p_lbs_acre,
+    k_lbs_acre,
+    salt_lbs_acre
+
+  ] = row.slice(11, TSV_INFO[FRESHWATER].numCols)
+
+  // import_date, material_type, import_desc
+  const field_crop_app_nutrient_import_search_url = `${encodeURIComponent(import_date)}/${encodeURIComponent(material_type)}/${encodeURIComponent(import_desc)}`
+  const nutrient_import_data = {
+    dairy_id: dairy_pk,
+    import_desc,
+    import_date,
+    material_type,
+    amount_imported: checkEmpty(amount_imported),
+    method_of_reporting,
+    moisture: checkEmpty(moisture),
+    n_con: checkEmpty(n_con),
+    p_con: checkEmpty(p_con),
+    k_con: checkEmpty(k_con),
+    salt_con: checkEmpty(salt_con),
+  }
+
+  // Get Source
+  return new Promise((resolve, rej) => {
+    // lazyget freshwater_source
+    lazyGet('nutrient_import', field_crop_app_nutrient_import_search_url, nutrient_import_data, dairy_pk)
+      .then(nutrient_import_res => {
+        if (nutrient_import_res.length > 0) {
+          let nutrient_import_obj = nutrient_import_res[0]
+          let nutrient_import_id = nutrient_import_obj.pk
+
+
+          const fertilizer_data = {
+            dairy_id: dairy_pk,
+            field_crop_app_id: field_crop_app.pk,
+            nutrient_import_id: nutrient_import_id,
+
+
+            amount_applied: checkEmpty(amount_applied),
+            n_lbs_acre: checkEmpty(n_lbs_acre),
+            p_lbs_acre: checkEmpty(p_lbs_acre),
+            k_lbs_acre: checkEmpty(k_lbs_acre),
+            salt_lbs_acre: checkEmpty(salt_lbs_acre)
+          }
+
+          resolve(post(`${BASE_URL}/api/field_crop_app_fertilizer/create`, fertilizer_data))
+
+        } else {
+          console.log("Error with reading pk for nutrient import", row)
         }
 
 

@@ -16,6 +16,10 @@ import ViewTSVsModal from "../Modals/viewTSVsModal"
 import { get, post } from '../../utils/requests';
 import { MG_KG, KG_MG } from '../../utils/convertCalc'
 import { isEmpty } from "../../utils/valid"
+import {
+  readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromHarvestTSVListRow, uploadTSVToDB
+} from "../../utils/TSV"
+
 
 
 const BASE_URL = "http://localhost:3001"
@@ -209,135 +213,36 @@ class HarvestTab extends Component {
   onCSVChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      this.readCSV(files[0])
+      readTSV(files[0], (ev) => {
+        const { result } = ev.target
+        this.setState({ csvText: result, uploadedFilename: files[0].name })
+      })
     }
   }
-  // File reader, reads as Text, CSV, TSV tested. Using TSV since commas are present in fields
-  readCSV(file) {
-    const reader = new FileReader()
-    reader.addEventListener('load', (ev) => {
-      const { result } = ev.target
-      this.setState({ csvText: result, uploadedFilename: file.name })
-    });
-    reader.readAsText(file)
-  }
-  // helper
-  processCSVText(csvText) {
-    console.log("Processing CSV Text")
-    // Field,Acres,Crop,Plant Date,Harvest Dates,Expected Yield Tons/Acre,Actual Yield Tons/Acre,Actual Yield Total Tons,Reporting Method,% Moisture,% N,% P,% K,% TFS    Salt  (Dry Basis),Lbs/Acre N,Lbs/Acre P,Lbs/Acre K,Lbs/Acre Salt
-    let lines = csvText.split("\n")
-    let started = false
-    let rows = []
-    lines.forEach((line, i) => {
-      let cols = line.split("\t").slice(0, -4)
-      if (cols[0]) {
-        if (started) {
-          rows.push(cols)
-        }
-        else if (cols[0] == "Start") {
-          started = true
-        }
-      }
-    })
-    return rows
-  }
-  /** helper
-   * Creating from CSV assumes that each row is a new harvest event(field_crop_harvest).
-   
-  *   Deciding to not modify identifying information for fields, field_crop and field_crop_harvest
-  
-  
-  * It will look for existing fields and Field crops( when crop was planted).
-   *     -- If it cannot find a field or  crop by title, it will create it
-   *        -- If it cannot find a field_crop by the Plant date and Field, it will create a new one
-   * 
-   *    -- ** This means, field title, crop title, plant date, or harvest date should not be
-   *                   modified to avoid confusion by the user.
-   * 
-  */
-  createFieldsFromCSV(fields) {
-    // Helper to create all fields in spreadsheet since they are parents of everything else
-    // There is an issue when multiple rows try to create a field and there is a race condition conflict.
-    let promises = fields.map(field => {
-      let data = {
-        data: {
-          dairy_id: this.state.dairy.pk,
-          title: field[0],
-          acres: field[1],
-          cropable: field[2]
-        }
-      }
-      return new Promise((res, rej) => {
-        post(`${BASE_URL}/api/fields/create`, data)
-          .then(result => {
-            res(result)
-          })
-          .catch(error => {
-            res(error)
-          })
-      })
-    })
-    return Promise.all(promises)
-  }
-
-  createFieldSet(rows){
-    let fields = []
-    let fieldSet = new Set()
-    // Create a set of fields to ensure duplicates are not attempted.
-    rows.forEach(row => {
-      const [
-        field_title, acres_planted, cropable, acres, crop_title, crop_title1, plant_date, harvest_date, typical_yield, actual_yield_tons_per_acre,
-        actual_yield_tons, basis, actual_moisture, actual_n, actual_p, actual_k, tfs
-      ] = row
-      if (!fieldSet.has(field_title)) {
-        fields.push([field_title, acres, cropable])
-        fieldSet.add(field_title)
-      }
-    })
-    return fields
-  }
-
-  uploadTSVToDB(){
-    console.log("Uploading TSV to DB", this.state.uploadedFilename, this.state.csvText)
-    post(`${BASE_URL}/api/tsv/create`, {
-      title: this.state.uploadedFilename,
-      data: this.state.csvText,
-      dairy_id: this.state.dairy.pk,
-      tsvType: "harvest",
-    })
-    .then(res => {
-      console.log("Uploaded to DB: ", res)
-    })
-    .catch(err => {
-      console.log(err)
-    })
-  }
+ 
   // Triggered when user presses Add btn in Modal
   uploadCSV() {
     console.log("Uploading CSV")
-    let rows = this.processCSVText(this.state.csvText)
+    let rows = processTSVText(this.state.csvText)
 
     // Create a set of fields to ensure duplicates are not attempted.
-    let fields = this.createFieldSet(rows)   
-    
+    let fields = createFieldSet(rows)   
 
 
-
-    this.createFieldsFromCSV(fields)      // Create fields before proceeding
+    createFieldsFromTSV(fields)      // Create fields before proceeding
       .then(createFieldRes => {
         console.log(createFieldRes)
         let result_promises = rows.map((row, i) => {
-          return this.createDataFromCSVListRow(row, i)    // Create entries for ea row in TSV file
+          return createDataFromHarvestTSVListRow(row, i, this.state.dairy.pk)    // Create entries for ea row in TSV file
         })
 
         Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
           .then(res => {
             console.log("Completed Results")
-            this.uploadTSVToDB() // remove this when done testing, do this after the data was successfully create in DB
+            uploadTSVToDB() // remove this when done testing, do this after the data was successfully create in DB
             console.log(res)
             this.toggleShowUploadCSV(false)
             this.getAllFieldCropHarvests()
-
           })
           .catch(err => {
             console.log("Error with all promises")
@@ -497,6 +402,7 @@ class HarvestTab extends Component {
   }
 
   render() {
+    console.log("harvests", this.state.field_crop_harvests)
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
