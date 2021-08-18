@@ -11,6 +11,7 @@ import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import formats from "../../utils/format"
+import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
@@ -38,7 +39,7 @@ const SOURCE_OF_ANALYSES = [
 /** View for Process Wastewater Entry in DB */
 const FreshwaterAppEvent = (props) => {
   return (
-    <Grid item container xs={12}>
+    <Grid item container xs={12} style={props.style}>
       <Grid item xs={12}>
         <Typography variant="h4">{props.freshwaters[0].fieldtitle}</Typography>
         <hr />
@@ -174,6 +175,8 @@ class Freshwater extends Component {
       tsvText: '',
       uploadedFilename: '',
       showViewTSVsModal: false,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
       createFreshwaterSourceObj: {
         dairy_id: props.dairy_id,
         src_desc: "",
@@ -431,6 +434,51 @@ class Freshwater extends Component {
     this.setState({ showViewTSVsModal: val })
   }
 
+  renderItem({ index, style }) {
+    let field_crop_app_id = this.getSortedKeys()[index]
+    let freshwaters = this.state.fieldCropAppFreshwaters[field_crop_app_id]
+    return (
+      <FreshwaterAppEvent key={`ppwwviewrow${index}`} style={style}
+        freshwaters={freshwaters}
+        onDelete={this.onConfirmFreshwaterDelete.bind(this)}
+      />
+    )
+  }
+
+  getSortedKeys() {
+    return Object.keys(this.state.fieldCropAppFreshwaters).sort()
+  }
+
+  getStartPos() {
+    let numSources = parseInt(this.state.fieldCropAppFreshwaterSources.length / 2)
+    let numAnalyses = parseInt(this.state.fieldCropAppFreshwaterAnalyses.length / 2)
+    let headerSize = 0 // looks better when it extends past  the page when starting so low
+    let sourceSectionSize = 32 + (48 * numSources)
+    let analysisSectionSize = 32 + (48 * numAnalyses)
+    return headerSize + sourceSectionSize + analysisSectionSize
+  }
+
+  getItemSize(index) {
+    let field_crop_app_id = this.getSortedKeys()[index]
+    let numRows = this.state.fieldCropAppFreshwaters[field_crop_app_id].length
+    let numSources = parseInt(this.state.fieldCropAppFreshwaterSources.length / 2)
+    let numAnalyses = parseInt(this.state.fieldCropAppFreshwaterAnalyses.length / 2)
+
+    let headerSize = 40
+    let sourceSectionSize = 32 + (48 * numSources)
+    let analysisSectionSize = 32 + (48 * numAnalyses)
+    let itemSize = 100
+
+    return headerSize + (numRows * itemSize)
+  }
+
+  setWindowListener() {
+    window.addEventListener('resize', (ev) => {
+      console.log(window.innerWidth, window.innerHeight)
+      this.setState({ windowHeight: window.innerHeight, windowWidth: window.innerWidth })
+    })
+  }
+
   render() {
 
     return (
@@ -492,6 +540,8 @@ class Freshwater extends Component {
 
 
         <Grid item xs={12}>
+
+
           {this.state.fieldCropAppFreshwaterSources.length > 0 ?
             <React.Fragment>
               <Typography variant="h5">Sources</Typography>
@@ -540,7 +590,21 @@ class Freshwater extends Component {
         </Grid>
 
         <Grid item xs={12}>
-          {Object.keys(this.state.fieldCropAppFreshwaters).length > 0 ?
+          {this.getSortedKeys().length > 0 ?
+            <List
+              height={Math.max(this.state.windowHeight - this.getStartPos(), 100)}
+              itemCount={this.getSortedKeys().length}
+              itemSize={this.getItemSize.bind(this)}
+              width={this.state.windowWidth * (.82)}
+            >
+              {this.renderItem.bind(this)}
+            </List>
+
+            :
+            <React.Fragment></React.Fragment>
+          }
+
+          {/* {Object.keys(this.state.fieldCropAppFreshwaters).length > 0 ?
 
             Object.keys(this.state.fieldCropAppFreshwaters)
               .sort()
@@ -555,7 +619,7 @@ class Freshwater extends Component {
               })
             :
             <React.Fragment></React.Fragment>
-          }
+          } */}
         </Grid>
 
         <ActionCancelModal

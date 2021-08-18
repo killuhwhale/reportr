@@ -11,6 +11,7 @@ import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import formats from "../../utils/format"
+import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
@@ -40,7 +41,7 @@ const SOURCE_OF_ANALYSES = [
 /** View for Process Wastewater Entry in DB */
 const SolidmanureAppEvent = (props) => {
   return (
-    <Grid item container xs={12}>
+    <Grid item container xs={12} style={props.style}>
       <Grid item xs={12}>
         <Typography variant="h4">{props.solidmanures[0].fieldtitle}</Typography>
         <hr />
@@ -150,6 +151,7 @@ class Solidmanure extends Component {
       fieldCropAppEvents: props.fieldCropAppEvents,
       fieldCropAppSolidmanureAnalyses: props.fieldCropAppSolidmanureAnalyses,
       fieldCropAppSolidmanures: props.fieldCropAppSolidmanures,
+      fieldCropAppSolidmanuresKeys: Object.keys(props.fieldCropAppSolidmanures).sort(),
       tsvType: props.tsvType,
       numCols: props.numCols,
 
@@ -163,6 +165,9 @@ class Solidmanure extends Component {
       tsvText: '',
       uploadedFilename: '',
       showViewTSVsModal: false,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
+
 
       createSolidmanureAnalysisObj: {
         dairy_id: '',
@@ -379,6 +384,43 @@ class Solidmanure extends Component {
     this.setState({ showViewTSVsModal: val })
   }
 
+  renderItem({ index, style }) {
+    let field_crop_app_id = this.getSortedKeys()[index]
+    let solidmanures = this.state.fieldCropAppSolidmanures[field_crop_app_id]
+
+    return (
+      <SolidmanureAppEvent key={`ppwwviewrow${index}`} style={style}
+        solidmanures={solidmanures}
+        onDelete={this.onConfirmSolidmanureDelete.bind(this)}
+      />
+    )
+  }
+  getSortedKeys() {
+    return Object.keys(this.state.fieldCropAppSolidmanures).sort()
+  }
+  getItemSize(index) {
+    let field_crop_app_id = this.getSortedKeys()[index]
+    let numRows = this.state.fieldCropAppSolidmanures[field_crop_app_id].length
+    let headerSize = 50
+    let itemSize = 145
+    return headerSize + (numRows * itemSize)
+  }
+
+  setWindowListener() {
+    window.addEventListener('resize', (ev) => {
+      console.log(window.innerWidth, window.innerHeight)
+      this.setState({ windowHeight: window.innerHeight, windowWidth: window.innerWidth })
+    })
+  }
+
+  getStartPos() {
+
+    let numAnalyses = parseInt(this.state.fieldCropAppSolidmanureAnalyses.length / 2)
+    let headerSize = 0
+    let analysisSectionSize = 32 + (48 * numAnalyses)
+    return headerSize + analysisSectionSize
+  }
+
   render() {
     return (
       <Grid item xs={12} container >
@@ -455,19 +497,16 @@ class Solidmanure extends Component {
         </Grid>
 
         <Grid item xs={12}>
-          {Object.keys(this.state.fieldCropAppSolidmanures).length > 0 ?
+          {this.getSortedKeys().length > 0 ?
+            <List
+              height={Math.max(this.state.windowHeight - this.getStartPos(), 100)}
+              itemCount={this.getSortedKeys().length}
+              itemSize={this.getItemSize.bind(this)}
+              width={this.state.windowWidth * (.82)}
+            >
+              {this.renderItem.bind(this)}
+            </List>
 
-            Object.keys(this.state.fieldCropAppSolidmanures)
-              .sort()
-              .map((field_crop_app_id, i) => {
-                let solidmanures = this.state.fieldCropAppSolidmanures[field_crop_app_id]
-                return (
-                  <SolidmanureAppEvent key={`ppwwviewrow${i}`}
-                    solidmanures={solidmanures}
-                    onDelete={this.onConfirmSolidmanureDelete.bind(this)}
-                  />
-                )
-              })
             :
             <React.Fragment></React.Fragment>
           }

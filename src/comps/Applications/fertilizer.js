@@ -22,6 +22,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
+import { VariableSizeList as List } from "react-window";
 
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
@@ -40,7 +41,7 @@ const SOURCE_OF_ANALYSES = [
 /** View for Process Wastewater Entry in DB */
 const FertilizerAppEvent = (props) => {
   return (
-    <Grid item container xs={12}>
+    <Grid item container xs={12} style={props.style}>
       <Grid item xs={12}>
         <Typography variant="h4">{props.fertilizers[0].fieldtitle}</Typography>
         <hr />
@@ -58,7 +59,7 @@ const FertilizerAppEvent = (props) => {
               <Grid item xs={6}>
                 <Typography variant="subtitle2"> Applied:{fertilizer.app_date} | {fertilizer.import_desc}</Typography>
               </Grid>
-              
+
               <Grid item container xs={10}>
                 <Grid item xs={2}>
                   <TextField disabled
@@ -124,54 +125,54 @@ const NutrientImport = (props) => {
           <Typography>{props.nutrientImport.import_date} / {props.nutrientImport.import_desc}</Typography>
         </Grid>
         <Grid item container xs={12}>
-        <Grid item xs={6}>
-          <TextField
-            value={props.nutrientImport.amount_imported}
-            label="Amount imported"
-            style={{ width: "100%" }}
-          />
+          <Grid item xs={6}>
+            <TextField
+              value={props.nutrientImport.amount_imported}
+              label="Amount imported"
+              style={{ width: "100%" }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              value={props.nutrientImport.material_type}
+              label="Type"
+              style={{ width: "100%" }}
+            />
+          </Grid>
+
         </Grid>
-        <Grid item xs={6}>
-          <TextField
-            value={props.nutrientImport.material_type}
-            label="Type"
-            style={{ width: "100%" }}
-          />
+
+        <Grid item container xs={12}>
+          <Grid item xs={2}>
+            <TextField
+              value={props.nutrientImport.n_con}
+              label="Nitrogen"
+              style={{ width: "100%" }}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              value={props.nutrientImport.p_con}
+              label="Phosphorus"
+              style={{ width: "100%" }}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              value={props.nutrientImport.k_con}
+              label="Potassium"
+              style={{ width: "100%" }}
+            />
+          </Grid>
+          <Grid item xs={2}>
+            <TextField
+              value={props.nutrientImport.salt_con}
+              label="Salt"
+              style={{ width: "100%" }}
+            />
+          </Grid>
         </Grid>
-       
-      </Grid>
-      
-      <Grid item container  xs={12}>
-        <Grid item xs={2}>
-          <TextField
-            value={props.nutrientImport.n_con}
-            label="Nitrogen"
-            style={{ width: "100%" }}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            value={props.nutrientImport.p_con}
-            label="Phosphorus"
-            style={{ width: "100%" }}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            value={props.nutrientImport.k_con}
-            label="Potassium"
-            style={{ width: "100%" }}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            value={props.nutrientImport.salt_con}
-            label="Salt"
-            style={{ width: "100%" }}
-          />
-        </Grid>
-      </Grid>
-      
+
       </Grid>
       <Grid item xs={2} align='center'>
         <Tooltip title="Delete Fertilizer Source">
@@ -200,12 +201,13 @@ const NutrientImport = (props) => {
 class Fertilizer extends Component {
   constructor(props) {
     super(props)
-    
+
     this.state = {
       dairy_id: props.dairy_id,
       fieldCropAppEvents: props.fieldCropAppEvents,
       nutrientImports: props.nutrientImports,
       fieldCropAppFertilizers: props.fieldCropAppFertilizers,
+      fieldCropAppFertilizersKeys: Object.keys(props.fieldCropAppFertilizers).sort((a, b) => a < b ? -1 : 1),
       tsvType: props.tsvType,
       numCols: props.numCols,
 
@@ -219,6 +221,8 @@ class Fertilizer extends Component {
       tsvText: '',
       uploadedFilename: '',
       showViewTSVsModal: false,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
 
       createNutrientImportObj: {
         dairy_id: '',
@@ -253,17 +257,13 @@ class Fertilizer extends Component {
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
-
   /** Manually add Process Wastewater */
-
   toggleShowAddNutrientImportModal(val) {
     this.setState({ showAddNutrientImportModal: val })
   }
   toggleShowAddFertilizerModal(val) {
     this.setState({ showAddFertilizerModal: val })
   }
-
-
   onCreateNutrientImportChange(ev) {
     const { name, value } = ev.target
     let createNutrientImportObj = this.state.createNutrientImportObj
@@ -276,8 +276,6 @@ class Fertilizer extends Component {
     createFertilizerObj[name] = value
     this.setState({ createFertilizerObj: createFertilizerObj })
   }
-
-
   createFertilizer() {
     let createObj = this.state.createFertilizerObj
     createObj.dairy_id = this.state.dairy_id
@@ -302,7 +300,6 @@ class Fertilizer extends Component {
         console.log(err)
       })
   }
-
   createNutrientImport() {
     let createObj = this.state.createNutrientImportObj
     createObj.dairy_id = this.state.dairy_id
@@ -327,25 +324,19 @@ class Fertilizer extends Component {
         console.log(err)
       })
   }
-
-
   /** Delete Process Wastewater entry */
   toggleShowConfirmDeleteFertilizerModal(val) {
     this.setState({ showConfirmDeleteFertilizerModal: val })
   }
-
   toggleShowConfirmDeleteNutrientImportModal(val) {
     this.setState({ showConfirmDeleteNutrientImportModal: val })
   }
-
-
   onConfirmNutrientImportDelete(deleteNutrientImportObj) {
     this.setState({ showConfirmDeleteNutrientImportModal: true, deleteNutrientImportObj: deleteNutrientImportObj })
   }
   onConfirmFertilizerDelete(deleteFertilizerObj) {
     this.setState({ showConfirmDeleteFertilizerModal: true, deleteFertilizerObj: deleteFertilizerObj })
   }
-
   onFertilizerDelete() {
     if (Object.keys(this.state.deleteFertilizerObj).length > 0) {
       post(`${BASE_URL}/api/field_crop_app_fertilizer/delete`, { pk: this.state.deleteFertilizerObj.pk })
@@ -359,7 +350,6 @@ class Fertilizer extends Component {
         })
     }
   }
-
   onNutrientImportDelete() {
     if (Object.keys(this.state.deleteNutrientImportObj).length > 0) {
       post(`${BASE_URL}/api/nutrient_import/delete`, { pk: this.state.deleteNutrientImportObj.pk })
@@ -373,7 +363,6 @@ class Fertilizer extends Component {
         })
     }
   }
-
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppFertilizerTSVModal(val) {
     this.setState({ showUploadFieldCropAppFertilizerTSVModal: val })
@@ -421,8 +410,45 @@ class Fertilizer extends Component {
     this.setState({ showViewTSVsModal: val })
   }
 
+  renderItem({ index, style }) {
+    let field_crop_app_id = this.getSortedKeys()[index]
+    let fertilizers = this.state.fieldCropAppFertilizers[field_crop_app_id]
+    return (
+      <FertilizerAppEvent key={`fcafviewfertzs${index}`} style={style}
+        fertilizers={fertilizers}
+        onDelete={this.onConfirmFertilizerDelete.bind(this)}
+      />
+    )
+  }
+
+  getItemSize(index) {
+    let field_crop_app_id = this.getSortedKeys()[index]
+    let numRows = this.state.fieldCropAppFertilizers[field_crop_app_id].length
+    let headerSize = 50
+    let itemSize = 145
+    return headerSize + (numRows * itemSize)
+  }
+
+  setWindowListener() {
+    window.addEventListener('resize', (ev) => {
+      console.log(window.innerWidth, window.innerHeight)
+      this.setState({ windowHeight: window.innerHeight, windowWidth: window.innerWidth })
+    })
+  }
+
+  getStartPos() {
+
+    let numAnalyses = parseInt(this.state.nutrientImports.length / 2)
+    let headerSize = 0
+    let analysisSectionSize = 32 + (120 * numAnalyses)
+    return headerSize + analysisSectionSize
+  }
+  getSortedKeys() {
+    return Object.keys(this.state.fieldCropAppFertilizers).sort()
+  }
+
   render() {
-    
+
     return (
       <Grid item xs={12} container >
         <Grid item xs={12} align="right">
@@ -497,20 +523,17 @@ class Fertilizer extends Component {
 
         </Grid>
 
-        <Grid item xs={12} style={{marginTop: "32px"}}>
-          {Object.keys(this.state.fieldCropAppFertilizers).length > 0 ?
+        <Grid item xs={12} style={{ marginTop: "32px" }}>
 
-            Object.keys(this.state.fieldCropAppFertilizers)
-              .sort((a, b) => a< b ? -1 : 1)
-              .map((field_crop_app_id, i) => {
-                let fertilizers = this.state.fieldCropAppFertilizers[field_crop_app_id]
-                return (
-                  <FertilizerAppEvent key={`fcafviewfertzs${i}`}
-                    fertilizers={fertilizers}
-                    onDelete={this.onConfirmFertilizerDelete.bind(this)}
-                  />
-                )
-              })
+          {this.getSortedKeys().length > 0 ?
+            <List
+              height={Math.max(this.state.windowHeight - this.getStartPos(), 100)}
+              itemCount={this.getSortedKeys().length}
+              itemSize={this.getItemSize.bind(this)}
+              width={this.state.windowWidth * (.82)}
+            >
+              {this.renderItem.bind(this)}
+            </List>
             :
             <React.Fragment></React.Fragment>
           }
@@ -550,8 +573,8 @@ class Fertilizer extends Component {
           onClose={() => this.toggleShowAddNutrientImportModal(false)}
         />
 
-        
-            
+
+
 
         <AddFertilizerModal
           open={this.state.showAddFertilizerModal}

@@ -173,50 +173,64 @@ class HomePage extends Component {
 
         <Grid item container xs={10}>
           <Grid item xs={12}>
-            <AppBar position="static" style={{marginBottom: "32px", backgroundColor: "black"}}>
-              <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
-                onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example">
-                <Tab label="Dairy" style={{color: "#ec00d9"}}/>
-                <Tab label="Herds" style={{color: "#ec00d9"}}/>
-                <Tab label="Crops planted" style={{color: "#ec00d9"}}/>
-                <Tab label="Crops harvested" style={{color: "#ec00d9"}} />
-                <Tab label="Nutrient Applications " style={{color: "#ec00d9"}} />
 
-              </Tabs>
-            </AppBar>
             {this.state.dairies.length > 0 ?
               <React.Fragment>
-                <Grid item xs={12} className={`${this.state.tabs[0]}`}>
-                  <DairyTab
-                    reportingYr={this.state.reportingYr}
-                    dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
-                    basins={BASINS}
-                    counties={COUNTIES}
-                    breeds={BREEDS}
-                    onChange={this.onDairyChange.bind(this)}
-                    onUpdate={this.updateDairy.bind(this)}
-                  />
-                </Grid>
-                <Grid item xs={12} className={`${this.state.tabs[1]}`}>
-                  <HerdTab
-                    dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
-                  />
-                </Grid>
-                <Grid item xs={12} className={`${this.state.tabs[2]}`}>
-                  <CropTab
-                    dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
-                  />
-                </Grid>
-                <Grid item xs={12} className={`${this.state.tabs[3]}`}>
-                  <HarvestTab
-                    dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
-                  />
-                </Grid>
-                <Grid item xs={12} className={`${this.state.tabs[4]}`}>
-                  <NutrientApplicationTab
-                    dairy={this.state.dairies[this.state.dairy]}
-                  />
-                </Grid>
+                <AppBar position="static" style={{ marginBottom: "32px", backgroundColor: "black" }} key='homePageAppBar'>
+                  <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
+                    onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='homePageAppBar'>
+                    <Tab label="Dairy" style={{ color: "#ec00d9" }} key='homePageAppBarTab0' />
+                    <Tab label="Herds" style={{ color: "#ec00d9" }} key='homePageAppBarTab1' />
+                    <Tab label="Crops planted" style={{ color: "#ec00d9" }} key='homePageAppBarTab2' />
+                    <Tab label="Crops harvested" style={{ color: "#ec00d9" }} key='homePageAppBarTab3' />
+                    <Tab label="Nutrient Applications " style={{ color: "#ec00d9" }} key='homePageAppBarTab4' />
+
+                  </Tabs>
+                </AppBar>
+
+                {
+                  this.state.tabs[0] === "show" ?
+                    <Grid item xs={12} className={`${this.state.tabs[0]}`} key='DairyTab'>
+                      <DairyTab
+                        reportingYr={this.state.reportingYr}
+                        dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
+                        basins={BASINS}
+                        counties={COUNTIES}
+                        breeds={BREEDS}
+                        onChange={this.onDairyChange.bind(this)}
+                        onUpdate={this.updateDairy.bind(this)}
+                      />
+                    </Grid>
+
+                    : this.state.tabs[1] === "show" ?
+                      <Grid item xs={12} key='HerdTab'>
+                        <HerdTab
+                          dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
+                        />
+                      </Grid>
+                      : this.state.tabs[2] === "show" ?
+                        <Grid item xs={12} key='CropTab'>
+                          <CropTab
+                            dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
+                          />
+                        </Grid>
+                        : this.state.tabs[3] === "show" ?
+                          <Grid item xs={12} key='HarvestTab'>
+                            <HarvestTab
+                              dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
+                            />
+                          </Grid>
+                          : this.state.tabs[4] === "show" ?
+                            <Grid item xs={12} key='NutrientTab'>
+                              <NutrientApplicationTab
+                                dairy={this.state.dairies[this.state.dairy]}
+                              />
+                            </Grid>
+                          :
+                          <React.Fragment></React.Fragment>
+              }
+
+
               </React.Fragment>
               :
               <React.Fragment>Loading....</React.Fragment>

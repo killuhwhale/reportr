@@ -21,6 +21,8 @@ import {
 } from "../../utils/TSV"
 
 
+
+
 const REPORTING_METHODS  = ['dry-weight', 'as-is']
 const SOURCE_OF_ANALYSES = ['Lab Analysis', 'Other/ estimated']
 const BASE_URL = "http://localhost:3001"
@@ -34,13 +36,13 @@ class HarvestTab extends Component {
     this.state = {
       dairy: props.dairy,
       field_crops: [], // The planted crops to choose from to create a harvest event in field_crop_harvest DB table
-      field_crop_harvests: [],
+      fieldCropHarvests: [],
       showAddFieldCropHarvestModal: false,
       showUploadCSV: false,
       csvText: "",
       uploadedFilename: "",
       updateFieldCropHarvestObj: {}, // PK: {all data for field_crop harvest that is updatable...}
-      groupedField_crop_harvests: {},
+      groupedFieldCropHarvests: {},
       showViewTSVsModal: false,
       createFieldCropHarvestObj: {
         harvest_date: new Date(),
@@ -76,9 +78,9 @@ class HarvestTab extends Component {
   componentDidMount() {
     this.getAllFieldCrops()
     this.getAllFieldCropHarvests()
-   
   }
   getAllFieldCrops() {
+    console.log("Getting all field crops")
     get(`${BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
       .then(res => {
         this.setState({ field_crops: res })
@@ -168,7 +170,7 @@ class HarvestTab extends Component {
     get(`${BASE_URL}/api/field_crop_harvest/${this.state.dairy.pk}`)
       .then(res => {
         this.groupFieldCropHarvestByField(res)
-        this.setState({ field_crop_harvests: res, groupedField_crop_harvests: this.groupFieldCropHarvestByField(res) })
+        this.setState({ fieldCropHarvests: res, groupedFieldCropHarvests: this.groupFieldCropHarvestByField(res) })
       })
       .catch(err => {
         console.log(err)
@@ -179,7 +181,7 @@ class HarvestTab extends Component {
 
     // Changing structure, need to change where the value is updating, since its coming from new source/ data format.
 
-    let harvests = this.state.groupedField_crop_harvests
+    let harvests = this.state.groupedFieldCropHarvests
 
     let harvestObj = harvests[data.fieldtitle][data.plant_date][index]
 
@@ -278,7 +280,6 @@ class HarvestTab extends Component {
   }
 
   render() {
-    console.log("harvests", this.state.field_crop_harvests)
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
@@ -307,13 +308,13 @@ class HarvestTab extends Component {
                 :
                 <React.Fragment></React.Fragment>
             }
-
+          
             {
-              Object.keys(this.state.groupedField_crop_harvests).length > 0 ?
+              Object.keys(this.state.groupedFieldCropHarvests).length > 0 ?
                 <HarvestView
                   dairy={this.state.dairy}
-                  field_crop_harvests={this.state.field_crop_harvests}
-                  groupedField_crop_harvests={this.state.groupedField_crop_harvests}
+                  fieldCropHarvests={this.state.fieldCropHarvests}
+                  groupedFieldCropHarvests={this.state.groupedFieldCropHarvests}
                   getAllFieldCropHarvests={this.getAllFieldCropHarvests.bind(this)}
                   onChange={this.onUpdateFieldCropHarvestChange.bind(this)}
                 />
