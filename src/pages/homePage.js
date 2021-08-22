@@ -11,6 +11,8 @@ import CropTab from "../comps/Crops/cropTab"
 import HarvestTab from "../comps/Harvests/harvestTab"
 import AddDairyModal from "../comps/Modals/addDairyModal"
 import NutrientApplicationTab from "../comps/Applications/appNutrientTab"
+import ExportTab from "../comps/Exports/exportTab"
+
 import { get, post, uploadFiles } from "../utils/requests"
 
 import "../App.css"
@@ -36,6 +38,7 @@ class HomePage extends Component {
         2: "hide",
         3: "hide",
         4: "hide",
+        5: "hide"
       },
       tabIndex: 0
     }
@@ -184,7 +187,7 @@ class HomePage extends Component {
                     <Tab label="Crops planted" style={{ color: "#ec00d9" }} key='homePageAppBarTab2' />
                     <Tab label="Crops harvested" style={{ color: "#ec00d9" }} key='homePageAppBarTab3' />
                     <Tab label="Nutrient Applications " style={{ color: "#ec00d9" }} key='homePageAppBarTab4' />
-
+                    <Tab label="Nutrient Exports " style={{ color: "#ec00d9" }} key='homePageAppBarTab5' />
                   </Tabs>
                 </AppBar>
 
@@ -226,9 +229,15 @@ class HomePage extends Component {
                                 dairy={this.state.dairies[this.state.dairy]}
                               />
                             </Grid>
-                          :
-                          <React.Fragment></React.Fragment>
-              }
+                            : this.state.tabs[5] === "show" ?
+                              <Grid item xs={12} key='NutrientTab'>
+                                <ExportTab
+                                  dairy={this.state.dairies[this.state.dairy]}
+                                />
+                              </Grid>
+                              :
+                              <React.Fragment></React.Fragment>
+                }
 
 
               </React.Fragment>

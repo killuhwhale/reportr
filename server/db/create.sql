@@ -452,6 +452,8 @@ CREATE TABLE IF NOT EXISTS nutrient_import(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+
+-- For the specific upload of Fertilizer app events - nutrient_import is similar to *_analysis and holds the analysis data and amount imported, will be used in AR.pdf in its own section
 CREATE TABLE IF NOT EXISTS field_crop_app_fertilizer(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -481,26 +483,151 @@ CREATE TABLE IF NOT EXISTS field_crop_app_fertilizer(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
--- CREATE TABLE IF NOT EXISTS water_sources(
---   pk SERIAL PRIMARY KEY,
---   dairy_id INT NOT NULL,
---   title VARCHAR(30) DEFAULT '',
---   src_type VARCHAR(30) DEFAULT '',
---   UNIQUE(title, src_type),
---   CONSTRAINT fk_dairy
---     FOREIGN KEY(dairy_id) 
--- 	  REFERENCES dairies(pk)
--- );
-
--- CREATE TABLE IF NOT EXISTS drain_sources(
---   pk SERIAL PRIMARY KEY,
---   dairy_id INT NOT NULL,
---   title VARCHAR(30) DEFAULT '',
---   UNIQUE(title),
---   CONSTRAINT fk_dairy
---     FOREIGN KEY(dairy_id) 
--- 	  REFERENCES dairies(pk)
--- );
+-- Contact information for export haulers
+CREATE TABLE IF NOT EXISTS export_hauler(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  
+  title VARCHAR(250) NOT NULL,
+  first_name VARCHAR(30),
+  last_name VARCHAR(30),
+  middle_name VARCHAR(30),
+  suffix_name VARCHAR(10),
+  primary_phone VARCHAR(20),
+  street VARCHAR(100) DEFAULT '' NOT NULL,
+  cross_street VARCHAR(50) DEFAULT '',
+  county VARCHAR NOT NULL,
+  city VARCHAR(30),
+  city_state VARCHAR(3) DEFAULT 'CA',
+  city_zip VARCHAR(20) NOT NULL,
 
 
+  UNIQUE(dairy_id, title, first_name, last_name, primary_phone, street, city_zip),
+
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+-- Contact of dairy that is exporting (source)
+CREATE TABLE IF NOT EXISTS export_contact(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  
+  first_name VARCHAR(30),
+  last_name VARCHAR(30),
+  middle_name VARCHAR(30),
+  suffix_name VARCHAR(10),
+  primary_phone VARCHAR(20),
+  
+  UNIQUE(dairy_id, first_name, last_name, suffix_name, primary_phone),
+
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- Contact of recipient
+CREATE TABLE IF NOT EXISTS export_recipient(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  
+  dest_type VARCHAR(50), -- Broker, Compost Facility, Farmer, Other(describe it )
+  title VARCHAR(250) NOT NULL,
+  primary_phone VARCHAR(20),
+  street VARCHAR(100) DEFAULT '' NOT NULL,
+  cross_street VARCHAR(50) DEFAULT '',
+  county VARCHAR NOT NULL,
+  city VARCHAR(30),
+  city_state VARCHAR(3) DEFAULT 'CA',
+  city_zip VARCHAR(20) NOT NULL,
+
+
+  UNIQUE(dairy_id, title, street, city_zip, primary_phone),
+
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- Export Destination, Recipient + address OR APN
+CREATE TABLE IF NOT EXISTS export_dest(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  export_recipient_id INT NOT NULL,
+
+  dest_is_pnumber BOOLEAN NOT NULL, -- True if the destination is just a pnumber and not an address
+  pnumber VARCHAR(16),
+  street VARCHAR(100) DEFAULT '' NOT NULL,
+  cross_street VARCHAR(50) DEFAULT '',
+  county VARCHAR NOT NULL,
+  city VARCHAR(30),
+  city_state VARCHAR(3) DEFAULT 'CA',
+  city_zip VARCHAR(20) NOT NULL,
+
+
+  UNIQUE(dairy_id, export_recipient_id, pnumber, street, city_zip),
+
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+
+CREATE TABLE IF NOT EXISTS export_manifest(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  operator_id INT NOT NULL,
+  export_contact_id INT NOT NULL,
+  export_hauler_id INT NOT NULL,
+  export_dest_id INT NOT NULL, -- ecompasses export_recipient
+
+  last_date_hauled TIMESTAMP NOT NULL,
+  amount_hauled INT NOT NULL, -- tons / gals
+  material_type VARCHAR(100) NOT NULL,
+  amount_hauled_method VARCHAR(2000),
+  is_solid BOOLEAN NOT NULL, -- Determines if data is for process waster water or dry manure
+
+  -- For Dry manure
+  reporting_method VARCHAR(100), 
+  moisture NUMERIC(6,2),
+  n_con_mg_kg NUMERIC(12,2),
+  p_con_mg_kg NUMERIC(12,2),
+  k_con_mg_kg NUMERIC(12,2),
+  tfs NUMERIC(6,2),
+  
+  -- For Process wastewater
+  kn_con_mg_l NUMERIC(12,2),
+  nh4_con_mg_l NUMERIC(12,2),
+  nh3_con_mg_l NUMERIC(12,2),
+  no3_con_mg_l NUMERIC(12,2),
+  p_con_mg_l NUMERIC(12,2),
+  k_con_mg_l NUMERIC(12,2),
+  tds NUMERIC(6,2),
+
+
+  UNIQUE(dairy_id, operator_id, export_contact_id, export_dest_id, last_date_hauled, material_type),
+
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_operator
+    FOREIGN KEY(operator_id) 
+	  REFERENCES operators(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_export_contact
+    FOREIGN KEY(export_contact_id)
+	  REFERENCES export_contact(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_export_dest
+    FOREIGN KEY(export_dest_id) 
+	  REFERENCES export_dest(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);

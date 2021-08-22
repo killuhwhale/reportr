@@ -1122,5 +1122,327 @@ module.exports = {
   },
 
 
+  insertExportHauler: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO export_hauler(
+        dairy_id,
+        title,
+        first_name,
+        last_name,
+        middle_name,
+        suffix_name,
+        primary_phone,
+        street,
+        cross_street,
+        county,
+        city,
+        city_state,
+        city_zip
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getExportHauler: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT *
+        FROM export_hauler
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmExportHauler: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM export_hauler where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+  insertExportContact: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO export_contact(
+        dairy_id,
+        first_name,
+        last_name,
+        middle_name,
+        suffix_name,
+        primary_phone
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getExportContact: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT *
+        FROM export_contact
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmExportContact: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM export_contact where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+  insertExportRecipient: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO export_recipient(
+        dairy_id,
+        dest_type,
+        title,
+        primary_phone,
+        street,
+        cross_street,
+        county,
+        city,
+        city_state,
+        city_zip
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getExportRecipient: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT *
+        FROM export_recipient
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmExportRecipient: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM export_recipient where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+  insertExportDest: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO export_dest(
+        dairy_id,
+        export_recipient_id,
+
+        dest_is_pnumber,
+        pnumber,
+        street,
+        cross_street,
+        county,
+        city,
+        city_state,
+        city_zip
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getExportDest: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT 
+        
+        ed.pk,
+        ed.dest_is_pnumber,
+        ed.pnumber,
+        ed.street,
+        ed.cross_street,
+        ed.county,
+        ed.city,
+        ed.city_state,
+        ed.city_zip,
+        
+        er.dest_type,
+        er.title,
+        er.primary_phone,
+        er.street as recipient_street,
+        er.cross_street as recipient_cross_street,
+        er.county as recipient_county,
+        er.city as recipient_city,
+        er.city_state as recipient_city_state,
+        er.city_zip as recipient_city_zip
+
+
+        FROM export_dest ed
+
+        JOIN export_recipient er
+        ON er.pk =  ed.export_recipient_id
+
+        
+
+        WHERE 
+        ed.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmExportDest: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM export_dest where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+
+
+  insertExportManifest: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO export_manifest(
+        dairy_id,
+        operator_id,
+        export_contact_id,
+        export_hauler_id,
+
+        export_dest_id,
+        last_date_hauled,
+        amount_hauled,
+        material_type,
+        amount_hauled_method,
+        is_solid,
+      
+        reporting_method, 
+        moisture,
+        n_con_mg_kg,
+        p_con_mg_kg,
+        k_con_mg_kg,
+        tfs,
+        
+        kn_con_mg_l,
+        nh4_con_mg_l,
+        nh3_con_mg_l,
+        no3_con_mg_l,
+        p_con_mg_l,
+        k_con_mg_l,
+        tds
+      
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getExportManifest: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT 
+        em.pk,
+        em.last_date_hauled,
+        em.amount_hauled,
+        em.material_type,
+        em.amount_hauled_method,
+        em.reporting_method, 
+        em.moisture,
+        em.n_con_mg_kg,
+        em.p_con_mg_kg,
+        em.k_con_mg_kg,
+        em.tfs,
+        
+        em.kn_con_mg_l,
+        em.nh4_con_mg_l,
+        em.nh3_con_mg_l,
+        em.no3_con_mg_l,
+        em.p_con_mg_l,
+        em.k_con_mg_l,
+        em.tds,
+
+        ed.dest_is_pnumber,
+        ed.pnumber,
+        ed.street as dest_street,
+        ed.cross_street as dest_cross_street,
+        ed.county as dest_county,
+        ed.city as dest_city,
+        ed.city_state as dest_city_state,
+        ed.city_zip as dest_city_zip,
+
+        er.dest_type,
+        er.title as recipient_,
+        er.primary_phone as recipient_primary_phone,
+        er.street as recipient_street,
+        er.cross_street as recipient_cross_street,
+        er.county as recipient_county,
+        er.city as recipient_city,
+        er.city_state as recipient_city_state,
+        er.city_zip as recipient_city_zip,
+
+        ec.first_name as contact_first_name,
+        ec.last_name as contact_last_name,
+        ec.middle_name as contact_middle_name,
+        ec.suffix_name as contact_suffix_name,
+        ec.primary_phone as contact_primary_phone,
+
+        op.title as operator_title,
+        op.primary_phone as operator_primary_phone,
+        op.secondary_phone as operator_secondary_phone,
+        op.street as operator_street,
+        op.city as operator_city, 
+        op.city_state as operator_city_state,
+        op.city_zip as operator_city_zip,
+        op.is_owner as operator_is_owner,
+        op.is_responsible as operator_is_responsible,
+
+        eh.title as hauler_title,
+        eh.first_name as hauler_first_name,
+        eh.last_name as hauler_last_name,
+        eh.middle_name as hauler_middle_name,
+        eh.suffix_name as hauler_suffix_name,
+        eh.primary_phone as hauler_primary_phone,
+        eh.street as hauler_street,
+        eh.cross_street as hauler_cross_street,
+        eh.county as hauler_county,
+        eh.city as hauler_city,
+        eh.city_state as hauler_city_state,
+        eh.city_zip as hauler_city_zip
+
+        FROM export_manifest em
+
+        JOIN export_contact ec
+        ON ec.pk = em.export_contact_id
+        
+        JOIN operators op
+        ON op.pk = em.operator_id
+        
+        JOIN export_dest ed
+        ON ed.pk = em.export_dest_id
+        
+        JOIN export_recipient er
+        ON er.pk = ed.export_recipient_id
+
+        JOIN export_hauler eh
+        ON eh.pk = em.export_hauler_id
+
+
+        WHERE 
+        em.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmExportManifest: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM export_manifest where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
 }
 

@@ -1200,10 +1200,354 @@ app.post("/api/field_crop_app_fertilizer/delete", (req, res) => {
 });
 
 
+app.post("/api/export_hauler/create", (req, res) => {
+  console.log("Creating.... export_hauler", req.body)
+  const {
+    dairy_id,
+    title,
+    first_name,
+    last_name,
+    middle_name,
+    suffix_name,
+    primary_phone,
+    street,
+    cross_street,
+    county,
+    city,
+    city_state,
+    city_zip
+  } = req.body
+  db.insertExportHauler(
+    [
+      dairy_id,
+      title,
+      first_name,
+      last_name,
+      middle_name,
+      suffix_name,
+      primary_phone,
+      street,
+      cross_street,
+      county,
+      city,
+      city_state,
+      city_zip
+    ],
+    (err, result) => {
+
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created export_hauler unsuccessful" });
+    }
+  )
+});
+app.get("/api/export_hauler/:dairy_id", (req, res) => {
+
+  db.getExportHauler(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all export_hauler unsuccessful" });
+    })
+});
+app.post("/api/export_hauler/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmExportHauler(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted export_hauler successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted export_hauler unsuccessful" });
+  })
+});
+
+app.post("/api/export_contact/create", (req, res) => {
+  console.log("Creating.... export_contact", req.body)
+  const {
+    dairy_id,
+    first_name,
+    last_name,
+    middle_name,
+    suffix_name,
+    primary_phone
+  } = req.body
+  db.insertExportContact(
+    [
+      dairy_id,
+      first_name,
+      last_name,
+      middle_name,
+      suffix_name,
+      primary_phone
+    ],
+    (err, result) => {
+
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created export_contact unsuccessful" });
+    }
+  )
+});
+app.get("/api/export_contact/:dairy_id", (req, res) => {
+
+  db.getExportContact(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all export_contact unsuccessful" });
+    })
+});
+app.post("/api/export_contact/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmExportContact(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted export_contact successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted export_contact unsuccessful" });
+  })
+});
 
 
+app.post("/api/export_recipient/create", (req, res) => {
+  console.log("Creating.... export recipient", req.body)
+  const {
+    dairy_id,
+    dest_type,
+    title,
+    primary_phone,
+    street,
+    cross_street,
+    county,
+    city,
+    city_state,
+    city_zip
+  } = req.body
+  db.insertExportRecipient(
+    [
+      dairy_id,
+      dest_type,
+      title,
+      primary_phone,
+      street,
+      cross_street,
+      county,
+      city,
+      city_state,
+      city_zip
+    ],
+    (err, result) => {
+
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created export_recipient unsuccessful" });
+    }
+  )
+});
+app.get("/api/export_recipient/:dairy_id", (req, res) => {
+
+  db.getExportRecipient(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all export_recipient unsuccessful" });
+    })
+});
+app.post("/api/export_recipient/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmExportRecipient(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted export_recipient successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted export_recipient unsuccessful" });
+  })
+});
 
 
+app.post("/api/export_dest/create", (req, res) => {
+  console.log("Creating.... export_dest", req.body)
+  const {
+    dairy_id,
+    export_recipient_id,
+    dest_is_pnumber,
+    pnumber,
+    street,
+    cross_street,
+    county,
+    city,
+    city_state,
+    city_zip
+  } = req.body
+  db.insertExportDest(
+    [
+      dairy_id,
+      export_recipient_id,
+      dest_is_pnumber,
+      pnumber,
+      street,
+      cross_street,
+      county,
+      city,
+      city_state,
+      city_zip
+    ],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created export_dest unsuccessful" });
+    }
+  )
+});
+app.get("/api/export_dest/:dairy_id", (req, res) => {
+console.log("Getting export_dest:", req.params.dairy_id)
+  db.getExportDest(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all export_dest unsuccessful" });
+    })
+});
+app.post("/api/export_dest/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmExportDest(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted export_dest successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted export_dest unsuccessful" });
+  })
+});
+
+
+app.post("/api/export_manifest/create", (req, res) => {
+  console.log("Creating.... export_manifest", req.body)
+  const {
+    dairy_id,
+    operator_id,
+    export_contact_id,
+    export_hauler_id,
+    export_dest_id,
+    last_date_hauled,
+    amount_hauled,
+    material_type,
+    amount_hauled_method,
+    is_solid,
+
+    reporting_method,
+    moisture,
+    n_con_mg_kg,
+    p_con_mg_kg,
+    k_con_mg_kg,
+    tfs,
+
+    kn_con_mg_l,
+    nh4_con_mg_l,
+    nh3_con_mg_l,
+    no3_con_mg_l,
+    p_con_mg_l,
+    k_con_mg_l,
+    tds
+  } = req.body
+  db.insertExportManifest(
+    [
+      dairy_id,
+      operator_id,
+      export_contact_id,
+      export_hauler_id,
+      export_dest_id,
+      last_date_hauled,
+      amount_hauled,
+      material_type,
+      amount_hauled_method,
+      is_solid,
+
+      reporting_method,
+      moisture,
+      n_con_mg_kg,
+      p_con_mg_kg,
+      k_con_mg_kg,
+      tfs,
+
+      kn_con_mg_l,
+      nh4_con_mg_l,
+      nh3_con_mg_l,
+      no3_con_mg_l,
+      p_con_mg_l,
+      k_con_mg_l,
+      tds
+    ],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created export_manifest unsuccessful" });
+    }
+  )
+});
+app.get("/api/export_manifest/:dairy_id", (req, res) => {
+
+  db.getExportManifest(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all export_manifest unsuccessful" });
+    })
+});
+app.post("/api/export_manifest/delete", (req, res) => {
+  console.log("Deleting....", req.body.pk)
+  db.rmExportManifest(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted export_manifest successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted export_manifest unsuccessful" });
+  })
+});
 
 
 
