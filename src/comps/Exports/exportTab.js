@@ -805,6 +805,7 @@ class ExportTab extends Component {
         reporting_method,
         material_type,
         amount_hauled: parseInt(checkEmpty(amount_hauled)),
+        
 
         moisture: checkEmpty(moisture),
         n_con_mg_kg: checkEmpty(n_con_mg_kg),
