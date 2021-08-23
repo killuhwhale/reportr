@@ -72,33 +72,7 @@ class AddExportContactModal extends Component {
                       style={{ width: "100%" }}
                     />
                   </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      name='last_name'
-                      onChange={this.props.onChange.bind(this)}
-                      value={this.state.createExportContactObj.last_name}
-                      label="Last name"
-                      style={{ width: "100%" }}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      name='middle_name'
-                      onChange={this.props.onChange.bind(this)}
-                      value={this.state.createExportContactObj.middle_name}
-                      label="Middle name"
-                      style={{ width: "100%" }}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      name='suffix_name'
-                      onChange={this.props.onChange.bind(this)}
-                      value={this.state.createExportContactObj.suffix_name}
-                      label="Appelation"
-                      style={{ width: "100%" }}
-                    />
-                  </Grid>
+                  
                   <Grid item xs={12}>
                     <TextField
                       name='primary_phone'

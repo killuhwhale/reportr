@@ -31,8 +31,8 @@ module.exports = {
     )
   },
   insertDairy: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format("INSERT INTO dairies(title, reporting_yr) VALUES (%L)", values),
       [],
@@ -56,9 +56,10 @@ module.exports = {
       callback
     )
   },
+
   insertField: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format("INSERT INTO fields(title, acres, cropable, dairy_id) VALUES (%L) RETURNING *", values),
       [],
@@ -89,9 +90,10 @@ module.exports = {
       callback
     )
   },
+
   insertParcel: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format("INSERT INTO parcels(pnumber, dairy_id) VALUES (%L)", values),
       [],
@@ -120,9 +122,10 @@ module.exports = {
       callback
     )
   },
+
   insertFieldParcel: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format("INSERT INTO field_parcel(dairy_id, field_id, parcel_id) VALUES (%L)", values),
       [],
@@ -157,13 +160,22 @@ module.exports = {
       callback
     )
   },
+
   insertOperator: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format(`INSERT INTO operators(
-        dairy_id, title, primary_phone, secondary_phone,
-        street, city, city_state, city_zip, is_owner, is_responsible
+        dairy_id,
+        title,
+        primary_phone,
+        secondary_phone,
+        street,
+        city,
+        city_state,
+        city_zip,
+        is_owner, 
+        is_responsible
         ) VALUES (%L)`, values),
       [],
       callback
@@ -200,9 +212,19 @@ module.exports = {
       callback
     )
   },
+  searchOperators: (values, callback) => {
+
+    return pool.query(
+      `SELECT * FROM operators
+      where title = $1 and primary_phone = $2 and dairy_id = $3`,
+      values,
+      callback
+    )
+  },
+
   insertHerd: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format(`INSERT INTO herds(
         dairy_id) VALUES (%L)`, values),
@@ -231,9 +253,10 @@ module.exports = {
       callback
     )
   },
+
   insertFieldCrop: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format(`INSERT INTO field_crop(
         dairy_id, field_id, crop_id, plant_date, acres_planted, typical_yield, moisture, n,p,k,salt
@@ -307,9 +330,10 @@ module.exports = {
       callback
     )
   },
+
   insertFieldCropHarvest: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format(`INSERT INTO field_crop_harvest(
         dairy_id,
@@ -404,8 +428,8 @@ module.exports = {
     )
   },
   searchFieldsByTitle: (values, callback) => {
-    
-    
+
+
     return pool.query(
       "SELECT * FROM fields where title = $1 and dairy_id = $2",
       values,
@@ -413,14 +437,15 @@ module.exports = {
     )
   },
   searchFieldCropsByFieldCropPlantdate: (values, callback) => {
-    
-    
+
+
     return pool.query(
       "SELECT * FROM field_crop where field_id = $1 and crop_id = $2 and plant_date = $3",
       values,
       callback
     )
   },
+
   insertTSV: (values, callback) => {
     return pool.query(
       format(`INSERT INTO TSVs(
@@ -444,9 +469,10 @@ module.exports = {
       callback
     )
   },
+
   insertFieldCropApplication: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format(`INSERT INTO field_crop_app(
         dairy_id, field_crop_id, app_date, app_method, precip_before, precip_during, precip_after
@@ -511,8 +537,8 @@ module.exports = {
     )
   },
   searchFieldCropApplicationsByFieldCropIDAppDate: (values, callback) => {
-    
-    
+
+
     return pool.query(
       "SELECT * FROM field_crop_app where field_crop_id = $1 and app_date = $2 and dairy_id = $3",
       values,
@@ -521,8 +547,8 @@ module.exports = {
   },
 
   insertFieldCropApplicationProcessWastewaterAnalysis: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format(`
         INSERT INTO field_crop_app_process_wastewater_analysis( 
@@ -554,8 +580,8 @@ module.exports = {
     )
   },
   searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc: (values, callback) => {
-    
-    
+
+
     return pool.query(
       `SELECT * FROM field_crop_app_process_wastewater_analysis
        where sample_date = $1 and sample_desc = $2 and dairy_id = $3`,
@@ -565,8 +591,8 @@ module.exports = {
   },
 
   insertFieldCropApplicationProcessWastewater: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format(`INSERT INTO field_crop_app_process_wastewater(
         dairy_id,
@@ -657,12 +683,12 @@ module.exports = {
       callback
     )
   },
-  
+
 
 
   insertFieldCropApplicationFreshwaterSource: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format(`INSERT INTO field_crop_app_freshwater_source(
         dairy_id,
@@ -694,8 +720,8 @@ module.exports = {
     )
   },
   searchFieldCropAppFreshwaterSource: (values, callback) => {
-    
-    
+
+
     return pool.query(
       `SELECT * FROM field_crop_app_freshwater_source
        where src_desc = $1 and src_type = $2 and dairy_id = $3`,
@@ -705,8 +731,8 @@ module.exports = {
   },
 
   insertFieldCropApplicationFreshwaterAnalysis: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format(`INSERT INTO field_crop_app_freshwater_analysis(
         dairy_id,
@@ -752,8 +778,8 @@ module.exports = {
     )
   },
   searchFieldCropAppFreshwaterAnalysis: (values, callback) => {
-    
-    
+
+
     return pool.query(
       `SELECT * FROM field_crop_app_freshwater_analysis
        where sample_date = $1 and sample_desc = $2 and src_of_analysis = $3 and fresh_water_source_id = $4 and dairy_id = $5`,
@@ -763,8 +789,8 @@ module.exports = {
   },
 
   insertFieldCropApplicationFreshwater: (values, callback) => {
-    
-    
+
+
     return pool.query(
       format(`INSERT INTO field_crop_app_freshwater(
         dairy_id,
@@ -894,7 +920,7 @@ module.exports = {
     )
   },
   searchFieldCropAppSolidmanureAnalysis: (values, callback) => {
-    
+
     return pool.query(
       `SELECT * FROM field_crop_app_solidmanure_analysis
        where sample_date = $1 and sample_desc = $2 and src_of_analysis = $3 and dairy_id = $4`,
@@ -1032,7 +1058,7 @@ module.exports = {
     )
   },
   searchNutrientImport: (values, callback) => {
-    
+
     return pool.query(
       `SELECT * FROM nutrient_import
        where import_date = $1 and material_type = $2 and import_desc = $3 and dairy_id = $4`,
@@ -1128,9 +1154,6 @@ module.exports = {
         dairy_id,
         title,
         first_name,
-        last_name,
-        middle_name,
-        suffix_name,
         primary_phone,
         street,
         cross_street,
@@ -1162,15 +1185,21 @@ module.exports = {
       callback
     )
   },
+  searchExportHauler: (values, callback) => {
+
+    return pool.query(
+      `SELECT * FROM export_hauler
+      where title = $1 and first_name = $2 and primary_phone = $3 and street = $4 and city_zip = $5 and dairy_id = $6`,
+      values,
+      callback
+    )
+  },
 
   insertExportContact: (values, callback) => {
     return pool.query(
       format(`INSERT INTO export_contact(
         dairy_id,
         first_name,
-        last_name,
-        middle_name,
-        suffix_name,
         primary_phone
         ) VALUES (%L)  RETURNING *`, values),
       [],
@@ -1193,6 +1222,15 @@ module.exports = {
     return pool.query(
       format("DELETE FROM export_contact where pk = %L", id),
       [],
+      callback
+    )
+  },
+  searchExportContact: (values, callback) => {
+
+    return pool.query(
+      `SELECT * FROM export_contact
+      where first_name = $1 and primary_phone = $2 and dairy_id = $3`,
+      values,
       callback
     )
   },
@@ -1231,6 +1269,15 @@ module.exports = {
     return pool.query(
       format("DELETE FROM export_recipient where pk = %L", id),
       [],
+      callback
+    )
+  },
+  searchExportRecipient: (values, callback) => {
+
+    return pool.query(
+      `SELECT * FROM export_recipient
+      where title = $1 and street = $2 and city_zip = $3 and primary_phone=$4 and dairy_id = $5`,
+      values,
       callback
     )
   },
@@ -1325,14 +1372,20 @@ module.exports = {
         p_con_mg_kg,
         k_con_mg_kg,
         tfs,
-        
+        salt_lbs_rm,
+
         kn_con_mg_l,
         nh4_con_mg_l,
         nh3_con_mg_l,
         no3_con_mg_l,
         p_con_mg_l,
         k_con_mg_l,
-        tds
+        ec_umhos_cm,
+        tds,
+        
+        n_lbs_rm,
+        p_lbs_rm,
+        k_lbs_rm 
       
         ) VALUES (%L)  RETURNING *`, values),
       [],
@@ -1354,6 +1407,13 @@ module.exports = {
         em.p_con_mg_kg,
         em.k_con_mg_kg,
         em.tfs,
+
+
+        em.ec_umhos_cm,
+        em.salt_lbs_rm,
+        em.n_lbs_rm,
+        em.p_lbs_rm,
+        em.k_lbs_rm,
         
         em.kn_con_mg_l,
         em.nh4_con_mg_l,
@@ -1383,9 +1443,6 @@ module.exports = {
         er.city_zip as recipient_city_zip,
 
         ec.first_name as contact_first_name,
-        ec.last_name as contact_last_name,
-        ec.middle_name as contact_middle_name,
-        ec.suffix_name as contact_suffix_name,
         ec.primary_phone as contact_primary_phone,
 
         op.title as operator_title,
@@ -1400,9 +1457,6 @@ module.exports = {
 
         eh.title as hauler_title,
         eh.first_name as hauler_first_name,
-        eh.last_name as hauler_last_name,
-        eh.middle_name as hauler_middle_name,
-        eh.suffix_name as hauler_suffix_name,
         eh.primary_phone as hauler_primary_phone,
         eh.street as hauler_street,
         eh.cross_street as hauler_cross_street,

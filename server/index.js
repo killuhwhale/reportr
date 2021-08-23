@@ -1206,9 +1206,7 @@ app.post("/api/export_hauler/create", (req, res) => {
     dairy_id,
     title,
     first_name,
-    last_name,
-    middle_name,
-    suffix_name,
+    
     primary_phone,
     street,
     cross_street,
@@ -1222,9 +1220,7 @@ app.post("/api/export_hauler/create", (req, res) => {
       dairy_id,
       title,
       first_name,
-      last_name,
-      middle_name,
-      suffix_name,
+      
       primary_phone,
       street,
       cross_street,
@@ -1275,18 +1271,14 @@ app.post("/api/export_contact/create", (req, res) => {
   const {
     dairy_id,
     first_name,
-    last_name,
-    middle_name,
-    suffix_name,
+    
     primary_phone
   } = req.body
   db.insertExportContact(
     [
       dairy_id,
       first_name,
-      last_name,
-      middle_name,
-      suffix_name,
+     
       primary_phone
     ],
     (err, result) => {
@@ -1475,7 +1467,8 @@ app.post("/api/export_manifest/create", (req, res) => {
     n_con_mg_kg,
     p_con_mg_kg,
     k_con_mg_kg,
-    tfs,
+    tfs, 
+    salt_lbs_rm,
 
     kn_con_mg_l,
     nh4_con_mg_l,
@@ -1483,7 +1476,12 @@ app.post("/api/export_manifest/create", (req, res) => {
     no3_con_mg_l,
     p_con_mg_l,
     k_con_mg_l,
-    tds
+    ec_umhos_cm,
+    tds,
+    
+    n_lbs_rm,
+    p_lbs_rm,
+    k_lbs_rm 
   } = req.body
   db.insertExportManifest(
     [
@@ -1504,6 +1502,7 @@ app.post("/api/export_manifest/create", (req, res) => {
       p_con_mg_kg,
       k_con_mg_kg,
       tfs,
+      salt_lbs_rm,
 
       kn_con_mg_l,
       nh4_con_mg_l,
@@ -1511,7 +1510,12 @@ app.post("/api/export_manifest/create", (req, res) => {
       no3_con_mg_l,
       p_con_mg_l,
       k_con_mg_l,
-      tds
+      ec_umhos_cm,
+      tds,
+      
+      n_lbs_rm,
+      p_lbs_rm,
+      k_lbs_rm 
     ],
     (err, result) => {
       if (!err) {
@@ -1532,7 +1536,7 @@ app.get("/api/export_manifest/:dairy_id", (req, res) => {
         res.json(result.rows)
         return;
       }
-      console.log(err)
+      console.log("Export manifest", err)
       res.json({ "test": "Get all export_manifest unsuccessful" });
     })
 });
@@ -1686,6 +1690,84 @@ app.get("/api/search/nutrient_import/:import_date/:material_type/:import_desc/:d
     })
 });
 
+//Exports 
+// title, primary_phone
+app.get("/api/search/operators/:title/:primary_phone/:dairy_pk", (req, res) => {
+  db.searchOperators(
+    [
+      req.params.title,
+      req.params.primary_phone,   
+      req.params.dairy_pk,
+    ],
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Search all operators unsuccessful" });
+    })
+});
+// title, first_name, primary_phone, street, city_zip
+app.get("/api/search/export_hauler/:title/:first_name/:primary_phone/:street/:city_zip/:dairy_pk", (req, res) => {
+  db.searchExportHauler(
+    [
+      req.params.title,
+      req.params.first_name,
+      req.params.primary_phone,
+      req.params.street,
+      req.params.city_zip,
+      req.params.dairy_pk,
+    ],
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Search all export_hauler unsuccessful" });
+    })
+});
+app.get("/api/search/export_contact/:first_name/:primary_phone/:dairy_pk", (req, res) => {
+  db.searchExportContact(
+    [
+      req.params.first_name,
+      req.params.primary_phone,
+      req.params.dairy_pk,
+    ],
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Search all export_hauler unsuccessful" });
+    })
+});
+
+//title, street, city_zip, primary_phone
+app.get("/api/search/export_recipient/:title/:street/:city_zip/:primary_phone/:dairy_pk", (req, res) => {
+  db.searchExportRecipient(
+    [
+      req.params.title,
+      req.params.street,
+      req.params.city_zip,
+      req.params.primary_phone,
+      req.params.dairy_pk,
+    ],
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Search all export_recipient unsuccessful" });
+    })
+});
 ////////////////////////////////
 
 app.post("/api/postImage", (req, res) => {

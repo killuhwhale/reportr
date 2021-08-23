@@ -1,4 +1,8 @@
 --- db: reportrr, user: admin, pass 
+
+-- NEED TO UPDATE
+--     OPERATORS UNIQUE,
+--      Export_manifest, total npk removed
 CREATE TABLE IF NOT EXISTS dairies(
   pk SERIAL PRIMARY KEY,
   reporting_yr SMALLINT DEFAULT 2021,
@@ -73,6 +77,7 @@ CREATE TABLE IF NOT EXISTS operators(
   is_owner BOOLEAN,
   is_responsible BOOLEAN DEFAULT FALSE, -- responsible for paying permit fees.
 
+  UNIQUE(dairy_id, title, primary_phone),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
 	  REFERENCES dairies(pk)
@@ -483,6 +488,10 @@ CREATE TABLE IF NOT EXISTS field_crop_app_fertilizer(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+
+
+
+
 -- Contact information for export haulers
 CREATE TABLE IF NOT EXISTS export_hauler(
   pk SERIAL PRIMARY KEY,
@@ -490,9 +499,6 @@ CREATE TABLE IF NOT EXISTS export_hauler(
   
   title VARCHAR(250) NOT NULL,
   first_name VARCHAR(30),
-  last_name VARCHAR(30),
-  middle_name VARCHAR(30),
-  suffix_name VARCHAR(10),
   primary_phone VARCHAR(20),
   street VARCHAR(100) DEFAULT '' NOT NULL,
   cross_street VARCHAR(50) DEFAULT '',
@@ -502,7 +508,7 @@ CREATE TABLE IF NOT EXISTS export_hauler(
   city_zip VARCHAR(20) NOT NULL,
 
 
-  UNIQUE(dairy_id, title, first_name, last_name, primary_phone, street, city_zip),
+  UNIQUE(dairy_id, title, first_name, primary_phone, street, city_zip),
 
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
@@ -510,19 +516,18 @@ CREATE TABLE IF NOT EXISTS export_hauler(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
 -- Contact of dairy that is exporting (source)
 CREATE TABLE IF NOT EXISTS export_contact(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
   
   first_name VARCHAR(30),
-  last_name VARCHAR(30),
-  middle_name VARCHAR(30),
-  suffix_name VARCHAR(10),
+  -- last_name VARCHAR(30),
+  -- middle_name VARCHAR(30),
+  -- suffix_name VARCHAR(10),
   primary_phone VARCHAR(20),
   
-  UNIQUE(dairy_id, first_name, last_name, suffix_name, primary_phone),
+  UNIQUE(dairy_id, first_name, primary_phone),
 
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
@@ -592,7 +597,7 @@ CREATE TABLE IF NOT EXISTS export_manifest(
   amount_hauled INT NOT NULL, -- tons / gals
   material_type VARCHAR(100) NOT NULL,
   amount_hauled_method VARCHAR(2000),
-  is_solid BOOLEAN NOT NULL, -- Determines if data is for process waster water or dry manure
+  is_solid BOOLEAN NOT NULL, -- DEPRACATED Determines if data is for process waster water or dry manure, probably going to use material_type instread of this boolean, deprecated.
 
   -- For Dry manure
   reporting_method VARCHAR(100), 
@@ -601,6 +606,7 @@ CREATE TABLE IF NOT EXISTS export_manifest(
   p_con_mg_kg NUMERIC(12,2),
   k_con_mg_kg NUMERIC(12,2),
   tfs NUMERIC(6,2),
+  salt_lbs_rm NUMERIC(12,2),  --New
   
   -- For Process wastewater
   kn_con_mg_l NUMERIC(12,2),
@@ -609,9 +615,13 @@ CREATE TABLE IF NOT EXISTS export_manifest(
   no3_con_mg_l NUMERIC(12,2),
   p_con_mg_l NUMERIC(12,2),
   k_con_mg_l NUMERIC(12,2),
+  ec_umhos_cm NUMERIC(12,2), -- New
   tds NUMERIC(6,2),
-
-
+  
+  -- Shared between manure and wastewater -- New
+  n_lbs_rm NUMERIC(12,2),
+  p_lbs_rm NUMERIC(12,2),
+  k_lbs_rm NUMERIC(12,2),
   UNIQUE(dairy_id, operator_id, export_contact_id, export_dest_id, last_date_hauled, material_type),
 
   CONSTRAINT fk_dairy

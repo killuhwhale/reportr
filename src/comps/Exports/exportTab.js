@@ -11,8 +11,9 @@ import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
 import LocalShippingIcon from '@material-ui/icons/LocalShipping'
 import CallReceivedIcon from '@material-ui/icons/CallReceived'
 import ExploreIcon from '@material-ui/icons/Explore'
-import AssessmentIcon from '@material-ui/icons/Assessment';
-
+import AssessmentIcon from '@material-ui/icons/Assessment'
+import CloudUploadIcon from '@material-ui/icons/CloudUpload'
+import DescriptionIcon from '@material-ui/icons/Description'
 
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
@@ -23,9 +24,11 @@ import AddExportHaulerModal from "../Modals/addExportHaulerModal"
 import AddExportRecipientModal from '../Modals/AddExportRecipientModal'
 import AddExportDestModal from "../Modals/addExportDestModal"
 import AddExportManifestModal from "../Modals/addExportManifestModal"
+import ViewTSVsModal from '../Modals/viewTSVsModal'
+import UploadExportTSVModal from '../Modals/uploadExportTSVModal'
 import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
-import { TSV_INFO, checkEmpty } from '../../utils/TSV'
+import { TSV_INFO, checkEmpty, readTSV, processTSVText, lazyGet } from '../../utils/TSV'
 
 
 const BASE_URL = "http://localhost:3001"
@@ -74,6 +77,22 @@ const MANIFEST_MATERIAL_TYPES = [
 ]
 const DEST_TYPES = ['Broker', 'Composting Facility', 'Farmer', 'Other']
 
+const MANURE = 'export_manifest_manure'
+const WASTEWATER = 'export_manifest_wastewater'
+const EXPORT_TSV_TYPES = {
+  [MANURE]: {
+    numCols: 49,
+    tsvType: MANURE
+  },
+  [WASTEWATER]: {
+    numCols: 50,
+    tsvType: WASTEWATER
+  }
+}
+
+
+
+
 class ExportTab extends Component {
   constructor(props) {
     super(props)
@@ -84,6 +103,12 @@ class ExportTab extends Component {
       showAddExportRecipientModal: false,
       showAddExportDestModal: false,
       showAddExportManifestModal: false,
+      showUploadTSVModal: false,
+      showViewTSVsModal: false,
+      tsvText: '',
+      uploadedFilename: '',
+      tsvType: MANURE,
+      numCols: '',
       operators: [],
       exportContacts: [],
       exportHaulers: [],
@@ -512,9 +537,291 @@ class ExportTab extends Component {
   }
 
 
+  onUploadExportTSVModalChange(ev) {
+    const { files } = ev.target
+    if (files.length > 0) {
+      readTSV(files[0], (_ev) => {
+        const { result } = _ev.target
+        this.setState({ tsvText: result, uploadedFilename: files[0].name })
+      })
+    }
+  }
+
+
+  onUploadExportManureTSV() {
+    // 24 columns from TSV
+    let dairy_id = this.state.dairy.pk
+    let numCols = EXPORT_TSV_TYPES[MANURE].numCols
+    let rows = processTSVText(this.state.tsvText, numCols) // extract rows from Text of tsv file TODO()
+    let promises = []
+    console.log("Rows SM", rows)
+
+    const [
+
+      last_date_hauled,
+      op_title,
+      op_primary_phone,
+      op_secondary_phone,
+      op_street,
+      op_city,
+      op_city_state,
+      op_city_zip,
+      op_is_owner, 
+      op_is_responsible,  // Yes, No
+
+      contact_first_name,
+      contact_primary_phone,
+
+
+      hauler_title,
+      hauler_first_name,
+      
+      hauler_primary_phone,
+      hauler_street,
+      hauler_cross_street,
+      hauler_county,
+      hauler_city,
+      hauler_city_state,
+      hauler_city_zip,
+
+
+
+      recipient_title,
+      dest_type,
+      recipient_primary_phone,
+      recipient_street,
+      recipient_cross_street,
+      recipient_county,
+      recipient_city,
+      recipient_city_state,
+      recipient_city_zip,
+
+      pnumber,
+      dest_street,
+      dest_cross_street,
+      dest_county,
+      dest_city,
+      dest_city_state,
+      dest_city_zip,
+
+      
+      amount_hauled_method,
+      reporting_method,
+      material_type,
+      amount_hauled,
+
+      moisture,
+      n_con_mg_kg,
+      p_con_mg_kg,
+      k_con_mg_kg,
+      tfs,
+      
+      n_lbs_rm,
+      p_lbs_rm,
+      k_lbs_rm,
+      salt_lbs_rm,
+    ] = rows[0]
+
+
+
+    // INDEPENDENT
+    // Then lazyget operator
+    // Then lazyget export_contact
+    // Then lazyget export_hauler
+    // Then lazyget export_recipient
+
+    // need ot create a search endpoint for evertyhting, operators, export_ *contact, *hauler, *recipient
+    let opSearchURL = `${op_title}/${op_primary_phone}`  
+    let createOperatorData ={
+      dairy_id: dairy_id,
+      title: op_title,
+      primary_phone: op_primary_phone,
+      secondary_phone: op_secondary_phone,
+      street: op_street,
+      city: op_city,
+      city_state: op_city_state,
+      city_zip: op_city_zip,
+      is_owner: op_is_owner, 
+      is_responsible: op_is_responsible
+    }
+    promises.push(lazyGet('operators', opSearchURL, createOperatorData, this.state.dairy.pk))
+
+
+    let contactSearchURL = `${contact_first_name}/${contact_primary_phone}`  
+    let createContactData ={
+      dairy_id: dairy_id,
+      first_name: contact_first_name,
+      primary_phone: contact_primary_phone,
+    }
+    promises.push(lazyGet('export_contact', contactSearchURL, createContactData, this.state.dairy.pk))
+
+    let haulerSearchURL = `${hauler_title}/${hauler_first_name}/${hauler_primary_phone}/${hauler_street}/${hauler_city_zip}`  
+    let createHaulerData ={
+      dairy_id: dairy_id,
+      title: hauler_title,
+      first_name: hauler_first_name,
+      primary_phone: hauler_primary_phone,
+      street: hauler_street,
+      cross_street: hauler_cross_street,
+      county: hauler_county,
+      city: hauler_city,
+      city_state: hauler_city_state,
+      city_zip: hauler_city_zip,
+    }
+    promises.push(lazyGet('export_hauler', haulerSearchURL, createHaulerData, this.state.dairy.pk))
+
+
+    // /title, street, city_zip, primary_phone
+    let recipientSearchURL = `${recipient_title}/${recipient_street}/${recipient_city_zip}/${recipient_primary_phone}`  
+    let createRecipientData ={
+      dairy_id: dairy_id,
+      title: recipient_title,
+      dest_type: dest_type,
+      primary_phone: recipient_primary_phone,
+      street: recipient_street,
+      cross_street: recipient_cross_street,
+      county: recipient_county,
+      city: recipient_city,
+      city_state: recipient_city_state,
+      city_zip: recipient_city_zip,
+    }
+    promises.push(lazyGet('export_recipient', recipientSearchURL, createRecipientData, this.state.dairy.pk))
+
+
+
+    Promise.all(promises)
+    .then(results => {
+      const operatorObj = results[0][0]
+      const contactObj = results[1][0]
+      const haulerObj = results[2][0]
+      const recipientObj = results[3][0]
+
+      console.log('operator', operatorObj)
+      console.log('contact', contactObj)
+      console.log('hauler',  haulerObj)
+      console.log('recipient', recipientObj )
+
+      //TODO
+      // Create Search for export_destination
+
+      // LazyGet export_dest
+      
+      // Then create the Manifest with the dest pk
+    
+
+
+
+    })
+
+  
+
+
+
+
+
+    // DEPENDENT
+    // Then lazyget export_dest
+    //      - NEEDS: recipient_id
+    // Then lazyget export_manifest
+    //      - NEEDS: operator_id,
+    //               export_contact_id
+    //               export_hauler_id
+    //               export_dest_id
+
+
+
+  }
+
+  onUploadExportWastewaterTSV() {
+    // 24 columns from TSV
+    let dairy_id = this.state.dairy.pk
+    let numCols = EXPORT_TSV_TYPES[WASTEWATER].numCols
+    let rows = processTSVText(this.state.tsvText, numCols) // extract rows from Text of tsv file TODO()
+    console.log("Rows WW", rows)
+    const [
+
+      last_date_hauled,
+      op_title,
+      op_primary_phone,
+      op_secondary_phone,
+      op_street,
+      op_city,
+      op_city_state,
+      op_city_zip,
+      op_is_owner, 
+      op_is_responsible,  // Yes, No
+
+      contact_first_name,
+      contact_last_name,
+      contact_middle_name,
+      contact_suffix_name,
+      contact_primary_phone,
+
+
+      hauler_title,
+      hauler_first_name,
+      hauler_last_name,
+      hauler_middle_name,
+      hauler_suffix_name,
+      hauler_primary_phone,
+      hauler_street,
+      hauler_cross_street,
+      hauler_county,
+      hauler_city,
+      hauler_city_state,
+      hauler_city_zip,
+
+
+
+      recipient_title,
+      dest_type,
+      recipient_primary_phone,
+      recipient_street,
+      recipient_cross_street,
+      recipient_county,
+      recipient_city,
+      recipient_city_state,
+      recipient_city_zip,
+
+      pnumber,
+      dest_street,
+      dest_cross_street,
+      dest_county,
+      dest_city,
+      dest_city_state,
+      dest_city_zip,
+
+      
+      amount_hauled_method,
+
+      
+      material_type,
+      hrs_ran,
+      gals_min,
+      amount_hauled,
+      src_desc,
+
+      n_con_mg_l,
+      p_con_mg_l,
+      k_con_mg_l,
+      ec_umhos_cm,
+      tds,
+      
+      n_lbs_rm,
+      p_lbs_rm,
+      k_lbs_rm,
+    ] = rows[0]
+
+
+  }
+
+  toggleShowUploadTSVModal(val) {
+    this.setState({ showUploadTSVModal: val })
+  }
+  toggleShowViewTSVModal(val) {
+    this.setState({ showViewTSVsModal: val })
+  }
   render() {
-
-
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
@@ -567,6 +874,25 @@ class ExportTab extends Component {
                     onClick={() => this.toggleShowAddExportManifestModal(true)}
                   >
                     <AssessmentIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+
+              <Grid item xs={1}>
+                <Tooltip title="Upload TSV">
+                  <IconButton color='primary'
+                    onClick={() => this.toggleShowUploadTSVModal(true)}
+                  >
+                    <CloudUploadIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid item xs={1}>
+                <Tooltip title="View TSVs">
+                  <IconButton color='primary'
+                    onClick={() => this.toggleShowViewTSVModal(true)}
+                  >
+                    <DescriptionIcon />
                   </IconButton>
                 </Tooltip>
               </Grid>
@@ -731,6 +1057,27 @@ class ExportTab extends Component {
           </React.Fragment>
         }
 
+        <ViewTSVsModal
+          open={this.state.showViewTSVsModal}
+          actionText={"" /* no action text*/}
+          cancelText="Close"
+          dairy_id={this.state.dairy.pk}
+          tsvType="export_manifest"
+          onClose={() => this.toggleShowViewTSVModal(false)}
+        />
+        <UploadExportTSVModal
+          open={this.state.showUploadTSVModal}
+          actionText="Add"
+          cancelText="Cancel"
+          modalText={`Upload Export TSV`}
+          uploadedFilename={this.state.uploadedFilename}
+
+          uploadManureTSV={this.onUploadExportManureTSV.bind(this)}
+          uploadWastewaterTSV={this.onUploadExportWastewaterTSV.bind(this)}
+          onChange={this.onUploadExportTSVModalChange.bind(this)}
+          onClose={() => this.toggleShowUploadTSVModal(false)}
+        />
+
         <AddExportContactModal
           open={this.state.showAddExportContactModal}
           actionText="Add"
@@ -801,7 +1148,7 @@ class ExportTab extends Component {
           cancelText="Cancel"
           modalText={`Delete Export Contact ${this.state.deleteExportContactObj.first_name} ${this.state.deleteExportContactObj.last_name}?`}
           onAction={this.onExportContactDelete.bind(this)}
-          onClose={() => this.setState({showConfirmDeleteExportContactModal: false})}
+          onClose={() => this.setState({ showConfirmDeleteExportContactModal: false })}
         />
 
         <ActionCancelModal
@@ -810,7 +1157,7 @@ class ExportTab extends Component {
           cancelText="Cancel"
           modalText={`Delete Export Hauler ${this.state.deleteExportHaulerObj.title} - ${this.state.deleteExportHaulerObj.first_name}?`}
           onAction={this.onExportHaulerDelete.bind(this)}
-          onClose={() => this.setState({showConfirmDeleteExportHaulerModal: false})}
+          onClose={() => this.setState({ showConfirmDeleteExportHaulerModal: false })}
         />
 
         <ActionCancelModal
@@ -819,7 +1166,7 @@ class ExportTab extends Component {
           cancelText="Cancel"
           modalText={`Delete Export Recipient ${this.state.deleteExportRecipientObj.title} ${this.state.deleteExportRecipientObj.primary_phone}?`}
           onAction={this.onExportRecipientDelete.bind(this)}
-          onClose={() => this.setState({showConfirmDeleteExportRecipientModal: false})}
+          onClose={() => this.setState({ showConfirmDeleteExportRecipientModal: false })}
         />
 
 
@@ -829,7 +1176,7 @@ class ExportTab extends Component {
           cancelText="Cancel"
           modalText={`Delete Export Dest ${this.state.deleteExportDestObj.title} - ${this.state.deleteExportDestObj.pnumber}${this.state.deleteExportDestObj.street} ${this.state.deleteExportDestObj.cross_street} ${this.state.deleteExportDestObj.city_zip}?`}
           onAction={this.onExportDestDelete.bind(this)}
-          onClose={() => this.setState({showConfirmDeleteExportDestModal: false})}
+          onClose={() => this.setState({ showConfirmDeleteExportDestModal: false })}
         />
 
 
@@ -839,7 +1186,7 @@ class ExportTab extends Component {
           cancelText="Cancel"
           modalText={`Delete Export Manifest ${this.state.deleteExportManifestObj.last_date_hauled} ${this.state.deleteExportManifestObj.amount_hauled}?`}
           onAction={this.onExportManifestDelete.bind(this)}
-          onClose={() => this.setState({showConfirmDeleteExportManifestModal: false})}
+          onClose={() => this.setState({ showConfirmDeleteExportManifestModal: false })}
         />
 
       </React.Fragment>

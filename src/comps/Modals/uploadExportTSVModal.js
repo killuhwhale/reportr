@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 // Material UI
-import { Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui/core';
+import { Grid, Paper, Button, Typography, Modal, TextField, Switch, FormGroup, FormControlLabel } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
 class UploadTSVModal extends Component {
@@ -8,7 +8,8 @@ class UploadTSVModal extends Component {
     super(props)
     this.state = {
       open: props.open,
-      uploadedFilename: props.uploadedFilename
+      uploadedFilename: props.uploadedFilename,
+      isWastewater: false,
     }
     /*
     open
@@ -22,6 +23,10 @@ class UploadTSVModal extends Component {
 
   static getDerivedStateFromProps(props, state) {
     return props
+  }
+
+  onExportTypeChange(isWastewater){
+    this.setState({isWastewater: isWastewater})
   }
 
   render() {
@@ -50,7 +55,7 @@ class UploadTSVModal extends Component {
                     {this.props.modalText}
                   </Typography>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item container spacing={2} xs={12}>
                   <input
                     accept="csv"
                     style={{ display: 'none' }}
@@ -58,10 +63,31 @@ class UploadTSVModal extends Component {
                     id="raised-button-file"
                     type="file"
                   />
+                 <Grid item xs={6} align="right">
                   <Button htmlFor="raised-button-file" variant="outlined" color="primary" component="label">
                       Select TSV
                   </Button>
+                 </Grid>
+                 <Grid item xs={6}>
+                    <FormGroup >
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              name="isWastewater"
+                              checked={this.state.isWastewater}
+                              onChange={(ev) => {
+                                const { checked } = ev.target
+                                this.onExportTypeChange(checked)
+                              }}
+                            />
+                          }
+                          label="Upload Waste Water"
+                        />
+                      </FormGroup>
+                 </Grid>
                 </Grid>
+
+               
 
                 <Grid item xs={12}>
                   <Typography variant="subtitle1" color="secondary">
@@ -79,7 +105,9 @@ class UploadTSVModal extends Component {
                   <Button
                     color="secondary"
                     variant="outlined"
-                    onClick={() => { this.props.onAction() }}>
+                    onClick={() => { 
+                      this.state.isWastewater? this.props.uploadWastewaterTSV() : this.props.uploadManureTSV() 
+                    }}>
                     {this.props.actionText}
                   </Button>
                 </Grid>
