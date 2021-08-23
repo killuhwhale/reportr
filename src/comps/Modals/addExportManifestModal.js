@@ -42,7 +42,6 @@ class AddExportManifestModal extends Component {
     amount_hauled,
     material_type,
     amount_hauled_method,
-    is_solid,
   
     reporting_method, 
     moisture,
@@ -96,7 +95,7 @@ class AddExportManifestModal extends Component {
                       this.props.exportDests.map((dest, i) => {
                         return (
                           <option key={`destmanifest${i}`} value={i}>
-                            {dest.title} {dest.dest_type}: {dest.dest_is_pnumber ? dest.pnumber : `${dest.street} ${dest.cross_street} ${dest.city_zip}`}
+                            {dest.title} {dest.dest_type}: {`${dest.pnumber} ${dest.street} ${dest.cross_street} ${dest.city_zip}`}
                           </option>
                         )
                       })

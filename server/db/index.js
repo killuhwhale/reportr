@@ -1288,7 +1288,6 @@ module.exports = {
         dairy_id,
         export_recipient_id,
 
-        dest_is_pnumber,
         pnumber,
         street,
         cross_street,
@@ -1307,7 +1306,6 @@ module.exports = {
         `SELECT 
         
         ed.pk,
-        ed.dest_is_pnumber,
         ed.pnumber,
         ed.street,
         ed.cross_street,
@@ -1348,6 +1346,15 @@ module.exports = {
       callback
     )
   },
+  searchExportDest: (values, callback) => {
+    console.log("Searching export_dest", values)
+    return pool.query(
+      `SELECT * FROM export_dest
+      where export_recipient_id = $1 and pnumber = $2 and street = $3 and city_zip=$4 and dairy_id = $5`,
+      values,
+      callback
+    )
+  },
 
 
 
@@ -1364,7 +1371,6 @@ module.exports = {
         amount_hauled,
         material_type,
         amount_hauled_method,
-        is_solid,
       
         reporting_method, 
         moisture,
@@ -1423,7 +1429,6 @@ module.exports = {
         em.k_con_mg_l,
         em.tds,
 
-        ed.dest_is_pnumber,
         ed.pnumber,
         ed.street as dest_street,
         ed.cross_street as dest_cross_street,

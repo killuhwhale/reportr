@@ -32,7 +32,6 @@ class AddExportDestModal extends Component {
 
     export_recipient_id,
 
-        dest_is_pnumber,
         pnumber,
         street,
         cross_street,
@@ -86,94 +85,75 @@ class AddExportDestModal extends Component {
                   </TextField>
                 </Grid>
 
-                <Grid item xs={12} align="center">
-                    <FormGroup row>
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            name="dest_is_pnumber"
-                            checked={this.state.createExportDestObj.dest_is_pnumber}
-                            onChange={(ev) => {
-                              const { checked } = ev.target
-                              this.props.onChange({ target: { name: 'dest_is_pnumber', value: checked } })
-                            }}
-                          />
-                        }
-                        label="Dest is Parcel"
-                      />
-                    </FormGroup>
-                </Grid>
+
                 <Grid item container alignItems="center" xs={12} style={{ height: '55vh' }}>
 
-                  {
-                    this.state.createExportDestObj.dest_is_pnumber ?
-                      <Grid item xs={6}>
-                        <ParcelNumber 
-                          parcel={{pnumber: this.state.createExportDestObj.pnumber}}
-                          onUpdate={(_pk, num)=> {
-                            console.log(num)
-                            this.props.onChange({target: {name: 'pnumber', value: num}})
-                          }}
-                        />
-                      </Grid>
-                      :
-                      <React.Fragment>
-                        <Grid item xs={6}>
-                          <TextField
-                            name='street'
-                            onChange={this.props.onChange.bind(this)}
-                            value={this.state.createExportDestObj.street}
-                            label="Street"
-                            style={{ width: "100%" }}
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          <TextField
-                            name='cross_street'
-                            onChange={this.props.onChange.bind(this)}
-                            value={this.state.createExportDestObj.cross_street}
-                            label="Cross street"
-                            style={{ width: "100%" }}
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          <TextField
-                            name='county'
-                            onChange={this.props.onChange.bind(this)}
-                            value={this.state.createExportDestObj.county}
-                            label="County"
-                            style={{ width: "100%" }}
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          <TextField
-                            name='city'
-                            onChange={this.props.onChange.bind(this)}
-                            value={this.state.createExportDestObj.city}
-                            label="City"
-                            style={{ width: "100%" }}
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          <TextField
-                            name='city_state'
-                            onChange={this.props.onChange.bind(this)}
-                            value={this.state.createExportDestObj.city_state}
-                            label="State"
-                            style={{ width: "100%" }}
-                          />
-                        </Grid>
-                        <Grid item xs={6}>
-                          <TextField
-                            name='city_zip'
-                            onChange={this.props.onChange.bind(this)}
-                            value={this.state.createExportDestObj.city_zip}
-                            label="Zip"
-                            style={{ width: "100%" }}
-                          />
-                        </Grid>
-                      </React.Fragment>
-                  }
+                  <Grid item xs={6}>
+                    <ParcelNumber
+                      parcel={{ pnumber: this.state.createExportDestObj.pnumber }}
+                      onUpdate={(_pk, num) => {
+                        console.log(num)
+                        this.props.onChange({ target: { name: 'pnumber', value: num } })
+                      }}
+                    />
+                  </Grid>
+
+
+                  <Grid item xs={6}>
+                    <TextField
+                      name='street'
+                      onChange={this.props.onChange.bind(this)}
+                      value={this.state.createExportDestObj.street}
+                      label="Street"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      name='cross_street'
+                      onChange={this.props.onChange.bind(this)}
+                      value={this.state.createExportDestObj.cross_street}
+                      label="Cross street"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      name='county'
+                      onChange={this.props.onChange.bind(this)}
+                      value={this.state.createExportDestObj.county}
+                      label="County"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      name='city'
+                      onChange={this.props.onChange.bind(this)}
+                      value={this.state.createExportDestObj.city}
+                      label="City"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      name='city_state'
+                      onChange={this.props.onChange.bind(this)}
+                      value={this.state.createExportDestObj.city_state}
+                      label="State"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      name='city_zip'
+                      onChange={this.props.onChange.bind(this)}
+                      value={this.state.createExportDestObj.city_zip}
+                      label="Zip"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+
                 </Grid>
                 <Grid item container xs={12}>
                   <Grid item xs={6}>

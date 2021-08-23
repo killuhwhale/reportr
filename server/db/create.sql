@@ -565,7 +565,6 @@ CREATE TABLE IF NOT EXISTS export_dest(
   dairy_id INT NOT NULL,
   export_recipient_id INT NOT NULL,
 
-  dest_is_pnumber BOOLEAN NOT NULL, -- True if the destination is just a pnumber and not an address
   pnumber VARCHAR(16),
   street VARCHAR(100) DEFAULT '' NOT NULL,
   cross_street VARCHAR(50) DEFAULT '',
@@ -597,7 +596,7 @@ CREATE TABLE IF NOT EXISTS export_manifest(
   amount_hauled INT NOT NULL, -- tons / gals
   material_type VARCHAR(100) NOT NULL,
   amount_hauled_method VARCHAR(2000),
-  is_solid BOOLEAN NOT NULL, -- DEPRACATED Determines if data is for process waster water or dry manure, probably going to use material_type instread of this boolean, deprecated.
+  
 
   -- For Dry manure
   reporting_method VARCHAR(100), 

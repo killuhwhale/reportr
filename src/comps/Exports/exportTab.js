@@ -81,7 +81,7 @@ const MANURE = 'export_manifest_manure'
 const WASTEWATER = 'export_manifest_wastewater'
 const EXPORT_TSV_TYPES = {
   [MANURE]: {
-    numCols: 49,
+    numCols: 50,
     tsvType: MANURE
   },
   [WASTEWATER]: {
@@ -152,7 +152,6 @@ class ExportTab extends Component {
         export_recipient_id: '',
         export_recipient_idx: 0,
 
-        dest_is_pnumber: false,
         pnumber: '',
         street: '',
         cross_street: '',
@@ -180,7 +179,6 @@ class ExportTab extends Component {
         material_type_idx: 0,
         amount_hauled_method: '',
 
-        is_solid: true,
 
         reporting_method: '',
         reporting_method_idx: 0,
@@ -547,15 +545,17 @@ class ExportTab extends Component {
     }
   }
 
+  checkAny(val) {
+    // If the value is empty replace with asterisk.
+    // pnumber may be empty but is required to search with 
+    return val ? val : "*"
+  }
 
-  onUploadExportManureTSV() {
-    // 24 columns from TSV
+
+
+  _lazyGetExportDest(row) {
     let dairy_id = this.state.dairy.pk
-    let numCols = EXPORT_TSV_TYPES[MANURE].numCols
-    let rows = processTSVText(this.state.tsvText, numCols) // extract rows from Text of tsv file TODO()
     let promises = []
-    console.log("Rows SM", rows)
-
     const [
 
       last_date_hauled,
@@ -566,7 +566,7 @@ class ExportTab extends Component {
       op_city,
       op_city_state,
       op_city_zip,
-      op_is_owner, 
+      op_is_owner,
       op_is_responsible,  // Yes, No
 
       contact_first_name,
@@ -575,7 +575,7 @@ class ExportTab extends Component {
 
       hauler_title,
       hauler_first_name,
-      
+
       hauler_primary_phone,
       hauler_street,
       hauler_cross_street,
@@ -603,36 +603,15 @@ class ExportTab extends Component {
       dest_city,
       dest_city_state,
       dest_city_zip,
-
-      
-      amount_hauled_method,
-      reporting_method,
-      material_type,
-      amount_hauled,
-
-      moisture,
-      n_con_mg_kg,
-      p_con_mg_kg,
-      k_con_mg_kg,
-      tfs,
-      
-      n_lbs_rm,
-      p_lbs_rm,
-      k_lbs_rm,
-      salt_lbs_rm,
-    ] = rows[0]
+      ..._rest
+    ] = row
 
 
 
-    // INDEPENDENT
-    // Then lazyget operator
-    // Then lazyget export_contact
-    // Then lazyget export_hauler
-    // Then lazyget export_recipient
 
     // need ot create a search endpoint for evertyhting, operators, export_ *contact, *hauler, *recipient
-    let opSearchURL = `${op_title}/${op_primary_phone}`  
-    let createOperatorData ={
+    let opSearchURL = `${op_title}/${op_primary_phone}`
+    let createOperatorData = {
       dairy_id: dairy_id,
       title: op_title,
       primary_phone: op_primary_phone,
@@ -641,22 +620,22 @@ class ExportTab extends Component {
       city: op_city,
       city_state: op_city_state,
       city_zip: op_city_zip,
-      is_owner: op_is_owner, 
+      is_owner: op_is_owner,
       is_responsible: op_is_responsible
     }
     promises.push(lazyGet('operators', opSearchURL, createOperatorData, this.state.dairy.pk))
 
 
-    let contactSearchURL = `${contact_first_name}/${contact_primary_phone}`  
-    let createContactData ={
+    let contactSearchURL = `${contact_first_name}/${contact_primary_phone}`
+    let createContactData = {
       dairy_id: dairy_id,
       first_name: contact_first_name,
       primary_phone: contact_primary_phone,
     }
     promises.push(lazyGet('export_contact', contactSearchURL, createContactData, this.state.dairy.pk))
 
-    let haulerSearchURL = `${hauler_title}/${hauler_first_name}/${hauler_primary_phone}/${hauler_street}/${hauler_city_zip}`  
-    let createHaulerData ={
+    let haulerSearchURL = `${hauler_title}/${hauler_first_name}/${hauler_primary_phone}/${hauler_street}/${hauler_city_zip}`
+    let createHaulerData = {
       dairy_id: dairy_id,
       title: hauler_title,
       first_name: hauler_first_name,
@@ -672,8 +651,8 @@ class ExportTab extends Component {
 
 
     // /title, street, city_zip, primary_phone
-    let recipientSearchURL = `${recipient_title}/${recipient_street}/${recipient_city_zip}/${recipient_primary_phone}`  
-    let createRecipientData ={
+    let recipientSearchURL = `${recipient_title}/${recipient_street}/${recipient_city_zip}/${recipient_primary_phone}`
+    let createRecipientData = {
       dairy_id: dairy_id,
       title: recipient_title,
       dest_type: dest_type,
@@ -687,57 +666,63 @@ class ExportTab extends Component {
     }
     promises.push(lazyGet('export_recipient', recipientSearchURL, createRecipientData, this.state.dairy.pk))
 
-
-
-    Promise.all(promises)
-    .then(results => {
-      const operatorObj = results[0][0]
-      const contactObj = results[1][0]
-      const haulerObj = results[2][0]
-      const recipientObj = results[3][0]
-
-      console.log('operator', operatorObj)
-      console.log('contact', contactObj)
-      console.log('hauler',  haulerObj)
-      console.log('recipient', recipientObj )
-
-      //TODO
-      // Create Search for export_destination
-
-      // LazyGet export_dest
-      
-      // Then create the Manifest with the dest pk
+    return new Promise((resolve, reject) => {
+        Promise.all(promises)
+        .then(results => {
+          const operatorObj = results[0][0]
+          const contactObj = results[1][0]
+          const haulerObj = results[2][0]
+          const recipientObj = results[3][0]
     
-
-
+          console.log('operator', operatorObj)
+          console.log('contact', contactObj)
+          console.log('hauler', haulerObj)
+          console.log('recipient', recipientObj)
+    
+          //TODO
+          // Create Search for export_destination
+    
+          // LazyGet export_dest
+          // export_recipient_id, pnumber, street, city_zip
+          // pnumber might be empty, which is valid, but will cause error in URL
+          let destSearchURL = `${encodeURIComponent(recipientObj.pk)}/${encodeURIComponent(this.checkAny(pnumber))}/${encodeURIComponent(dest_street)}/${encodeURIComponent(dest_city_zip)}`
+    
+          let createDestData = {
+            dairy_id: dairy_id,
+            export_recipient_id: recipientObj.pk,
+            pnumber: pnumber,
+            street: dest_street,
+            cross_street: dest_cross_street,
+            county: dest_county,
+            city: dest_city,
+            city_state: dest_city_state,
+            city_zip: dest_city_zip,
+          }
+          lazyGet('export_dest', destSearchURL, createDestData, this.state.dairy.pk)
+          .then(export_dest_res => {
+            resolve([operatorObj, contactObj, haulerObj, export_dest_res[0]])
+          })
+          .catch(err => {
+            console.log(err)
+            reject(err)
+          })
+        })
+        .catch(err => {
+          console.log(err)
+          reject(err)
+        })
 
     })
 
-  
-
-
-
-
-
-    // DEPENDENT
-    // Then lazyget export_dest
-    //      - NEEDS: recipient_id
-    // Then lazyget export_manifest
-    //      - NEEDS: operator_id,
-    //               export_contact_id
-    //               export_hauler_id
-    //               export_dest_id
-
-
-
   }
 
-  onUploadExportWastewaterTSV() {
+  onUploadExportManureTSV() {
     // 24 columns from TSV
     let dairy_id = this.state.dairy.pk
-    let numCols = EXPORT_TSV_TYPES[WASTEWATER].numCols
+    let numCols = EXPORT_TSV_TYPES[MANURE].numCols
     let rows = processTSVText(this.state.tsvText, numCols) // extract rows from Text of tsv file TODO()
-    console.log("Rows WW", rows)
+    console.log("Rows SM", rows)
+
     const [
 
       last_date_hauled,
@@ -748,21 +733,16 @@ class ExportTab extends Component {
       op_city,
       op_city_state,
       op_city_zip,
-      op_is_owner, 
+      op_is_owner,
       op_is_responsible,  // Yes, No
 
       contact_first_name,
-      contact_last_name,
-      contact_middle_name,
-      contact_suffix_name,
       contact_primary_phone,
 
 
       hauler_title,
       hauler_first_name,
-      hauler_last_name,
-      hauler_middle_name,
-      hauler_suffix_name,
+
       hauler_primary_phone,
       hauler_street,
       hauler_cross_street,
@@ -791,407 +771,521 @@ class ExportTab extends Component {
       dest_city_state,
       dest_city_zip,
 
-      
+
       amount_hauled_method,
-
-      
+      reporting_method,
       material_type,
-      hrs_ran,
-      gals_min,
       amount_hauled,
-      src_desc,
 
-      n_con_mg_l,
-      p_con_mg_l,
-      k_con_mg_l,
-      ec_umhos_cm,
-      tds,
-      
+      moisture,
+      n_con_mg_kg,
+      p_con_mg_kg,
+      k_con_mg_kg,
+      tfs,
+
       n_lbs_rm,
       p_lbs_rm,
       k_lbs_rm,
+      salt_lbs_rm,
     ] = rows[0]
 
+    this._lazyGetExportDest(rows[0])
+    .then(dest_res => {
+      console.log(dest_res)
+      const [operatorObj, contactObj, haulerObj, destObj] = dest_res
+      
+      let createManifestObj = {
+        dairy_id: dairy_id,
+        export_dest_id: destObj.pk,
+        operator_id: operatorObj.pk,
+        export_contact_id: contactObj.pk,
+        export_hauler_id: haulerObj.pk,
+        last_date_hauled,
+        amount_hauled_method,
+        reporting_method,
+        material_type,
+        amount_hauled: parseInt(checkEmpty(amount_hauled)),
+
+        moisture: checkEmpty(moisture),
+        n_con_mg_kg: checkEmpty(n_con_mg_kg),
+        p_con_mg_kg: checkEmpty(p_con_mg_kg),
+        k_con_mg_kg: checkEmpty(k_con_mg_kg),
+        tfs: checkEmpty(tfs),
+
+        n_lbs_rm: checkEmpty(n_lbs_rm),
+        p_lbs_rm: checkEmpty(p_lbs_rm),
+        k_lbs_rm: checkEmpty(k_lbs_rm),
+        salt_lbs_rm: checkEmpty(salt_lbs_rm),
+
+      }
+      post(`${BASE_URL}/api/export_manifest/create`, createManifestObj)
+    })
+
+
 
   }
+    
 
-  toggleShowUploadTSVModal(val) {
-    this.setState({ showUploadTSVModal: val })
-  }
-  toggleShowViewTSVModal(val) {
-    this.setState({ showViewTSVsModal: val })
-  }
-  render() {
-    return (
-      <React.Fragment>
-        {Object.keys(this.props.dairy).length > 0 ?
-          <Grid item xs={12} container alignItems="baseline">
-            <Grid item xs={12}>
-              <Typography variant="h2">Nutrient Exports
-                <Typography variant="subtitle1" component="span"> (1337)</Typography>
-              </Typography>
-            </Grid>
-            <Grid item container xs={12}>
-              <Grid item xs={2}>
-                <Tooltip title="Add Export Contact">
-                  <IconButton color='primary'
-                    onClick={() => this.toggleShowAddExportContactModal(true)}
-                  >
-                    <ContactPhoneIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={2}>
-                <Tooltip title="Add Export Hauler">
-                  <IconButton color='primary'
-                    onClick={() => this.toggleShowAddExportHaulerModal(true)}
-                  >
-                    <LocalShippingIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={2}>
-                <Tooltip title="Add Export Recipient">
-                  <IconButton color='primary'
-                    onClick={() => this.toggleShowAddExportRecipientModal(true)}
-                  >
-                    <CallReceivedIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={2}>
-                <Tooltip title="Add Export Dest">
-                  <IconButton color='primary'
-                    onClick={() => this.toggleShowAddExportDestModal(true)}
-                  >
-                    <ExploreIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={2}>
-                <Tooltip title="Add Export Manifest">
-                  <IconButton color='primary'
-                    onClick={() => this.toggleShowAddExportManifestModal(true)}
-                  >
-                    <AssessmentIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
+onUploadExportWastewaterTSV() {
+  // 24 columns from TSV
+  let dairy_id = this.state.dairy.pk
+  let numCols = EXPORT_TSV_TYPES[WASTEWATER].numCols
+  let rows = processTSVText(this.state.tsvText, numCols) // extract rows from Text of tsv file TODO()
+  console.log("Rows WW", rows)
+  const [
 
-              <Grid item xs={1}>
-                <Tooltip title="Upload TSV">
-                  <IconButton color='primary'
-                    onClick={() => this.toggleShowUploadTSVModal(true)}
-                  >
-                    <CloudUploadIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={1}>
-                <Tooltip title="View TSVs">
-                  <IconButton color='primary'
-                    onClick={() => this.toggleShowViewTSVModal(true)}
-                  >
-                    <DescriptionIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
+    last_date_hauled,
+    op_title,
+    op_primary_phone,
+    op_secondary_phone,
+    op_street,
+    op_city,
+    op_city_state,
+    op_city_zip,
+    op_is_owner,
+    op_is_responsible,  // Yes, No
 
-            <Grid item xs={6}>
-              <Typography variant='h3'>
-                Contacts
-              </Typography>
-              {this.state.exportContacts.length > 0 ?
-                this.state.exportContacts.map((contact, i) => {
-                  return (
-                    <Grid item container xs={12} key={`ecview${i}`}>
-                      <Grid item container xs={10}>
-                        <Typography variant="subtitle1">
-                          {contact.first_name} {contact.middle_name} {contact.last_name} {contact.suffix_name} {contact.primary_phone}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Tooltip title="Delete contact">
-                          <IconButton
-                            onClick={() => this.onConfirmExportContactDelete(contact)}
-                          >
-                            <DeleteIcon color='error' />
-                          </IconButton>
-                        </Tooltip>
-                      </Grid>
-                    </Grid>
-                  )
-                })
-                :
-                <React.Fragment></React.Fragment>
-              }
-            </Grid>
+    contact_first_name,
+    contact_last_name,
+    contact_middle_name,
+    contact_suffix_name,
+    contact_primary_phone,
 
-            <Grid item xs={6}>
-              <Typography variant='h3'>
-                Haulers
-              </Typography>
-              {this.state.exportHaulers.length > 0 ?
-                this.state.exportHaulers.map((hauler, i) => {
-                  return (
-                    <Grid item container xs={12} key={`ehview${i}`}>
-                      <Grid item container xs={10}>
-                        <Typography variant="subtitle1">
-                          {hauler.title} {hauler.first_name} {hauler.last_name} {hauler.primary_phone}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Tooltip title="Delete hauler">
-                          <IconButton
-                            onClick={() => this.onConfirmExportHaulerDelete(hauler)}
-                          >
-                            <DeleteIcon color='error' />
-                          </IconButton>
-                        </Tooltip>
-                      </Grid>
-                    </Grid>
-                  )
-                })
-                :
-                <React.Fragment></React.Fragment>
-              }
-            </Grid>
 
-            <Grid item xs={6}>
-              <Typography variant='h3'>
-                Recipients
-              </Typography>
-              {this.state.exportRecipients.length > 0 ?
-                this.state.exportRecipients.map((recipient, i) => {
-                  return (
-                    <Grid item container xs={12} key={`erview${i}`}>
-                      <Grid item container xs={10}>
-                        <Typography variant="subtitle1">
-                          {recipient.title} {recipient.dest_type} {recipient.primary_phone}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Tooltip title="Delete recipient">
-                          <IconButton
-                            onClick={() => this.onConfirmExportRecipientDelete(recipient)}
-                          >
-                            <DeleteIcon color='error' />
-                          </IconButton>
-                        </Tooltip>
-                      </Grid>
-                    </Grid>
-                  )
-                })
-                :
-                <React.Fragment></React.Fragment>
-              }
-            </Grid>
+    hauler_title,
+    hauler_first_name,
+    hauler_last_name,
+    hauler_middle_name,
+    hauler_suffix_name,
+    hauler_primary_phone,
+    hauler_street,
+    hauler_cross_street,
+    hauler_county,
+    hauler_city,
+    hauler_city_state,
+    hauler_city_zip,
 
-            <Grid item xs={6}>
-              <Typography variant='h3'>
-                Destinations
-              </Typography>
-              {this.state.exportDests.length > 0 ?
-                this.state.exportDests.map((dest, i) => {
-                  return (
-                    <Grid item container xs={12} key={`edview${i}`}>
-                      <Grid item container xs={10}>
-                        <Typography variant="subtitle1">
-                          {dest.title} {dest.dest_type}: {dest.dest_is_pnumber ? dest.pnumber : `${dest.street} ${dest.cross_street} ${dest.city_zip}`}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Tooltip title="Delete destination">
-                          <IconButton
-                            onClick={() => this.onConfirmExportDestDelete(dest)}
-                          >
-                            <DeleteIcon color='error' />
-                          </IconButton>
-                        </Tooltip>
-                      </Grid>
-                    </Grid>
-                  )
-                })
-                :
-                <React.Fragment></React.Fragment>
-              }
-            </Grid>
 
-            <Grid item xs={12}>
-              <Typography variant='h3'>
-                Manifests
-              </Typography>
-              {this.state.exportManifests.length > 0 ?
-                this.state.exportManifests.map((manifest, i) => {
-                  return (
-                    <Grid item container xs={12} key={`emview${i}`}>
-                      <Grid item container xs={10}>
-                        <Typography variant="subtitle1">
-                          {manifest.last_date_hauled} {manifest.material_type} {manifest.amount_hauled}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={2}>
-                        <Tooltip title="Delete manifest">
-                          <IconButton
-                            onClick={() => this.onConfirmExportManifestDelete(manifest)}
-                          >
-                            <DeleteIcon color='error' />
-                          </IconButton>
-                        </Tooltip>
-                      </Grid>
-                    </Grid>
-                  )
-                })
-                :
-                <React.Fragment></React.Fragment>
-              }
-            </Grid>
 
+    recipient_title,
+    dest_type,
+    recipient_primary_phone,
+    recipient_street,
+    recipient_cross_street,
+    recipient_county,
+    recipient_city,
+    recipient_city_state,
+    recipient_city_zip,
+
+    pnumber,
+    dest_street,
+    dest_cross_street,
+    dest_county,
+    dest_city,
+    dest_city_state,
+    dest_city_zip,
+
+
+    amount_hauled_method,
+
+
+    material_type,
+    hrs_ran,
+    gals_min,
+    amount_hauled,
+    src_desc,
+
+    n_con_mg_l,
+    p_con_mg_l,
+    k_con_mg_l,
+    ec_umhos_cm,
+    tds,
+
+    n_lbs_rm,
+    p_lbs_rm,
+    k_lbs_rm,
+  ] = rows[0]
+
+
+}
+
+toggleShowUploadTSVModal(val) {
+  this.setState({ showUploadTSVModal: val })
+}
+toggleShowViewTSVModal(val) {
+  this.setState({ showViewTSVsModal: val })
+}
+render() {
+  return (
+    <React.Fragment>
+      {Object.keys(this.props.dairy).length > 0 ?
+        <Grid item xs={12} container alignItems="baseline">
+          <Grid item xs={12}>
+            <Typography variant="h2">Nutrient Exports
+              <Typography variant="subtitle1" component="span"> (1337)</Typography>
+            </Typography>
           </Grid>
-          :
-          <React.Fragment>
-            <Grid item xs={12}>
-              <Typography>No dairy selected</Typography>
+          <Grid item container xs={12}>
+            <Grid item xs={2}>
+              <Tooltip title="Add Export Contact">
+                <IconButton color='primary'
+                  onClick={() => this.toggleShowAddExportContactModal(true)}
+                >
+                  <ContactPhoneIcon />
+                </IconButton>
+              </Tooltip>
             </Grid>
-          </React.Fragment>
-        }
+            <Grid item xs={2}>
+              <Tooltip title="Add Export Hauler">
+                <IconButton color='primary'
+                  onClick={() => this.toggleShowAddExportHaulerModal(true)}
+                >
+                  <LocalShippingIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={2}>
+              <Tooltip title="Add Export Recipient">
+                <IconButton color='primary'
+                  onClick={() => this.toggleShowAddExportRecipientModal(true)}
+                >
+                  <CallReceivedIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={2}>
+              <Tooltip title="Add Export Dest">
+                <IconButton color='primary'
+                  onClick={() => this.toggleShowAddExportDestModal(true)}
+                >
+                  <ExploreIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={2}>
+              <Tooltip title="Add Export Manifest">
+                <IconButton color='primary'
+                  onClick={() => this.toggleShowAddExportManifestModal(true)}
+                >
+                  <AssessmentIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
 
-        <ViewTSVsModal
-          open={this.state.showViewTSVsModal}
-          actionText={"" /* no action text*/}
-          cancelText="Close"
-          dairy_id={this.state.dairy.pk}
-          tsvType="export_manifest"
-          onClose={() => this.toggleShowViewTSVModal(false)}
-        />
-        <UploadExportTSVModal
-          open={this.state.showUploadTSVModal}
-          actionText="Add"
-          cancelText="Cancel"
-          modalText={`Upload Export TSV`}
-          uploadedFilename={this.state.uploadedFilename}
+            <Grid item xs={1}>
+              <Tooltip title="Upload TSV">
+                <IconButton color='primary'
+                  onClick={() => this.toggleShowUploadTSVModal(true)}
+                >
+                  <CloudUploadIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={1}>
+              <Tooltip title="View TSVs">
+                <IconButton color='primary'
+                  onClick={() => this.toggleShowViewTSVModal(true)}
+                >
+                  <DescriptionIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
 
-          uploadManureTSV={this.onUploadExportManureTSV.bind(this)}
-          uploadWastewaterTSV={this.onUploadExportWastewaterTSV.bind(this)}
-          onChange={this.onUploadExportTSVModalChange.bind(this)}
-          onClose={() => this.toggleShowUploadTSVModal(false)}
-        />
+          <Grid item xs={6}>
+            <Typography variant='h3'>
+              Contacts
+            </Typography>
+            {this.state.exportContacts.length > 0 ?
+              this.state.exportContacts.map((contact, i) => {
+                return (
+                  <Grid item container xs={12} key={`ecview${i}`}>
+                    <Grid item container xs={10}>
+                      <Typography variant="subtitle1">
+                        {contact.first_name} {contact.middle_name} {contact.last_name} {contact.suffix_name} {contact.primary_phone}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Tooltip title="Delete contact">
+                        <IconButton
+                          onClick={() => this.onConfirmExportContactDelete(contact)}
+                        >
+                          <DeleteIcon color='error' />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                )
+              })
+              :
+              <React.Fragment></React.Fragment>
+            }
+          </Grid>
 
-        <AddExportContactModal
-          open={this.state.showAddExportContactModal}
-          actionText="Add"
-          cancelText="Cancel"
-          modalText={`Create Export Contact`}
-          createExportContactObj={this.state.createExportContactObj}
-          onAction={this.onCreateExportContact.bind(this)}
-          onChange={this.onCreateExportContactChange.bind(this)}
-          onClose={() => this.toggleShowAddExportContactModal(false)}
-        />
+          <Grid item xs={6}>
+            <Typography variant='h3'>
+              Haulers
+            </Typography>
+            {this.state.exportHaulers.length > 0 ?
+              this.state.exportHaulers.map((hauler, i) => {
+                return (
+                  <Grid item container xs={12} key={`ehview${i}`}>
+                    <Grid item container xs={10}>
+                      <Typography variant="subtitle1">
+                        {hauler.title} {hauler.first_name} {hauler.last_name} {hauler.primary_phone}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Tooltip title="Delete hauler">
+                        <IconButton
+                          onClick={() => this.onConfirmExportHaulerDelete(hauler)}
+                        >
+                          <DeleteIcon color='error' />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                )
+              })
+              :
+              <React.Fragment></React.Fragment>
+            }
+          </Grid>
 
-        <AddExportHaulerModal
-          open={this.state.showAddExportHaulerModal}
-          actionText="Add"
-          cancelText="Cancel"
-          modalText={`Create Export Hauler`}
-          createExportHaulerObj={this.state.createExportHaulerObj}
-          onAction={this.onCreateExportHauler.bind(this)}
-          onChange={this.onCreateExportHaulerChange.bind(this)}
-          onClose={() => this.toggleShowAddExportHaulerModal(false)}
-        />
+          <Grid item xs={6}>
+            <Typography variant='h3'>
+              Recipients
+            </Typography>
+            {this.state.exportRecipients.length > 0 ?
+              this.state.exportRecipients.map((recipient, i) => {
+                return (
+                  <Grid item container xs={12} key={`erview${i}`}>
+                    <Grid item container xs={10}>
+                      <Typography variant="subtitle1">
+                        {recipient.title} {recipient.dest_type} {recipient.primary_phone}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Tooltip title="Delete recipient">
+                        <IconButton
+                          onClick={() => this.onConfirmExportRecipientDelete(recipient)}
+                        >
+                          <DeleteIcon color='error' />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                )
+              })
+              :
+              <React.Fragment></React.Fragment>
+            }
+          </Grid>
+
+          <Grid item xs={6}>
+            <Typography variant='h3'>
+              Destinations
+            </Typography>
+            {this.state.exportDests.length > 0 ?
+              this.state.exportDests.map((dest, i) => {
+                return (
+                  <Grid item container xs={12} key={`edview${i}`}>
+                    <Grid item container xs={10}>
+                      <Typography variant="subtitle1">
+                        {dest.title} {dest.dest_type}: {`${dest.pnumber} ${dest.street} ${dest.cross_street} ${dest.city_zip}`}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Tooltip title="Delete destination">
+                        <IconButton
+                          onClick={() => this.onConfirmExportDestDelete(dest)}
+                        >
+                          <DeleteIcon color='error' />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                )
+              })
+              :
+              <React.Fragment></React.Fragment>
+            }
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='h3'>
+              Manifests
+            </Typography>
+            {this.state.exportManifests.length > 0 ?
+              this.state.exportManifests.map((manifest, i) => {
+                return (
+                  <Grid item container xs={12} key={`emview${i}`}>
+                    <Grid item container xs={10}>
+                      <Typography variant="subtitle1">
+                        {manifest.last_date_hauled} {manifest.material_type} {manifest.amount_hauled}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Tooltip title="Delete manifest">
+                        <IconButton
+                          onClick={() => this.onConfirmExportManifestDelete(manifest)}
+                        >
+                          <DeleteIcon color='error' />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                )
+              })
+              :
+              <React.Fragment></React.Fragment>
+            }
+          </Grid>
+
+        </Grid>
+        :
+        <React.Fragment>
+          <Grid item xs={12}>
+            <Typography>No dairy selected</Typography>
+          </Grid>
+        </React.Fragment>
+      }
+
+      <ViewTSVsModal
+        open={this.state.showViewTSVsModal}
+        actionText={"" /* no action text*/}
+        cancelText="Close"
+        dairy_id={this.state.dairy.pk}
+        tsvType="export_manifest"
+        onClose={() => this.toggleShowViewTSVModal(false)}
+      />
+      <UploadExportTSVModal
+        open={this.state.showUploadTSVModal}
+        actionText="Add"
+        cancelText="Cancel"
+        modalText={`Upload Export TSV`}
+        uploadedFilename={this.state.uploadedFilename}
+
+        uploadManureTSV={this.onUploadExportManureTSV.bind(this)}
+        uploadWastewaterTSV={this.onUploadExportWastewaterTSV.bind(this)}
+        onChange={this.onUploadExportTSVModalChange.bind(this)}
+        onClose={() => this.toggleShowUploadTSVModal(false)}
+      />
+
+      <AddExportContactModal
+        open={this.state.showAddExportContactModal}
+        actionText="Add"
+        cancelText="Cancel"
+        modalText={`Create Export Contact`}
+        createExportContactObj={this.state.createExportContactObj}
+        onAction={this.onCreateExportContact.bind(this)}
+        onChange={this.onCreateExportContactChange.bind(this)}
+        onClose={() => this.toggleShowAddExportContactModal(false)}
+      />
+
+      <AddExportHaulerModal
+        open={this.state.showAddExportHaulerModal}
+        actionText="Add"
+        cancelText="Cancel"
+        modalText={`Create Export Hauler`}
+        createExportHaulerObj={this.state.createExportHaulerObj}
+        onAction={this.onCreateExportHauler.bind(this)}
+        onChange={this.onCreateExportHaulerChange.bind(this)}
+        onClose={() => this.toggleShowAddExportHaulerModal(false)}
+      />
 
 
-        <AddExportRecipientModal
-          open={this.state.showAddExportRecipientModal}
-          actionText="Add"
-          cancelText="Cancel"
-          modalText={`Create Export Recipient`}
-          createExportRecipientObj={this.state.createExportRecipientObj}
-          DEST_TYPES={DEST_TYPES}
-          onAction={this.onCreateExportRecipient.bind(this)}
-          onChange={this.onCreateExportRecipientChange.bind(this)}
-          onClose={() => this.toggleShowAddExportRecipientModal(false)}
-        />
+      <AddExportRecipientModal
+        open={this.state.showAddExportRecipientModal}
+        actionText="Add"
+        cancelText="Cancel"
+        modalText={`Create Export Recipient`}
+        createExportRecipientObj={this.state.createExportRecipientObj}
+        DEST_TYPES={DEST_TYPES}
+        onAction={this.onCreateExportRecipient.bind(this)}
+        onChange={this.onCreateExportRecipientChange.bind(this)}
+        onClose={() => this.toggleShowAddExportRecipientModal(false)}
+      />
 
-        <AddExportDestModal
-          open={this.state.showAddExportDestModal}
-          actionText="Add"
-          cancelText="Cancel"
-          modalText={`Create Export Dest`}
-          createExportDestObj={this.state.createExportDestObj}
-          exportRecipients={this.state.exportRecipients}
-          onAction={this.onCreateExportDest.bind(this)}
-          onChange={this.onCreateExportDestChange.bind(this)}
-          onClose={() => this.toggleShowAddExportDestModal(false)}
-        />
+      <AddExportDestModal
+        open={this.state.showAddExportDestModal}
+        actionText="Add"
+        cancelText="Cancel"
+        modalText={`Create Export Dest`}
+        createExportDestObj={this.state.createExportDestObj}
+        exportRecipients={this.state.exportRecipients}
+        onAction={this.onCreateExportDest.bind(this)}
+        onChange={this.onCreateExportDestChange.bind(this)}
+        onClose={() => this.toggleShowAddExportDestModal(false)}
+      />
 
-        <AddExportManifestModal
-          open={this.state.showAddExportManifestModal}
-          actionText="Add"
-          cancelText="Cancel"
-          modalText={`Create Export Manifest`}
-          createExportManifestObj={this.state.createExportManifestObj}
-          exportDests={this.state.exportDests}
-          exportContacts={this.state.exportContacts}
-          operators={this.state.operators}
-          exportHaulers={this.state.exportHaulers}
-          MANIFEST_MATERIAL_TYPES={MANIFEST_MATERIAL_TYPES}
-          REPORTING_METHODS={REPORTING_METHODS}
-          onAction={this.onCreateExportManifest.bind(this)}
-          onChange={this.onCreateExportManifestChange.bind(this)}
-          onClose={() => this.toggleShowAddExportManifestModal(false)}
-        />
+      <AddExportManifestModal
+        open={this.state.showAddExportManifestModal}
+        actionText="Add"
+        cancelText="Cancel"
+        modalText={`Create Export Manifest`}
+        createExportManifestObj={this.state.createExportManifestObj}
+        exportDests={this.state.exportDests}
+        exportContacts={this.state.exportContacts}
+        operators={this.state.operators}
+        exportHaulers={this.state.exportHaulers}
+        MANIFEST_MATERIAL_TYPES={MANIFEST_MATERIAL_TYPES}
+        REPORTING_METHODS={REPORTING_METHODS}
+        onAction={this.onCreateExportManifest.bind(this)}
+        onChange={this.onCreateExportManifestChange.bind(this)}
+        onClose={() => this.toggleShowAddExportManifestModal(false)}
+      />
 
-        <ActionCancelModal
-          open={this.state.showConfirmDeleteExportContactModal}
-          actionText="Delete"
-          cancelText="Cancel"
-          modalText={`Delete Export Contact ${this.state.deleteExportContactObj.first_name} ${this.state.deleteExportContactObj.last_name}?`}
-          onAction={this.onExportContactDelete.bind(this)}
-          onClose={() => this.setState({ showConfirmDeleteExportContactModal: false })}
-        />
+      <ActionCancelModal
+        open={this.state.showConfirmDeleteExportContactModal}
+        actionText="Delete"
+        cancelText="Cancel"
+        modalText={`Delete Export Contact ${this.state.deleteExportContactObj.first_name} ${this.state.deleteExportContactObj.last_name}?`}
+        onAction={this.onExportContactDelete.bind(this)}
+        onClose={() => this.setState({ showConfirmDeleteExportContactModal: false })}
+      />
 
-        <ActionCancelModal
-          open={this.state.showConfirmDeleteExportHaulerModal}
-          actionText="Delete"
-          cancelText="Cancel"
-          modalText={`Delete Export Hauler ${this.state.deleteExportHaulerObj.title} - ${this.state.deleteExportHaulerObj.first_name}?`}
-          onAction={this.onExportHaulerDelete.bind(this)}
-          onClose={() => this.setState({ showConfirmDeleteExportHaulerModal: false })}
-        />
+      <ActionCancelModal
+        open={this.state.showConfirmDeleteExportHaulerModal}
+        actionText="Delete"
+        cancelText="Cancel"
+        modalText={`Delete Export Hauler ${this.state.deleteExportHaulerObj.title} - ${this.state.deleteExportHaulerObj.first_name}?`}
+        onAction={this.onExportHaulerDelete.bind(this)}
+        onClose={() => this.setState({ showConfirmDeleteExportHaulerModal: false })}
+      />
 
-        <ActionCancelModal
-          open={this.state.showConfirmDeleteExportRecipientModal}
-          actionText="Delete"
-          cancelText="Cancel"
-          modalText={`Delete Export Recipient ${this.state.deleteExportRecipientObj.title} ${this.state.deleteExportRecipientObj.primary_phone}?`}
-          onAction={this.onExportRecipientDelete.bind(this)}
-          onClose={() => this.setState({ showConfirmDeleteExportRecipientModal: false })}
-        />
-
-
-        <ActionCancelModal
-          open={this.state.showConfirmDeleteExportDestModal}
-          actionText="Delete"
-          cancelText="Cancel"
-          modalText={`Delete Export Dest ${this.state.deleteExportDestObj.title} - ${this.state.deleteExportDestObj.pnumber}${this.state.deleteExportDestObj.street} ${this.state.deleteExportDestObj.cross_street} ${this.state.deleteExportDestObj.city_zip}?`}
-          onAction={this.onExportDestDelete.bind(this)}
-          onClose={() => this.setState({ showConfirmDeleteExportDestModal: false })}
-        />
+      <ActionCancelModal
+        open={this.state.showConfirmDeleteExportRecipientModal}
+        actionText="Delete"
+        cancelText="Cancel"
+        modalText={`Delete Export Recipient ${this.state.deleteExportRecipientObj.title} ${this.state.deleteExportRecipientObj.primary_phone}?`}
+        onAction={this.onExportRecipientDelete.bind(this)}
+        onClose={() => this.setState({ showConfirmDeleteExportRecipientModal: false })}
+      />
 
 
-        <ActionCancelModal
-          open={this.state.showConfirmDeleteExportManifestModal}
-          actionText="Delete"
-          cancelText="Cancel"
-          modalText={`Delete Export Manifest ${this.state.deleteExportManifestObj.last_date_hauled} ${this.state.deleteExportManifestObj.amount_hauled}?`}
-          onAction={this.onExportManifestDelete.bind(this)}
-          onClose={() => this.setState({ showConfirmDeleteExportManifestModal: false })}
-        />
+      <ActionCancelModal
+        open={this.state.showConfirmDeleteExportDestModal}
+        actionText="Delete"
+        cancelText="Cancel"
+        modalText={`Delete Export Dest ${this.state.deleteExportDestObj.title} - ${this.state.deleteExportDestObj.pnumber}${this.state.deleteExportDestObj.street} ${this.state.deleteExportDestObj.cross_street} ${this.state.deleteExportDestObj.city_zip}?`}
+        onAction={this.onExportDestDelete.bind(this)}
+        onClose={() => this.setState({ showConfirmDeleteExportDestModal: false })}
+      />
 
-      </React.Fragment>
-    )
-  }
+
+      <ActionCancelModal
+        open={this.state.showConfirmDeleteExportManifestModal}
+        actionText="Delete"
+        cancelText="Cancel"
+        modalText={`Delete Export Manifest ${this.state.deleteExportManifestObj.last_date_hauled} ${this.state.deleteExportManifestObj.amount_hauled}?`}
+        onAction={this.onExportManifestDelete.bind(this)}
+        onClose={() => this.setState({ showConfirmDeleteExportManifestModal: false })}
+      />
+
+    </React.Fragment>
+  )
+}
 }
 
 export default ExportTab = withRouter(withTheme(ExportTab))

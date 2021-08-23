@@ -1389,7 +1389,6 @@ app.post("/api/export_dest/create", (req, res) => {
   const {
     dairy_id,
     export_recipient_id,
-    dest_is_pnumber,
     pnumber,
     street,
     cross_street,
@@ -1402,7 +1401,6 @@ app.post("/api/export_dest/create", (req, res) => {
     [
       dairy_id,
       export_recipient_id,
-      dest_is_pnumber,
       pnumber,
       street,
       cross_street,
@@ -1460,7 +1458,6 @@ app.post("/api/export_manifest/create", (req, res) => {
     amount_hauled,
     material_type,
     amount_hauled_method,
-    is_solid,
 
     reporting_method,
     moisture,
@@ -1494,7 +1491,6 @@ app.post("/api/export_manifest/create", (req, res) => {
       amount_hauled,
       material_type,
       amount_hauled_method,
-      is_solid,
 
       reporting_method,
       moisture,
@@ -1756,6 +1752,27 @@ app.get("/api/search/export_recipient/:title/:street/:city_zip/:primary_phone/:d
       req.params.street,
       req.params.city_zip,
       req.params.primary_phone,
+      req.params.dairy_pk,
+    ],
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Search all export_recipient unsuccessful" });
+    })
+});
+
+   // export_recipient_id, pnumber, street, city_zip
+app.get("/api/search/export_dest/:export_recipient_id/:pnumber/:street/:city_zip/:dairy_pk", (req, res) => {
+  db.searchExportDest(
+    [
+      req.params.export_recipient_id,
+      req.params.pnumber === "*"? "": req.params.pnumber,
+      req.params.street,
+      req.params.city_zip,
       req.params.dairy_pk,
     ],
     (err, result) => {
