@@ -93,7 +93,13 @@ app.post("/api/dairies/create", (req, res) => {
 app.post("/api/dairies/update", (req, res) => {
   console.log("Updating....", req.body.data)
   // req.body.data is a list of values in order to match DB Table
-  db.updateDairy(req.body.data, (err, result) => {
+  const {
+    street, cross_street, county, city, city_state, title, city_zip, basin_plan, p_breed, began, dairy_id
+  } = req.body
+
+  db.updateDairy([
+    street, cross_street, county, city, city_state, city_zip, title, basin_plan, p_breed, began, dairy_id
+  ], (err, result) => {
 
     if (!err) {
       res.json({ "test": "Updated dairy successfully" });

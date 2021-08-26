@@ -104,7 +104,7 @@ class HarvestView extends Component {
                             <Grid item xs={4}>
                               <TextField disabled
                                 label="Harvest Date"
-                                value={harvest.harvest_date}
+                                value={harvest.harvest_date && harvest.harvest_date.split('T')[0]}
                                 style={{ width: "100%" }}
                               />
                             </Grid>

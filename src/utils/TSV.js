@@ -8,6 +8,10 @@ export const PROCESS_WASTEWATER = 'process_wastewater'
 export const FRESHWATER = 'field_crop_app_freshwater'
 export const SOLIDMANURE = 'field_crop_app_solidmanure'
 export const FERTILIZER = 'field_crop_app_fertilizer'
+
+export const MANURE = 'export_manifest_manure'
+export const WASTEWATER = 'export_manifest_wastewater'
+
 export const TSV_INFO = {
   [PROCESS_WASTEWATER]: {
     numCols: 32, // 32 columns in process_wastewater spreadsheet/ TSV
@@ -25,6 +29,14 @@ export const TSV_INFO = {
     numCols: 27,
     tsvType: FERTILIZER
   },
+  [MANURE]: {
+    numCols: 50,
+    tsvType: MANURE
+  },
+  [WASTEWATER]: {
+    numCols: 51,
+    tsvType: WASTEWATER
+  }
 }
 
 export const lazyGet = (endpoint, value, data, dairy_pk) => {

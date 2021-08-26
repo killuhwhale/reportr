@@ -21,6 +21,7 @@ import dd from "./pdf"
 
 import formats from "../../utils/format"
 import { getByText } from '@testing-library/react'
+import { ImportExport } from '@material-ui/icons'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
@@ -69,14 +70,11 @@ class DairyTab extends Component {
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
-  componentDidMount(){
+  componentDidMount() {
     this.getAllFields()
     this.getAllParcels()
   }
-  onChange(ev) {
-    const { name, value } = ev.target
-    this.props.onChange(name, value)
-  }
+
   handleDateChange(date) {
     this.props.onChange("began", date)
   }
@@ -167,7 +165,7 @@ class DairyTab extends Component {
     ]
 
     let materialData = [
-      [31,10,52,61,73,84,20550540, "Nitrogen"]
+      [31, 10, 52, 61, 73, 84, 20550540, "Nitrogen"]
     ]
 
     return new Promise((resolve, rej) => {
@@ -178,7 +176,7 @@ class DairyTab extends Component {
 
       // Summarys in report
       let materialPromises = materialData.map((row, i) => {
-        return this._createHoriBarChart(`materialHoriBar${i}`, materialLabels, row.slice(0,-1), row.slice(-1))
+        return this._createHoriBarChart(`materialHoriBar${i}`, materialLabels, row.slice(0, -1), row.slice(-1))
       })
 
       Promise.all([...nutrientPromises, ...materialPromises])
@@ -196,7 +194,7 @@ class DairyTab extends Component {
   onLoadBase64() {
     return this.chart.toBase64Image()
   }
-  
+
   _createHoriBarChart(key, labels, data, title) {
     let canvas = document.createElement('canvas')
     canvas.style.width = HORIBAR_WIDTH
@@ -209,7 +207,7 @@ class DairyTab extends Component {
       let chart = null
       chart = new Chart(canvas, {
         type: 'bar',
-        
+
         data: {
           labels: labels, // [x, y, z]
           datasets: [{
@@ -259,7 +257,7 @@ class DairyTab extends Component {
               type: 'logarithmic',
               color: "#0f0",
               // position: 'left', // `axis` is determined by the position as `'y'`
-              title:{
+              title: {
                 text: "lbs",
                 display: true,
                 font: {
@@ -294,31 +292,31 @@ class DairyTab extends Component {
               ctx.fillStyle = CHART_BACKGROUND_COLOR
 
               // Top line and top right corner
-              ctx.lineTo(PAD,0, chart.width-PAD, 0) 
-              ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)  
-              
+              ctx.lineTo(PAD, 0, chart.width - PAD, 0)
+              ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)
+
               // Right wall and bottom right corner
-              ctx.lineTo(chart.width, PAD, chart.width, chart.height-PAD) 
-              ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)  
-              
+              ctx.lineTo(chart.width, PAD, chart.width, chart.height - PAD)
+              ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)
+
               // Bottom line and bottom left corner
-              ctx.lineTo(chart.width - PAD, chart.height,  PAD, chart.height) // right wall
-              ctx.arcTo(0, chart.height,  0, chart.height - PAD, RADIUS)
+              ctx.lineTo(chart.width - PAD, chart.height, PAD, chart.height) // right wall
+              ctx.arcTo(0, chart.height, 0, chart.height - PAD, RADIUS)
 
               // Left wall and top left corner
-              ctx.lineTo(0, chart.height - PAD,  0, PAD) // right wall
+              ctx.lineTo(0, chart.height - PAD, 0, PAD) // right wall
               ctx.arcTo(0, 0, PAD, 0, RADIUS)
 
               // Close the rectangle....
-              ctx.lineTo(PAD , 0, PAD + 2, 0)
-              
+              ctx.lineTo(PAD, 0, PAD + 2, 0)
+
               ctx.fill()
               ctx.restore();
             }
           }
         ]
       })
-     
+
     })
   }
   _createBarChart(key, labels, data) {
@@ -390,7 +388,7 @@ class DairyTab extends Component {
               type: 'logarithmic',
               color: "#0f0",
               position: 'left', // `axis` is determined by the position as `'y'`
-              title:{
+              title: {
                 text: "lbs / acre",
                 display: true,
               },
@@ -412,7 +410,7 @@ class DairyTab extends Component {
             }
           },
         },
-        plugins:[
+        plugins: [
           {
             id: 'custom_canvas_background_color',
             beforeDraw: (chart) => {
@@ -422,31 +420,31 @@ class DairyTab extends Component {
               ctx.fillStyle = CHART_BACKGROUND_COLOR;
 
               // Top line and top right corner
-              ctx.lineTo(PAD,0, chart.width-PAD, 0) 
-              ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)  
-              
+              ctx.lineTo(PAD, 0, chart.width - PAD, 0)
+              ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)
+
               // Right wall and bottom right corner
-              ctx.lineTo(chart.width, PAD, chart.width, chart.height-PAD) 
-              ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)  
-              
+              ctx.lineTo(chart.width, PAD, chart.width, chart.height - PAD)
+              ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)
+
               // Bottom line and bottom left corner
-              ctx.lineTo(chart.width - PAD, chart.height,  PAD, chart.height) // right wall
-              ctx.arcTo(0, chart.height,  0, chart.height - PAD, RADIUS)
+              ctx.lineTo(chart.width - PAD, chart.height, PAD, chart.height) // right wall
+              ctx.arcTo(0, chart.height, 0, chart.height - PAD, RADIUS)
 
               // Left wall and top left corner
-              ctx.lineTo(0, chart.height - PAD,  0, PAD) // right wall
+              ctx.lineTo(0, chart.height - PAD, 0, PAD) // right wall
               ctx.arcTo(0, 0, PAD, 0, RADIUS)
 
               // Close the rectangle....
-              ctx.lineTo(PAD , 0, PAD + 2, 0)
-              
+              ctx.lineTo(PAD, 0, PAD + 2, 0)
+
               ctx.fill()
               ctx.restore();
             }
           }
         ]
       })
-     
+
     })
   }
 
@@ -474,21 +472,21 @@ class DairyTab extends Component {
         var ctx = chartInstance.ctx;
         // render the value of the chart above the bar
         ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';        
-        
+        ctx.textBaseline = 'bottom';
+
         chartInstance.data.datasets.forEach((dataset, di) => {
           for (var i = 0; i < dataset.data.length; i++) {
             // rewrite text if it is too close to edge for hoizontal bar chart
-            
+
             let bar = chartInstance._metasets[di].data[i]
             let maxX = chartInstance.scales.x.maxWidth
             // let maxY = chartInstance.scales.y.maxHeight
             let numChars = dataset.data[i].toString().length
             let singleCharLen = 4
             var xOffset = (500 - bar.x) / 500 < 0.03 ? ((numChars * -singleCharLen) - 10) : 0;
-            if(chartInstance.scales.x.type === "logarithmic"){
-              ctx.fillText(dataset.data[i], bar.x + xOffset + 10 , bar.y);
-            }else{
+            if (chartInstance.scales.x.type === "logarithmic") {
+              ctx.fillText(dataset.data[i], bar.x + xOffset + 10, bar.y);
+            } else {
               ctx.fillText(dataset.data[i], bar.x, bar.y);
 
             }
@@ -536,16 +534,27 @@ class DairyTab extends Component {
 
 
             <Grid item container xs={12} style={{ marginTop: "64px" }}>
-              <Grid item xs={12}>
-                <Typography variant="h2">
-                  Address
-                </Typography>
+              <Grid container item xs={12}>
+                <Grid item xs={3}>
+                  <Typography variant="h2">
+                    Address
+                  </Typography>
+                </Grid>
+                <Grid item xs={9} align="left">
+                  <Tooltip title='Update Address'>
+                    <IconButton variant="outlined" fullWidth color="secondary"
+                      onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
+                    >
+                      <ImportExport />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
               </Grid>
               <Grid item xs={4}>
                 <TextField
                   name='title'
                   value={this.state.dairy.title}
-                  onChange={this.onChange.bind(this)}
+                  onChange={this.props.onChange}
                   label="Dairy Name"
                   style={{ width: "100%" }}
                 />
@@ -556,22 +565,25 @@ class DairyTab extends Component {
                 </div>
                 <DatePicker
                   value={this.state.dairy.began}
-                  onChange={this.handleDateChange.bind(this)}
+                  onChange={(_date) => this.props.onChange({ target: { name: 'began', value: _date } })}
                   style={{ width: "100%", justifyContent: "flex-end" }}
                 />
               </Grid>
               <Grid item xs={4}>
                 <TextField select
-                  name='p_breed'
-                  value={this.state.dairy.p_breed}
-                  onChange={this.onChange.bind(this)}
                   label="Primary Breed"
+                  value={
+                    Math.max(0, this.props.BREEDS.indexOf(this.state.dairy.p_breed))
+                  }
+                  onChange={(ev) => {
+                    this.props.onChange({ target: { name: 'p_breed', value: this.props.BREEDS[ev.target.value] } })
+                  }}
                   style={{ width: "100%" }}
                   SelectProps={{
                     native: true,
                   }}
                 >
-                  {this.props.breeds.map((el, i) => {
+                  {this.props.BREEDS.map((el, i) => {
                     return (
                       <option key={`breeds${i}`} value={i}>{el}</option>
                     )
@@ -584,7 +596,7 @@ class DairyTab extends Component {
                 <TextField
                   name='street'
                   value={this.state.dairy.street}
-                  onChange={this.onChange.bind(this)}
+                  onChange={this.props.onChange}
                   label="Street"
                   style={{ width: "100%" }}
                 />
@@ -593,23 +605,26 @@ class DairyTab extends Component {
                 <TextField
                   name='cross_street'
                   value={this.state.dairy.cross_street}
-                  onChange={this.onChange.bind(this)}
+                  onChange={this.props.onChange}
                   label="Cross Street"
                   style={{ width: "100%" }}
                 />
               </Grid>
               <Grid item xs={4}>
                 <TextField select
-                  name='county'
-                  value={this.state.dairy.county}
-                  onChange={this.onChange.bind(this)}
                   label="County"
+                  value={
+                    Math.max(0, this.props.COUNTIES.indexOf(this.state.dairy.county))
+                  }
+                  onChange={(ev) => {
+                    this.props.onChange({ target: { name: 'county', value: this.props.COUNTIES[ev.target.value] } })
+                  }}
                   style={{ width: "100%" }}
                   SelectProps={{
                     native: true,
                   }}
                 >
-                  {this.props.counties.map((el, i) => {
+                  {this.props.COUNTIES.map((el, i) => {
                     return (
                       <option name="county" key={`county${i}`} value={i}>{el}</option>
                     )
@@ -623,7 +638,7 @@ class DairyTab extends Component {
                 <TextField
                   name='city'
                   value={this.state.dairy.city}
-                  onChange={this.onChange.bind(this)}
+                  onChange={this.props.onChange}
                   label="City"
                   style={{ width: "100%" }}
                 />
@@ -632,7 +647,7 @@ class DairyTab extends Component {
                 <TextField
                   name='city_state'
                   value={this.state.dairy.city_state}
-                  onChange={this.onChange.bind(this)}
+                  onChange={this.props.onChange}
                   label="State"
                   style={{ width: "100%" }}
                 />
@@ -641,38 +656,33 @@ class DairyTab extends Component {
                 <TextField
                   name='city_zip'
                   value={this.state.dairy.city_zip}
-                  onChange={this.onChange.bind(this)}
+                  onChange={this.props.onChange}
                   label="Zip"
                   style={{ width: "100%" }}
                 />
               </Grid>
               <Grid item xs={3}>
                 <TextField select
-                  name='basin_plan'
-                  value={this.state.dairy.basin_plan}
-                  onChange={this.onChange.bind(this)}
                   label="Basin Plan"
+                  value={
+                    Math.max(0, this.props.BASINS.indexOf(this.state.dairy.basin_plan))
+                  }
+                  onChange={(ev) => {
+                    this.props.onChange({ target: { name: 'basin_plan', value: this.props.BASINS[ev.target.value] } })
+                  }}
                   style={{ width: "100%" }}
                   SelectProps={{
                     native: true,
                   }}
                 >
-                  {this.props.basins.map((el, i) => {
+                  {this.props.BASINS.map((el, i) => {
                     return (
                       <option key={`basin${i}`} value={i}>{el}</option>
                     )
                   })}
                 </TextField>
               </Grid>
-              <Grid item xs={12}>
-                <Grid item xs={12} container alignItems="center">
-                  <Button variant="outlined" fullWidth color="primary"
-                    onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
-                  >
-                    Update
-                  </Button>
-                </Grid>
-              </Grid>
+
             </Grid>
             <Grid item container key="parcel_FieldList" align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
               <Grid item xs={6}>

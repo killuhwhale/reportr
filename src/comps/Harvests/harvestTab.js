@@ -6,6 +6,11 @@ import {
   DatePicker
 } from '@material-ui/pickers';
 import AddIcon from '@material-ui/icons/Add'
+import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
+import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
+import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
+import { CloudUpload } from '@material-ui/icons' // uploadTSV
+
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
@@ -23,11 +28,12 @@ import {
 
 
 
-const REPORTING_METHODS  = ['dry-weight', 'as-is']
+const REPORTING_METHODS = ['dry-weight', 'as-is']
 const SOURCE_OF_ANALYSES = ['Lab Analysis', 'Other/ estimated']
 const BASE_URL = "http://localhost:3001"
 const BASIS = ['As-is', "Dry wt"]
 
+const HARVEST = 'field_crop_harvest'
 const NUM_COLS = 22
 
 class HarvestTab extends Component {
@@ -38,8 +44,8 @@ class HarvestTab extends Component {
       field_crops: [], // The planted crops to choose from to create a harvest event in field_crop_harvest DB table
       fieldCropHarvests: [],
       showAddFieldCropHarvestModal: false,
-      showUploadCSV: false,
-      csvText: "",
+      showUploadTSV: false,
+      tsvText: "",
       uploadedFilename: "",
       updateFieldCropHarvestObj: {}, // PK: {all data for field_crop harvest that is updatable...}
       groupedFieldCropHarvests: {},
@@ -66,9 +72,9 @@ class HarvestTab extends Component {
 
 
 
- 
-    
-    
+
+
+
       } // TODO fill out required keys to create object....
     }
   }
@@ -146,7 +152,7 @@ class HarvestTab extends Component {
     const src_of_analysis_idx = this.state.createFieldCropHarvestObj.src_of_analysis_idx
     const method_of_reporting = REPORTING_METHODS[method_of_reporting_idx]
     const src_of_analysis = SOURCE_OF_ANALYSES[src_of_analysis_idx]
-    
+
     console.log("Create field crop harvest w/ field_crop id: ", field_crop_id, method_of_reporting)
 
     let data = {
@@ -223,26 +229,25 @@ class HarvestTab extends Component {
       })
   }
 
-  toggleShowUploadCSV(val) {
-    this.setState({ showUploadCSV: val })
+  toggleShowUploadTSV(val) {
+    this.setState({ showUploadTSV: val })
   }
   onCSVChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
       readTSV(files[0], (ev) => {
         const { result } = ev.target
-        this.setState({ csvText: result, uploadedFilename: files[0].name })
+        this.setState({ tsvText: result, uploadedFilename: files[0].name })
       })
     }
   }
- 
+
   // Triggered when user presses Add btn in Modal
-  uploadCSV() {
-    console.log("Uploading CSV")
-    let rows = processTSVText(this.state.csvText, NUM_COLS)
+  uploadTSV() {
+    let rows = processTSVText(this.state.tsvText, NUM_COLS)
 
     // Create a set of fields to ensure duplicates are not attempted.
-    let fields = createFieldSet(rows)   
+    let fields = createFieldSet(rows)
 
 
     createFieldsFromTSV(fields)      // Create fields before proceeding
@@ -254,10 +259,8 @@ class HarvestTab extends Component {
 
         Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
           .then(res => {
-            console.log("Completed Results")
-            uploadTSVToDB() // remove this when done testing, do this after the data was successfully create in DB
-            console.log(res)
-            this.toggleShowUploadCSV(false)
+            uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, HARVEST) // remove this when done testing, do this after the data was successfully create in DB
+            this.toggleShowUploadTSV(false)
             this.getAllFieldCropHarvests()
           })
           .catch(err => {
@@ -272,43 +275,56 @@ class HarvestTab extends Component {
 
 
   }
-  
- 
 
-  toggleShowTSVsModal(val){
-    this.setState({showViewTSVsModal: val})
+
+
+  toggleShowTSVsModal(val) {
+    this.setState({ showViewTSVsModal: val })
   }
 
   render() {
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
-          <React.Fragment>
-            <Button variant="outlined" fullWidth color="secondary"
-              onClick={this.updateFieldCropHarvest.bind(this)}>
-              Update Harvests
-            </Button>
-            <Button variant="outlined" fullWidth color="secondary"
-              onClick={() => this.toggleShowTSVsModal(true)}>
-              View TSVs
-            </Button>
-            <Button variant="outlined" fullWidth color="primary"
-              onClick={() => this.toggleShowUploadCSV(true)}>
-              Import Harvest from TSV Production Records Tab
-            </Button>
-            {
-              this.state.field_crops.length > 0 ?
-                <Grid item container xs={12}>
-                  <Button variant="outlined" fullWidth color="primary"
-                    onClick={() => this.toggleShowAddFieldCropHarvestModal(true)}>
-                    Add new harvest
-                  </Button>
+          <Grid item container xs={12}>
+            {/* <Button variant="outlined" fullWidth color="secondary"
+                onClick={this.updateFieldCropHarvest.bind(this)}>
+                Update Harvests
+              </Button> */}
+            <Grid item xs={10} align='right'>
+              <Tooltip title='Import Harvest from TSV Production Records Tab'>
+                <IconButton variant="outlined" color="primary"
+                  onClick={() => this.toggleShowUploadTSV(true)}>
+                  <CloudUpload />
+                </IconButton>
 
-                </Grid>
-                :
-                <React.Fragment></React.Fragment>
-            }
-          
+              </Tooltip>
+            </Grid>
+            <Grid item xs={1} align='right'>
+              <Tooltip title='View TSVs'>
+                <IconButton variant="outlined" color="secondary"
+                  onClick={() => this.toggleShowTSVsModal(true)}>
+                  <WbCloudyIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+            <Grid item xs={1} align='right'>
+              {
+                this.state.field_crops.length > 0 ?
+                  <Grid item xs={12} align='right'>
+                    <Tooltip title='Add new harvest'>
+                      <IconButton variant="outlined" color="primary"
+                        onClick={() => this.toggleShowAddFieldCropHarvestModal(true)}>
+                        <SpeakerNotesIcon />
+                      </IconButton>
+                    </Tooltip>
+
+                  </Grid>
+                  :
+                  <React.Fragment></React.Fragment>
+              }
+            </Grid>
+
             {
               Object.keys(this.state.groupedFieldCropHarvests).length > 0 ?
                 <HarvestView
@@ -321,7 +337,8 @@ class HarvestTab extends Component {
                 :
                 <React.Fragment></React.Fragment>
             }
-          </React.Fragment>
+
+          </Grid>
           :
           <React.Fragment>Loading....</React.Fragment>
         }
@@ -331,19 +348,19 @@ class HarvestTab extends Component {
           actionText="Upload"
           cancelText="Close"
           dairy_id={this.state.dairy.pk}
-          tsvType="harvest"
+          tsvType={HARVEST}
           onClose={() => this.toggleShowTSVsModal(false)}
         />
 
         <UploadHarvestCSVModal
-          open={this.state.showUploadCSV}
+          open={this.state.showUploadTSV}
           actionText="Upload"
           cancelText="Cancel"
           modalText={`Import TSV file, (must be a tab separated value file)`}
           uploadedFilename={this.state.uploadedFilename}
-          onAction={this.uploadCSV.bind(this)}
+          onAction={this.uploadTSV.bind(this)}
           onChange={this.onCSVChange.bind(this)}
-          onClose={() => this.toggleShowUploadCSV(false)}
+          onClose={() => this.toggleShowUploadTSV(false)}
         />
         <AddFieldCropHarvestModal
           open={this.state.showAddFieldCropHarvestModal}

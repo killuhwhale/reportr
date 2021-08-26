@@ -6,6 +6,8 @@ import {
   DatePicker
 } from '@material-ui/pickers';
 import DeleteIcon from '@material-ui/icons/Delete'
+import AddIcon from '@material-ui/icons/Add'
+
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import OperatorModal from "../Modals/addOperatorModal"
@@ -13,6 +15,7 @@ import OperatorForm from "./operatorForm"
 import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { get, post } from '../../utils/requests';
+import { ImportExport, InsertEmoticon } from '@material-ui/icons';
 
 const BASE_URL = "http://localhost:3001"
 
@@ -24,9 +27,9 @@ class OperatorView extends Component {
       dairy: props.dairy,
       showOperatorModal: false,
       showDeleteOperatorModal: false,
-      operators:[],
+      operators: [],
       updateOperatorObjs: {},
-      curDeleteOperatorObj:{},
+      curDeleteOperatorObj: {},
       createOperatorObj: {
         dairy_id: "",
         title: "",
@@ -44,110 +47,125 @@ class OperatorView extends Component {
   static getDerivedStateFromProps(props, state) {
     return state // if default props change return props | compare props.dairy == state.dairy
   }
-  componentDidMount(){
+  componentDidMount() {
     this.getAllOperators()
   }
-  toggleOperatorModal(val){
-    this.setState({showOperatorModal: val})
+  toggleOperatorModal(val) {
+    this.setState({ showOperatorModal: val })
   }
-  createOperator(){
+  createOperator() {
     console.log("Creating operator", this.state.createOperatorObj, this.state.dairy)
     post(`${BASE_URL}/api/operators/create`, {
       ...this.state.createOperatorObj, dairy_id: this.state.dairy.pk
     })
-    .then(res => {
-      // console.log(res)
-      this.getAllOperators()
-    })
-    .catch(err => {
-      console.log(err)
-    })
+      .then(res => {
+        // console.log(res)
+        this.getAllOperators()
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
-  onOperatorModalUpdate(ev){
+  onOperatorModalUpdate(ev) {
     const { name, value, checked } = ev.target
     let operator = this.state.createOperatorObj
-    if(['is_owner', 'is_responsible'].indexOf(name) >= 0){
-      operator[name] = checked  
-    }else{
+    if (['is_owner', 'is_responsible'].indexOf(name) >= 0) {
+      operator[name] = checked
+    } else {
       operator[name] = value
     }
-    this.setState({createOperatorObj: operator})
+    this.setState({ createOperatorObj: operator })
   }
 
-  getAllOperators(){
+  getAllOperators() {
     get(`${BASE_URL}/api/operators/${this.state.dairy.pk}`)
-    .then(res => {
-      // console.log(res)
-      this.setState({operators: res})
-    })
-    .catch(err => {
-      console.log(err)
-    })
+      .then(res => {
+        // console.log(res)
+        this.setState({ operators: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
-  onOperatorUpdate(pk, operator){
+  onOperatorUpdate(pk, operator) {
     let operators = this.state.updateOperatorObjs
     operators[pk] = operator
 
-    this.setState({updateOperatorObjs: operators})
+    this.setState({ updateOperatorObjs: operators })
   }
 
-  updateOperators(){
+  updateOperators() {
     console.log("Updating operators", this.state.updateOperatorObjs)
     let operators = this.state.updateOperatorObjs
     let promises = Object.keys(operators).map((pk, i) => {
-      return(
+      return (
         post(`${BASE_URL}/api/operators/update`, operators[pk])
       )
     })
-    
+
     Promise.all(promises)
-    .then(res => {
-      console.log(res)
-    })
-    .catch(err => {
-      console.log(err)
-    })
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
 
   }
 
-  confirmDeleteOperator(operator){
+  confirmDeleteOperator(operator) {
     console.log("deleteing operator", operator)
-    this.setState({showDeleteOperatorModal: true, curDeleteOperatorObj: operator})
+    this.setState({ showDeleteOperatorModal: true, curDeleteOperatorObj: operator })
   }
-  toggleDeleteOperatorModal(val){
-    this.setState({showDeleteOperatorModal: val})
+  toggleDeleteOperatorModal(val) {
+    this.setState({ showDeleteOperatorModal: val })
   }
-  deleteOperator(){
+  deleteOperator() {
     console.log("deleteing operator", this.state.curDeleteOperatorObj)
-    post(`${BASE_URL}/api/operators/delete`, {pk: this.state.curDeleteOperatorObj.pk})
-    .then(res => {
-      console.log(res)
-      this.getAllOperators()
-      this.toggleDeleteOperatorModal(false)
-    })
-    .catch(err => {
-      console.log(err)
-    })
+    post(`${BASE_URL}/api/operators/delete`, { pk: this.state.curDeleteOperatorObj.pk })
+      .then(res => {
+        console.log(res)
+        this.getAllOperators()
+        this.toggleDeleteOperatorModal(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   render() {
     return (
       <Grid item xs={12}>
         <Typography variant="h2">Owner Operators</Typography>
-        <Tooltip title="Add Owner / Operator">
-          <Button variant="outlined" color="primary"
-            onClick={() => this.toggleOperatorModal(true)}
-          >
-            <Typography variant="subtitle1">
-              Add Owner / Operator
-            </Typography>
-          </Button>
-        </Tooltip>
+        <Grid item container xs={12}>
+          <Grid item xs={11} align='right'>
+            <Tooltip title="Add Owner / Operator">
+              <IconButton variant="outlined" color="primary"
+                onClick={() => this.toggleOperatorModal(true)}
+              >
+                <InsertEmoticon />
+              </IconButton>
+            </Tooltip>
+
+          </Grid>
+          <Grid item xs={1}  align='right'>
+            <Tooltip title="Update owner / operators">
+              <IconButton color="secondary" variant="outlined"
+                onClick={this.updateOperators.bind(this)}
+              >
+                <ImportExport />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        </Grid>
+
+
+
         {this.state.operators.length > 0 ?
           this.state.operators.map((operator, i) => {
-            return(
-              <Grid item container xs={12} key={`operatorOV${i}` } justifyContent="center" alignItems="center" align="center">
+            return (
+              <Grid item container xs={12} key={`operatorOV${i}`} justifyContent="center" alignItems="center" align="center">
                 <Grid item xs={10}>
                   <OperatorForm key={`operatorOV${i}`}
                     operator={operator}
@@ -155,32 +173,21 @@ class OperatorView extends Component {
                   />
 
                 </Grid>
-                <Grid item  xs={2}>
-                    <Tooltip title="Delete Owner / Operator">
-                      <IconButton onClick={() => {this.confirmDeleteOperator(operator)}}>
-                        <DeleteIcon color="error"/>
-                      </IconButton>
-                    </Tooltip>
+                <Grid item xs={2}>
+                  <Tooltip title="Delete Owner / Operator">
+                    <IconButton onClick={() => { this.confirmDeleteOperator(operator) }}>
+                      <DeleteIcon color="error" />
+                    </IconButton>
+                  </Tooltip>
                 </Grid>
               </Grid>
             )
           })
-        :
+          :
           <React.Fragment></React.Fragment>
         }
-        <Grid item xs={12}>
-          <Tooltip title="Update owner / operators">
-            <Button color="secondary" variant="outlined"
-              onClick={this.updateOperators.bind(this)}
-            >
-              <Typography gutterBottom variant="subtitle1">
-                Update Owner / Operators
-              </Typography>
-            </Button>
-          </Tooltip>
-        </Grid>
 
-        <OperatorModal 
+        <OperatorModal
           open={this.state.showOperatorModal}
           actionText="Add"
           cancelText="Cancel"
@@ -197,7 +204,7 @@ class OperatorView extends Component {
           modalText={`Are you sure you want to delete: ${this.state.curDeleteOperatorObj.title}`}
           onAction={this.deleteOperator.bind(this)}
           onClose={() => this.toggleDeleteOperatorModal(false)}
-          
+
         />
       </Grid>
     )

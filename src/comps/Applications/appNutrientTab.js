@@ -17,7 +17,7 @@ import AddFieldCropApplicationModal from "../Modals/addFieldCropApplicationModal
 import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
 import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, } from '../../utils/TSV'
-
+import {groupBySortBy} from "../../utils/format"
 const BASE_URL = "http://localhost:3001"
 const PRECIPITATIONS = [
   "No Precipitation",
@@ -51,25 +51,6 @@ const MATERIAL_TYPES = ['Separator solids', 'Corral solids', "Scraped material",
 
 const NUTRIENT_IMPORT_MATERIAL_TYPES = ['Commercial fertilizer/ Other: Liquid commercial fertilizer', 'Commercial fertilizer/ Other: Solid commercial fertilizer', 'Commercial fertilizer/ Other: Other liquid nutrient source', 'Commercial fertilizer/ Other: Other solid nutrient source', 'Dry manure: Separator solids', 'Dry manure: Corral solids', 'Dry manure: Scraped material', 'Dry manure: Bedding', 'Dry manure: Compost', 'Process wastewater', 'Process wastewater: Process wastewater sludge']
 
-const groupBySortBy = (list, groupBy, sortBy) => {
-  let grouped = {}
-  list.forEach(item => {
-    let key = `${item[groupBy]}`
-    if (grouped[key]) {
-      grouped[key].push(item)
-    } else {
-      grouped[key] = [item]
-    }
-  })
-
-  // Sort each list by sortBy 
-  Object.keys(grouped).forEach(key => {
-    grouped[key].sort((a, b) => {
-      return a[sortBy] > b[sortBy] ? 1 : -1
-    })
-  })
-  return grouped
-}
 
 class NutrientApplicationTab extends Component {
   constructor(props) {
@@ -412,8 +393,6 @@ class NutrientApplicationTab extends Component {
 
                     : this.state.tabs[3] == "show" ?
                       <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab3'>
-
-                        <Typography variant="h2">Fertilizer</Typography>
                         <Fertilizer
                           dairy_id={this.state.dairy.pk}
                           tsvType={TSV_INFO[FERTILIZER].tsvType}

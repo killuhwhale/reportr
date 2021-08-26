@@ -47,7 +47,7 @@ class AddFreshwaterModal extends Component {
             align="center"
             xs={12}
           >
-            <Paper style={{ height: "75vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <Paper style={{ height: "45vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <Grid item container spacing={2} xs={12}>
                 <Grid item xs={12}>
                   <Typography style={{ marginTop: "32px" }}>

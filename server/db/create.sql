@@ -8,13 +8,13 @@ CREATE TABLE IF NOT EXISTS dairies(
   reporting_yr SMALLINT DEFAULT 2021,
   street VARCHAR(100) DEFAULT '',
   cross_street VARCHAR(50) DEFAULT '',
-  county INT DEFAULT 0,
+  county VARCHAR(30),
   city VARCHAR(30) DEFAULT '',
   city_state VARCHAR(3) DEFAULT 'CA',
   city_zip VARCHAR(20) DEFAULT '',
   title VARCHAR(30) NOT NULL,
-  basin_plan INT DEFAULT 0,
-  p_breed INT DEFAULT 0,
+  basin_plan VARCHAR(50),
+  p_breed VARCHAR(50),
   began timestamp DEFAULT NOW(),
   UNIQUE(title, reporting_yr)
 );

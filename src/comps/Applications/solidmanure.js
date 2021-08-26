@@ -7,6 +7,11 @@ import {
 } from '@material-ui/pickers'
 import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
+import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
+import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
+import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
+import { CloudUpload } from '@material-ui/icons' // uploadTSV
+
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
@@ -53,14 +58,14 @@ const SolidmanureAppEvent = (props) => {
               <Grid item xs={6}>
                 <Typography variant="subtitle1">{solidmanure.croptitle}</Typography>
               </Grid>
-              <Grid item xs={6} align="right">
-                <Typography variant="subtitle1">Planted: {solidmanure.plant_date}</Typography>
+              <Grid item xs={6} align="center">
+                <Typography variant="subtitle1">Planted: {solidmanure.plant_date && solidmanure.plant_date.split('T')[0]}</Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="subtitle2">{solidmanure.sample_desc} | {solidmanure.src_desc}</Typography>
               </Grid>
-              <Grid item xs={6} align="right">
-                <Typography variant="subtitle2">Applied: {solidmanure.app_date}</Typography>
+              <Grid item xs={6} align="center">
+                <Typography variant="subtitle2">Applied: {solidmanure.app_date && solidmanure.app_date.split('T')[0]}</Typography>
               </Grid>
               <Grid item container xs={10}>
                 <Grid item xs={3}>
@@ -424,17 +429,50 @@ class Solidmanure extends Component {
   render() {
     return (
       <Grid item xs={12} container >
-        <Grid item xs={12} align="right">
-          <Button color="primary" variant="outlined"
-            onClick={() => this.toggleShowUploadFieldCropAppSolidmanureTSVModal(true)}
-          >
-            Upload TSV
-          </Button>
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleViewTSVsModal(true)}
-          >
-            View Uploaded TSVs
-          </Button>
+        <Grid item container xs={12}>
+          <Grid item xs={9} align="right">
+            <Tooltip title='Upload TSV'>
+              <IconButton color="primary" variant="outlined"
+                onClick={() => this.toggleShowUploadFieldCropAppSolidmanureTSVModal(true)}
+              >
+                <CloudUpload />
+              </IconButton>
+
+            </Tooltip>
+
+          </Grid>
+          <Grid item xs={1} align="right">
+            <Tooltip title='View Uploaded TSVs'>
+              <IconButton color="secondary" variant="outlined"
+                onClick={() => this.toggleViewTSVsModal(true)}
+              >
+                <WbCloudyIcon/>
+              </IconButton>
+
+            </Tooltip>
+
+          </Grid>
+          <Grid item xs={1} align="right">
+            <Tooltip title='Add solidmanure analysis'>
+              <IconButton color="primary" variant="outlined"
+                onClick={() => this.toggleShowAddSolidmanureAnalysisModal(true)}
+              >
+                <ShowChartIcon />
+              </IconButton>
+
+            </Tooltip>
+          </Grid>
+          <Grid item xs={1} align="right">
+            <Tooltip title='Add solidmanure to application event'>
+              <IconButton color="primary" variant="outlined"
+                onClick={() => this.toggleShowAddSolidmanureModal(true)}
+              >
+                <SpeakerNotesIcon />
+              </IconButton>
+
+            </Tooltip>
+          </Grid>
+
         </Grid>
 
         <ViewTSVsModal
@@ -456,20 +494,6 @@ class Solidmanure extends Component {
           onClose={() => this.toggleShowUploadFieldCropAppSolidmanureTSVModal(false)}
         />
 
-        <Grid item xs={12} align="right">
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleShowAddSolidmanureAnalysisModal(true)}
-          >
-            Add solidmanure analysis
-          </Button>
-        </Grid>
-        <Grid item xs={12} align="right">
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleShowAddSolidmanureModal(true)}
-          >
-            Add solidmanure to application event
-          </Button>
-        </Grid>
 
 
         <Grid item xs={12}>

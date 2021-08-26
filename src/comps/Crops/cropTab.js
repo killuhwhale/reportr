@@ -42,39 +42,39 @@ class CropTab extends Component {
     this.getCrops()
     this.getAllFieldCrops()
   }
-  toggleShowAddFieldCropModal(val){
-    this.setState({showAddFieldCropModal: val})
+  toggleShowAddFieldCropModal(val) {
+    this.setState({ showAddFieldCropModal: val })
   }
-  onFieldCropChange(ev){
+  onFieldCropChange(ev) {
     let createObj = this.state.createFieldCropObj
-    if(ev.target){
-      const {name, value} = ev.target
+    if (ev.target) {
+      const { name, value } = ev.target
       createObj[name] = value
-      this.setState({createFieldCropObj: createObj})
-    }else{
+      this.setState({ createFieldCropObj: createObj })
+    } else {
       createObj['plant_date'] = ev
-      this.setState({createFieldCropObj: createObj})
+      this.setState({ createFieldCropObj: createObj })
     }
   }
-  getFields(){
+  getFields() {
     get(`${BASE_URL}/api/fields/${this.state.dairy.pk}`)
-    .then(res => {
-      this.setState({fields: res})
-    })
-    .catch(err => [
-      console.log(err)
-    ])
+      .then(res => {
+        this.setState({ fields: res })
+      })
+      .catch(err => [
+        console.log(err)
+      ])
   }
-  getCrops(){
+  getCrops() {
     get(`${BASE_URL}/api/crops`)
-    .then(res => {
-      this.setState({crops: res})
-    })
-    .catch(err => [
-      console.log(err)
-    ])
+      .then(res => {
+        this.setState({ crops: res })
+      })
+      .catch(err => [
+        console.log(err)
+      ])
   }
-  createFieldCrop(){
+  createFieldCrop() {
     console.log("Create field_crop")
     let createFieldObj = this.state.createFieldCropObj
     let field = this.state.fields[createFieldObj.createFieldIdx]
@@ -88,7 +88,7 @@ class CropTab extends Component {
       acres_planted: createFieldObj.acres_planted,
       typical_yield: crop.typical_yield,
       moisture: crop.moisture,
-      n:crop.n,
+      n: crop.n,
       p: crop.p,
       k: crop.k,
       salt: crop.salt
@@ -96,69 +96,76 @@ class CropTab extends Component {
     console.log(field_crop)
 
     post(`${BASE_URL}/api/field_crop/create`, field_crop)
-    .then(res =>{ 
-      console.log(res)
-      this.toggleShowAddFieldCropModal(false)
-      this.getAllFieldCrops()
-    })
-    .catch(err => {
-      console.log(err)
-    })
+      .then(res => {
+        console.log(res)
+        this.toggleShowAddFieldCropModal(false)
+        this.getAllFieldCrops()
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
-  getAllFieldCrops(){
+  getAllFieldCrops() {
     get(`${BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
-    .then(res => {
-      if(res.test){
-        console.log("Field Crops not found.")
-      }else{
-        this.setState({field_crops: res, convertedFieldCrops: this.convertFieldCrops(res)})
-      }
-    })
+      .then(res => {
+        if (res.test) {
+          console.log("Field Crops not found.")
+        } else {
+          this.setState({ field_crops: res, convertedFieldCrops: this.convertFieldCrops(res) })
+        }
+      })
   }
 
 
   // converts to  GROUPY by Field view of crops
-  convertFieldCrops(field_crops){
+  convertFieldCrops(field_crops) {
     let obj = {}
     field_crops.forEach(field_crop => {
-      let l = obj[field_crop.field_id]? obj[field_crop.field_id]: []
+      let l = obj[field_crop.field_id] ? obj[field_crop.field_id] : []
       l.push(field_crop)
       obj[field_crop.field_id] = l
     })
     return obj
   }
 
-  deleteFieldCrop(delFieldCropObj){
+  deleteFieldCrop(delFieldCropObj) {
     console.log("Deleting field crop ", delFieldCropObj)
-    post(`${BASE_URL}/api/field_crop/delete`, {pk: delFieldCropObj.pk})
-    .then(res => {
-      console.log(res)
-      this.getAllFieldCrops()
-    })
+    post(`${BASE_URL}/api/field_crop/delete`, { pk: delFieldCropObj.pk })
+      .then(res => {
+        console.log(res)
+        this.getAllFieldCrops()
+      })
   }
 
   render() {
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
-        <Grid item container xs={12}>
+          <Grid item container xs={12}>
             {this.state.field_crops.length > 0 ?
-              <CropView 
-                dairy={this.state.dairy}  
+              <CropView
+                dairy={this.state.dairy}
                 field_crops={this.state.field_crops}
                 convertedFieldCrops={this.state.convertedFieldCrops}
                 onDeleteFieldCrop={this.deleteFieldCrop.bind(this)}
                 addNewCrop={this.toggleShowAddFieldCropModal.bind(this)}
               />
-            :
-              <React.Fragment>
-                <Button onClick={() => this.toggleShowAddFieldCropModal(true)}>
-                  Add new planted crop
-                </Button>
-              </React.Fragment>
-             }
-        </Grid>
+              :
+              <Grid item container xs={12}>
+                <Grid item container xs={12}>
+                  <Typography variant='h3'>
+                    No crops planted
+                  </Typography>
+                </Grid>
+                <Grid item container xs={12}>
+                  <Button onClick={() => this.toggleShowAddFieldCropModal(true)} variant='outlined' color='primary'>
+                    Add new planted crop
+                  </Button>
+                </Grid>
+              </Grid>
+            }
+          </Grid>
           :
           <React.Fragment>Loading....</React.Fragment>
         }

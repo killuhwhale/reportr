@@ -7,6 +7,11 @@ import {
 } from '@material-ui/pickers'
 import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
+import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
+import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
+import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
+import { CloudUpload } from '@material-ui/icons' // uploadTSV
+
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
@@ -54,10 +59,10 @@ const FertilizerAppEvent = (props) => {
                 <Typography variant="subtitle1">{fertilizer.croptitle}</Typography>
               </Grid>
               <Grid item xs={6} align="right">
-                <Typography variant="subtitle1">Planted: {fertilizer.plant_date}</Typography>
+                <Typography variant="subtitle1">Planted: {fertilizer.plant_date && fertilizer.plant_date.split('T')[0]}</Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="subtitle2"> Applied:{fertilizer.app_date} | {fertilizer.import_desc}</Typography>
+                <Typography variant="subtitle2"> Applied:{fertilizer.app_date && fertilizer.app_date.split('T')[0]} | {fertilizer.import_desc}</Typography>
               </Grid>
 
               <Grid item container xs={10}>
@@ -122,7 +127,7 @@ const NutrientImport = (props) => {
     <Grid item container xs={6} alignItems='center'>
       <Grid item container xs={10} >
         <Grid item xs={12}>
-          <Typography>{props.nutrientImport.import_date} / {props.nutrientImport.import_desc}</Typography>
+          <Typography>{props.nutrientImport.import_desc} | {props.nutrientImport.import_date && props.nutrientImport.import_date.split('T')[0]}</Typography>
         </Grid>
         <Grid item container xs={12}>
           <Grid item xs={6}>
@@ -451,17 +456,47 @@ class Fertilizer extends Component {
 
     return (
       <Grid item xs={12} container >
-        <Grid item xs={12} align="right">
-          <Button color="primary" variant="outlined"
-            onClick={() => this.toggleShowUploadFieldCropAppFertilizerTSVModal(true)}
-          >
-            Upload TSV
-          </Button>
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleViewTSVsModal(true)}
-          >
-            View Uploaded TSVs
-          </Button>
+        <Grid item xs={12} container >
+
+          <Grid item xs={9} align="right">
+            <Tooltip title='Upload TSV'>
+              <IconButton color="primary" variant="outlined"
+                onClick={() => this.toggleShowUploadFieldCropAppFertilizerTSVModal(true)}
+              >
+                <CloudUpload />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+
+          <Grid item xs={1} align="right">
+            <Tooltip title='View Uploaded TSVs'>
+              <IconButton color="secondary" variant="outlined"
+                onClick={() => this.toggleViewTSVsModal(true)}
+              >
+                <WbCloudyIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+
+          <Grid item xs={1} align="right">
+            <Tooltip title='Add nutrient import'>
+              <IconButton color="secondary" variant="outlined"
+                onClick={() => this.toggleShowAddNutrientImportModal(true)}
+              >
+                <ShowChartIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+
+          <Grid item xs={1} align="right">
+            <Tooltip title='Add fertilizer to application event'>
+              <IconButton color="secondary" variant="outlined"
+                onClick={() => this.toggleShowAddFertilizerModal(true)}
+              >
+                <SpeakerNotesIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
         </Grid>
 
         <ViewTSVsModal
@@ -482,23 +517,6 @@ class Fertilizer extends Component {
           onChange={this.onUploadFieldCropAppFreshwateTSVModalChange.bind(this)}
           onClose={() => this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)}
         />
-
-        <Grid item xs={12} align="right">
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleShowAddNutrientImportModal(true)}
-          >
-            Add nutrient import
-          </Button>
-        </Grid>
-        <Grid item xs={12} align="right">
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleShowAddFertilizerModal(true)}
-          >
-            Add fertilizer to application event
-          </Button>
-        </Grid>
-
-
         <Grid item xs={12}>
           {this.state.nutrientImports.length > 0 ?
             <React.Fragment>
@@ -523,9 +541,9 @@ class Fertilizer extends Component {
 
         </Grid>
 
-        <Grid item xs={12} style={{ marginTop: "32px" }}>
 
-          {this.getSortedKeys().length > 0 ?
+        {this.getSortedKeys().length > 0 ?
+          <Grid item xs={12} style={{ marginTop: "32px" }}>
             <List
               height={Math.max(this.state.windowHeight - this.getStartPos(), 100)}
               itemCount={this.getSortedKeys().length}
@@ -534,10 +552,10 @@ class Fertilizer extends Component {
             >
               {this.renderItem.bind(this)}
             </List>
-            :
-            <React.Fragment></React.Fragment>
-          }
-        </Grid>
+          </Grid>
+          :
+          <React.Fragment></React.Fragment>
+        }
 
 
         <ActionCancelModal
@@ -545,20 +563,18 @@ class Fertilizer extends Component {
           actionText="Delete"
           cancelText="Cancel"
           modalText={`Delete Nutrient Import for ${this.state.deleteNutrientImportObj.import_date} - ${this.state.deleteNutrientImportObj.import_desc}?`}
-
           onAction={this.onNutrientImportDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteNutrientImportModal(false)}
         />
+
         <ActionCancelModal
           open={this.state.showConfirmDeleteFertilizerModal}
           actionText="Delete"
           cancelText="Cancel"
           modalText={`Delete Fertilizer for ${this.state.deleteFertilizerObj.app_date}?`}
-
           onAction={this.onFertilizerDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteFertilizerModal(false)}
         />
-
 
         <AddNutrientImportModal
           open={this.state.showAddNutrientImportModal}
@@ -573,9 +589,6 @@ class Fertilizer extends Component {
           onClose={() => this.toggleShowAddNutrientImportModal(false)}
         />
 
-
-
-
         <AddFertilizerModal
           open={this.state.showAddFertilizerModal}
           actionText="Add"
@@ -589,9 +602,6 @@ class Fertilizer extends Component {
           onChange={this.onCreateFertilizerChange.bind(this)}
           onClose={() => this.toggleShowAddFertilizerModal(false)}
         />
-
-
-
       </Grid>
     )
   }

@@ -7,6 +7,12 @@ import {
 } from '@material-ui/pickers'
 import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
+import SpaIcon from '@material-ui/icons/Spa' //source
+import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
+import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
+import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
+import { CloudUpload } from '@material-ui/icons' // uploadTSV
+
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
@@ -52,13 +58,13 @@ const FreshwaterAppEvent = (props) => {
                 <Typography variant="subtitle1">{freshwater.croptitle}</Typography>
               </Grid>
               <Grid item xs={6} align="right">
-                <Typography variant="subtitle1">Planted: {freshwater.plant_date}</Typography>
+                <Typography variant="subtitle1">Planted: {freshwater.plant_date && freshwater.plant_date.split('T')[0]}</Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="subtitle2">{freshwater.src_desc} | {freshwater.src_type}</Typography>
               </Grid>
               <Grid item xs={6} align="right">
-                <Typography variant="subtitle2">Applied: {freshwater.app_date}</Typography>
+                <Typography variant="subtitle2">Applied: {freshwater.app_date && freshwater.app_date.split('T')[0]}</Typography>
               </Grid>
               <Grid item container xs={10}>
                 <Grid item xs={3}>
@@ -418,6 +424,7 @@ class Freshwater extends Component {
             console.log("Completed uploading Freshwater TSV")
             // uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
             this.toggleShowUploadFieldCropAppFreshwateTSVModal(false)
+            uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
             this.props.getFieldCropAppFreshwater()
           })
           .catch(err => {
@@ -483,17 +490,61 @@ class Freshwater extends Component {
 
     return (
       <Grid item xs={12} container >
-        <Grid item xs={12} align="right">
-          <Button color="primary" variant="outlined"
-            onClick={() => this.toggleShowUploadFieldCropAppFreshwateTSVModal(true)}
-          >
-            Upload TSV
-          </Button>
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleViewTSVsModal(true)}
-          >
-            View Uploaded TSVs
-          </Button>
+        <Grid item container xs={12}>
+          <Grid item xs={8} align="right">
+            <Tooltip title='Upload TSV'>
+              <IconButton color="primary" variant="outlined"
+                onClick={() => this.toggleShowUploadFieldCropAppFreshwateTSVModal(true)}
+              >
+                <CloudUpload />
+              </IconButton>
+
+            </Tooltip>
+          </Grid>
+
+          <Grid item xs={1} align="right">
+            <Tooltip title='View Uploaded TSVs'>
+              <IconButton color="secondary" variant="outlined"
+                onClick={() => this.toggleViewTSVsModal(true)}
+              >
+                <WbCloudyIcon />
+              </IconButton>
+
+            </Tooltip>
+          </Grid>
+
+          <Grid item xs={1} align="right">
+            <Tooltip title='Add freshwater source'>
+              <IconButton color="primary" variant="outlined"
+                onClick={() => this.toggleShowAddFreshwaterSourceModal(true)}
+              >
+                <SpaIcon />
+              </IconButton>
+
+            </Tooltip>
+          </Grid>
+
+          <Grid item xs={1} align="right">
+            <Tooltip title='Add freshwater analysis'>
+              <IconButton color="primary" variant="outlined"
+                onClick={() => this.toggleShowAddFreshwaterAnalysisModal(true)}
+              >
+                <ShowChartIcon />
+              </IconButton>
+
+            </Tooltip>
+          </Grid>
+
+          <Grid item xs={1} align="right">
+            <Tooltip title='Add freshwater to application event'>
+              <IconButton color="primary" variant="outlined"
+                onClick={() => this.toggleShowAddFreshwaterModal(true)}
+              >
+                <SpeakerNotesIcon />
+              </IconButton>
+
+            </Tooltip>
+          </Grid>
         </Grid>
 
         <ViewTSVsModal
@@ -516,27 +567,9 @@ class Freshwater extends Component {
         />
 
 
-        <Grid item xs={12} align="right">
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleShowAddFreshwaterSourceModal(true)}
-          >
-            Add freshwater source
-          </Button>
-        </Grid>
-        <Grid item xs={12} align="right">
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleShowAddFreshwaterAnalysisModal(true)}
-          >
-            Add freshwater analysis
-          </Button>
-        </Grid>
-        <Grid item xs={12} align="right">
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleShowAddFreshwaterModal(true)}
-          >
-            Add freshwater to application event
-          </Button>
-        </Grid>
+
+
+
 
 
         <Grid item xs={12}>

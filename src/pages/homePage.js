@@ -32,6 +32,7 @@ class HomePage extends Component {
       showAddDairyModal: false,
       createDairyTitle: "",
       dairy: 0, // current dairy being edited
+      updateDairyObj: {},
       tabs: {
         0: "show",
         1: "hide",
@@ -69,7 +70,8 @@ class HomePage extends Component {
     }
     this.setState({ [name]: value })
   }
-  onDairyChange(name, value) {
+  onDairyChange(ev) {
+    const { name, value } = ev.target
     let _dairies = this.state.dairies  // listput updated
     let _dairy = this.state.dairy      // index
     let updateDairy = _dairies[_dairy] // copy object
@@ -78,11 +80,29 @@ class HomePage extends Component {
     _dairies[_dairy] = updateDairy      // store updated object
     this.setState({ dairies: _dairies })
   }
+
+
   updateDairy() {
     let url = `${BASE_URL}/api/dairies/update`
     let dairy = this.state.dairies[this.state.dairy]
     const { street, cross_street, county, city, city_state, title, city_zip, basin_plan, p_breed, began } = dairy
-    let data = { data: [street, cross_street, county, city, city_state, city_zip, title, basin_plan, p_breed, began, dairy.pk] }
+
+
+
+
+    let data = {
+      street,
+      cross_street,
+      county,
+      city,
+      city_state,
+      city_zip,
+      title,
+      basin_plan,
+      p_breed,
+      began,
+      dairy_id: dairy.pk
+    }
 
     post(url, data)
       .then(res => {
@@ -96,14 +116,11 @@ class HomePage extends Component {
     this.setState({ showAddDairyModal: show })
   }
   createDairy() {
-    this.toggleDairyModal(false)
-    console.log("Create a dairy with this title and year")
-    console.log(this.state.reportingYr, this.state.createDairyTitle)
-    let url = "/api/dairies/create"
     let data = { reportingYr: this.state.reportingYr, title: this.state.createDairyTitle }
-    post(`${BASE_URL}${url}`, data)
+    post(`${BASE_URL}/api/dairies/create`, data)
       .then(res => {
-        console.log(res)
+        this.getDairiesForReportingYear(this.state.reportingYr)
+        this.toggleDairyModal(false)
       })
       .catch(err => {
         console.log(err)
@@ -197,9 +214,9 @@ class HomePage extends Component {
                       <DairyTab
                         reportingYr={this.state.reportingYr}
                         dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
-                        basins={BASINS}
-                        counties={COUNTIES}
-                        breeds={BREEDS}
+                        BASINS={BASINS}
+                        COUNTIES={COUNTIES}
+                        BREEDS={BREEDS}
                         onChange={this.onDairyChange.bind(this)}
                         onUpdate={this.updateDairy.bind(this)}
                       />
@@ -247,7 +264,7 @@ class HomePage extends Component {
 
           </Grid>
         </Grid>
-        <hr />
+       
 
         <AddDairyModal
           open={this.state.showAddDairyModal}

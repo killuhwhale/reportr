@@ -14,7 +14,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { VariableSizeList as List } from "react-window";
 
 import { get, post } from '../../utils/requests';
-import { PollTwoTone } from '@material-ui/icons';
+import { PollTwoTone, SpeakerGroup } from '@material-ui/icons';
 
 
 const BASE_URL = "http://localhost:3001"
@@ -255,12 +255,11 @@ class CropView extends Component {
       <Grid item xs={12}>
         {Object.keys(this.props.dairy).length > 0 ?
           <Grid item container xs={12}>
-            <Grid item xs={12}>
-              <Typography variant="h2" style={{ marginBottom: "32px" }}>Crops Planted</Typography>
+            <Grid item xs={12} align='right'>
               <Tooltip title="Add new Crop">
                 <IconButton variant="outlined" color="primary"
                   onClick={() => this.props.addNewCrop(true)}>
-                  <AddIcon />
+                  <SpeakerGroup />
                 </IconButton>
               </Tooltip>
             </Grid>

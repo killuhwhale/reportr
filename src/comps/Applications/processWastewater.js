@@ -7,6 +7,10 @@ import {
 } from '@material-ui/pickers'
 import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
+import { CloudUpload } from '@material-ui/icons'
+import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
+import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
+
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
@@ -383,32 +387,33 @@ class ProcessWastewater extends Component {
   render() {
     return (
       <Grid item xs={12} container >
-        <Grid item xs={12} align="right">
-          <Button color="primary" variant="outlined"
-            onClick={() => this.toggleShowUploadFieldCropAppProcessWastewateTSVModal(true)}
-          >
-            Upload TSV
-          </Button>
-          <Button color="secondary" variant="outlined"
-            onClick={() => this.toggleViewTSVsModal(true)}
-          >
-            View Uploaded TSVs
-          </Button>
+        <Grid item xs={10} align="right">
+         <Tooltip title='Upload TSV'>
+            <IconButton color="primary" variant="outlined"
+              onClick={() => this.toggleShowUploadFieldCropAppProcessWastewateTSVModal(true)}
+            >
+              <CloudUpload />
+            </IconButton>
+         </Tooltip>
         </Grid>
-
-
-        {this.state.fieldCropAppEvents.length > 0 ? // Render Add Process Wastewater
-          <Grid item xs={12} align="right">
-            <Button color="secondary" variant="outlined"
+        <Grid item xs={1} align="right">
+         <Tooltip title='View Uploaded TSVs'>
+            <IconButton color="secondary" variant="outlined"
+              onClick={() => this.toggleViewTSVsModal(true)}
+            >
+              <WbCloudyIcon />
+            </IconButton>
+         </Tooltip>
+        </Grid>
+        <Grid item xs={1} align='right'>
+          <Tooltip title='Add process wastewater to application event'>
+            <IconButton color="primary" variant="outlined"
               onClick={() => this.toggleShowAddProcessWastewaterModal(true)}
             >
-              Add process wastewater to application event
-            </Button>
-          </Grid>
-
-          :
-          <React.Fragment></React.Fragment>
-        }
+              <SpeakerNotesIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid>
 
         {this.getSortedKeys().length > 0 ?
           <List
@@ -423,41 +428,30 @@ class ProcessWastewater extends Component {
           <React.Fragment></React.Fragment>
         }
 
-        
+        <ActionCancelModal
+          open={this.state.showConfirmDeleteProcessWastewaterModal}
+          actionText="Delete"
+          cancelText="Cancel"
+          modalText={`Delete Process Wastewater for ${this.state.deleteProcessWastewaterObj.fieldtitle} - ${this.state.deleteProcessWastewaterObj.app_date}?`}
 
+          onAction={this.onProcessWastewaterDelete.bind(this)}
+          onClose={() => this.toggleShowConfirmDeleteProcessWastewaterModal(false)}
+        />
+        <AddProcessWastewaterModal
+          open={this.state.showAddProcessWastewaterModal}
+          actionText="Add"
+          cancelText="Cancel"
+          modalText={`Add process waste water application to applciation event`}
+          fieldCropAppEvents={this.state.fieldCropAppEvents}
 
+          createProcessWastewaterObj={this.state.createProcessWastewaterObj}
+          materialTypes={MATERIAL_TYPES}
 
-
-
-        {this.state.fieldCropAppEvents.length > 0 ?
-          <React.Fragment>
-            <ActionCancelModal
-              open={this.state.showConfirmDeleteProcessWastewaterModal}
-              actionText="Delete"
-              cancelText="Cancel"
-              modalText={`Delete Process Wastewater for ${this.state.deleteProcessWastewaterObj.fieldtitle} - ${this.state.deleteProcessWastewaterObj.app_date}?`}
-
-              onAction={this.onProcessWastewaterDelete.bind(this)}
-              onClose={() => this.toggleShowConfirmDeleteProcessWastewaterModal(false)}
-            />
-            <AddProcessWastewaterModal
-              open={this.state.showAddProcessWastewaterModal}
-              actionText="Add"
-              cancelText="Cancel"
-              modalText={`Add process waste water application to applciation event`}
-              fieldCropAppEvents={this.state.fieldCropAppEvents}
-
-              createProcessWastewaterObj={this.state.createProcessWastewaterObj}
-              materialTypes={MATERIAL_TYPES}
-
-              onAction={this.createProcessWastewater.bind(this)}
-              onChange={this.onCreateProcessWastewaterChange.bind(this)}
-              onClose={() => this.toggleShowAddProcessWastewaterModal(false)}
-            />
-          </React.Fragment>
-          :
-          <React.Fragment></React.Fragment>
-        }
+          onAction={this.createProcessWastewater.bind(this)}
+          onChange={this.onCreateProcessWastewaterChange.bind(this)}
+          onClose={() => this.toggleShowAddProcessWastewaterModal(false)}
+        />
+      
         <ViewTSVsModal
           open={this.state.showViewTSVsModal}
           actionText={"" /* no action text*/}

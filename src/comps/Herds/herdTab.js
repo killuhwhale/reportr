@@ -49,7 +49,8 @@ class HerdTab extends Component {
   getHerds() {
     get(`${BASE_URL}/api/herds/${this.state.dairy.pk}`)
       .then(res => {
-        if (res.test) {
+        console.log(res)
+        if (res.test || res.length === 0) {
           return;
         }
         this.setState({ herds: res[0], initHerdLoad: true })
@@ -84,7 +85,7 @@ class HerdTab extends Component {
             herds={this.state.herds}
           />
           :
-          <React.Fragment>Loading....</React.Fragment>
+          <React.Fragment>Loading herds....</React.Fragment>
         }
       </React.Fragment>
 

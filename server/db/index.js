@@ -1437,8 +1437,9 @@ module.exports = {
         ed.city_state as dest_city_state,
         ed.city_zip as dest_city_zip,
 
+        er.pk as recipient_id,
         er.dest_type,
-        er.title as recipient_,
+        er.title as recipient_title,
         er.primary_phone as recipient_primary_phone,
         er.street as recipient_street,
         er.cross_street as recipient_cross_street,

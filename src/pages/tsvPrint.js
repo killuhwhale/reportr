@@ -112,7 +112,7 @@ class TSVPrint extends Component {
 
   render() {
     return (
-      <Grid container alignItems="center" alignContent="center" align="center" item xs={12} style={{ paddingTop: "16px", maxWidth: "100%" }} >
+      <Grid container alignItems="center" alignContent="center" align="center" item xs={12} style={{backgroundColor: 'white' ,paddingTop: "16px", maxWidth: "100%" }} >
         
         {
           this.state.aboveHeader.length > 0 &&

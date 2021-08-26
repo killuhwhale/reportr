@@ -266,7 +266,7 @@ class AddProcessWastewaterModal extends Component {
                     </Button>
                   </Grid>
                   <Grid item xs={6}>
-                    <Button
+                    <Button disabled={this.props.fieldCropAppEvents.length === 0}
                       color="primary"
                       variant="outlined"
                       onClick={() => { this.props.onAction() }}>

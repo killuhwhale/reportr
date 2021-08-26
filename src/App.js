@@ -22,9 +22,9 @@ const BackgroundGrid = withStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.paper,
     position: "absolute",
-    // minHeight: "100vh",
-    // maxHeight: "100vh",
-    // overflowY: "auto"
+    minHeight: "100vh",
+    maxHeight: "100vh",
+    overflowY: "auto"
   }
 }))(Grid)
 

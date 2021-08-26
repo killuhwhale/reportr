@@ -92,7 +92,7 @@ class AddFreshwaterAnalysisModal extends Component {
                   <DatePicker
                     value={this.state.createFreshwaterAnalysisObj.sample_date}
                     label="Sample Date"
-                    onChange={this.props.onChange.bind(this)}
+                    onChange={(_date) => this.props.onChange({target: {name: 'sample_date', value: _date}})}
                     style={{ width: "100%", justifyContent: "flex-end" }}
                   />
 
@@ -251,7 +251,7 @@ class AddFreshwaterAnalysisModal extends Component {
                     </Button>
                   </Grid>
                   <Grid item xs={6}>
-                    <Button
+                    <Button disabled={this.props.fieldCropAppFreshwaterSources.length === 0}
                       color="primary"
                       variant="outlined"
                       onClick={() => { this.props.onAction() }}>
