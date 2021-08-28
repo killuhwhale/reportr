@@ -316,7 +316,7 @@ class NutrientApplicationTab extends Component {
 
             <Grid item xs={5} align="center" >
 
-              <Button variant="outlined" color="primary" fullWidth
+              <Button variant="outlined" color="primary" fullwidth
                 onClick={() => this.toggleShowAddFieldCropAppModal(true)}>
                 Create New Application Event
               </Button>

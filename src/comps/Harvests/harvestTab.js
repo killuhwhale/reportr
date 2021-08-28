@@ -271,12 +271,7 @@ class HarvestTab extends Component {
       .catch(createFieldErr => {
         console.log(createFieldErr)
       })
-
-
-
   }
-
-
 
   toggleShowTSVsModal(val) {
     this.setState({ showViewTSVsModal: val })
@@ -287,7 +282,7 @@ class HarvestTab extends Component {
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
           <Grid item container xs={12}>
-            {/* <Button variant="outlined" fullWidth color="secondary"
+            {/* <Button variant="outlined" fullwidth color="secondary"
                 onClick={this.updateFieldCropHarvest.bind(this)}>
                 Update Harvests
               </Button> */}

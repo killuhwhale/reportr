@@ -217,7 +217,7 @@ class ParcelView extends Component {
           </Grid>
           <Grid item xs={12} style={{marginTop: "16px"}}>
             <Tooltip title="Update Parcels">
-              <Button onClick={this.updateParcelNumbers.bind(this)} fullWidth variant="outlined" color="secondary">
+              <Button onClick={this.updateParcelNumbers.bind(this)} fullwidth variant="outlined" color="secondary">
                 <Typography variant="caption">Update Parcels</Typography>
               </Button>
             </Tooltip>
@@ -253,7 +253,7 @@ class ParcelView extends Component {
           }
           <Grid item xs={12} style={{marginTop: "16px"}}>
             <Tooltip title="Update Fields">
-              <Button onClick={this.updateFields.bind(this)} fullWidth variant="outlined" color="secondary">
+              <Button onClick={this.updateFields.bind(this)} fullwidth variant="outlined" color="secondary">
                 <Typography variant="caption">Update Fields</Typography>
               </Button>
             </Tooltip>
@@ -275,7 +275,7 @@ class ParcelView extends Component {
           <Tooltip title="Join Field & Parcel">
             <Button
               onClick={() => this.toggleShowJoinFieldParcelModal(true)}
-              variant="outlined" color="primary" fullWidth
+              variant="outlined" color="primary" fullwidth
             >
               <Typography variant="subtitle1">
                 Join New Field & Parcel

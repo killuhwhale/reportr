@@ -189,7 +189,7 @@ class AddExportManifestModal extends Component {
                 <Grid item xs={4}>
                   <DatePicker label="Date last hauled"
                     value={this.state.createExportManifestObj.last_date_hauled}
-                    fullWidth
+                    fullwidth
                     onChange={(date) => this.props.onChange({target: {name: 'last_date_hauled', value: date}})}
                   />
                 </Grid>

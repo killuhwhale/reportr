@@ -14,7 +14,7 @@ import NutrientApplicationTab from "../comps/Applications/appNutrientTab"
 import ExportTab from "../comps/Exports/exportTab"
 
 import { get, post, uploadFiles } from "../utils/requests"
-
+import { getAnnualReportData } from "../comps/Dairy/pdfDB"
 import "../App.css"
 
 const BASE_URL = "http://localhost:3001"
@@ -33,6 +33,7 @@ class HomePage extends Component {
       createDairyTitle: "",
       dairy: 0, // current dairy being edited
       updateDairyObj: {},
+      arPDFData: {},
       tabs: {
         0: "show",
         1: "hide",
@@ -53,24 +54,30 @@ class HomePage extends Component {
   }
   getDairiesForReportingYear(year) {
     let url = `/api/dairies/${year}`
-
+    // Get dairy data and then gather annualReportData after setting state.
     get(`${BASE_URL}${url}`)
       .then(res => {
 
-        this.setState({ dairies: res })
+        this.setState({ dairies: res }, () => this.gatherAnnualReportData())
       })
 
   }
   onChange(ev) {
     const { name, value } = ev.target
     // when select name changes query new data and update state
-    if (name == "reportingYr") {
+    if (name === "reportingYr") {
       // query api for all dairies with this year
       this.getDairiesForReportingYear(value)
+      return
+    }else if(name === 'dairy' ){
+      this.setState({ [name]: value }, () => this.gatherAnnualReportData())
+      return
     }
     this.setState({ [name]: value })
   }
+
   onDairyChange(ev) {
+    // Dairy info address info change
     const { name, value } = ev.target
     let _dairies = this.state.dairies  // listput updated
     let _dairy = this.state.dairy      // index
@@ -81,6 +88,40 @@ class HomePage extends Component {
     this.setState({ dairies: _dairies })
   }
 
+  gatherAnnualReportData(){
+    // once user picks annual report data start fetching it and builds all data for reports and store in state.
+    // Done separating in background should be okay and in home page so it doesnt keep reloading.
+    /**
+     * the PDF document takes two args props and images, both are objects with the keys that represent the section of the report the data is for
+     * 
+     * props = {
+     *  'dairyInfoA' : {
+     *            .... info like address......
+     *   },
+     *  'dairyInfoB': {
+     *  },
+     *  ....,
+     *  
+     * }
+     * 
+     * 
+     * 
+     * images = {
+     *  'nutrientHoriBar#X': 
+     * }
+     * 
+     */
+    // Call getAnnualReport if dairies
+    if(this.state.dairies && this.state.dairies[this.state.dairy]){
+    getAnnualReportData(this.state.dairies[this.state.dairy].pk)
+      .then(props => {
+        this.setState({
+          arPDFData: props
+        })
+      })
+    }
+
+  }
 
   updateDairy() {
     let url = `${BASE_URL}/api/dairies/update`
@@ -174,7 +215,7 @@ class HomePage extends Component {
 
 
           <Tooltip title="Add Dairy">
-            <Button color="primary" fullWidth variant="outlined" style={{ marginTop: "16px" }}
+            <Button color="primary" fullwidth variant="outlined" style={{ marginTop: "16px" }}
               onClick={() => this.toggleDairyModal(true)} >
 
               <Grid item container xs={12} >
@@ -217,6 +258,7 @@ class HomePage extends Component {
                         BASINS={BASINS}
                         COUNTIES={COUNTIES}
                         BREEDS={BREEDS}
+                        arPDFData={this.state.arPDFData}
                         onChange={this.onDairyChange.bind(this)}
                         onUpdate={this.updateDairy.bind(this)}
                       />

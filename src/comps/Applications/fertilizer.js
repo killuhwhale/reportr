@@ -70,14 +70,14 @@ const FertilizerAppEvent = (props) => {
                   <TextField disabled
                     label="Amount applied tons"
                     value={fertilizer.amount_applied}
-                    fullWidth
+                    fullwidth
                   />
                 </Grid>
                 <Grid item xs={2}>
                   <TextField disabled
                     label="Moisture"
                     value={fertilizer.moisture}
-                    fullWidth
+                    fullwidth
                   />
                 </Grid>
                 <Grid item xs={2}>
@@ -90,7 +90,7 @@ const FertilizerAppEvent = (props) => {
                   <TextField disabled
                     label="Phosphorus lbs / acre"
                     value={fertilizer.p_lbs_acre}
-                    fullWidth
+                    fullwidth
                   />
                 </Grid>
                 <Grid item xs={2}>

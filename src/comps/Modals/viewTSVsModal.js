@@ -176,7 +176,7 @@ class ViewTSVsModal extends Component {
 
                 </Grid>
                 <Grid item xs={12}>
-                  <Button fullWidth
+                  <Button fullwidth
                     variant="outlined"
                     onClick={() => { this.props.onClose() }}>
                     {this.props.cancelText}

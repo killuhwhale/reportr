@@ -141,7 +141,7 @@ const nameTelephoneLine = (props) => {
           },
           {
             border: [false, false, false, true],
-            text: 'Nylun, Rodney V', fontSize: 9
+            text: props.title, fontSize: 9
           },
           {
             border: [false, false, false, false],
@@ -149,7 +149,7 @@ const nameTelephoneLine = (props) => {
           },
           {
             border: [false, false, false, true],
-            text: '(209)634-7520', fontSize: 9
+            text: props.primary_phone, fontSize: 9
           },
         ]
       ]
@@ -178,30 +178,30 @@ const ownOperatorTable = (key, props) => {
         [
           {
             fillColor: gray,
-            text: `${key}Nylund, Rodney Vz`,
+            text: props.title,
             fontSize: 9
           }
         ],
         [{
           border: [true, false, true, false],
           stack: [
-            nameTelephoneLine({})
+            nameTelephoneLine(props)
           ]
         }],
         [
           {
             border: [true, false, true, false],
             stack: [longAddressLine({
-              street: "20723 Geer RD",
-              city: "Hilmar",
-              county: "Merced",
-              zipCode: "95324",
+              street: props.street,
+              city: props.city,
+              county: props.county,
+              zipCode: props.city_zip,
             })]
           }
         ],
         [{
           border: [true, false, true, true],
-          text: 'This operator is responsible',
+          text: `This operator is ${props.is_responsible? '': 'not'} responsible`,
           fontSize: 9
 
         }],
@@ -217,6 +217,96 @@ const ownOperatorTable = (key, props) => {
   }
 }
 const dairyInformationA = (props) => {
+  let tmpRow = []
+  let parcelTableBody = []
+  // if there are less that 6 parcels process differently.)(single row)
+  if(props.parcels.length > 6){
+    props.parcels.forEach((parcel, i) => {
+      let c = i % 6
+      let r = parseInt(i / 6)
+      console.log(r, c, parcel.pnumber)
+      
+      if(i != 0 && c === 0){
+        parcelTableBody.push(tmpRow)
+        console.log("Pushing 1", tmpRow)
+        tmpRow = []
+      }
+      let border = null
+      if(r===0 && c===0){
+        border = [true, true, false, false] // top left corner 
+      }else if(r===0 && c > 0 && c < 6 - 1){
+        border = [false, true, false, false] // top middle
+      }else if(r===0 && c === 6-1){
+        border = [false, true, true, false] // top right corner 
+      }else if(c===0){
+        border = [true, false, false, false] // left middle  
+      }else if(c === 6-1){
+        border = [false, false, true, false] // right middle 
+      }else{
+        border = [false, false, false, false] //  middle 
+      }
+      
+      tmpRow.push({
+        border: border,
+        text: parcel.pnumber, fontSize: 8
+      })
+
+      if(i === props.parcels.length - 1){
+        console.log("Pushing last el row", tmpRow)
+        parcelTableBody.push(tmpRow)
+      }
+    })
+    let lastRow = parcelTableBody[parcelTableBody.length - 1]
+    let numEmptyCells = 6 - lastRow.length
+    for(let i =0; i < numEmptyCells; i ++){
+      lastRow.push({
+        border: [],
+        text: '', fontSize: 8
+      })
+    }
+  
+    lastRow = lastRow.map((el, i) => {
+      let border = [false, false, false, false]
+      if(i==0){
+        border = [true, false, false, true] // bottom left
+      }else if(i == 5){
+        border = [false, false, true, true] // bottom right
+      }else{
+        border = [false, false, false, true] // bottom middle
+      }
+      el.border = border
+      return el
+    })
+    // replace last row with updated row
+    parcelTableBody[parcelTableBody.length - 1] = lastRow
+  }else{
+    parcelTableBody = [props.parcels.map((parcel, i) => {
+     
+      let border = null
+      if(i === 0){
+        border = [true, true, false, true] // left 
+      }else if(i > 0 && i < 6-1){
+        border = [false, true, false, true] // middle
+      }else if(i === 6-1){
+        border = [false, true, true, true] // right 
+      }
+      return {
+        border: border,
+        text: parcel.pnumber, fontSize: 8
+      }
+    })]
+    // Fill potentail empty cells in row
+    let numEmpty = 6 - props.parcels.length
+    for(let i=0; i < numEmpty; i ++){
+      parcelTableBody[0].push({
+        border: [false, true, false, true],
+        text: '', fontSize: 8
+      })
+    }
+    parcelTableBody[0][0].border = [true, true, false, true]
+    parcelTableBody[0][6-1].border = [false, true, true, true] 
+  }
+
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [{
@@ -251,7 +341,7 @@ const dairyInformationA = (props) => {
               {
                 border: [false, false, false, true],
                 text: {
-                  text: 'Nylund Dairy Farms', fontSize: 9, lineHeight: 0.1
+                  text: props.title, fontSize: 9, lineHeight: 0.1
                 }
               }]
             ]
@@ -274,16 +364,14 @@ const dairyInformationA = (props) => {
                 border: [false],
                 stack: [
                   longAddressLine({
-                    street: "20723 Geer RD",
-                    city: "Hilmar",
-                    county: "Merced",
-                    zipCode: "95324",
+                    street: props.street,
+                    city: props.city,
+                    county: props.county,
+                    zipCode: props.city_zip,
                   })
                 ]
-
               }
               ]
-
             ]
           }
         },
@@ -304,7 +392,7 @@ const dairyInformationA = (props) => {
               {
                 border: [false, false, false, true],
                 text: {
-                  text: '', fontSize: 9, lineHeight: 0.1
+                  text: props.cross_street, fontSize: 9, lineHeight: 0.1
                 }
               }]
             ]
@@ -327,7 +415,7 @@ const dairyInformationA = (props) => {
               {
                 border: [false, false, false, true],
                 text: {
-                  text: '01/01/1921', fontSize: 9, lineHeight: 0.1
+                  text: props.began? props.began.split("T")[0] : '', fontSize: 9, lineHeight: 0.1
                 }
               },
               {
@@ -357,7 +445,7 @@ const dairyInformationA = (props) => {
               {
                 border: [false, false, false, true],
                 text: {
-                  text: 'San Joaquin River Basin', fontSize: 9, lineHeight: 0.1
+                  text: props.basin_plan, fontSize: 9, lineHeight: 0.1
                 }
               },
               {
@@ -396,83 +484,7 @@ const dairyInformationA = (props) => {
         {
           table: {
             widths: ['*', '*', '*', '*', '*', '*',],
-            body: [
-              [{
-                border: [true, true, false, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, true, false, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, true, false, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, true, false, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, true, false, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, true, true, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              ], // nneed to iterate through a list to produce lists of size 6
-              [{
-                border: [true, false, false, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, false, false, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, false, false, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, false, false, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, false, false, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, false, true, false],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              ],
-              [{
-                border: [true, false, false, true],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, false, false, true],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, false, false, true],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, false, false, true],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, false, false, true],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              {
-                border: [false, false, true, true],
-                text: '0045-0200-0012-0000 ', fontSize: 8
-              },
-              ]
-            ]
+            body: parcelTableBody
           }
         }
       ]
@@ -521,11 +533,11 @@ const dairyInformationC = (props) => {
       },
       {
         margin: [15, 0, 0, 0],
-        stack: OwnOperators.map((owner, i) => {
+        stack: props.owners.map((owner, i) => {
           return {
             table: {
               body: [
-                [ownOperatorTable(`ownerTable${i}`, {})]
+                [ownOperatorTable(`ownerTable${i}`, owner)]
               ],
               widths: [705],
             },
@@ -6608,9 +6620,9 @@ const attachmentsA = (props) => {
 export default function dd(props, images) {
   console.log(images)
   const body = [
-    dairyInformationA(props),
+    dairyInformationA(props.dairyInformationA),
     dairyInformationB(props),
-    dairyInformationC(props),
+    dairyInformationC(props.dairyInformationC),
     // 'text\n\n\n\n\n\n\n\nZ',
     // 'text\n\n\n\nZZ',
     availableNutrientsA(props),   // bind last two rows and last row of table together...

@@ -464,7 +464,10 @@ class DairyTab extends Component {
         PADdingBottom: function (i, node) { return 0; },
       }
     }
-    let props = {} // data from db formatted nicely to plugin to pdf
+
+    // Gathered in HomePage.js given in props arPDFData
+    // If this is empty, give user an alert, else generate report. Charts will be generated here but data from DB will be present.
+    let props = this.props.arPDFData // data from db formatted nicely to plugin to pdf
 
     Chart.register({
       id: 'testyplugzzz',
@@ -542,7 +545,7 @@ class DairyTab extends Component {
                 </Grid>
                 <Grid item xs={9} align="left">
                   <Tooltip title='Update Address'>
-                    <IconButton variant="outlined" fullWidth color="secondary"
+                    <IconButton variant="outlined" fullwidth color="secondary"
                       onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
                     >
                       <ImportExport />
@@ -694,7 +697,7 @@ class DairyTab extends Component {
                 <Tooltip title="Add parcel to dairy">
                   <Button
                     onClick={() => this.toggleParcelModal(true)}
-                    fullWidth variant="outlined" color="primary"
+                    fullwidth variant="outlined" color="primary"
                     style={{ marginTop: "16px" }}
                   >
                     <Typography variant="subtitle2">
@@ -710,7 +713,7 @@ class DairyTab extends Component {
                 <Tooltip title="Add field to dairy">
                   <Button
                     onClick={() => this.toggleFieldModal(true)}
-                    fullWidth variant="outlined" color="primary"
+                    fullwidth variant="outlined" color="primary"
                     style={{ marginTop: "16px" }}
                   >
                     <Typography variant="subtitle2">

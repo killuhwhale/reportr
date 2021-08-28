@@ -30,6 +30,13 @@ module.exports = {
       callback
     )
   },
+  getDairy: (dairy_id, callback) => {
+    return pool.query(
+      format("SELECT * FROM dairies where pk = %L LIMIT 1", dairy_id),
+      [],
+      callback
+    )
+  },
   insertDairy: (values, callback) => {
 
 
@@ -185,6 +192,13 @@ module.exports = {
     return pool.query(
       format("SELECT * FROM operators where dairy_id = %L", dairy_id),
       [],
+      callback
+    )
+  },
+  getOperatorsByOwnerStatus: (values, callback) => {
+    return pool.query(
+      "SELECT * FROM operators where is_owner = $1 and dairy_id = $2",
+      values,
       callback
     )
   },

@@ -79,6 +79,16 @@ app.get("/api/dairies/:reportingYear", (req, res) => {
       res.json({ "test": "Get all dairies unsuccessful" });
     })
 });
+app.get("/api/dairy/:dairy_id", (req, res) => {
+  db.getDairy(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      res.json({ "test": "Get dairy unsuccessful" });
+    })
+});
 app.post("/api/dairies/create", (req, res) => {
   db.insertDairy([req.body.title, req.body.reportingYr], (err, result) => {
 
@@ -273,6 +283,16 @@ app.get("/api/operators/:dairy_id", (req, res) => {
         return;
       }
       res.json({ "test": "Get all operators unsuccessful" });
+    })
+});
+app.get("/api/operators/is_owner/:is_owner/:dairy_id", (req, res) => {
+  db.getOperatorsByOwnerStatus([req.params.is_owner, req.params.dairy_id],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      res.json({ "test": "Get all operators by owner status unsuccessful" });
     })
 });
 app.post("/api/operators/update", (req, res) => {

@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS operators(
   city_state VARCHAR(3) DEFAULT 'CA',
   city_zip VARCHAR(20) ,
   is_owner BOOLEAN,
+  is_operator BOOLEAN,
   is_responsible BOOLEAN DEFAULT FALSE, -- responsible for paying permit fees.
 
   UNIQUE(dairy_id, title, primary_phone),
