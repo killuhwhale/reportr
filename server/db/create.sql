@@ -1,11 +1,23 @@
 --- db: reportrr, user: admin, pass 
 
+-- Clear DB
+-- DO $$ DECLARE
+--     r RECORD;
+-- BEGIN
+--     FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = current_schema()) LOOP
+--         EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
+--     END LOOP;
+-- END $$;
 -- NEED TO UPDATE
 --     OPERATORS UNIQUE,
 --      Export_manifest, total npk removed
+
+--
 CREATE TABLE IF NOT EXISTS dairies(
   pk SERIAL PRIMARY KEY,
   reporting_yr SMALLINT DEFAULT 2021,
+  period_start TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  period_end TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   street VARCHAR(100) DEFAULT '',
   cross_street VARCHAR(50) DEFAULT '',
   county VARCHAR(30),
@@ -68,15 +80,15 @@ CREATE TABLE IF NOT EXISTS operators(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
   title VARCHAR(50) NOT NULL,
-  primary_phone VARCHAR(15),
-  secondary_phone VARCHAR(15),
+  primary_phone VARCHAR(40),
+  secondary_phone VARCHAR(40),
   street VARCHAR(100),
   city VARCHAR(30),
   city_state VARCHAR(3) DEFAULT 'CA',
   city_zip VARCHAR(20) ,
   is_owner BOOLEAN,
   is_operator BOOLEAN,
-  is_responsible BOOLEAN DEFAULT FALSE, -- responsible for paying permit fees.
+  is_responsible BOOLEAN, -- responsible for paying permit fees.
 
   UNIQUE(dairy_id, title, primary_phone),
   CONSTRAINT fk_dairy

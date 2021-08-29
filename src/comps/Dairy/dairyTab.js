@@ -527,11 +527,42 @@ class DairyTab extends Component {
 
             </Grid>
 
+            <Grid container item xs={12} style={{marginBottom: '16px'}}>
+            <Grid container item alignItems='center' xs={12}>
+                <Grid item xs={3}>
+                  <Typography variant='h4'>Reporting Period</Typography>
+                </Grid>
+                <Grid item xs={9} align="left">
+                    <Tooltip title='Update Reporting Period'>
+                      <IconButton variant="outlined" fullwidth color="secondary"
+                        onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
+                      >
+                        <ImportExport />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+              </Grid>
+              <Grid item xs={6}>
+                <DatePicker
+                  value={this.state.dairy.period_start}
+                  label="Start"
+                  onChange={(_date) => this.props.onChange({ target: { name: 'period_start', value: _date } })}
+                  style={{ width: "100%", justifyContent: "flex-end" }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <DatePicker
+                  value={this.state.dairy.period_end}
+                  label="Start"
+                  onChange={(_date) => this.props.onChange({ target: { name: 'period_end', value: _date } })}
+                  style={{ width: "100%", justifyContent: "flex-end" }}
+                />
+              </Grid>
+            </Grid>
 
             <Grid item xs={12}>
               <OperatorView
                 dairy={this.state.dairy}
-
               />
             </Grid>
 
@@ -539,7 +570,7 @@ class DairyTab extends Component {
             <Grid item container xs={12} style={{ marginTop: "64px" }}>
               <Grid container item xs={12}>
                 <Grid item xs={3}>
-                  <Typography variant="h2">
+                  <Typography variant="h4">
                     Address
                   </Typography>
                 </Grid>

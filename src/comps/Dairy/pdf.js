@@ -168,7 +168,7 @@ const image = (img, w, h) => {
   }
 }
 
-const ownOperatorTable = (key, props) => {
+const ownOperatorTable = (key, props, is_owner) => {
   return {
     headlineLevel: key,
     table: {
@@ -201,7 +201,7 @@ const ownOperatorTable = (key, props) => {
         ],
         [{
           border: [true, false, true, true],
-          text: `This operator is ${props.is_responsible? '': 'not'} responsible`,
+          text: `This ${is_owner? 'owner':'operator'} is ${props.is_responsible? '': 'not '}responsible for paying permit fees.`,
           fontSize: 9
 
         }],
@@ -505,11 +505,11 @@ const dairyInformationB = (props) => {
       },
       {
         margin: [15, 0, 0, 0],
-        stack: OwnOperators.map((owner, i) => {
+        stack: props.operators.map((operator, i) => {
           return {
             table: {
               body: [
-                [ownOperatorTable(`owneropTable${i}`, {})]
+                [ownOperatorTable(`owneropTableB${i}`, operator, false)]
               ],
               widths: [705],
             },
@@ -537,7 +537,7 @@ const dairyInformationC = (props) => {
           return {
             table: {
               body: [
-                [ownOperatorTable(`ownerTable${i}`, owner)]
+                [ownOperatorTable(`ownerTableA${i}`, owner, true)]
               ],
               widths: [705],
             },
@@ -629,22 +629,22 @@ const availableNutrientsA = (props) => {
                   text: 'Number open confinement'
                 },
                 { // row 2
-                  text: '1'
+                  text: props.herdInfo.milk_cows[0]
                 },
                 { // row 2
-                  text: '1'
+                  text: props.herdInfo.dry_cows[0]
                 },
                 { // row 2
-                  text: '1'
+                  text: props.herdInfo.bred_cows[0]
                 },
                 { // row 2
-                  text: '1'
+                  text: props.herdInfo.cows[0]
                 },
                 { // row 2
-                  text: '1'
+                  text: props.herdInfo.calf_old[0]
                 },
                 { // row 2
-                  text: '1'
+                  text: props.herdInfo.calf_young[0]
                 },
 
               ],
@@ -652,23 +652,23 @@ const availableNutrientsA = (props) => {
                 { // row 3
                   text: 'Number under roof'
                 },
-                { // row 3
-                  text: '1'
+                { // row 2
+                  text: props.herdInfo.milk_cows[1]
                 },
-                { // row 3
-                  text: '1'
+                { // row 2
+                  text: props.herdInfo.dry_cows[1]
                 },
-                { // row 3
-                  text: '1'
+                { // row 2
+                  text: props.herdInfo.bred_cows[1]
                 },
-                { // row 3
-                  text: '1'
+                { // row 2
+                  text: props.herdInfo.cows[1]
                 },
-                { // row 3
-                  text: '1'
+                { // row 2
+                  text: props.herdInfo.calf_old[1]
                 },
-                { // row 3
-                  text: '1'
+                { // row 2
+                  text: props.herdInfo.calf_young[1]
                 },
 
               ],
@@ -676,23 +676,23 @@ const availableNutrientsA = (props) => {
                 { // row 4
                   text: 'Maximum number'
                 },
-                { // row 4
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.milk_cows[2]
                 },
-                { // row 4
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.dry_cows[2]
                 },
-                { // row 4
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.bred_cows[2]
                 },
-                { // row 4
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.cows[2]
                 },
-                { // row 4
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.calf_old[2]
                 },
-                { // row 4
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.calf_young[2]
                 },
 
               ],
@@ -700,23 +700,23 @@ const availableNutrientsA = (props) => {
                 { // row 5
                   text: 'Average number'
                 },
-                { // row 5
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.milk_cows[3]
                 },
-                { // row 5
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.dry_cows[3]
                 },
-                { // row 5
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.bred_cows[3]
                 },
-                { // row 5
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.cows[3]
                 },
-                { // row 5
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.calf_old[3]
                 },
-                { // row 5
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.calf_young[3]
                 },
 
               ],
@@ -726,17 +726,17 @@ const availableNutrientsA = (props) => {
 
                   text: 'Avg live weight (lbs)'
                 },
-                { // row 6
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.milk_cows[4]
                 },
-                { // row 6
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.dry_cows[4]
                 },
-                { // row 6
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.bred_cows[4]
                 },
-                { // row 6
-                  text: '1'
+                { // row 
+                  text: props.herdInfo.cows[4]
                 },
                 { // row 6
                   fillColor: darkGray,
@@ -771,7 +771,7 @@ const availableNutrientsA = (props) => {
               {
                 border: [false, false, false, true],
                 text: {
-                  text: 'Holstein', fontSize: 9
+                  text: props.p_breed, fontSize: 9
                 }
               }]
             ]
@@ -794,7 +794,7 @@ const availableNutrientsA = (props) => {
                 {
                   border: [false, false, false, true],
                   text: {
-                    text: '75', alignment: 'right', fontSize: 9
+                    text: props.herdInfo.milk_cows[5], alignment: 'right', fontSize: 9
                   }
                 },
                 {
@@ -814,6 +814,9 @@ const availableNutrientsA = (props) => {
   }
 }
 const availableNutrientsB = (props) => {
+  // Numbers are strings formatted from Intl javascript formatting library, need to parse to do math.
+  let n_ammonia_loss = (parseFloat(props.herdCalc[1].replaceAll(',', '')) * 0.7).toFixed(2)
+
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [{
@@ -855,7 +858,7 @@ const availableNutrientsB = (props) => {
                 {
                   border: [false, false, false, true],
                   text: {
-                    text: '70,026.15',
+                    text: props.herdCalc[0],
                     fontSize: 9,
                   }
                 },
@@ -887,7 +890,7 @@ const availableNutrientsB = (props) => {
                 {
                   border: [false, false, false, true],
                   text: {
-                    text: '881,742.55',
+                    text: props.herdCalc[1],
                     fontSize: 9,
                   }
                 },
@@ -909,7 +912,7 @@ const availableNutrientsB = (props) => {
                 {
                   border: [false, false, false, true],
                   text: {
-                    text: '617,219.79',
+                    text: n_ammonia_loss,
                     fontSize: 9,
                   }
                 },
@@ -940,7 +943,7 @@ const availableNutrientsB = (props) => {
                 {
                   border: [false, false, false, true],
                   text: {
-                    text: '145,025.47',
+                    text: props.herdCalc[2],
                     fontSize: 9,
                   }
                 },
@@ -964,7 +967,7 @@ const availableNutrientsB = (props) => {
                 {
                   border: [false, false, false, true],
                   text: {
-                    text: '400,422.21',
+                    text: props.herdCalc[3],
                     fontSize: 9,
                   }
                 },
@@ -988,7 +991,7 @@ const availableNutrientsB = (props) => {
                 {
                   border: [false, false, false, true],
                   text: {
-                    text: '1,037,061.00',
+                    text: props.herdCalc[4],
                     fontSize: 9,
                   }
                 },
@@ -1049,7 +1052,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: '70,026.15',
+                      text: props.generated[0],
                       fontSize: 9,
                     }
                   },
@@ -1073,7 +1076,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: '70,026.15',
+                      text: props.generated[1],
                       fontSize: 9,
                     }
                   },
@@ -1097,7 +1100,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: '70,026.15',
+                      text: props.generated[2],
                       fontSize: 9,
                     }
                   },
@@ -1121,7 +1124,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: '70,026.15',
+                      text: props.generated[3],
                       fontSize: 9,
                     }
                   },
@@ -1145,7 +1148,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: '70,026.15',
+                      text: props.generated[4],
                       fontSize: 9,
                     }
                   },
@@ -1184,7 +1187,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, true, false, false],
                     text: {
-                      text: `${4 * 1337 * 9}`,
+                      text: props.applied[0],
                       fontSize: 9,
                     }
                   },
@@ -1208,7 +1211,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, false],
                     text: {
-                      text: `${3 * 10 ** 7}`,
+                      text: props.exported[0],
                       fontSize: 9,
                     }
                   },
@@ -1232,7 +1235,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: `${0}`,
+                      text: props.imported[0],
                       fontSize: 9,
                     }
                   },
@@ -1257,7 +1260,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: `${4 * 1337 * 9}`,
+                      text: props.generated[0],
                       fontSize: 9,
                     }
                   },
@@ -6621,13 +6624,13 @@ export default function dd(props, images) {
   console.log(images)
   const body = [
     dairyInformationA(props.dairyInformationA),
-    dairyInformationB(props),
+    dairyInformationB(props.dairyInformationB),
     dairyInformationC(props.dairyInformationC),
     // 'text\n\n\n\n\n\n\n\nZ',
     // 'text\n\n\n\nZZ',
-    availableNutrientsA(props),   // bind last two rows and last row of table together...
-    availableNutrientsB(props),  // bind this section together
-    availableNutrientsC(props), // bind this section together
+    availableNutrientsA({...props.availableNutrientsAB, p_breed: props.dairyInformationA.p_breed}),   // bind last two rows and last row of table together...
+    availableNutrientsB(props.availableNutrientsAB),  // bind this section together
+    availableNutrientsC(props.availableNutrientsC), // bind this section together
     availableNutrientsD(props),
     availableNutrientsE(props),
     availableNutrientsF(props),

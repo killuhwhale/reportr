@@ -28,7 +28,6 @@ class OperatorView extends Component {
       showOperatorModal: false,
       showDeleteOperatorModal: false,
       operators: [],
-      updateOperatorObjs: {},
       curDeleteOperatorObj: {},
       createOperatorObj: {
         dairy_id: "",
@@ -40,16 +39,19 @@ class OperatorView extends Component {
         city_state: "",
         city_zip: "",
         is_owner: false,
+        is_operator: false,
         is_responsible: false
       }
     }
+    this.updatedOperators = new Set()
   }
   static getDerivedStateFromProps(props, state) {
-    return state // if default props change return props | compare props.dairy == state.dairy
+    return props // if default props change return props | compare props.dairy == state.dairy
   }
   componentDidMount() {
     this.getAllOperators()
   }
+  
   toggleOperatorModal(val) {
     this.setState({ showOperatorModal: val })
   }
@@ -69,11 +71,7 @@ class OperatorView extends Component {
   onOperatorModalUpdate(ev) {
     const { name, value, checked } = ev.target
     let operator = this.state.createOperatorObj
-    if (['is_owner', 'is_responsible'].indexOf(name) >= 0) {
-      operator[name] = checked
-    } else {
-      operator[name] = value
-    }
+    operator[name] = value
     this.setState({ createOperatorObj: operator })
   }
 
@@ -88,30 +86,32 @@ class OperatorView extends Component {
       })
   }
 
-  onOperatorUpdate(pk, operator) {
-    let operators = this.state.updateOperatorObjs
-    operators[pk] = operator
-
-    this.setState({ updateOperatorObjs: operators })
+  onOperatorChange(index, ev) {
+    this.updatedOperators.add(index)
+    const { name, value } = ev.target    
+    console.log('Operator @ index ', index, name, value)
+    let operators = this.state.operators
+    let operator = this.state.operators[index]
+    operator[name] = value
+    operators[index] = operator
+    this.setState({ operators: operators })
   }
 
   updateOperators() {
-    console.log("Updating operators", this.state.updateOperatorObjs)
-    let operators = this.state.updateOperatorObjs
-    let promises = Object.keys(operators).map((pk, i) => {
+    let operators = this.state.operators.filter((op, i) => this.updatedOperators.has(i))
+    let promises = operators.map((operator, i) => {
       return (
-        post(`${BASE_URL}/api/operators/update`, operators[pk])
+        post(`${BASE_URL}/api/operators/update`, operator)
       )
     })
-
     Promise.all(promises)
       .then(res => {
         console.log(res)
+        this.updatedOperators = new Set()
       })
       .catch(err => {
         console.log(err)
       })
-
   }
 
   confirmDeleteOperator(operator) {
@@ -137,7 +137,7 @@ class OperatorView extends Component {
   render() {
     return (
       <Grid item xs={12}>
-        <Typography variant="h2">Owner Operators</Typography>
+        <Typography variant="h4">Owner Operators</Typography>
         <Grid item container xs={12}>
           <Grid item xs={11} align='right'>
             <Tooltip title="Add Owner / Operator">
@@ -169,7 +169,8 @@ class OperatorView extends Component {
                 <Grid item xs={10}>
                   <OperatorForm key={`operatorOV${i}`}
                     operator={operator}
-                    onUpdate={this.onOperatorUpdate.bind(this)}
+                    index={i}
+                    onChange={this.onOperatorChange.bind(this)}
                   />
 
                 </Grid>

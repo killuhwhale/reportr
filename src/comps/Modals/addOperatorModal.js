@@ -123,22 +123,33 @@ class OperatorModal extends Component{
                   Responsible for permit fees
                 </Typography>
                 <Switch
-                  name="is_responsible" color="secondary"
+                  color="secondary"
                   label="Responsible for permit fees"
                   checked={this.state.operator.is_responsible}
-                  onChange={this.props.onChange}
+                  onChange={(ev) => this.props.onChange({target: {name: 'is_responsible', value: ev.target.checked}})}
                 />
               </Grid>
 
-              <Grid item xs={4}>
+              <Grid item xs={2}>
                 <Typography variant="caption">
                     Is Owner
                 </Typography>
                 <Switch
-                  name="is_owner" color="secondary"
+                  color="secondary"
                   label="Owner"
                   checked={this.state.operator.is_owner}
-                  onChange={this.props.onChange}
+                  onChange={(ev) => this.props.onChange({target: {name: 'is_owner', value: ev.target.checked}})}
+                />
+              </Grid>
+							<Grid item xs={2}>
+                <Typography variant="caption">
+                    Is Operator
+                </Typography>
+                <Switch
+                  color="secondary"
+                  label="Owner"
+                  checked={this.state.operator.is_operator}
+                  onChange={(ev) => this.props.onChange({target: {name: 'is_operator', value: ev.target.checked}})}
                 />
               </Grid>
               

@@ -57,8 +57,10 @@ module.exports = {
       title = $7,
       basin_plan = $8,
       p_breed = $9,
-      began = $10
-      WHERE pk=$11`,
+      began = $10,
+      period_start = $11,
+      period_end = $12
+      WHERE pk=$13`,
       values,
       callback
     )
@@ -182,6 +184,7 @@ module.exports = {
         city_state,
         city_zip,
         is_owner, 
+        is_operator,
         is_responsible
         ) VALUES (%L)`, values),
       [],
@@ -202,6 +205,13 @@ module.exports = {
       callback
     )
   },
+  getOperatorsByOperatorStatus: (values, callback) => {
+    return pool.query(
+      "SELECT * FROM operators where is_operator = $1 and dairy_id = $2",
+      values,
+      callback
+    )
+  },
   updateOperator: (values, callback) => {
     return pool.query(`UPDATE operators SET
       dairy_id = $1,
@@ -213,8 +223,9 @@ module.exports = {
       city_state = $7,
       city_zip = $8, 
       is_owner = $9, 
-      is_responsible = $10 
-      WHERE pk=$11`,
+      is_operator = $10,
+      is_responsible = $11 
+      WHERE pk=$12`,
       values,
       callback
     )
@@ -1064,6 +1075,20 @@ module.exports = {
       callback
     )
   },
+  getNutrientImportByWastewater: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT *
+        FROM nutrient_import
+        WHERE 
+        material_type = 'Process wastewater' or
+        material_type = 'Process wastewater sludge' and
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
   rmNutrientImport: (id, callback) => {
     return pool.query(
       format("DELETE FROM nutrient_import where pk = %L", id),
@@ -1504,6 +1529,106 @@ module.exports = {
 
 
         WHERE 
+        em.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  getExportManifestByWastewater: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT 
+        em.pk,
+        em.last_date_hauled,
+        em.amount_hauled,
+        em.material_type,
+        em.amount_hauled_method,
+        em.reporting_method, 
+        em.moisture,
+        em.n_con_mg_kg,
+        em.p_con_mg_kg,
+        em.k_con_mg_kg,
+        em.tfs,
+
+
+        em.ec_umhos_cm,
+        em.salt_lbs_rm,
+        em.n_lbs_rm,
+        em.p_lbs_rm,
+        em.k_lbs_rm,
+        
+        em.kn_con_mg_l,
+        em.nh4_con_mg_l,
+        em.nh3_con_mg_l,
+        em.no3_con_mg_l,
+        em.p_con_mg_l,
+        em.k_con_mg_l,
+        em.tds,
+
+        ed.pnumber,
+        ed.street as dest_street,
+        ed.cross_street as dest_cross_street,
+        ed.county as dest_county,
+        ed.city as dest_city,
+        ed.city_state as dest_city_state,
+        ed.city_zip as dest_city_zip,
+
+        er.pk as recipient_id,
+        er.dest_type,
+        er.title as recipient_title,
+        er.primary_phone as recipient_primary_phone,
+        er.street as recipient_street,
+        er.cross_street as recipient_cross_street,
+        er.county as recipient_county,
+        er.city as recipient_city,
+        er.city_state as recipient_city_state,
+        er.city_zip as recipient_city_zip,
+
+        ec.first_name as contact_first_name,
+        ec.primary_phone as contact_primary_phone,
+
+        op.title as operator_title,
+        op.primary_phone as operator_primary_phone,
+        op.secondary_phone as operator_secondary_phone,
+        op.street as operator_street,
+        op.city as operator_city, 
+        op.city_state as operator_city_state,
+        op.city_zip as operator_city_zip,
+        op.is_owner as operator_is_owner,
+        op.is_responsible as operator_is_responsible,
+
+        eh.title as hauler_title,
+        eh.first_name as hauler_first_name,
+        eh.primary_phone as hauler_primary_phone,
+        eh.street as hauler_street,
+        eh.cross_street as hauler_cross_street,
+        eh.county as hauler_county,
+        eh.city as hauler_city,
+        eh.city_state as hauler_city_state,
+        eh.city_zip as hauler_city_zip
+
+        FROM export_manifest em
+
+        JOIN export_contact ec
+        ON ec.pk = em.export_contact_id
+        
+        JOIN operators op
+        ON op.pk = em.operator_id
+        
+        JOIN export_dest ed
+        ON ed.pk = em.export_dest_id
+        
+        JOIN export_recipient er
+        ON er.pk = ed.export_recipient_id
+
+        JOIN export_hauler eh
+        ON eh.pk = em.export_hauler_id
+
+
+        WHERE 
+        em.material_type = 'Process wastewater' or
+        em.material_type = 'Process wastewater sludge' and
         em.dairy_id = %L
         `, dairy_id),
       [],

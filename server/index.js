@@ -104,11 +104,11 @@ app.post("/api/dairies/update", (req, res) => {
   console.log("Updating....", req.body.data)
   // req.body.data is a list of values in order to match DB Table
   const {
-    street, cross_street, county, city, city_state, title, city_zip, basin_plan, p_breed, began, dairy_id
+    street, cross_street, county, city, city_state, title, city_zip, basin_plan, p_breed, began, period_start, period_end, dairy_id
   } = req.body
 
   db.updateDairy([
-    street, cross_street, county, city, city_state, city_zip, title, basin_plan, p_breed, began, dairy_id
+    street, cross_street, county, city, city_state, city_zip, title, basin_plan, p_breed, began, period_start, period_end, dairy_id
   ], (err, result) => {
 
     if (!err) {
@@ -257,11 +257,11 @@ app.post("/api/field_parcel/delete", (req, res) => {
 app.post("/api/operators/create", (req, res) => {
   console.log("Creating....", req.body)
   const { dairy_id, title, primary_phone, secondary_phone, street, city,
-    city_state, city_zip, is_owner, is_responsible } = req.body
+    city_state, city_zip, is_owner, is_operator, is_responsible } = req.body
   db.insertOperator(
     [
       dairy_id, title, primary_phone, secondary_phone, street, city,
-      city_state, city_zip, is_owner, is_responsible
+      city_state, city_zip, is_owner, is_operator, is_responsible
     ],
     (err, result) => {
 
@@ -295,6 +295,16 @@ app.get("/api/operators/is_owner/:is_owner/:dairy_id", (req, res) => {
       res.json({ "test": "Get all operators by owner status unsuccessful" });
     })
 });
+app.get("/api/operators/is_operator/:is_operator/:dairy_id", (req, res) => {
+  db.getOperatorsByOperatorStatus([req.params.is_operator, req.params.dairy_id],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      res.json({ "test": "Get all operators by operator status unsuccessful" });
+    })
+});
 app.post("/api/operators/update", (req, res) => {
   console.log("Updating....", req.body)
   const {
@@ -307,6 +317,7 @@ app.post("/api/operators/update", (req, res) => {
     city_state,
     city_zip,
     is_owner,
+    is_operator,
     is_responsible,
     pk
   } = req.body
@@ -320,6 +331,7 @@ app.post("/api/operators/update", (req, res) => {
     city_state,
     city_zip,
     is_owner,
+    is_operator,
     is_responsible,
     pk
   ], (err, result) => {
@@ -1151,6 +1163,19 @@ app.get("/api/nutrient_import/:dairy_id", (req, res) => {
       res.json({ "test": "Get all nutrient_import unsuccessful" });
     })
 });
+app.get("/api/nutrient_import/wastewater/:dairy_id", (req, res) => {
+
+  db.getNutrientImportByWastewater(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all nutrient_import by wastewater unsuccessful" });
+    })
+});
 app.post("/api/nutrient_import/delete", (req, res) => {
   console.log("Deleting....", req.body.pk)
   db.rmNutrientImport(req.body.pk, (err, result) => {
@@ -1493,6 +1518,7 @@ app.post("/api/export_manifest/create", (req, res) => {
     tfs, 
     salt_lbs_rm,
 
+    n_con_mg_l,
     kn_con_mg_l,
     nh4_con_mg_l,
     nh3_con_mg_l,
@@ -1526,7 +1552,7 @@ app.post("/api/export_manifest/create", (req, res) => {
       tfs,
       salt_lbs_rm,
 
-      kn_con_mg_l,
+      n_con_mg_l,
       nh4_con_mg_l,
       nh3_con_mg_l,
       no3_con_mg_l,
@@ -1560,6 +1586,19 @@ app.get("/api/export_manifest/:dairy_id", (req, res) => {
       }
       console.log("Export manifest", err)
       res.json({ "test": "Get all export_manifest unsuccessful" });
+    })
+});
+app.get("/api/export_manifest/wastewater/:dairy_id", (req, res) => {
+
+  db.getExportManifestByWastewater(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log("Export manifest wastewater", err)
+      res.json({ "test": "Get all export_manifest wastewater unsuccessful" });
     })
 });
 app.post("/api/export_manifest/delete", (req, res) => {

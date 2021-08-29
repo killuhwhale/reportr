@@ -84,6 +84,7 @@ class HomePage extends Component {
     let updateDairy = _dairies[_dairy] // copy object
 
     updateDairy[name] = value            // update object
+    console.log(updateDairy)
     _dairies[_dairy] = updateDairy      // store updated object
     this.setState({ dairies: _dairies })
   }
@@ -126,26 +127,8 @@ class HomePage extends Component {
   updateDairy() {
     let url = `${BASE_URL}/api/dairies/update`
     let dairy = this.state.dairies[this.state.dairy]
-    const { street, cross_street, county, city, city_state, title, city_zip, basin_plan, p_breed, began } = dairy
 
-
-
-
-    let data = {
-      street,
-      cross_street,
-      county,
-      city,
-      city_state,
-      city_zip,
-      title,
-      basin_plan,
-      p_breed,
-      began,
-      dairy_id: dairy.pk
-    }
-
-    post(url, data)
+    post(url, {...dairy, dairy_id: dairy.pk})
       .then(res => {
         console.log(res)
       })
