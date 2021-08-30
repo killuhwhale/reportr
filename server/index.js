@@ -1150,6 +1150,7 @@ app.post("/api/nutrient_import/create", (req, res) => {
     }
   )
 });
+
 app.get("/api/nutrient_import/:dairy_id", (req, res) => {
 
   db.getNutrientImport(req.params.dairy_id,
@@ -1161,6 +1162,18 @@ app.get("/api/nutrient_import/:dairy_id", (req, res) => {
       }
       console.log(err)
       res.json({ "test": "Get all nutrient_import unsuccessful" });
+    })
+});
+app.get("/api/nutrient_import/material_type/:material_type/:dairy_id", (req, res) => {
+
+  db.getNutrientImportByMaterialType([req.params.material_type, req.params.dairy_id],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all nutrient_import by material_type unsuccessful" });
     })
 });
 app.get("/api/nutrient_import/wastewater/:dairy_id", (req, res) => {
@@ -1599,6 +1612,19 @@ app.get("/api/export_manifest/wastewater/:dairy_id", (req, res) => {
       }
       console.log("Export manifest wastewater", err)
       res.json({ "test": "Get all export_manifest wastewater unsuccessful" });
+    })
+});
+app.get("/api/export_manifest/material_type/:material_type/:dairy_id", (req, res) => {
+
+  db.getExportManifestByMaterialType([req.params.material_type, req.params.dairy_id],
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      console.log("Export manifest", err)
+      res.json({ "test": "Get all export_manifest unsuccessful" });
     })
 });
 app.post("/api/export_manifest/delete", (req, res) => {

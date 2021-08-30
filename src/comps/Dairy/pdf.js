@@ -1,3 +1,5 @@
+import { formatFloat } from "../../utils/format"
+
 const PARCELS = ["0045-0200-0012-0000", "0045-0200-0020-0000", "0045-0200-0023-0000", "0045-0200-0029-0000", "0045-0200-0033-0000",
   "0045-0200-0034-0000", "0045-0200-0035-0000", "0045-0200-0037-0000", "0045-0200-0060-0000", "0045-0200-0061-0000", "0045-0200-0074-0000", "0045-0230-0025-0000",
   "0045-0230-0066-0000", "0045-0240-0037-0000"]
@@ -47,6 +49,8 @@ const OwnOperators = [
 ]
 const gray = "#eeeeee"
 const darkGray = "#cecece"
+
+
 
 const line = (len) => {
   return {
@@ -201,7 +205,7 @@ const ownOperatorTable = (key, props, is_owner) => {
         ],
         [{
           border: [true, false, true, true],
-          text: `This ${is_owner? 'owner':'operator'} is ${props.is_responsible? '': 'not '}responsible for paying permit fees.`,
+          text: `This ${is_owner ? 'owner' : 'operator'} is ${props.is_responsible ? '' : 'not '}responsible for paying permit fees.`,
           fontSize: 9
 
         }],
@@ -220,58 +224,58 @@ const dairyInformationA = (props) => {
   let tmpRow = []
   let parcelTableBody = []
   // if there are less that 6 parcels process differently.)(single row)
-  if(props.parcels.length > 6){
+  if (props.parcels.length > 6) {
     props.parcels.forEach((parcel, i) => {
       let c = i % 6
       let r = parseInt(i / 6)
       console.log(r, c, parcel.pnumber)
-      
-      if(i != 0 && c === 0){
+
+      if (i != 0 && c === 0) {
         parcelTableBody.push(tmpRow)
         console.log("Pushing 1", tmpRow)
         tmpRow = []
       }
       let border = null
-      if(r===0 && c===0){
+      if (r === 0 && c === 0) {
         border = [true, true, false, false] // top left corner 
-      }else if(r===0 && c > 0 && c < 6 - 1){
+      } else if (r === 0 && c > 0 && c < 6 - 1) {
         border = [false, true, false, false] // top middle
-      }else if(r===0 && c === 6-1){
+      } else if (r === 0 && c === 6 - 1) {
         border = [false, true, true, false] // top right corner 
-      }else if(c===0){
+      } else if (c === 0) {
         border = [true, false, false, false] // left middle  
-      }else if(c === 6-1){
+      } else if (c === 6 - 1) {
         border = [false, false, true, false] // right middle 
-      }else{
+      } else {
         border = [false, false, false, false] //  middle 
       }
-      
+
       tmpRow.push({
         border: border,
         text: parcel.pnumber, fontSize: 8
       })
 
-      if(i === props.parcels.length - 1){
+      if (i === props.parcels.length - 1) {
         console.log("Pushing last el row", tmpRow)
         parcelTableBody.push(tmpRow)
       }
     })
     let lastRow = parcelTableBody[parcelTableBody.length - 1]
     let numEmptyCells = 6 - lastRow.length
-    for(let i =0; i < numEmptyCells; i ++){
+    for (let i = 0; i < numEmptyCells; i++) {
       lastRow.push({
         border: [],
         text: '', fontSize: 8
       })
     }
-  
+
     lastRow = lastRow.map((el, i) => {
       let border = [false, false, false, false]
-      if(i==0){
+      if (i == 0) {
         border = [true, false, false, true] // bottom left
-      }else if(i == 5){
+      } else if (i == 5) {
         border = [false, false, true, true] // bottom right
-      }else{
+      } else {
         border = [false, false, false, true] // bottom middle
       }
       el.border = border
@@ -279,15 +283,15 @@ const dairyInformationA = (props) => {
     })
     // replace last row with updated row
     parcelTableBody[parcelTableBody.length - 1] = lastRow
-  }else{
+  } else {
     parcelTableBody = [props.parcels.map((parcel, i) => {
-     
+
       let border = null
-      if(i === 0){
+      if (i === 0) {
         border = [true, true, false, true] // left 
-      }else if(i > 0 && i < 6-1){
+      } else if (i > 0 && i < 6 - 1) {
         border = [false, true, false, true] // middle
-      }else if(i === 6-1){
+      } else if (i === 6 - 1) {
         border = [false, true, true, true] // right 
       }
       return {
@@ -297,14 +301,14 @@ const dairyInformationA = (props) => {
     })]
     // Fill potentail empty cells in row
     let numEmpty = 6 - props.parcels.length
-    for(let i=0; i < numEmpty; i ++){
+    for (let i = 0; i < numEmpty; i++) {
       parcelTableBody[0].push({
         border: [false, true, false, true],
         text: '', fontSize: 8
       })
     }
     parcelTableBody[0][0].border = [true, true, false, true]
-    parcelTableBody[0][6-1].border = [false, true, true, true] 
+    parcelTableBody[0][6 - 1].border = [false, true, true, true]
   }
 
   return {
@@ -415,7 +419,7 @@ const dairyInformationA = (props) => {
               {
                 border: [false, false, false, true],
                 text: {
-                  text: props.began? props.began.split("T")[0] : '', fontSize: 9, lineHeight: 0.1
+                  text: props.began ? props.began.split("T")[0] : '', fontSize: 9, lineHeight: 0.1
                 }
               },
               {
@@ -1284,6 +1288,50 @@ const availableNutrientsC = (props) => {
   }
 }
 const availableNutrientsD = (props) => {
+  let sources = props.sources.map(source => {
+    return [
+      {
+        text: {
+          text: source.src_desc, fontSize: 9,
+        }
+      },
+      {
+        text: {
+          text: source.src_type, fontSize: 9,
+        }
+      },
+    ]
+  })
+  const fullBody = [
+    [
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Source Description', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Type', fontSize: 9,
+        }
+      },
+    ],
+    ...sources,
+  ]
+  const emptyBody = [
+    [
+      {// row 1
+        border: [false, false, false, false],
+        colSpan: 2,
+        text: {
+          text: 'No freshwater sources entered.', fontSize: 9,
+        }
+      },
+    ]
+  ]
+  const body = props.sources.length > 0 ? fullBody : emptyBody
+
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [
@@ -1308,58 +1356,7 @@ const availableNutrientsD = (props) => {
         margin: [10, 0, 80, 0],
         table: {
           widths: ['75%', '25%'],
-          body: [
-            [
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'Source Description', fontSize: 9,
-                }
-              },
-              {// row 1
-                fillColor: gray,
-                text: {
-                  text: 'Type', fontSize: 9,
-                }
-              },
-            ],
-            [
-              {
-                text: {
-                  text: 'I5', fontSize: 9,
-                }
-              },
-              {
-                text: {
-                  text: 'Ground Water', fontSize: 9,
-                }
-              },
-            ],
-            [
-              {
-                text: {
-                  text: 'I6', fontSize: 9,
-                }
-              },
-              {
-                text: {
-                  text: 'Ground Water', fontSize: 9,
-                }
-              },
-            ],
-            // [
-            //   {
-            //     text: {
-            //       text: 'I7', fontSize: 9,
-            //     }
-            //   },
-            //   {
-            //     text: {
-            //       text: 'Ground Water', fontSize: 9,
-            //     }
-            //   },
-            // ],
-          ]
+          body: body
         }
       },
     ]
@@ -1409,55 +1406,56 @@ const availableNutrientsFTableRow = (props) => {
   return [
     {// row 1
       text: {
-        text: '05/20/2020', fontSize: 8,
+        text: props.import_date && props.import_date.length > 0 ? props.import_date.split("T")[0] : '',
+        fontSize: 8,
       }
     },
     {// row 
       text: {
-        text: 'UN32', fontSize: 8,
+        text: props.import_desc, fontSize: 8,
       }
     },
     {// row 1
       text: {
-        text: '41.61 ton', fontSize: 8,
+        text: props.amount_imported, fontSize: 8,
       }
     },
     {// row 1
       text: {
-        text: 'Dry-weight', fontSize: 8,
+        text: props.method_of_reporting, fontSize: 8,
       }
     },
     {// row 1
       text: {
-        text: '32.0000', fontSize: 8,
+        text: props.moisture, fontSize: 8,
       }
     },
     {// row 1
       text: {
-        text: '0.000000', fontSize: 8,
+        text: props.n_con, fontSize: 8,
       }
     },
     {// row 1
       text: {
-        text: '0.000000', fontSize: 8,
+        text: props.p_con, fontSize: 8,
       }
     },
     {// row 1
       text: {
-        text: '0.000000', fontSize: 8,
+        text: props.k_con, fontSize: 8,
       }
     },
     {// row 1
       text: {
-        text: 'Salt (%)', fontSize: 8,
+        text: props.salt_con, fontSize: 8,
       }
     },
   ]
 }
 const availableNutrientsF = (props) => {
   let importRowData = [{}, {}, {}, {}]
-  let importRows = importRowData.map(row => {
-    return availableNutrientsFTableRow(row)
+  let importRows = props.commercial.map(n_import => {
+    return availableNutrientsFTableRow(n_import)
   })
   let importRowsBody = [
     [
@@ -1615,25 +1613,25 @@ const availableNutrientsF = (props) => {
               },
               {// row 1
                 text: {
-                  text: '26,603.77', fontSize: 9,
+                  text: formatFloat(props.commercialTotals[0]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.commercialTotals[1]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.commercialTotals[2]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.commercialTotals[3]), fontSize: 9,
                   alignment: 'right',
                 }
               },
@@ -1641,30 +1639,30 @@ const availableNutrientsF = (props) => {
             [
               {// row 
                 text: {
-                  text: 'Dru Manure', fontSize: 9,
+                  text: 'Dry Manure', fontSize: 9,
                 }
               },
               {// row 1
                 text: {
-                  text: '26,603.77', fontSize: 9,
+                  text: formatFloat(props.dryTotals[0]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.dryTotals[1]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.dryTotals[2]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.dryTotals[3]), fontSize: 9,
                   alignment: 'right',
                 }
               },
@@ -1677,25 +1675,25 @@ const availableNutrientsF = (props) => {
               },
               {// row 1
                 text: {
-                  text: '26,603.77', fontSize: 9,
+                  text: formatFloat(props.processTotals[0]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.processTotals[1]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.processTotals[2]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.processTotals[3]), fontSize: 9,
                   alignment: 'right',
                 }
               },
@@ -1710,28 +1708,28 @@ const availableNutrientsF = (props) => {
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: '26,603.77', fontSize: 9,
+                  text: formatFloat(props.total[0]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.total[1]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.total[2]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.total[3]), fontSize: 9,
                   alignment: 'right',
 
                 }
@@ -1745,69 +1743,92 @@ const availableNutrientsF = (props) => {
   }
 }
 const availableNutrientsGSolidTableRow = (props) => {
+  console.log(props)
   return [
     {// row 1
       text: {
-        text: '05/20/2020', fontSize: 8,
+        // text: '05/20/2020',
+        text: typeof (props.last_date_hauled) == typeof ('') ? props.last_date_hauled.split("T")[0] : '',
+        fontSize: 8,
         alignment: 'center',
       }
     },
     {// row 
       text: {
-        text: 'Corral Solids', fontSize: 8,
+        // text: 'Corral Solids',
+        text: props.material_type,
+        fontSize: 8,
       }
     },
     {// row 1
       text: {
-        text: '1,898.00 ton', fontSize: 8,
+        // text: '1,898.00 ton',
+        text: formatFloat(props.amount_hauled),
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: 'Dry-weight', fontSize: 8,
+        // text: 'Dry-weight',
+        text: props.reporting_method,
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '56.00', fontSize: 8,
+        // text: '56.00',
+        text: formatFloat(props.moisture),
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '0.0000', fontSize: 8,
+        // text: '0.0000', density not in sheet or DB
+        text: '',
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '19,400.00', fontSize: 8,
+        // text: '19,400.00',
+        text: formatFloat(props.n_con_mg_kg),
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '5,280.00', fontSize: 8,
+        // text: '5,280.00',
+        text: formatFloat(props.p_con_mg_kg),
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '21,800.00', fontSize: 8,
+        // text: '21,800.00',
+        text: formatFloat(props.k_con_mg_kg),
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '0.00', fontSize: 8,
+        // text: '0.00',
+        text: '',
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '0.00', fontSize: 8,
+        // text: '0.00',
+        text: formatFloat(props.tfs),
+        fontSize: 8,
         alignment: "right",
       }
     }
@@ -1818,60 +1839,70 @@ const availableNutrientsGLiquidTableRow = (props) => {
     {// row 1
 
       text: {
-        text: '05/20/2020', fontSize: 8,
+        text: props.last_date_hauled ? props.last_date_hauled.split("T")[0] : '',
+        fontSize: 8,
         alignment: 'center',
       }
     },
     {// row 
       text: {
-        text: 'Corral Solids', fontSize: 8,
+        text: props.material_type,
+        fontSize: 8,
       }
     },
     {// row 1
       text: {
-        text: '1,898.00 gal', fontSize: 8,
+        text: props.amount_hauled,
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '484.00', fontSize: 8,
+        text: props.kn_con_mg_l,
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '336.00', fontSize: 8,
+        text: props.nh4_con_mg_l,
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '0.00', fontSize: 8,
+        text: props.nh3_con_mg_l,
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '0.00', fontSize: 8,
+        text: props.no3_con_mg_l,
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '71.90', fontSize: 8,
+        text: props.p_con_mg_l,
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '997.00', fontSize: 8,
+        text: props.k_con_mg_l,
+        fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: '0.00', fontSize: 8,
+        text: props.ec_umhos_cm,
+        fontSize: 8,
         alignment: "right",
       }
     },
@@ -1879,18 +1910,18 @@ const availableNutrientsGLiquidTableRow = (props) => {
       headlineLevel: "rowAvailableNutrientsGLiquidTableRow",
       text: {
         headlineLevel: "rowAvailableNutrientsGLiquidTableRow",
-        text: '8,800.00', fontSize: 8,
+        text: props.tds,
+        fontSize: 8,
         alignment: "right",
       }
     }
   ]
 }
 const availableNutrientsG = (props) => {
-  let exportRowData = [{}, {}, {}, {}]
-  let exportSolidRows = exportRowData.map(row => {
+  let exportSolidRows = props.dry.map(row => {
     return availableNutrientsGSolidTableRow(row)
   })
-  let exportLiquidRows = exportRowData.map(row => {
+  let exportLiquidRows = props.process.map(row => {
     return availableNutrientsGLiquidTableRow(row)
   })
 
@@ -2024,6 +2055,12 @@ const availableNutrientsG = (props) => {
               {
                 fillColor: gray,
                 text: {
+                  text: "Ammonium-N (mg/L)", fontSize: 8,
+                }
+              },
+              {
+                fillColor: gray,
+                text: {
                   text: "Ammonia-N (mg/L)", fontSize: 8,
                 }
               },
@@ -2031,12 +2068,6 @@ const availableNutrientsG = (props) => {
                 fillColor: gray,
                 text: {
                   text: "Nitrate-N (mg/L)", fontSize: 8,
-                }
-              },
-              {
-                fillColor: gray,
-                text: {
-                  text: "N (mg/L)", fontSize: 8,
                 }
               },
               {
@@ -2121,25 +2152,25 @@ const availableNutrientsG = (props) => {
               },
               {// row 1
                 text: {
-                  text: '26,603.77', fontSize: 9,
+                  text: formatFloat(props.dryTotal[0]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.dryTotal[1]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.dryTotal[2]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.dryTotal[3]), fontSize: 9,
                   alignment: 'right',
                 }
               },
@@ -2152,25 +2183,25 @@ const availableNutrientsG = (props) => {
               },
               {// row 1
                 text: {
-                  text: '26,603.77', fontSize: 9,
+                  text: formatFloat(props.processTotal[0]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.processTotal[1]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.processTotal[2]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.processTotal[3]), fontSize: 9,
                   alignment: 'right',
                 }
               },
@@ -2185,28 +2216,28 @@ const availableNutrientsG = (props) => {
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: '26,603.77', fontSize: 9,
+                  text: formatFloat(props.total[0]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.total[1]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.total[2]), fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: '0.00', fontSize: 9,
+                  text: formatFloat(props.total[3]), fontSize: 9,
                   alignment: 'right',
 
                 }
@@ -2224,31 +2255,31 @@ const availableNutrientsG = (props) => {
 const applicationAreaATableRow = (props) => {
   return [
     { // row 1
-      text: 'Field 1337', fontSize: 8
+      text: props.title, fontSize: 8
     },
     { // row 1
-      text: '37', fontSize: 8,
+      text: props.acres, fontSize: 8,
       alignment: 'right',
     },
     { // row 1
-      text: '22', fontSize: 8,
+      text: props.cropable, fontSize: 8,
       alignment: 'right',
     },
     { // row 1
-      text: '2', fontSize: 8,
+      text: props.harvest_count, fontSize: 8,
       alignment: 'right',
     },
     { // row 1
-      text: 'Process Wastewater', fontSize: 8
+      text: props.waste_type, fontSize: 8
     },
     { // row 1
-      text: '1234-4321-2314-1423', fontSize: 8
+      text: props.parcels.join(" "), fontSize: 8
     },
   ]
 }
 const applicationAreaA = (props) => {
-  const areas = [{}, {}, {}, {}]
-  let rows = areas.map(row => {
+  
+  let rows = props.fields.map(row => {
     return applicationAreaATableRow(row)
   })
 
@@ -6510,7 +6541,7 @@ const attachmentsA = (props) => {
   General Order, Groundwater Reporting Section starting on page MRP-13.`
   const s5 = `Dischargers that are required to monitor storm water more frequently than required in the General Order must submit monitoring results as directed in the General Order,
   Storm Water Reporting Section on page MRP-14.`
-  
+
 
   return {
     pageBreak: 'before',
@@ -6538,9 +6569,9 @@ const attachmentsA = (props) => {
           ]
         }
       },
-      
+
       {
-        margin: [10,0,0,0],
+        margin: [10, 0, 0, 0],
         stack: [
           {
             text: {
@@ -6549,7 +6580,7 @@ const attachmentsA = (props) => {
           },
           line(650),
           {
-            margin: [5,0,0,5],
+            margin: [5, 0, 0, 5],
             text: {
               text: s1, fontSize: 8
             }
@@ -6561,7 +6592,7 @@ const attachmentsA = (props) => {
           },
           line(650),
           {
-            margin: [5,0,0,5],
+            margin: [5, 0, 0, 5],
             text: {
               text: s2, fontSize: 8
             }
@@ -6573,7 +6604,7 @@ const attachmentsA = (props) => {
           },
           line(650),
           {
-            margin: [5,0,0,5],
+            margin: [5, 0, 0, 5],
             text: {
               text: s3, fontSize: 8
             }
@@ -6585,7 +6616,7 @@ const attachmentsA = (props) => {
           },
           line(650),
           {
-            margin: [5,0,0,5],
+            margin: [5, 0, 0, 5],
             text: {
               text: s4, fontSize: 8
             }
@@ -6597,7 +6628,7 @@ const attachmentsA = (props) => {
           },
           line(650),
           {
-            margin: [5,0,0,5],
+            margin: [5, 0, 0, 5],
             text: {
               text: s5, fontSize: 8
             }
@@ -6621,33 +6652,36 @@ const attachmentsA = (props) => {
  *  
  */
 export default function dd(props, images) {
-  console.log(images)
   const body = [
     dairyInformationA(props.dairyInformationA),
     dairyInformationB(props.dairyInformationB),
     dairyInformationC(props.dairyInformationC),
     // 'text\n\n\n\n\n\n\n\nZ',
     // 'text\n\n\n\nZZ',
-    availableNutrientsA({...props.availableNutrientsAB, p_breed: props.dairyInformationA.p_breed}),   // bind last two rows and last row of table together...
+    availableNutrientsA({ ...props.availableNutrientsAB, p_breed: props.dairyInformationA.p_breed }),   // bind last two rows and last row of table together...
     availableNutrientsB(props.availableNutrientsAB),  // bind this section together
     availableNutrientsC(props.availableNutrientsC), // bind this section together
-    availableNutrientsD(props),
-    availableNutrientsE(props),
-    availableNutrientsF(props),
-    availableNutrientsG(props),
-    applicationAreaA(props),
+    availableNutrientsD(props.availableNutrientsD),
+    availableNutrientsE(props), // subsurface tile drainage
+    availableNutrientsF(props.availableNutrientsF),
+    availableNutrientsG(props.availableNutrientsG),
+
+    // Here
+    applicationAreaA(props.applicationAreaA),
     applicationAreaB(props),
     nutrientBudgetA(props),
-    nutrientBudgetB(props, images),
+    nutrientBudgetB(props, images), // Graph
     nutrientAnalysisA(props),
-    nutrientAnalysisB(props),
+    nutrientAnalysisB(props),  
     nutrientAnalysisC(props),
     nutrientAnalysisD(props),
     nutrientAnalysisE(props),
     nutrientAnalysisF(props),
     naprbalA(props),
-    naprbalB(props, images),
+    naprbalB(props, images), 
     naprbalC(props, images),
+
+    // Minimal data below, need to create, answers to basic questions.
     exceptionReportingABC(props),
     nmpeaStatementsAB(props),
     notesA(props),

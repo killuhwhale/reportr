@@ -24,3 +24,9 @@ export const groupBySortBy = (list, groupBy, sortBy) => {
   })
   return grouped
 }
+
+
+export const formatFloat = (num, precision=2) => {
+  num = typeof(num) === typeof('') ? parseFloat(num.replaceAll(',', '')): num
+  return new Intl.NumberFormat().format(num.toFixed(precision))
+}

@@ -145,17 +145,26 @@ module.exports = {
     return pool.query(
       format(
         `SELECT
-            field_parcel.pk,
-            dairies.title as dairyTitle,
-            parcels.pnumber, fields.title, fields.acres,
-            fields.cropable FROM field_parcel
-          JOIN fields
-          ON field_parcel.field_id = fields.pk
-          JOIN parcels
-          ON field_parcel.parcel_id = parcels.pk
-          JOIN dairies
-          ON field_parcel.dairy_id = dairies.pk
-          WHERE field_parcel.dairy_id = %L
+            fp.pk,
+            fp.field_id,
+            d.title as dairyTitle,
+            p.pnumber,
+            f.title,
+            f.acres,
+            f.cropable
+          
+          FROM field_parcel fp
+
+          JOIN fields f
+          ON fp.field_id = f.pk
+          
+          JOIN parcels p
+          ON fp.parcel_id = p.pk
+          
+          JOIN dairies d
+          ON fp.dairy_id = d.pk
+          
+          WHERE fp.dairy_id = %L
          `
         , dairy_id),
       [],
@@ -406,6 +415,7 @@ module.exports = {
 
            c.title as croptitle,
            f.title as fieldtitle,
+           f.pk as field_id,
            fc.plant_date,
            fc.acres_planted,
            fc.typical_yield,
@@ -668,6 +678,7 @@ module.exports = {
           
           c.title as croptitle,
           f.title as fieldtitle,
+          f.pk as field_id,
           fc.plant_date,
           fc.acres_planted,
           fc.typical_yield,
@@ -1003,6 +1014,7 @@ module.exports = {
         
 
         f.title as fieldtitle,
+        f.pk as field_id,
         c.title as croptitle,
         fc.plant_date,
 
@@ -1072,6 +1084,17 @@ module.exports = {
         dairy_id = %L
         `, dairy_id),
       [],
+      callback
+    )
+  },
+  getNutrientImportByMaterialType: (values, callback) => {
+    return pool.query(
+      `SELECT *
+      FROM nutrient_import
+      WHERE 
+      material_type LIKE $1 and
+      dairy_id = $2`,
+      values,
       callback
     )
   },
@@ -1632,6 +1655,105 @@ module.exports = {
         em.dairy_id = %L
         `, dairy_id),
       [],
+      callback
+    )
+  },
+  getExportManifestByMaterialType: (values, callback) => {
+    return pool.query(
+      
+        `SELECT 
+        em.pk,
+        em.last_date_hauled,
+        em.amount_hauled,
+        em.material_type,
+        em.amount_hauled_method,
+        em.reporting_method, 
+        em.moisture,
+        em.n_con_mg_kg,
+        em.p_con_mg_kg,
+        em.k_con_mg_kg,
+        em.tfs,
+
+
+        em.ec_umhos_cm,
+        em.salt_lbs_rm,
+        em.n_lbs_rm,
+        em.p_lbs_rm,
+        em.k_lbs_rm,
+        
+        em.kn_con_mg_l,
+        em.nh4_con_mg_l,
+        em.nh3_con_mg_l,
+        em.no3_con_mg_l,
+        em.p_con_mg_l,
+        em.k_con_mg_l,
+        em.tds,
+
+        ed.pnumber,
+        ed.street as dest_street,
+        ed.cross_street as dest_cross_street,
+        ed.county as dest_county,
+        ed.city as dest_city,
+        ed.city_state as dest_city_state,
+        ed.city_zip as dest_city_zip,
+
+        er.pk as recipient_id,
+        er.dest_type,
+        er.title as recipient_title,
+        er.primary_phone as recipient_primary_phone,
+        er.street as recipient_street,
+        er.cross_street as recipient_cross_street,
+        er.county as recipient_county,
+        er.city as recipient_city,
+        er.city_state as recipient_city_state,
+        er.city_zip as recipient_city_zip,
+
+        ec.first_name as contact_first_name,
+        ec.primary_phone as contact_primary_phone,
+
+        op.title as operator_title,
+        op.primary_phone as operator_primary_phone,
+        op.secondary_phone as operator_secondary_phone,
+        op.street as operator_street,
+        op.city as operator_city, 
+        op.city_state as operator_city_state,
+        op.city_zip as operator_city_zip,
+        op.is_owner as operator_is_owner,
+        op.is_responsible as operator_is_responsible,
+
+        eh.title as hauler_title,
+        eh.first_name as hauler_first_name,
+        eh.primary_phone as hauler_primary_phone,
+        eh.street as hauler_street,
+        eh.cross_street as hauler_cross_street,
+        eh.county as hauler_county,
+        eh.city as hauler_city,
+        eh.city_state as hauler_city_state,
+        eh.city_zip as hauler_city_zip
+
+        FROM export_manifest em
+
+        JOIN export_contact ec
+        ON ec.pk = em.export_contact_id
+        
+        JOIN operators op
+        ON op.pk = em.operator_id
+        
+        JOIN export_dest ed
+        ON ed.pk = em.export_dest_id
+        
+        JOIN export_recipient er
+        ON er.pk = ed.export_recipient_id
+
+        JOIN export_hauler eh
+        ON eh.pk = em.export_hauler_id
+
+
+        WHERE 
+        em.material_type ILIKE $1 and
+        em.dairy_id = $2
+        `,
+      values,
       callback
     )
   },

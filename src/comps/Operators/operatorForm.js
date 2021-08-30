@@ -20,7 +20,6 @@ class OperatorForm extends Component {
   }
 
   render() {
-    console.log(this.state.operator)
     return (
       <Grid item container xs={12}>
         <Grid item xs={12}>
