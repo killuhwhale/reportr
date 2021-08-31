@@ -24,17 +24,12 @@ import AddProcessWastewaterModal from "../Modals/addProcessWastewaterModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
-
+import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
 
 const BASE_URL = "http://localhost:3001"
-const MATERIAL_TYPES = [
-  '',
-  'Process wastewater',
-  'Process wastewater sludge',
-]
 
 /** View for Process Wastewater Entry in DB */
 const ProcessWastewaterAppEvent = (props) => {
@@ -258,7 +253,7 @@ class ProcessWastewater extends Component {
     createObj.dairy_id = this.state.dairy_id
 
     createObj.field_crop_app_id = this.state.fieldCropAppEvents[createObj.app_event_idx].pk
-    createObj.material_type = MATERIAL_TYPES[createObj.material_type_idx]
+    createObj.material_type = WASTEWATER_MATERIAL_TYPES[createObj.material_type_idx]
 
 
 
@@ -445,7 +440,7 @@ class ProcessWastewater extends Component {
           fieldCropAppEvents={this.state.fieldCropAppEvents}
 
           createProcessWastewaterObj={this.state.createProcessWastewaterObj}
-          materialTypes={MATERIAL_TYPES}
+          materialTypes={WASTEWATER_MATERIAL_TYPES}
 
           onAction={this.createProcessWastewater.bind(this)}
           onChange={this.onCreateProcessWastewaterChange.bind(this)}

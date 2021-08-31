@@ -2253,6 +2253,7 @@ const availableNutrientsG = (props) => {
 
 
 const applicationAreaATableRow = (props) => {
+  // console.log(props)
   return [
     { // row 1
       text: props.title, fontSize: 8
@@ -2364,17 +2365,17 @@ const applicationAreaA = (props) => {
                   },
                   { // row 1
                     fillColor: gray,
-                    text: '583', fontSize: 8,
+                    text: props.total_for_apps[0], fontSize: 8,
                     alignment: 'right'
                   },
                   { // row 1
                     fillColor: gray,
-                    text: '485', fontSize: 8,
+                    text: props.total_for_apps[1], fontSize: 8,
                     alignment: 'right'
                   },
                   { // row 1
                     fillColor: gray,
-                    text: '20', fontSize: 8,
+                    text: props.total_for_apps[2], fontSize: 8,
                     alignment: 'right'
                   },
                   { // row 1
@@ -2393,17 +2394,17 @@ const applicationAreaA = (props) => {
                   },
                   { // row 1
                     fillColor: gray,
-                    text: '20', fontSize: 8,
+                   text: props.total_NOT_for_apps[0], fontSize: 8,
                     alignment: 'right'
                   },
                   { // row 1
                     fillColor: gray,
-                    text: '18', fontSize: 8,
+                   text: props.total_NOT_for_apps[1], fontSize: 8,
                     alignment: 'right'
                   },
                   { // row 1
                     fillColor: gray,
-                    text: '1', fontSize: 8,
+                    text: props.total_NOT_for_apps[2], fontSize: 8,
                     alignment: 'right'
                   },
                   { // row 1
@@ -2422,17 +2423,17 @@ const applicationAreaA = (props) => {
                   },
                   { // row 1
                     fillColor: gray,
-                    text: '603', fontSize: 8,
+                    text: props.total_app_area[0], fontSize: 8,
                     alignment: 'right'
                   },
                   { // row 1
                     fillColor: gray,
-                    text: '503', fontSize: 8,
+                    text: props.total_app_area[1], fontSize: 8,
                     alignment: 'right'
                   },
                   { // row 1
                     fillColor: gray,
-                    text: '21', fontSize: 8,
+                   text: props.total_app_area[2], fontSize: 8,
                     alignment: 'right'
                   },
                   { // row 1
@@ -2452,53 +2453,24 @@ const applicationAreaA = (props) => {
     ]
   }
 }
-const applicationAreaBFieldHarvestTableSubTableRow = (props) => {
+const applicationAreaBFieldHarvestTableSubTableRow = (props) => {  
+  const harvest_date = props.harvest_date ? props.harvest_date.split('T')[0]: ''
   return [
     {
       text: {
-        text: props.harvestDate,
+        text: harvest_date,
         fontSize: 8,
       }
     },
     {
       text: {
-        text: '440.00 ton',
+        text: `${props.actual_yield} tons`,
         fontSize: 8,
       }
     },
     {
       text: {
-        text: 'As-is',
-        fontSize: 8,
-      }
-    },
-    {
-      text: {
-        text: '',
-        fontSize: 8,
-      }
-    },
-    {
-      text: {
-        text: '71.00',
-        fontSize: 8,
-      }
-    },
-    {
-      text: {
-        text: '5,450.00',
-        fontSize: 8,
-      }
-    },
-    {
-      text: {
-        text: '1,040.00',
-        fontSize: 8,
-      }
-    },
-    {
-      text: {
-        text: '12,200.00',
+        text: props.method_of_reporting,
         fontSize: 8,
       }
     },
@@ -2510,7 +2482,37 @@ const applicationAreaBFieldHarvestTableSubTableRow = (props) => {
     },
     {
       text: {
-        text: '9.52',
+        text: `${props.actual_moisture}%`,
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: props.actual_n,
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: props.actual_p,
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: props.actual_k,
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: '',
+        fontSize: 8,
+      }
+    },
+    {
+      text: {
+        text: `${props.tfs}%`,
         fontSize: 8,
       }
     },
@@ -2518,8 +2520,10 @@ const applicationAreaBFieldHarvestTableSubTableRow = (props) => {
 }
 // For each field, this shows each crops plant date, and corresponding harvests
 const applicationAreaBFieldHarvestTableSubTable = (props) => {
-  let dummyHarvestDates = [{ harvestDate: "08/29/2020" }, { harvestDate: "12/27/2020" }]
-  let rows = dummyHarvestDates.map(harvestEvent => {
+  let cropHeader = props.harvests && props.harvests.length > 0 ? props.harvests[0] : {}
+  let plant_date = cropHeader.plant_date ? cropHeader.plant_date.split("T")[0] : 'No date entered'
+
+  let rows = props.harvests.map(harvestEvent => {
     return applicationAreaBFieldHarvestTableSubTableRow(harvestEvent)
   })
   return [{
@@ -2534,7 +2538,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
           {
             fillColor: gray,
             text: {
-              text: '01/01/2020: Almond, in shell',
+              text: `${plant_date} ${cropHeader.croptitle}`,
               fontSize: 9,
             }
           }
@@ -2558,7 +2562,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: 'Almond, in shell:',
+                      text: cropHeader.croptitle,
                       fontSize: 8,
                     }
                   },
@@ -2572,7 +2576,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: '18:',
+                      text: cropHeader.acres_planted,
                       fontSize: 8,
                     }
                   },
@@ -2586,7 +2590,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: '01/01/2020',
+                      text: plant_date,
                       fontSize: 8,
                     }
                   }
@@ -2739,31 +2743,31 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                   },
                   {
                     text: {
-                      text: '28.00',
+                      text: props.antiTotals[0],
                       fontSize: 8,
                     },
                   },
                   {
                     text: {
-                      text: '224.00',
+                      text: props.antiTotals[1],
                       fontSize: 8,
                     },
                   },
                   {
                     text: {
-                      text: '42.00',
+                      text: props.antiTotals[2],
                       fontSize: 8,
                     },
                   },
                   {
                     text: {
-                      text: '184.0',
+                      text: props.antiTotals[3],
                       fontSize: 8,
                     },
                   },
                   {
                     text: {
-                      text: '0.00',
+                      text: props.antiTotals[4],
                       fontSize: 8,
                     },
                   },
@@ -2779,35 +2783,35 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                   {
                     border: [true, true, true, true],
                     text: {
-                      text: '28.00',
+                      text: props.totals[0],
                       fontSize: 8,
                     },
                   },
                   {
                     border: [true, true, true, true],
                     text: {
-                      text: '224.00',
+                      text: props.totals[1],
                       fontSize: 8,
                     },
                   },
                   {
                     border: [true, true, true, true],
                     text: {
-                      text: '42.00',
+                      text: props.totals[2],
                       fontSize: 8,
                     },
                   },
                   {
                     border: [true, true, true, true],
                     text: {
-                      text: '184.0',
+                      text: props.totals[3],
                       fontSize: 8,
                     },
                   },
                   {
                     border: [true, true, true, true],
                     text: {
-                      text: '0.00',
+                      text: props.totals[4],
                       fontSize: 8,
                     },
                   },
@@ -2822,16 +2826,21 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
 }
 const applicationAreaBFieldHarvestTable = (props) => {
   // list of objects
-  let events = props.map(event => {
-    return applicationAreaBFieldHarvestTableSubTable(event) // returns list of table objects
+  let allHarvestEvents = Object.keys(props).map(key => props[key]) // Key: Plant_date, now this is a list of {antiTotals, harvests, totals}
+  let headerEvent = allHarvestEvents && allHarvestEvents .length > 0 ? allHarvestEvents[0] : {} // Neeed for information about field, {antiTotals, harvests, totals}
+  let headerEventHarvestInfo = headerEvent &&  headerEvent.harvests &&   headerEvent.harvests.length > 0 ? headerEvent.harvests[0] : {} // First harvest objects in
+  
+  let events = allHarvestEvents.map(event => {
+    return applicationAreaBFieldHarvestTableSubTable(event) // returns list of table objects Header: plantdate: crop title
   })
+
   let body = [
     [
       {
         border: [true, true, false, true],
         fillColor: gray,
         text: {
-          text: 'Field 1',
+          text: headerEventHarvestInfo.fieldtitle,
           fontSize: 10,
         }
       }, { text: '', fillColor: gray, border: [false, true, true, true] } // empty cell
@@ -2849,7 +2858,7 @@ const applicationAreaBFieldHarvestTable = (props) => {
       {
         border: [false, false, true, true],
         text: {
-          text: 'Field 1',
+          text: headerEventHarvestInfo.fieldtitle,
           fontSize: 9,
         }
       }
@@ -2879,20 +2888,12 @@ const applicationAreaB = (props) => {
     ],
     [
       {}
-    ],
-    [
-      {}
-    ],
-    [
-      {}
-    ],
-    [
-      {}
     ]
   ]
+  
   // stack of table for each field
-  let harvestTable = fieldHarvests.map((fieldHarvests) => {
-    return applicationAreaBFieldHarvestTable(fieldHarvests) // returns a table for a field with multiple field harvest events
+  let harvestTable = Object.keys(props.groupedHarvests).map(key => {
+    return applicationAreaBFieldHarvestTable(props.groupedHarvests[key]) // returns a table for a field with multiple field harvest events
   })
 
   return {
@@ -6668,7 +6669,7 @@ export default function dd(props, images) {
 
     // Here
     applicationAreaA(props.applicationAreaA),
-    applicationAreaB(props),
+    applicationAreaB(props.applicationAreaB),
     nutrientBudgetA(props),
     nutrientBudgetB(props, images), // Graph
     nutrientAnalysisA(props),

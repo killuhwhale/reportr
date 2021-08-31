@@ -18,6 +18,8 @@ import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
 import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, } from '../../utils/TSV'
 import {groupBySortBy} from "../../utils/format"
+import {NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES} from '../../utils/constants'
+
 const BASE_URL = "http://localhost:3001"
 const PRECIPITATIONS = [
   "No Precipitation",
@@ -47,9 +49,6 @@ const APP_METHODS = [
 
 const REPORTING_METHODS = ['dry-weight', 'as-is']
 const SOURCE_OF_ANALYSES = ['Lab Analysis', 'Other/ estimated']
-const MATERIAL_TYPES = ['Separator solids', 'Corral solids', "Scraped material", 'Bedding', 'Compost']
-
-const NUTRIENT_IMPORT_MATERIAL_TYPES = ['Commercial fertilizer/ Other: Liquid commercial fertilizer', 'Commercial fertilizer/ Other: Solid commercial fertilizer', 'Commercial fertilizer/ Other: Other liquid nutrient source', 'Commercial fertilizer/ Other: Other solid nutrient source', 'Dry manure: Separator solids', 'Dry manure: Corral solids', 'Dry manure: Scraped material', 'Dry manure: Bedding', 'Dry manure: Compost', 'Process wastewater', 'Process wastewater: Process wastewater sludge']
 
 
 class NutrientApplicationTab extends Component {

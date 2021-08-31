@@ -1,6 +1,6 @@
 --- db: reportrr, user: admin, pass 
 
--- Clear DB
+-- Clear DB COMMAND :) 
 -- DO $$ DECLARE
 --     r RECORD;
 -- BEGIN
@@ -154,36 +154,7 @@ CREATE TABLE IF NOT EXISTS field_crop(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
--- Abandoned... not reused informationn, it is unique to each harvest...
--- CREATE TABLE IF NOT EXISTS plant_tissue_analysis(
---   pk SERIAL PRIMARY KEY,
---   dairy_id INT NOT NULL,
---   sample_date timestamp NOT NULL,  
---   src_of_analysis VARCHAR(50) NOT NULL,
---   method_of_reporting VARCHAR(20), -- reporting method
-  
---   moisture NUMERIC(6,2), -- stored as a percent 10 == 10%
---   n_con NUMERIC(8,6), -- Come from lab as a percentage of concentration in mg/kg, divide by .49999899 to convert to lb/ ton conversion factor
---   p_con NUMERIC(8,6),       -- With the conversions factor in lb/ton we can calculate the required Annual report data
---   k_con NUMERIC(8,6),       --    totals for N, P K & Salt == yield(tons/acre) * CF (concentration factor in lb/ton) 
---   tfs_con NUMERIC(8,6), -- total fixed solids
---   UNIQUE(dairy_id, sample_date, src_of_analysis, method_of_reporting, moisture, n_con),
---   CONSTRAINT fk_dairy
---     FOREIGN KEY(dairy_id) 
--- 	  REFERENCES dairies(pk)
---     ON UPDATE CASCADE ON DELETE CASCADE,
---   CONSTRAINT fk_field_crop
---     FOREIGN KEY(field_crop_id) 
--- 	  REFERENCES field_crop(pk)
---     ON UPDATE CASCADE ON DELETE CASCADE
-
--- );
-
--- Rename: basis->mehtod_of_reporting, Delete: density
--- Concentration conversion factors:
--- Display mg/kg == x 10,000
--- Display actualy yields == divide by 0.49999899 and then use in the formula
-    -- yield(tons/acre) * convertedFactor(lbs/ton) == Totals N, P, K in lbs/acre
+-- Harvests
 CREATE TABLE IF NOT EXISTS field_crop_harvest(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -214,18 +185,8 @@ CREATE TABLE IF NOT EXISTS field_crop_harvest(
     ON UPDATE CASCADE ON DELETE CASCADE
 
 );
-CREATE TABLE IF NOT EXISTS TSVs(
-  pk SERIAL PRIMARY KEY,
-  dairy_id INT NOT NULL,
-  title VARCHAR(100) NOT NULL,
-  data TEXT,
-  tsvType VARCHAR(30),
-  UNIQUE(dairy_id, tsvType),
-  CONSTRAINT fk_dairy
-    FOREIGN KEY(dairy_id) 
-	  REFERENCES dairies(pk)
-    ON UPDATE CASCADE ON DELETE CASCADE
-);
+
+
 CREATE TABLE IF NOT EXISTS field_crop_app(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -247,6 +208,8 @@ CREATE TABLE IF NOT EXISTS field_crop_app(
     ON UPDATE CASCADE ON DELETE CASCADE
 
 );
+
+
 CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater_analysis(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -299,6 +262,7 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater(
 
 );
 
+
 -- Source
 CREATE TABLE IF NOT EXISTS field_crop_app_freshwater_source(
   pk SERIAL PRIMARY KEY,
@@ -311,7 +275,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_freshwater_source(
 	  REFERENCES dairies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS field_crop_app_freshwater_analysis(
    pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -343,7 +306,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_freshwater_analysis(
     ON UPDATE CASCADE ON DELETE CASCADE
 
 );
-
 CREATE TABLE IF NOT EXISTS field_crop_app_freshwater(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -373,6 +335,7 @@ CREATE TABLE IF NOT EXISTS field_crop_app_freshwater(
 
 );
 
+
 CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure_analysis(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -400,7 +363,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure_analysis(
     REFERENCES dairies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
-
 -- Dry Manure aka Solid manure 
 CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure(
   pk SERIAL PRIMARY KEY,
@@ -431,6 +393,7 @@ CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure(
     ON UPDATE CASCADE ON DELETE CASCADE
 
 );
+
 
 --  Material type will be the key to tying to nutrient applications
 -- E.g. commerical fertilizer is an nutrient application that is from a nutrient import.
@@ -469,8 +432,6 @@ CREATE TABLE IF NOT EXISTS nutrient_import(
 	  REFERENCES dairies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
-
-
 -- For the specific upload of Fertilizer app events - nutrient_import is similar to *_analysis and holds the analysis data and amount imported, will be used in AR.pdf in its own section
 CREATE TABLE IF NOT EXISTS field_crop_app_fertilizer(
   pk SERIAL PRIMARY KEY,
@@ -502,9 +463,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_fertilizer(
 );
 
 
-
-
-
 -- Contact information for export haulers
 CREATE TABLE IF NOT EXISTS export_hauler(
   pk SERIAL PRIMARY KEY,
@@ -528,7 +486,6 @@ CREATE TABLE IF NOT EXISTS export_hauler(
 	  REFERENCES dairies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
-
 -- Contact of dairy that is exporting (source)
 CREATE TABLE IF NOT EXISTS export_contact(
   pk SERIAL PRIMARY KEY,
@@ -547,7 +504,6 @@ CREATE TABLE IF NOT EXISTS export_contact(
 	  REFERENCES dairies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
-
 -- Contact of recipient
 CREATE TABLE IF NOT EXISTS export_recipient(
   pk SERIAL PRIMARY KEY,
@@ -571,7 +527,6 @@ CREATE TABLE IF NOT EXISTS export_recipient(
 	  REFERENCES dairies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
-
 -- Export Destination, Recipient + address OR APN
 CREATE TABLE IF NOT EXISTS export_dest(
   pk SERIAL PRIMARY KEY,
@@ -594,9 +549,6 @@ CREATE TABLE IF NOT EXISTS export_dest(
 	  REFERENCES dairies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
-
-
-
 CREATE TABLE IF NOT EXISTS export_manifest(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -651,5 +603,19 @@ CREATE TABLE IF NOT EXISTS export_manifest(
   CONSTRAINT fk_export_dest
     FOREIGN KEY(export_dest_id) 
 	  REFERENCES export_dest(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS TSVs(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  data TEXT,
+  tsvType VARCHAR(30),
+  UNIQUE(dairy_id, tsvType),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );

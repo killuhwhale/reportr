@@ -59,8 +59,8 @@ class AddFreshwaterModal extends Component {
                 <Grid item xs={6}>
                   <TextField
                     name='src_desc'
-                    onChange={this.props.onChange.bind(this)}
-                    value={this.state.createFreshwaterSourceObj.src_desc}
+                    onChange={this.props.onChange}
+                    value={this.props.createFreshwaterSourceObj.src_desc}
                     label="Source description"
                     style={{ width: "100%" }}
                     SelectProps={{
@@ -70,16 +70,27 @@ class AddFreshwaterModal extends Component {
                 </Grid>
 
                 <Grid item xs={6}>
-                  <TextField
-                    name='src_type'
-                    onChange={this.props.onChange.bind(this)}
-                    value={this.state.createFreshwaterSourceObj.src_type}
+                  <TextField select
+                    name='src_type_idx'
+                    onChange={this.props.onChange}
+                    value={this.props.createFreshwaterSourceObj.src_type_idx}
                     label="Source type"
                     style={{ width: "100%" }}
                     SelectProps={{
                       native: true,
                     }}
-                  />
+                  >
+                    {this.props.FRESHWATER_SOURCE_TYPES.length > 0 ?
+                      this.props.FRESHWATER_SOURCE_TYPES.map((src_type, i) => {
+                        return (
+                          <option key={`fwsrc_type${i}`} value={i}>{src_type}</option>
+                        )
+                      })
+                      :
+                      <option key={`fwsrc_type`}>No freshwater source types.</option>
+
+                    }
+                  </TextField>
                 </Grid>
 
 

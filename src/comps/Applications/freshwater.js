@@ -29,7 +29,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
-
+import { FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
@@ -187,6 +187,7 @@ class Freshwater extends Component {
         dairy_id: props.dairy_id,
         src_desc: "",
         src_type: "",
+        src_type_idx: 0,
       },
       createFreshwaterAnalysisObj: {
         dairy_id: props.dairy_id,
@@ -284,8 +285,8 @@ class Freshwater extends Component {
   createFreshwaterSource() {
     let createObj = this.state.createFreshwaterSourceObj
     createObj.dairy_id = this.state.dairy_id
-
-    console.log("creating freshwater event: ", createObj)
+    createObj.src_type = FRESHWATER_SOURCE_TYPES[parseInt(createObj.src_type_idx)]
+    
     post(`${BASE_URL}/api/field_crop_app_freshwater_source/create`, createObj)
       .then(res => {
         console.log(res)
@@ -689,7 +690,7 @@ class Freshwater extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Add freshwater source`}
-
+          FRESHWATER_SOURCE_TYPES={FRESHWATER_SOURCE_TYPES}
           createFreshwaterSourceObj={this.state.createFreshwaterSourceObj}
 
           onAction={this.createFreshwaterSource.bind(this)}

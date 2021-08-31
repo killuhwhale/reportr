@@ -871,6 +871,7 @@ module.exports = {
           totalN,
 
           f.title as fieldtitle,
+          f.pk as field_id,
           c.title as croptitle,
           fc.plant_date,
 
@@ -1168,6 +1169,7 @@ module.exports = {
         ni.salt_con,
 
         f.title as fieldtitle,
+        f.pk as field_id,
         c.title as croptitle,
         fc.plant_date,
         fca.app_date
