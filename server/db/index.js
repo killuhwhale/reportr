@@ -396,6 +396,7 @@ module.exports = {
     return pool.query(
       format(
         `SELECT 
+          'harvest' as entry_type,
            fch.pk,
            fch.harvest_date,
            fch.actual_yield,
@@ -649,6 +650,7 @@ module.exports = {
       format(
         // nitrateN, totalP, totalK, totalTDS
         `SELECT 
+          'wastewater' as entry_type,
           fcapww.pk,
           fcapww.dairy_id,
           fcapww.field_crop_app_id,
@@ -673,8 +675,11 @@ module.exports = {
           fcapwwa.tds,
           fcapwwa.ph,
 
-          fca. app_date,
-          fca. app_method,
+          fca.app_date,
+          fca.app_method,
+          fca.precip_before,
+          fca.precip_during,
+          fca.precip_after,
           
           c.title as croptitle,
           f.title as fieldtitle,
@@ -847,6 +852,7 @@ module.exports = {
       format(
         // nitrateN, totalP, totalK, totalTDS
         `SELECT 
+          'freshwater' as entry_type,
           sample_date,
           src_desc,
           src_type,
@@ -875,7 +881,12 @@ module.exports = {
           c.title as croptitle,
           fc.plant_date,
 
-          fca.app_date
+          fca.app_date,
+          fca.app_method,
+          fca.precip_before,
+          fca.precip_during,
+          fca.precip_after
+          
         
         FROM field_crop_app_freshwater fcfw
 
@@ -989,6 +1000,7 @@ module.exports = {
       format(
         // nitrateN, totalP, totalK, totalTDS
         `SELECT 
+        'manure' as entry_type,
         fcasm.src_desc,
         fcasm.amount_applied,
         fcasm.amt_applied_per_acre,
@@ -1019,7 +1031,12 @@ module.exports = {
         c.title as croptitle,
         fc.plant_date,
 
-        fca.app_date
+        fca.app_date,
+        fca.app_method,
+        fca.precip_before,
+        fca.precip_during,
+        fca.precip_after
+          
         
         FROM field_crop_app_solidmanure fcasm
 
@@ -1152,6 +1169,7 @@ module.exports = {
       format(
         // nitrateN, totalP, totalK, totalTDS
         `SELECT 
+        'fertilizer' as entry_type,
         fcaf.amount_applied,
         fcaf.n_lbs_acre,
         fcaf.p_lbs_acre,
@@ -1172,7 +1190,12 @@ module.exports = {
         f.pk as field_id,
         c.title as croptitle,
         fc.plant_date,
-        fca.app_date
+        fca.app_date,
+        fca.app_method,
+        fca.precip_before,
+        fca.precip_during,
+        fca.precip_after
+          
         
 
 

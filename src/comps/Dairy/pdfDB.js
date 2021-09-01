@@ -1,6 +1,6 @@
 import { get, post } from '../../utils/requests'
 import { toFloat } from '../../utils/convertCalc'
-import { formatFloat, groupBySortBy } from '../../utils/format'
+import { formatFloat, groupBySortBy, groupByKeys } from '../../utils/format'
 import calculateHerdManNKPNaCl from "../../utils/herdCalculation"
 import { NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES, WASTEWATER_MATERIAL_TYPES, FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
 
@@ -40,7 +40,7 @@ const percentToLBSFromTons = (con, moisture, amount, method_of_reporting) => {
 
   con *= 0.01
   moisture *= .01
-  moisture = Math.max(Math.min(1, moisture), 0.1) // mositure must be between 0.1% and 100%
+  moisture = Math.max(Math.min(1, moisture), 0.001) // mositure must be between 0.1% and 100%
   moisture = method_of_reporting === "dry-weight" ? (1 - (moisture)) : 1 // if reported as dry-weight, account for moisture
   amount *= 2000
   return con * moisture * amount
@@ -52,6 +52,7 @@ const percentToPPM = (num) => {
 }
 
 const PPMToLBS = (con, amt) => {
+  // Gals to lbs
   // getNutrientBudgetA, converts total n p k applied from con
   con = toFloat(con)
   amt = toFloat(amt)
@@ -82,6 +83,7 @@ export const getAnnualReportData = (dairy_id) => {
     getApplicationAreaA(dairy_id),
     getApplicationAreaB(dairy_id),
     getNutrientBudgetA(dairy_id),
+    getNutrientBudgetB(dairy_id),
   ]
 
   return new Promise((resolve, reject) => {
@@ -533,9 +535,9 @@ const getApplicationAreaB = (dairy_id) => {
             let harvestsByPlantDate = fieldHarvestsObj[key]
             harvestsByPlantDate.map(el => {
               el.actual_yield = toFloat(el.actual_yield)
-              el.actual_n = percentToPPM(el.actual_n) // For display only, not used in calculations or for totals, its just a concentation
-              el.actual_p = percentToPPM(el.actual_p) // For display only
-              el.actual_k = percentToPPM(el.actual_k) // For display only
+              el.actual_n = formatFloat(percentToPPM(el.actual_n)) // For display only, not used in calculations or for totals, its just a concentation
+              el.actual_p = formatFloat(percentToPPM(el.actual_p)) // For display only
+              el.actual_k = formatFloat(percentToPPM(el.actual_k)) // For display only
               el.tfs = toFloat(el.tfs)
               el.acres_planted = toFloat(el.acres_planted)
               el.actual_moisture = toFloat(el.actual_moisture)
@@ -550,7 +552,7 @@ const getApplicationAreaB = (dairy_id) => {
               totals[4] += (el.tfs * 1e-2) * ((el.actual_yield / el.acres_planted) * 2000) * (1 - (el.actual_moisture * 1e-2))
               return
             })
-            totals = totals.map(el => el.toFixed(2))
+            totals = totals.map(el => formatFloat(el))
             // Calculate anticipated totals, it is not dependent on the number of harvest events, it is a report on the anticipated yield.
             let harvestObj = harvestsByPlantDate && harvestsByPlantDate.length > 0 ? harvestsByPlantDate[0] : {}
             // typical_ yield, n, p, k, salt
@@ -565,13 +567,11 @@ const getApplicationAreaB = (dairy_id) => {
               typical_k = toFloat(typical_k)
               typical_salt = toFloat(typical_salt)
 
-
-              antiTotals[0] = typical_yield.toFixed(2)
-              antiTotals[1] = (typical_n * typical_yield).toFixed(2)
-              antiTotals[2] = (typical_p * typical_yield).toFixed(2)
-              antiTotals[3] = (typical_k * typical_yield).toFixed(2)
-              antiTotals[4] = (typical_salt * typical_yield).toFixed(2)
-
+              antiTotals[0] = formatFloat(typical_yield)
+              antiTotals[1] = formatFloat((typical_n * typical_yield))
+              antiTotals[2] = formatFloat((typical_p * typical_yield))
+              antiTotals[3] = formatFloat((typical_k * typical_yield))
+              antiTotals[4] = formatFloat((typical_salt * typical_yield))
             }
 
             // Recreate Object w/ extra info
@@ -616,9 +616,9 @@ const getNutrientBudgetA = (dairy_id) => {
           plantDateEventObj = Object.fromEntries(Object.keys(plantDateEventObj).map(key => {
             let plantDateEvents = plantDateEventObj[key]
             let appDatesObj = groupBySortBy(plantDateEvents, 'app_date', 'src_desc')
-            
-            
-            
+
+
+
             appDatesObj = Object.fromEntries(Object.keys(appDatesObj).map(key => {
               let appDatesObjList = appDatesObj[key]
               let totals = [0, 0, 0, 0]
@@ -631,25 +631,25 @@ const getNutrientBudgetA = (dairy_id) => {
                   totals[0] += toFloat(el.totaln)
                   // p and k are not given in sheet
                   totals[3] += PPMToLBS(el.tds, el.amt_applied_per_acre)
-                  
+
                   // Update for easy display in PDF
-                  el.n_lbs_acre = toFloat(el.totaln)
+                  el.n_lbs_acre = formatFloat(toFloat(el.totaln))
                   el.p_lbs_acre = 0
                   el.k_lbs_acre = 0
-                  el.salt_lbs_acre = PPMToLBS(el.tds, el.amt_applied_per_acre)
+                  el.salt_lbs_acre = formatFloat(PPMToLBS(el.tds, el.amt_applied_per_acre))
                 } else if (WASTEWATER_MATERIAL_TYPES.indexOf(el.material_type) > -1) {
                   let amt_applied_per_acre = toFloat(el.amount_applied) / toFloat(el.acres_planted)
-                  
+
                   // Process wastewater
                   totals[0] += PPMToLBS(el.kn_con, amt_applied_per_acre)
                   totals[1] += PPMToLBS(el.p_con, amt_applied_per_acre)
                   totals[2] += PPMToLBS(el.k_con, amt_applied_per_acre)
                   totals[3] += PPMToLBS(el.tds, amt_applied_per_acre)
                   // Update vals
-                  el.n_lbs_acre = PPMToLBS(el.kn_con, amt_applied_per_acre)  
-                  el.p_lbs_acre = PPMToLBS(el.p_con, amt_applied_per_acre)
-                  el.k_lbs_acre = PPMToLBS(el.k_con, amt_applied_per_acre)
-                  el.salt_lbs_acre = PPMToLBS(el.tds, amt_applied_per_acre)
+                  el.n_lbs_acre = formatFloat(PPMToLBS(el.kn_con, amt_applied_per_acre))
+                  el.p_lbs_acre = formatFloat(PPMToLBS(el.p_con, amt_applied_per_acre))
+                  el.k_lbs_acre = formatFloat(PPMToLBS(el.k_con, amt_applied_per_acre))
+                  el.salt_lbs_acre = formatFloat(PPMToLBS(el.tds, amt_applied_per_acre))
 
                 } else if ([...NUTRIENT_IMPORT_MATERIAL_TYPES, ...MATERIAL_TYPES].indexOf(el.material_type) > -1) {
                   // Tally up solidmanure or commerical fertilizer
@@ -658,15 +658,16 @@ const getNutrientBudgetA = (dairy_id) => {
                   totals[2] += toFloat(el.k_lbs_acre)
                   totals[3] += toFloat(el.salt_lbs_acre)
 
-                  el.n_lbs_acre = toFloat(el.n_lbs_acre)
-                  el.p_lbs_acre = toFloat(el.p_lbs_acre)
-                  el.k_lbs_acre = toFloat(el.k_lbs_acre)
-                  el.salt_lbs_acre = toFloat(el.salt_lbs_acre)
+                  el.n_lbs_acre = formatFloat(toFloat(el.n_lbs_acre))
+                  el.p_lbs_acre = formatFloat(toFloat(el.p_lbs_acre))
+                  el.k_lbs_acre = formatFloat(toFloat(el.k_lbs_acre))
+                  el.salt_lbs_acre = formatFloat(toFloat(el.salt_lbs_acre))
                 }
+                el.amount_applied = formatFloat(el.amount_applied)
                 return el
               })
 
-              return [key, {appDatesObjList, totals}]
+              return [key, { appDatesObjList, totals: totals.map(t => formatFloat(t)) }]
             }))
 
 
@@ -681,6 +682,98 @@ const getNutrientBudgetA = (dairy_id) => {
 
         resolve({
           'nutrientBudgetA': {
+            allEvents
+          }
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
+}
+
+
+const getNutrientBudgetB = (dairy_id) => {
+  return new Promise((resolve, rej) => {
+    Promise.all([
+      get(`${BASE_URL}/api/field_crop_app_fertilizer/${dairy_id}`),
+      get(`${BASE_URL}/api/field_crop_app_solidmanure/${dairy_id}`),
+      get(`${BASE_URL}/api/field_crop_app_process_wastewater/${dairy_id}`),
+      get(`${BASE_URL}/api/field_crop_app_freshwater/${dairy_id}`),
+      get(`${BASE_URL}/api/field_crop_harvest/${dairy_id}`),
+    ])
+      .then(([fertilizers, manures, wastewaters, freshwaters, harvests]) => {
+
+        let allEvents = groupByKeys([
+          ...fertilizers,
+          ...manures,
+          ...wastewaters,
+          ...freshwaters,
+          ...harvests
+        ], ['field_id', 'plant_date'])
+
+
+        allEvents = Object.fromEntries(Object.keys(allEvents).map(key => {
+          
+          let info = {
+            fertilizers: [0,0,0,0],
+            manures: [0,0,0,0],
+            wastewaters: [0,0,0,0],
+            freshwaters: [0,0,0,0], 
+            anti_harvests: [0,0,0,0],
+            actual_harvests: [0,0,0,0],
+            freshwater_app: [0,0,0],
+            wastewater_app: [0,0,0],
+            totalHarvests: 0
+          }
+          let events = allEvents[key]
+          events.map(ev => {
+            if(ev.entry_type === 'fertilizer'){       
+              info.fertilizers[0] += toFloat(ev.n_lbs_acre)
+              info.fertilizers[1] += toFloat(ev.p_lbs_acre)
+              info.fertilizers[2] += toFloat(ev.k_lbs_acre)
+              info.fertilizers[3] += toFloat(ev.salt_lbs_acre)
+            }else if(ev.entry_type === 'manure'){
+              info.manures[0] += toFloat(ev.n_lbs_acre)
+              info.manures[1] += toFloat(ev.p_lbs_acre)
+              info.manures[2] += toFloat(ev.k_lbs_acre)
+              info.manures[3] += toFloat(ev.salt_lbs_acre)
+            }else if(ev.entry_type === 'freshwater'){
+              info.freshwaters[0] += PPMToLBS(ev.n_con, ev.amt_applied_per_acre)
+              info.freshwaters[3] += PPMToLBS(ev.tds, ev.amt_applied_per_acre)
+            }else if(ev.entry_type === 'wastewater'){
+              info.wastewaters[0] += PPMToLBS(ev.kn_con, (toFloat(ev.amount_applied) / toFloat(ev.acres_planted)))
+              info.wastewaters[1] += PPMToLBS(ev.p_con, (toFloat(ev.amount_applied) / toFloat(ev.acres_planted)))
+              info.wastewaters[2] += PPMToLBS(ev.k_con, (toFloat(ev.amount_applied) / toFloat(ev.acres_planted)))
+              info.wastewaters[3] += PPMToLBS(ev.tds, (toFloat(ev.amount_applied) / toFloat(ev.acres_planted)))
+            }else if(ev.entry_type === 'harvest'){
+              if(ev.fieldtitle === 'Field 1')
+                console.log(ev)
+              let amt_per_acre = toFloat(ev.actual_yield) / toFloat(ev.acres_planted)
+              
+              info.anti_harvests[0] += toFloat(ev.typical_n) * amt_per_acre // (already in )lbs_per_ton, multiple by tons/amt per acre
+              info.anti_harvests[1] += toFloat(ev.typical_p) * amt_per_acre
+              info.anti_harvests[2] += toFloat(ev.typical_k) * amt_per_acre
+              info.anti_harvests[3] += toFloat(ev.typical_salt) * amt_per_acre
+
+              info.actual_harvests[0] += percentToLBSFromTons(ev.actual_n, ev.actual_moisture, amt_per_acre, ev.method_of_reporting)
+              info.actual_harvests[1] += percentToLBSFromTons(ev.actual_p, ev.actual_moisture, amt_per_acre, ev.method_of_reporting)
+              info.actual_harvests[2] += percentToLBSFromTons(ev.actual_k, ev.actual_moisture, amt_per_acre, ev.method_of_reporting)
+              // info.actual_harvests[3] += percentToLBSFromTons(ev.tfs, ev.typical_moisture, amt_per_acre, ev.method_of_reporting)
+              // (391 / 22) * 2000 * (1- .722) * .125
+              info.actual_harvests[3] += amt_per_acre * 2000 * (1 - (toFloat(ev.actual_moisture) * 1e-2)) *  (toFloat(ev.tfs) * 1e-2)
+            }
+          })
+
+
+
+
+          return [key, info]
+        }))
+
+        resolve({
+          'nutrientBudgetB': {
             allEvents
           }
         })

@@ -2864,7 +2864,7 @@ const applicationAreaBFieldHarvestTable = (props) => {
       }
     ],
     ...events,
-    [{ text: '', border: [true, false, true, true], colSpan: 2 }] // empty row
+    [{ text: '', border: [true, false, false, true]}, { text: '', border: [false, false, true, true]}] // empty row
   ]
   return {
     // pageBreak: 'before',
@@ -2881,15 +2881,6 @@ const applicationAreaBFieldHarvestTable = (props) => {
   }
 }
 const applicationAreaB = (props) => {
-
-  let fieldHarvests = [ //fields
-    [ //events for a field
-      {}, {}
-    ],
-    [
-      {}
-    ]
-  ]
   
   // stack of table for each field
   let harvestTable = Object.keys(props.groupedHarvests).map(key => {
@@ -2926,1055 +2917,1026 @@ const applicationAreaB = (props) => {
 
 
 const nutrientBudgetBTable = (props, images) => {
-  let data = [{}, {}, {}]
-  return data.map((tableData, i) => {
-    return {
-      columns: [
-        {// Main Table
-          pageBreak: i == 0 ? '' : 'before',
-          table: {
-            widths: ['98%'],
-            body: [
-              [{// 1st row header
-                fillColor: gray,
-                text: {
-                  text: "Field 1 - 11/01/2019: Oats, silage-soft dough", fontSize: 9,
-                }
-              }],
-              [{
-                border: [true, false, true, false],
-                table: {
-                  widths: ['15%', '15%', '15%', '15%', '15%', '15%'],
-                  body: [
-                    [
+  return {
+    columns: [
+      {// Main Table
+        // pageBreak: i == 0 ? '' : 'before',
+        table: {
+          widths: ['98%'],
+          body: [
+            [{// 1st row header
+              fillColor: gray,
+              text: {
+                text: "Field 1 - 11/01/2019: Oats, silage-soft dough", fontSize: 9,
+              }
+            }],
+            [{
+              border: [true, false, true, false],
+              table: {
+                widths: ['15%', '15%', '15%', '15%', '15%', '15%'],
+                body: [
+                  [
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: 'Field name:', fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: 'Field 1:', fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: 'Crop:', fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: 'Oats, silage-soft dough', fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, false],
+                      text: {
+                        text: 'Plant date:', fontSize: 8,
+                      }
+                    },
+                    {
+                      border: [false, false, false, true],
+                      text: {
+                        text: '11/01/2019:', fontSize: 8,
+                      }
+                    },
+                  ]
+                ]
+              }
+            }],
+            [{
+              border: [true, false, true, false],
+              columns: [
+                image(images.nutrientHoriBar0, 475, 175),
+              ]
+            }
+            ],
+            [
+              {
+                border: [true, false, true, true],
+                columns: [
+                  {
+                    width: "60%",
+                    table: {
+                      widths: ["40%", "15%", "15%", "15%", "15%"],
+                      body: [
+                        [
+                          {
+                            text: {
+                              text: '', fontSize: 8,
+                            }
+                          },
+                          {
+                            fillColor: gray,
+                            text: {
+                              text: 'Total N (lbs/acre)', fontSize: 8,
+                            }
+                          },
+                          {
+                            fillColor: gray,
+                            text: {
+                              text: 'Total P (lbs/acre)', fontSize: 8,
+                            }
+                          },
+                          {
+                            fillColor: gray,
+                            text: {
+                              text: 'Total K (lbs/acre)', fontSize: 8,
+                            }
+                          },
+                          {
+                            fillColor: gray,
+                            text: {
+                              text: 'Total salt (lbs/acre)', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: 'Existing soil nutrient content', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                        ],
+                        [
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: 'Plowdown credit', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: 'Commerical fertilizer / Other', fontSize: 7,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: 'Dry manure', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: 'Process wastewater', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: 'Fresh water', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: 'Atmospheric deposition', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: 'Total nutrients applied', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: 'Anticipated crop nutrient removal', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: 'Actual crop nutrient removal', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: 'Nutrient balance', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, false],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+                        [
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: 'Applied to removed ratio', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                          {
+                            border: [true, false, true, true],
+                            text: {
+                              text: '0.00', fontSize: 8,
+                            }
+                          },
+                        ],
+
+                      ]
+                    }
+                  },
+                  , {
+                    width: "40%",
+                    stack: [
                       {
-                        border: [false, false, false, false],
-                        text: {
-                          text: 'Field name:', fontSize: 8,
+                        table: {
+                          widths: ['40%', '30%'],
+                          body: [
+                            [
+                              {
+                                fillColor: gray,
+                                border: [true, true, false, true],
+                                text: {
+                                  text: 'Fresh water applied', fontSize: 8,
+                                }
+                              },
+                              {
+                                fillColor: gray,
+                                border: [false, true, true, true], text: ''
+                              }
+                            ],
+                            [
+                              {
+                                border: [true, false, false, false],
+                                text: {
+                                  text: '4,824,000.00', fontSize: 8,
+                                  alignment: 'right',
+                                }
+                              },
+                              {
+                                border: [false, false, true, false],
+                                text: {
+                                  text: 'gallons', fontSize: 8,
+                                  alignment: 'left', italics: true,
+                                }
+                              },
+                            ],
+                            [
+                              {
+                                border: [true, false, false, false],
+                                text: {
+                                  text: '177.65.00', fontSize: 8,
+                                  alignment: 'right',
+                                }
+                              },
+                              {
+                                border: [false, false, true, false],
+                                text: {
+                                  text: 'acre-inches', fontSize: 8,
+                                  alignment: 'left', italics: true,
+                                }
+                              },
+                            ],
+                            [
+                              {
+                                border: [true, false, false, true],
+                                text: {
+                                  text: '8.08', fontSize: 8,
+                                  alignment: 'right',
+                                }
+                              },
+                              {
+                                border: [false, false, true, true],
+                                text: {
+                                  text: 'inces/acre', fontSize: 8,
+                                  alignment: 'left', italics: true,
+                                }
+                              },
+                            ],
+                          ]
                         }
                       },
                       {
-                        border: [false, false, false, true],
-                        text: {
-                          text: 'Field 1:', fontSize: 8,
+                        table: {
+                          widths: ['40%', '30%'],
+                          body: [
+                            [
+                              {
+                                fillColor: gray,
+                                border: [true, true, true, true],
+                                colSpan: 2,
+                                text: {
+                                  text: 'Process  wastewater applied', fontSize: 8,
+                                }
+                              },
+                              {
+                                fillColor: gray,
+                                border: [false, true, true, true], text: ''
+                              }
+                            ],
+                            [
+                              {
+                                border: [true, false, false, false],
+                                text: {
+                                  text: '4,824,000.00', fontSize: 8,
+                                  alignment: 'right',
+                                }
+                              },
+                              {
+                                border: [false, false, true, false],
+                                text: {
+                                  text: 'gallons', fontSize: 8,
+                                  alignment: 'left', italics: true,
+                                }
+                              },
+                            ],
+                            [
+                              {
+                                border: [true, false, false, false],
+                                text: {
+                                  text: '177.65.00', fontSize: 8,
+                                  alignment: 'right',
+                                }
+                              },
+                              {
+                                border: [false, false, true, false],
+                                text: {
+                                  text: 'acre-inches', fontSize: 8,
+                                  alignment: 'left', italics: true,
+                                }
+                              },
+                            ],
+                            [
+                              {
+                                border: [true, false, false, true],
+                                text: {
+                                  text: '8.08', fontSize: 8,
+                                  alignment: 'right',
+                                }
+                              },
+                              {
+                                border: [false, false, true, true],
+                                text: {
+                                  text: 'inces/acre', fontSize: 8,
+                                  alignment: 'left', italics: true,
+                                }
+                              },
+                            ],
+                          ]
                         }
                       },
                       {
-                        border: [false, false, false, false],
-                        text: {
-                          text: 'Crop:', fontSize: 8,
-                        }
-                      },
-                      {
-                        border: [false, false, false, true],
-                        text: {
-                          text: 'Oats, silage-soft dough', fontSize: 8,
-                        }
-                      },
-                      {
-                        border: [false, false, false, false],
-                        text: {
-                          text: 'Plant date:', fontSize: 8,
-                        }
-                      },
-                      {
-                        border: [false, false, false, true],
-                        text: {
-                          text: '11/01/2019:', fontSize: 8,
+                        table: {
+                          widths: ['40%', '30%'],
+                          body: [
+                            [
+                              {
+                                fillColor: gray,
+                                border: [true, true, false, true],
+                                text: {
+                                  text: 'Total harvests for the crop', fontSize: 8,
+                                }
+                              },
+                              {
+                                fillColor: gray,
+                                border: [false, true, true, true], text: ''
+                              }
+                            ],
+                            [
+                              {
+                                border: [true, false, false, true],
+                                text: {
+                                  text: '1', fontSize: 8,
+                                  alignment: 'right',
+                                }
+                              },
+                              {
+                                border: [false, false, true, true],
+                                text: {
+                                  text: 'harvest', fontSize: 8,
+                                  alignment: 'left', italics: true,
+                                }
+                              },
+                            ],
+                          ]
                         }
                       },
                     ]
-                  ]
-                }
-              }],
-              [{
-                border: [true, false, true, false],
-                columns: [
-                  image(images.nutrientHoriBar0, 475, 175),
+                  }
                 ]
               }
-              ],
-              [
-                {
-                  border: [true, false, true, true],
-                  columns: [
-                    {
-                      width: "60%",
-                      table: {
-                        widths: ["40%", "15%", "15%", "15%", "15%"],
-                        body: [
-                          [
-                            {
-                              text: {
-                                text: '', fontSize: 8,
-                              }
-                            },
-                            {
-                              fillColor: gray,
-                              text: {
-                                text: 'Total N (lbs/acre)', fontSize: 8,
-                              }
-                            },
-                            {
-                              fillColor: gray,
-                              text: {
-                                text: 'Total P (lbs/acre)', fontSize: 8,
-                              }
-                            },
-                            {
-                              fillColor: gray,
-                              text: {
-                                text: 'Total K (lbs/acre)', fontSize: 8,
-                              }
-                            },
-                            {
-                              fillColor: gray,
-                              text: {
-                                text: 'Total salt (lbs/acre)', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: 'Existing soil nutrient content', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                          ],
-                          [
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: 'Plowdown credit', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: 'Commerical fertilizer / Other', fontSize: 7,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: 'Dry manure', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: 'Process wastewater', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: 'Fresh water', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: 'Atmospheric deposition', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: 'Total nutrients applied', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: 'Anticipated crop nutrient removal', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: 'Actual crop nutrient removal', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: 'Nutrient balance', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, false],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-                          [
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: 'Applied to removed ratio', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                            {
-                              border: [true, false, true, true],
-                              text: {
-                                text: '0.00', fontSize: 8,
-                              }
-                            },
-                          ],
-
-                        ]
-                      }
-                    },
-                    , {
-                      width: "40%",
-                      stack: [
-                        {
-                          table: {
-                            widths: ['40%', '30%'],
-                            body: [
-                              [
-                                {
-                                  fillColor: gray,
-                                  border: [true, true, false, true],
-                                  text: {
-                                    text: 'Fresh water applied', fontSize: 8,
-                                  }
-                                },
-                                {
-                                  fillColor: gray,
-                                  border: [false, true, true, true], text: ''
-                                }
-                              ],
-                              [
-                                {
-                                  border: [true, false, false, false],
-                                  text: {
-                                    text: '4,824,000.00', fontSize: 8,
-                                    alignment: 'right',
-                                  }
-                                },
-                                {
-                                  border: [false, false, true, false],
-                                  text: {
-                                    text: 'gallons', fontSize: 8,
-                                    alignment: 'left', italics: true,
-                                  }
-                                },
-                              ],
-                              [
-                                {
-                                  border: [true, false, false, false],
-                                  text: {
-                                    text: '177.65.00', fontSize: 8,
-                                    alignment: 'right',
-                                  }
-                                },
-                                {
-                                  border: [false, false, true, false],
-                                  text: {
-                                    text: 'acre-inches', fontSize: 8,
-                                    alignment: 'left', italics: true,
-                                  }
-                                },
-                              ],
-                              [
-                                {
-                                  border: [true, false, false, true],
-                                  text: {
-                                    text: '8.08', fontSize: 8,
-                                    alignment: 'right',
-                                  }
-                                },
-                                {
-                                  border: [false, false, true, true],
-                                  text: {
-                                    text: 'inces/acre', fontSize: 8,
-                                    alignment: 'left', italics: true,
-                                  }
-                                },
-                              ],
-                            ]
-                          }
-                        },
-                        {
-                          table: {
-                            widths: ['40%', '30%'],
-                            body: [
-                              [
-                                {
-                                  fillColor: gray,
-                                  border: [true, true, true, true],
-                                  colSpan: 2,
-                                  text: {
-                                    text: 'Process  wastewater applied', fontSize: 8,
-                                  }
-                                },
-                                {
-                                  fillColor: gray,
-                                  border: [false, true, true, true], text: ''
-                                }
-                              ],
-                              [
-                                {
-                                  border: [true, false, false, false],
-                                  text: {
-                                    text: '4,824,000.00', fontSize: 8,
-                                    alignment: 'right',
-                                  }
-                                },
-                                {
-                                  border: [false, false, true, false],
-                                  text: {
-                                    text: 'gallons', fontSize: 8,
-                                    alignment: 'left', italics: true,
-                                  }
-                                },
-                              ],
-                              [
-                                {
-                                  border: [true, false, false, false],
-                                  text: {
-                                    text: '177.65.00', fontSize: 8,
-                                    alignment: 'right',
-                                  }
-                                },
-                                {
-                                  border: [false, false, true, false],
-                                  text: {
-                                    text: 'acre-inches', fontSize: 8,
-                                    alignment: 'left', italics: true,
-                                  }
-                                },
-                              ],
-                              [
-                                {
-                                  border: [true, false, false, true],
-                                  text: {
-                                    text: '8.08', fontSize: 8,
-                                    alignment: 'right',
-                                  }
-                                },
-                                {
-                                  border: [false, false, true, true],
-                                  text: {
-                                    text: 'inces/acre', fontSize: 8,
-                                    alignment: 'left', italics: true,
-                                  }
-                                },
-                              ],
-                            ]
-                          }
-                        },
-                        {
-                          table: {
-                            widths: ['40%', '30%'],
-                            body: [
-                              [
-                                {
-                                  fillColor: gray,
-                                  border: [true, true, false, true],
-                                  text: {
-                                    text: 'Total harvests for the crop', fontSize: 8,
-                                  }
-                                },
-                                {
-                                  fillColor: gray,
-                                  border: [false, true, true, true], text: ''
-                                }
-                              ],
-                              [
-                                {
-                                  border: [true, false, false, true],
-                                  text: {
-                                    text: '1', fontSize: 8,
-                                    alignment: 'right',
-                                  }
-                                },
-                                {
-                                  border: [false, false, true, true],
-                                  text: {
-                                    text: 'harvest', fontSize: 8,
-                                    alignment: 'left', italics: true,
-                                  }
-                                },
-                              ],
-                            ]
-                          }
-                        },
-                      ]
-                    }
-                  ]
-                }
-              ]
             ]
-          }
+          ]
         }
-      ]
-    }
-  })
+      }
+    ]
+  }
 }
 const nutrientBudgetA = (props) => {
-  const fieldCropApplications = [
-    {
-      title: "Field 1",
-      plant_date: "11/01/2019",
-      croptitle: "Oats, silage-soft dough",
-      applications: [
-        {
-          applicationdate: "10/10/2019",
-          sources: [
-            {
-              sourcetitle: "UN32"
-            }
-          ]
-        },
-        {
-          applicationdate: "11/11/2019",
-          sources: [
-            {
-              sourcetitle: "UN69"
-            }
-          ]
-        },
-      ]
-    },
-    {
-      title: "Field 1",
-      plant_date: "11/01/2019",
-      croptitle: "Oats, silage-soft dough",
-      applications: [
-        {
-          applicationdate: "10/10/2019",
-          sources: [
-            {
-              sourcetitle: "UN32"
-            }
-          ]
-        },
-        {
-          applicationdate: "11/11/2019",
-          sources: [
-            {
-              sourcetitle: "UN69"
-            }
-          ]
-        },
-      ]
-    }
-  ]
+  let tables = []
+  Object.keys(props.allEvents).map(fieldIDKey => {
+    let fieldAppsByPlantDate = props.allEvents[fieldIDKey]
+    Object.keys(fieldAppsByPlantDate).map(plantDatekey => {
 
-  let tables = fieldCropApplications.map(fieldCropApp => {
-    let rows = []
-    fieldCropApp.applications.forEach(app => {
-
-
-      const innerRows = app.sources.map(source => {
-        return [
+      
+      // let apps = Object.keys(fieldAppsByPlantDate[plantDatekey]).map(k => fieldAppsByPlantDate[plantDatekey][k])
+      
+      let headerInfo = {}
+      let rows = []
+  
+      
+  
+      Object.keys(fieldAppsByPlantDate[plantDatekey]).forEach(appKey => {
+        let app = fieldAppsByPlantDate[plantDatekey][appKey]
+        let appEventHeader = app && app.appDatesObjList && app.appDatesObjList.length > 0 ? app.appDatesObjList[0]: {}
+        headerInfo = appEventHeader
+        let totals = app.totals
+        const innerRows = app.appDatesObjList.map(ev => {
+          
+          let unit = ev.tds ? 'gals' : 'tons'
+          if(!ev.tds && !ev.tfs){
+            // commerical fertilizer
+            //Check if it container the word liquid
+            unit = ev.material_type.toLowerCase().includes('solid') || ev.material_type.toLowerCase().includes('dry') ? 'tons' : 'gals'
+          }
+          
+          return [
+            {
+              text: {
+                text: ev.src_desc ? ev.src_desc : ev.app_desc ? ev.app_desc : ev.material_type.toLowerCase().includes('commercial') ? 'Commercial' : ev.material_type, fontSize: 8,
+              }
+            
+            },
+            {
+              text: {
+                text: ev.material_type ? ev.material_type : ev.src_type , fontSize: 8,
+              }
+            },
+            {
+              text: {
+                text: ev.n_lbs_acre, fontSize: 8,
+              }
+            },
+            {
+              text: {
+                text: ev.p_lbs_acre, fontSize: 8,
+              }
+            },
+            {
+              text: {
+                text: ev.k_lbs_acre, fontSize: 8,
+              }
+            },
+            {
+              text: {
+                text: ev.salt_lbs_acre, fontSize: 8,
+              }
+            },
+            {
+              text: {
+                text: `${ev.amount_applied} ${unit}`, fontSize: 8,
+              }
+            },
+          ]
+        })
+  
+        rows.push([// MainSubTable App_date/ method/ precip before during after... 
           {
             text: {
-              text: source.sourcetitle, fontSize: 8,
+              text: appEventHeader.app_date ? appEventHeader.app_date.split('T')[0]: '', fontSize: 8,
             }
           },
           {
             text: {
-              text: 'Solid commerical fertilizer', fontSize: 8,
+              text: appEventHeader.app_method, fontSize: 8,
             }
           },
           {
             text: {
-              text: '16.00', fontSize: 8,
+              text: appEventHeader.precip_before, fontSize: 8,
             }
           },
           {
             text: {
-              text: '0.00', fontSize: 8,
+              text: appEventHeader.precip_during, fontSize: 8,
             }
           },
           {
             text: {
-              text: '0.00', fontSize: 8,
+              text: appEventHeader.precip_after, fontSize: 8,
             }
           },
+        ])
+        rows.push([// sub table of MainSubTable
           {
-            text: {
-              text: '0.00', fontSize: 8,
+            colSpan: 5,
+            table: {
+              widths: ['25%', '20%', '10%', '10%', '10%', '10%', '15%'],
+              body: [
+                [// header
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Source description', fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Material Type', fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'N  (lbs/acre)', fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'P (lbs/acre)', fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'K (lbs/acre)', fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Salt (lbs/acre)', fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Amount', fontSize: 8,
+                    }
+                  },
+                ],// rows
+                ...innerRows,
+                [// fotter totals
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: 'Application event totals', fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: ' ', fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: totals[0], fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: totals[1], fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: totals[2], fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: totals[3], fontSize: 8,
+                    }
+                  },
+                  {
+                    fillColor: gray,
+                    text: {
+                      text: " ", fontSize: 8,
+                    }
+                  },
+                ],
+              ]
             }
-          },
+          }
+        ])
+      })
+  
+      tables.push( {
+        margin: [0, 5, 0, 5],
+        columns: [
           {
-            text: {
-              text: '2,754,000.00 gal', fontSize: 8,
+            width: "98%",
+            margin: [10, 0, 0, 0],
+            table: {
+              widths: ["100%"],
+              body: [
+                [ // each row is a table with  application dat table where ea row is a table of the entry
+                  { // row 1
+                    fillColor: gray,
+                    // text: 'Field 1 - 11/01/01/2019: Oats, silage-soft dough',
+                    text: `${headerInfo.fieldtitle} - ${headerInfo.plant_date ? headerInfo.plant_date.split('T')[0] : '' }: ${headerInfo.croptitle}`,
+                    fontSize: 8
+                  },
+                ],
+                [
+                  {
+                    stack: [
+                      {
+                        columns: [
+                          {
+                            table: {
+                              widths: ["10%", '65%', '10%', '15%'],
+                              body: [
+                                [
+                                  {
+                                    border: [false, false, false, false],
+                                    text: {
+                                      text: 'Field name:', fontSize: 8,
+                                    }
+                                  },
+                                  {
+                                    border: [false, false, false, true],
+                                    colSpan: 3,
+                                    text: {
+                                      text: headerInfo.fieldtitle, fontSize: 8,
+                                    }
+                                  }
+                                ],
+                                [
+                                  {
+                                    border: [false, false, false, false],
+                                    text: {
+                                      text: 'Crop:', fontSize: 8,
+                                    }
+                                  },
+                                  {
+                                    border: [false, false, false, true],
+                                    text: {
+                                      text: headerInfo.croptitle, fontSize: 8,
+                                    }
+                                  },
+                                  {
+                                    border: [false, false, false, false],
+                                    text: {
+                                      text: 'Plant date:', fontSize: 8,
+                                      alignment: 'right',
+                                    }
+                                  },
+                                  {
+                                    border: [false, false, false, true],
+                                    text: {
+                                      text: headerInfo.plant_date ? headerInfo.plant_date.split('T')[0] : '', fontSize: 8,
+                                    }
+                                  }
+  
+                                ]
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        columns: [
+                          {
+                            margin: [0, 5, 0, 5],
+                            table: {
+                              widths: ["10%", '30%', '20%', '20%', '20%'],
+                              body: [
+                                [
+                                  {
+                                    fillColor: gray,
+                                    text: {
+                                      text: 'Application date', fontSize: 8,
+                                    }
+                                  },
+                                  {
+                                    fillColor: gray,
+                                    text: {
+                                      text: 'Application method', fontSize: 8,
+                                    }
+                                  },
+                                  {
+                                    fillColor: gray,
+                                    text: {
+                                      text: 'Precipitation 24 hours prior:', fontSize: 8,
+                                    }
+                                  },
+                                  {
+                                    fillColor: gray,
+                                    text: {
+                                      text: 'Precipitation during application', fontSize: 8,
+                                    }
+                                  },
+                                  {
+                                    fillColor: gray,
+                                    text: {
+                                      text: 'Precipitation 24 hours following', fontSize: 8,
+                                    }
+                                  }
+  
+                                ],
+                                ...rows,
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+  
+              ]
             }
-          },
+          }
         ]
       })
-
-
-      rows.push([// regular row
-        {
-          text: {
-            text: app.applicationdate, fontSize: 8,
-          }
-        },
-        {
-          text: {
-            text: 'Sidedress', fontSize: 8,
-          }
-        },
-        {
-          text: {
-            text: 'No precipitation', fontSize: 8,
-          }
-        },
-        {
-          text: {
-            text: 'No precipitation', fontSize: 8,
-          }
-        },
-        {
-          text: {
-            text: 'No precipitation', fontSize: 8,
-          }
-        },
-      ])
-      rows.push([// table
-        {
-          colSpan: 5,
-          table: {
-            widths: ['25%', '20%', '10%', '10%', '10%', '10%', '15%'],
-            body: [
-              [// header
-                {
-                  fillColor: gray,
-                  text: {
-                    text: 'Source description', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: 'Material Type', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: 'N', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: 'P', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: 'K', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: 'Salt', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: 'Amount', fontSize: 8,
-                  }
-                },
-              ],// rows
-              ...innerRows,
-              [// fotter totals
-                {
-                  fillColor: gray,
-                  text: {
-                    text: 'Application event totals', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: ' ', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: '0.00', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: '0.00', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: '0.00', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: '2,371.69', fontSize: 8,
-                  }
-                },
-                {
-                  fillColor: gray,
-                  text: {
-                    text: " ", fontSize: 8,
-                  }
-                },
-              ],
-            ]
-          }
-        }
-      ])
     })
-    console.log(rows)
-
-    return {
-      margin: [0, 5, 0, 5],
-      columns: [
-        {
-          width: "98%",
-          margin: [10, 0, 0, 0],
-          table: {
-            widths: ["100%"],
-            body: [
-              [ // each row is a table with  application dat table where ea row is a table of the entry
-                { // row 1
-                  fillColor: gray,
-                  text: 'Field 1 - 11/01/01/2019: Oats, silage-soft dough', fontSize: 8
-                },
-              ],
-              [
-                {
-                  stack: [
-                    {
-                      columns: [
-                        {
-                          table: {
-                            widths: ["10%", '65%', '10%', '15%'],
-                            body: [
-                              [
-                                {
-                                  border: [false, false, false, false],
-                                  text: {
-                                    text: 'Field name:', fontSize: 8,
-                                  }
-                                },
-                                {
-                                  border: [false, false, false, true],
-                                  colSpan: 3,
-                                  text: {
-                                    text: 'Field 1', fontSize: 8,
-                                  }
-                                }
-                              ],
-                              [
-                                {
-                                  border: [false, false, false, false],
-                                  text: {
-                                    text: 'Crop:', fontSize: 8,
-                                  }
-                                },
-                                {
-                                  border: [false, false, false, true],
-                                  text: {
-                                    text: 'Corn, silage:', fontSize: 8,
-                                  }
-                                },
-                                {
-                                  border: [false, false, false, false],
-                                  text: {
-                                    text: 'Plant date:', fontSize: 8,
-                                    alignment: 'right',
-                                  }
-                                },
-                                {
-                                  border: [false, false, false, true],
-                                  text: {
-                                    text: '05/07/202:', fontSize: 8,
-                                  }
-                                }
-
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      columns: [
-                        {
-                          margin: [0, 5, 0, 5],
-                          table: {
-                            widths: ["10%", '30%', '20%', '20%', '20%'],
-                            body: [
-                              [
-                                {
-                                  fillColor: gray,
-                                  text: {
-                                    text: 'Application date', fontSize: 8,
-                                  }
-                                },
-                                {
-                                  fillColor: gray,
-                                  text: {
-                                    text: 'Application method', fontSize: 8,
-                                  }
-                                },
-                                {
-                                  fillColor: gray,
-                                  text: {
-                                    text: 'Precipitation 24 hours prior:', fontSize: 8,
-                                  }
-                                },
-                                {
-                                  fillColor: gray,
-                                  text: {
-                                    text: 'Precipitation during application', fontSize: 8,
-                                  }
-                                },
-                                {
-                                  fillColor: gray,
-                                  text: {
-                                    text: 'Precipitation 24 hours following', fontSize: 8,
-                                  }
-                                }
-
-                              ],
-                              ...rows,
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ],
-
-            ]
-          }
-        }
-      ]
-    }
   })
 
   return {
@@ -4025,7 +3987,7 @@ const nutrientBudgetA = (props) => {
   }
 }
 const nutrientBudgetB = (props, images) => {
-  const tables = nutrientBudgetBTable(props, images)
+  const tables = [nutrientBudgetBTable(props, images)]
   return {
     pageBreak: 'before',
     stack: [
@@ -6670,7 +6632,7 @@ export default function dd(props, images) {
     // Here
     applicationAreaA(props.applicationAreaA),
     applicationAreaB(props.applicationAreaB),
-    nutrientBudgetA(props),
+    nutrientBudgetA(props.nutrientBudgetA),
     nutrientBudgetB(props, images), // Graph
     nutrientAnalysisA(props),
     nutrientAnalysisB(props),  
