@@ -19,8 +19,10 @@ import pdfMake from "pdfmake/build/pdfmake"
 import pdfFonts from "pdfmake/build/vfs_fonts"
 import dd from "./pdf"
 
-import formats from "../../utils/format"
-import { getByText } from '@testing-library/react'
+
+
+import { formatFloat } from "../../utils/format"
+
 import { ImportExport } from '@material-ui/icons'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
@@ -139,20 +141,27 @@ class DairyTab extends Component {
 
 
   // Annual Report Section 
-  createCharts() {
+  createCharts(props) {
     let nutrientLabels = ["N", "P", "K", "Salt"]
-    let nutrientData = [
-      [// data set 1
-        [0, 51, 5067, 2000054],   // applied
-        [6, 11, 16, 2010],   // anticipated
-        [7, 12, 17, 2020],   // harvested
-      ],
-      [ // data set 2
-        [5, 10, 15, 2000],
-        [6, 11, 16, 2010],
-        [7, 12, 17, 2020],
-      ]
-    ]
+    // let nutrientData = [
+    //   [// data set 1
+    //     [0, 51, 5067, 2000054],   // applied
+    //     [6, 11, 16, 2010],   // anticipated
+    //     [7, 12, 17, 2020],   // harvested
+    //   ],
+    //   [ // data set 2
+    //     [5, 10, 15, 2000],
+    //     [6, 11, 16, 2010],
+    //     [7, 12, 17, 2020],
+    //   ]
+    // ]
+    let nutrientBudgetB = props[0]
+    let nutrientData = Object.keys(nutrientBudgetB).map(key => {
+      const ev = nutrientBudgetB[key]
+      
+
+      return {key: key, data: [ev.total_app, ev.anti_harvests, ev.actual_harvests]}
+    })
 
     let materialLabels = [
       'Existing soil nutrient content',
@@ -171,7 +180,7 @@ class DairyTab extends Component {
     return new Promise((resolve, rej) => {
       // for fields and a single summery in report
       let nutrientPromises = nutrientData.map((row, i) => {
-        return this._createBarChart(`nutrientHoriBar${i}`, nutrientLabels, row)
+        return this._createBarChart(row.key, nutrientLabels, row.data)
       })
 
       // Summarys in report
@@ -488,16 +497,16 @@ class DairyTab extends Component {
             let singleCharLen = 4
             var xOffset = (500 - bar.x) / 500 < 0.03 ? ((numChars * -singleCharLen) - 10) : 0;
             if (chartInstance.scales.x.type === "logarithmic") {
-              ctx.fillText(dataset.data[i], bar.x + xOffset + 10, bar.y);
+              ctx.fillText(formatFloat(dataset.data[i]), bar.x + xOffset + 10, bar.y);
             } else {
-              ctx.fillText(dataset.data[i], bar.x, bar.y);
+              ctx.fillText(formatFloat(dataset.data[i]), bar.x, bar.y);
 
             }
           }
         });
       }
     });
-    this.createCharts()
+    this.createCharts([props.nutrientBudgetB.allEvents])
       .then(images => {
         console.log(images)
         pdfMake.createPdf(dd(props, images)).open()

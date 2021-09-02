@@ -880,6 +880,7 @@ module.exports = {
           f.pk as field_id,
           c.title as croptitle,
           fc.plant_date,
+          fc.acres_planted,
 
           fca.app_date,
           fca.app_method,
@@ -1030,6 +1031,7 @@ module.exports = {
         f.pk as field_id,
         c.title as croptitle,
         fc.plant_date,
+        fc.acres_planted,
 
         fca.app_date,
         fca.app_method,
@@ -1190,6 +1192,7 @@ module.exports = {
         f.pk as field_id,
         c.title as croptitle,
         fc.plant_date,
+        fc.acres_planted,
         fca.app_date,
         fca.app_method,
         fca.precip_before,

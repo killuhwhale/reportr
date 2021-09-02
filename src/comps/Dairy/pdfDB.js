@@ -8,8 +8,8 @@ import { NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES, WASTEWATER_MATERIAL_TYP
 const BASE_URL = `http://localhost:3001`
 const PPM_TO_DEC = .000001
 export default function mTEA() { }
-
-
+const GALS_PER_ACREINCH = 27154.2856
+const AND_RATE = 14 // Atmopheric deopsition rate
 
 
 
@@ -21,8 +21,10 @@ const mgKGToLBS = (con, amount) => {
 }
 
 
-const sumArrayByPos = (a, b, subtract = false) => {
-  return a.map((el, i) => subtract ? el - b[i] : el + b[i])
+const opArrayByPos = (a, b, op="+") => {
+  return a.map((el, i) =>  {
+    return op === '+' ? el + b[i] : op === '-' ? el - b[i]: op === '*'? el * b[i]: op === '/'? el / (b[i] != 0? b[i]: 1) : null
+  })
 }
 
 const percentToLBSFromTons = (con, moisture, amount, method_of_reporting) => {
@@ -224,7 +226,7 @@ const getAvailableNutrientsC = (dairy_id) => {
               PPMToLBS(parseFloat(el.tds.replaceAll(',', '')), el.amount_applied),
             ]
           })
-            .reduce((a, c) => sumArrayByPos(a, c))
+            .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0, 0]
 
         exported = exported && exported.length > 0 ?
@@ -237,7 +239,7 @@ const getAvailableNutrientsC = (dairy_id) => {
               PPMToLBS(parseFloat(el.tds.replaceAll(',', '')), el.amount_hauled),
             ]
           })
-            .reduce((a, c) => sumArrayByPos(a, c))
+            .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0, 0]
 
         imported = imported && imported.length > 0 ?
@@ -250,10 +252,10 @@ const getAvailableNutrientsC = (dairy_id) => {
               parseFloat(el.salt_con.replaceAll(',', '')) * el.amount_imported * .01,
             ]
           })
-            .reduce((a, c) => sumArrayByPos(a, c))
+            .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0, 0]
 
-        let generated = sumArrayByPos(sumArrayByPos(applied, exported), imported, true) // can be given true to do subtraction instead
+        let generated = opArrayByPos(opArrayByPos(applied, exported), imported, '-') // can be given true to do subtraction instead
 
         resolve({
           'availableNutrientsC': {
@@ -311,7 +313,7 @@ const getAvailableNutrientsF = (dairy_id) => {
             percentToLBSFromTons(el.k_con, el.moisture, el.amount_imported, el.method_of_reporting),
             percentToLBSFromTons(el.salt_con, el.moisture, el.amount_imported, "dry-weight"), // Method of reporting doesnt affect, should always acount for moisture
           ])
-            .reduce((a, c) => sumArrayByPos(a, c))
+            .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]
 
         let processTotals = process.length > 0 ?
@@ -321,7 +323,7 @@ const getAvailableNutrientsF = (dairy_id) => {
             percentToLBSFromGals(el.k_con, el.amount_imported),
             percentToLBSFromGals(el.salt_con, el.amount_imported),
           ])
-            .reduce((a, c) => sumArrayByPos(a, c))
+            .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]
 
         let commercialSolidTotals = commercialSolid.length > 0 ?
@@ -331,7 +333,7 @@ const getAvailableNutrientsF = (dairy_id) => {
             percentToLBSFromTons(el.k_con, el.moisture, el.amount_imported, el.method_of_reporting),
             percentToLBSFromTons(el.salt_con, el.moisture, el.amount_imported, el.method_of_reporting),
           ])
-            .reduce((a, c) => sumArrayByPos(a, c))
+            .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]
 
         let commercialLiquidTotals = commercialLiquid.length > 0 ?
@@ -341,7 +343,7 @@ const getAvailableNutrientsF = (dairy_id) => {
             percentToLBSFromGals(el.k_con, el.amount_imported),
             percentToLBSFromGals(el.salt_con, el.amount_imported),
           ])
-            .reduce((a, c) => sumArrayByPos(a, c))
+            .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]
 
 
@@ -354,9 +356,9 @@ const getAvailableNutrientsF = (dairy_id) => {
             dryTotals,
             processTotals,
             commercialTotals: [commercialSolidTotals, commercialLiquidTotals]
-              .reduce((a, c) => sumArrayByPos(a, c)),
+              .reduce((a, c) => opArrayByPos(a, c)),
             total: [dryTotals, processTotals, commercialSolidTotals, commercialLiquidTotals]
-              .reduce((a, c) => sumArrayByPos(a, c))
+              .reduce((a, c) => opArrayByPos(a, c))
           }
         })
       })
@@ -383,7 +385,7 @@ const getAvailableNutrientsG = (dairy_id) => {
             percentToLBSFromTons(el.p_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
             percentToLBSFromTons(el.k_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
             percentToLBSFromTons(el.tfs, el.moisture, el.amount_hauled, el.reporting_method),
-          ]).reduce((a, c) => sumArrayByPos(a, c))
+          ]).reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]
 
         let processTotal = process && process.length > 0 ?
@@ -392,7 +394,7 @@ const getAvailableNutrientsG = (dairy_id) => {
             PPMToLBS(el.p_con_mg_l, el.amount_hauled),
             PPMToLBS(el.k_con_mg_l, el.amount_hauled),
             PPMToLBS(el.tds, el.amount_hauled),
-          ]).reduce((a, c) => sumArrayByPos(a, c))
+          ]).reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]
 
         // Converting values since values are in percent and need to be displayed in mg/kg
@@ -408,7 +410,7 @@ const getAvailableNutrientsG = (dairy_id) => {
             process,
             dryTotal,
             processTotal,
-            total: sumArrayByPos(dryTotal, processTotal)
+            total: opArrayByPos(dryTotal, processTotal)
           }
         })
       })
@@ -713,9 +715,15 @@ const getNutrientBudgetB = (dairy_id) => {
           ...harvests
         ], ['field_id', 'plant_date'])
 
+        let totalHarvestByFieldId = {}
+        harvests.map(el => {
+          totalHarvestByFieldId[el.field_id] = totalHarvestByFieldId[el.field_id] ? totalHarvestByFieldId[el.field_id] + 1 : 1 
+          return
+        })
 
         allEvents = Object.fromEntries(Object.keys(allEvents).map(key => {
-          
+          let events = allEvents[key]
+          let headerInfo = events && events.length > 0 ? events[0] : {}
           let info = {
             fertilizers: [0,0,0,0],
             manures: [0,0,0,0],
@@ -725,9 +733,9 @@ const getNutrientBudgetB = (dairy_id) => {
             actual_harvests: [0,0,0,0],
             freshwater_app: [0,0,0],
             wastewater_app: [0,0,0],
+            total_app: [0,0,0,0],
             totalHarvests: 0
           }
-          let events = allEvents[key]
           events.map(ev => {
             if(ev.entry_type === 'fertilizer'){       
               info.fertilizers[0] += toFloat(ev.n_lbs_acre)
@@ -740,16 +748,29 @@ const getNutrientBudgetB = (dairy_id) => {
               info.manures[2] += toFloat(ev.k_lbs_acre)
               info.manures[3] += toFloat(ev.salt_lbs_acre)
             }else if(ev.entry_type === 'freshwater'){
+              info.freshwater_app[0] += toFloat(ev.amount_applied)
+              let acreInches = (toFloat(ev.amount_applied) / GALS_PER_ACREINCH)
+              let inchesPerAcre = acreInches / toFloat(ev.acres_planted)
+              info.freshwater_app[1] += toFloat(acreInches)
+              info.freshwater_app[2] += toFloat(inchesPerAcre)
+              
               info.freshwaters[0] += PPMToLBS(ev.n_con, ev.amt_applied_per_acre)
               info.freshwaters[3] += PPMToLBS(ev.tds, ev.amt_applied_per_acre)
             }else if(ev.entry_type === 'wastewater'){
+              info.wastewater_app[0] += toFloat(ev.amount_applied)
+              let acreInches = (toFloat(ev.amount_applied) / GALS_PER_ACREINCH)
+              let inchesPerAcre = acreInches / toFloat(ev.acres_planted)
+              info.wastewater_app[1] += toFloat(acreInches)
+              info.wastewater_app[2] += toFloat(inchesPerAcre)
+
               info.wastewaters[0] += PPMToLBS(ev.kn_con, (toFloat(ev.amount_applied) / toFloat(ev.acres_planted)))
               info.wastewaters[1] += PPMToLBS(ev.p_con, (toFloat(ev.amount_applied) / toFloat(ev.acres_planted)))
               info.wastewaters[2] += PPMToLBS(ev.k_con, (toFloat(ev.amount_applied) / toFloat(ev.acres_planted)))
               info.wastewaters[3] += PPMToLBS(ev.tds, (toFloat(ev.amount_applied) / toFloat(ev.acres_planted)))
             }else if(ev.entry_type === 'harvest'){
-              if(ev.fieldtitle === 'Field 1')
-                console.log(ev)
+              // if(ev.fieldtitle === 'Field 1')
+              //   console.log(ev)
+              info.totalHarvests += 1
               let amt_per_acre = toFloat(ev.actual_yield) / toFloat(ev.acres_planted)
               
               info.anti_harvests[0] += toFloat(ev.typical_n) * amt_per_acre // (already in )lbs_per_ton, multiple by tons/amt per acre
@@ -765,8 +786,39 @@ const getNutrientBudgetB = (dairy_id) => {
               info.actual_harvests[3] += amt_per_acre * 2000 * (1 - (toFloat(ev.actual_moisture) * 1e-2)) *  (toFloat(ev.tfs) * 1e-2)
             }
           })
+          // Atmospheric deposition, where is this entered or used in calc or determined. I see the values 7 and 14. Is it per acre, or a range of acrage?
+          // 14 pounds wet and dry deposition per planted crop acre per year
+          
+          let total_app = opArrayByPos( info.fertilizers, opArrayByPos(info.manures, opArrayByPos(info.wastewaters, info.freshwaters)))
+          let nApplied = AND_RATE / toFloat(totalHarvestByFieldId[headerInfo.field_id]) * info.totalHarvests
+          info.atmospheric_depo = nApplied
+          total_app[0] += nApplied
+          info.total_app = total_app
+          info.headerInfo = headerInfo
+
+          info.nutrient_bal = opArrayByPos(info.total_app, info.actual_harvests, '-')
+          info.nutrient_bal_ratio = opArrayByPos(info.total_app, info.actual_harvests, '/')
 
 
+
+          // info = Object.fromEntries(Object.keys(info).map(key => {
+          //   let val = info[key]
+          //   if(['fertilizers',
+          //     'manures',
+          //     'wastewaters',
+          //     'freshwaters',
+          //     'anti_harvests',
+          //     'actual_harvests',
+          //     'freshwater_app',
+          //     'wastewater_app',
+          //     'total_app',
+          //     'total_app',
+          //     'nutrient_bal',
+          //     'nutrient_bal_ratio',].indexOf(key) >= 0){
+          //     return [key, val.map(l => formatFloat(l))]
+          //   }
+          //   return [key, val]
+          // }))
 
 
           return [key, info]

@@ -161,7 +161,7 @@ const nameTelephoneLine = (props) => {
   }
 }
 const image = (img, w, h) => {
-  return {
+   return {
     // you'll most often use dataURI images on the browser side
     // if no width/height/fit is provided, the original size will be used
     image: img,
@@ -1743,7 +1743,6 @@ const availableNutrientsF = (props) => {
   }
 }
 const availableNutrientsGSolidTableRow = (props) => {
-  console.log(props)
   return [
     {// row 1
       text: {
@@ -2916,18 +2915,40 @@ const applicationAreaB = (props) => {
 }
 
 
-const nutrientBudgetBTable = (props, images) => {
+const nutrientBudgetBTable = (props, img) => {
+  let plant_date = props.headerInfo && props.headerInfo.plant_date ? props.headerInfo.plant_date.split('T')[0] : ''
+
+  props = Object.fromEntries(Object.keys(props).map(key => {
+    let val = props[key]
+    if(['fertilizers',
+      'manures',
+      'wastewaters',
+      'freshwaters',
+      'anti_harvests',
+      'actual_harvests',
+      'freshwater_app',
+      'wastewater_app',
+      'total_app',
+      'total_app',
+      'nutrient_bal',
+      'nutrient_bal_ratio',].indexOf(key) >= 0){
+      return [key, val.map(l => formatFloat(l))]
+    }
+    return [key, val]
+  }))
   return {
     columns: [
       {// Main Table
-        // pageBreak: i == 0 ? '' : 'before',
+        pageBreak: 'before',
         table: {
           widths: ['98%'],
           body: [
             [{// 1st row header
               fillColor: gray,
               text: {
-                text: "Field 1 - 11/01/2019: Oats, silage-soft dough", fontSize: 9,
+                // text: "Field 1 - 11/01/2019: Oats, silage-soft dough",
+                text: `${props.headerInfo.fieldtitle} - ${plant_date}: ${props.headerInfo.croptitle}`,
+                fontSize: 9,
               }
             }],
             [{
@@ -2945,7 +2966,7 @@ const nutrientBudgetBTable = (props, images) => {
                     {
                       border: [false, false, false, true],
                       text: {
-                        text: 'Field 1:', fontSize: 8,
+                        text: 'props.headerInfo.fieldtitle', fontSize: 8,
                       }
                     },
                     {
@@ -2957,7 +2978,7 @@ const nutrientBudgetBTable = (props, images) => {
                     {
                       border: [false, false, false, true],
                       text: {
-                        text: 'Oats, silage-soft dough', fontSize: 8,
+                        text: props.headerInfo.croptitle, fontSize: 8,
                       }
                     },
                     {
@@ -2969,7 +2990,7 @@ const nutrientBudgetBTable = (props, images) => {
                     {
                       border: [false, false, false, true],
                       text: {
-                        text: '11/01/2019:', fontSize: 8,
+                        text: plant_date, fontSize: 8,
                       }
                     },
                   ]
@@ -2979,7 +3000,7 @@ const nutrientBudgetBTable = (props, images) => {
             [{
               border: [true, false, true, false],
               columns: [
-                image(images.nutrientHoriBar0, 475, 175),
+                image(img, 475, 175),
               ]
             }
             ],
@@ -3100,26 +3121,26 @@ const nutrientBudgetBTable = (props, images) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.fertilizers[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.fertilizers[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.fertilizers[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.fertilizers[3], fontSize: 8,
                             }
                           },
                         ],
@@ -3133,26 +3154,26 @@ const nutrientBudgetBTable = (props, images) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.manures[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.manures[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.manures[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.manures[3], fontSize: 8,
                             }
                           },
                         ],
@@ -3166,26 +3187,26 @@ const nutrientBudgetBTable = (props, images) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.wastewaters[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.wastewaters[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.wastewaters[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.wastewaters[3], fontSize: 8,
                             }
                           },
                         ],
@@ -3199,26 +3220,26 @@ const nutrientBudgetBTable = (props, images) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.freshwaters[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.freshwaters[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.freshwaters[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.freshwaters[3], fontSize: 8,
                             }
                           },
                         ],
@@ -3232,7 +3253,7 @@ const nutrientBudgetBTable = (props, images) => {
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.atmospheric_depo, fontSize: 8,
                             }
                           },
 
@@ -3265,26 +3286,26 @@ const nutrientBudgetBTable = (props, images) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.total_app[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.total_app[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.total_app[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.total_app[3], fontSize: 8,
                             }
                           },
                         ],
@@ -3298,26 +3319,26 @@ const nutrientBudgetBTable = (props, images) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.anti_harvests[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.anti_harvests[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.anti_harvests[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.anti_harvests[3], fontSize: 8,
                             }
                           },
                         ],
@@ -3331,26 +3352,26 @@ const nutrientBudgetBTable = (props, images) => {
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.actual_harvests[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.actual_harvests[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.actual_harvests[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.actual_harvests[3], fontSize: 8,
                             }
                           },
                         ],
@@ -3364,26 +3385,26 @@ const nutrientBudgetBTable = (props, images) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.nutrient_bal[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.nutrient_bal[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.nutrient_bal[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.nutrient_bal[3], fontSize: 8,
                             }
                           },
                         ],
@@ -3397,26 +3418,26 @@ const nutrientBudgetBTable = (props, images) => {
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.nutrient_bal_ratio[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.nutrient_bal_ratio[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.nutrient_bal_ratio[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.nutrient_bal_ratio[3], fontSize: 8,
                             }
                           },
                         ],
@@ -3448,7 +3469,7 @@ const nutrientBudgetBTable = (props, images) => {
                               {
                                 border: [true, false, false, false],
                                 text: {
-                                  text: '4,824,000.00', fontSize: 8,
+                                  text: props.freshwater_app[0], fontSize: 8,
                                   alignment: 'right',
                                 }
                               },
@@ -3464,7 +3485,7 @@ const nutrientBudgetBTable = (props, images) => {
                               {
                                 border: [true, false, false, false],
                                 text: {
-                                  text: '177.65.00', fontSize: 8,
+                                  text: props.freshwater_app[1], fontSize: 8,
                                   alignment: 'right',
                                 }
                               },
@@ -3480,7 +3501,7 @@ const nutrientBudgetBTable = (props, images) => {
                               {
                                 border: [true, false, false, true],
                                 text: {
-                                  text: '8.08', fontSize: 8,
+                                  text: props.freshwater_app[2], fontSize: 8,
                                   alignment: 'right',
                                 }
                               },
@@ -3517,7 +3538,7 @@ const nutrientBudgetBTable = (props, images) => {
                               {
                                 border: [true, false, false, false],
                                 text: {
-                                  text: '4,824,000.00', fontSize: 8,
+                                  text: props.wastewater_app[0], fontSize: 8,
                                   alignment: 'right',
                                 }
                               },
@@ -3533,7 +3554,7 @@ const nutrientBudgetBTable = (props, images) => {
                               {
                                 border: [true, false, false, false],
                                 text: {
-                                  text: '177.65.00', fontSize: 8,
+                                  text: props.wastewater_app[1], fontSize: 8,
                                   alignment: 'right',
                                 }
                               },
@@ -3549,7 +3570,7 @@ const nutrientBudgetBTable = (props, images) => {
                               {
                                 border: [true, false, false, true],
                                 text: {
-                                  text: '8.08', fontSize: 8,
+                                  text: props.wastewater_app[2], fontSize: 8,
                                   alignment: 'right',
                                 }
                               },
@@ -3585,7 +3606,7 @@ const nutrientBudgetBTable = (props, images) => {
                               {
                                 border: [true, false, false, true],
                                 text: {
-                                  text: '1', fontSize: 8,
+                                  text: props.totalHarvests, fontSize: 8,
                                   alignment: 'right',
                                 }
                               },
@@ -3987,7 +4008,14 @@ const nutrientBudgetA = (props) => {
   }
 }
 const nutrientBudgetB = (props, images) => {
-  const tables = [nutrientBudgetBTable(props, images)]
+  // const tables = [nutrientBudgetBTable(props, images)]
+  let allEvents = props && props.allEvents ? props.allEvents : {}
+  
+  const tables = Object.keys(allEvents).map(key => {
+    return nutrientBudgetBTable(allEvents[key], images[key])
+  })
+  
+  
   return {
     pageBreak: 'before',
     stack: [
@@ -6628,21 +6656,22 @@ export default function dd(props, images) {
     availableNutrientsE(props), // subsurface tile drainage
     availableNutrientsF(props.availableNutrientsF),
     availableNutrientsG(props.availableNutrientsG),
-
-    // Here
     applicationAreaA(props.applicationAreaA),
     applicationAreaB(props.applicationAreaB),
     nutrientBudgetA(props.nutrientBudgetA),
-    nutrientBudgetB(props, images), // Graph
-    nutrientAnalysisA(props),
+    nutrientBudgetB(props.nutrientBudgetB, images), // Graph
+    
+    // Almost there, just theses tables, show data, no calculations here
+    // Need to add Detection limit, I think each analysis needs DL and its not in the spreadsheet or anywhere.... :(
+    nutrientAnalysisA(props), 
     nutrientAnalysisB(props),  
     nutrientAnalysisC(props),
     nutrientAnalysisD(props),
     nutrientAnalysisE(props),
     nutrientAnalysisF(props),
     naprbalA(props),
-    naprbalB(props, images), 
-    naprbalC(props, images),
+    // naprbalB(props, images), 
+    // naprbalC(props, images),
 
     // Minimal data below, need to create, answers to basic questions.
     exceptionReportingABC(props),
