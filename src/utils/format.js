@@ -29,7 +29,6 @@ export const groupBySortBy = (list, groupBy, sortBy) => {
 export const groupByKeys = (list, groupKeys) => {
   let grouped = {}
   list.forEach(item => {
-    // let key = `${item[groupByA]}${item[groupByB]}`
     let key = groupKeys.map(gkey => item[gkey]).join('')
     if (grouped[key]) {
       grouped[key].push(item)

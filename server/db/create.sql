@@ -166,10 +166,14 @@ CREATE TABLE IF NOT EXISTS field_crop_harvest(
   actual_yield NUMERIC(6,2)  NOT NULL, -- tons -- calculate to find tons/ acres by field_crop.acres_planted 
   src_of_analysis VARCHAR(50) NOT NULL,
   moisture NUMERIC(6,2), -- stored as a percent 10 == 10%
-  n NUMERIC(8,6), -- Come from lab as a percentage of concentration in mg/kg, divide by .49999899 to convert to lb/ ton conversion factor
-  p NUMERIC(8,6),       -- With the conversions factor in lb/ton we can calculate the required Annual report data
-  k NUMERIC(8,6),       --    totals for N, P K & Salt == yield(tons/acre) * CF (concentration factor in lb/ton) 
-  tfs NUMERIC(8,6), -- total fixed solids,
+  n NUMERIC(20,6), -- Come from lab as a percentage of concentration in mg/kg, divide by .49999899 to convert to lb/ ton conversion factor
+  p NUMERIC(20,6),       -- With the conversions factor in lb/ton we can calculate the required Annual report data
+  k NUMERIC(20,6),       --    totals for N, P K & Salt == yield(tons/acre) * CF (concentration factor in lb/ton) 
+  tfs NUMERIC(20,6), -- total fixed solids,
+  n_dl NUMERIC(20,6) DEFAULT 100, -- detection limit mg/kg
+  p_dl NUMERIC(20,6) DEFAULT 100,
+  k_dl NUMERIC(20,6) DEFAULT 100,
+  tfs_dl NUMERIC(20,6) DEFAULT 0.01, -- DL % 
   n_lbs_acre NUMERIC(12,2),
   p_lbs_acre NUMERIC(12,2),
   k_lbs_acre NUMERIC(12,2),
@@ -216,14 +220,37 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater_analysis(
   sample_date TIMESTAMP NOT NULL,
   sample_desc VARCHAR(100) NOT NULL,
   sample_data_src VARCHAR(100),
-  kn_con NUMERIC(9,3),
-  nh4_con NUMERIC(9,3),
-  nh3_con NUMERIC(9,3),
-  no3_con NUMERIC(9,3),
-  p_con NUMERIC(9,3),
-  k_con NUMERIC(9,3),
-  ec NUMERIC(9,3),
-  tds NUMERIC(9,3),
+  kn_con NUMERIC(12,3),
+  nh4_con NUMERIC(12,3),
+  nh3_con NUMERIC(12,3),
+  no3_con NUMERIC(12,3),
+  p_con NUMERIC(12,3),
+  k_con NUMERIC(12,3),
+  ca_con NUMERIC(12,3),
+  mg_con NUMERIC(12,3),
+  na_con NUMERIC(12,3),
+  hco3_con NUMERIC(12,3),
+  co3_con NUMERIC(12,3),
+  so4_con NUMERIC(12,3),
+  cl_con NUMERIC(12,3),
+  ec NUMERIC(12,3),
+  tds NUMERIC(12,3),
+  kn_dl NUMERIC(12,3), -- mg/L
+  nh4_dl NUMERIC(12,3),
+  nh3_dl NUMERIC(12,3),
+  no3_dl NUMERIC(12,3),
+  p_dl NUMERIC(12,3),
+  k_dl NUMERIC(12,3),
+  ca_dl NUMERIC(12,3),
+  mg_dl NUMERIC(12,3),
+  na_dl NUMERIC(12,3),
+  hco3_dl NUMERIC(12,3),
+  co3_dl NUMERIC(12,3),
+  so4_dl NUMERIC(12,3),
+  cl_dl NUMERIC(12,3),
+
+  ec_dl NUMERIC(9,3) DEFAULT 1, -- micro/cm
+  tds_dl NUMERIC(9,3) DEFAULT 10, 
   ph NUMERIC(9,3),
   UNIQUE(dairy_id, sample_date, sample_desc),
   
@@ -295,6 +322,18 @@ CREATE TABLE IF NOT EXISTS field_crop_app_freshwater_analysis(
   cl_con NUMERIC(9,3),
   ec NUMERIC(9,3), 
   tds NUMERIC(9,3),
+  n_dl NUMERIC(9,3) DEFAULT 0.5, -- mg/ L 
+  nh4_dl NUMERIC(9,3) DEFAULT 0.5, 
+  no2_dl NUMERIC(9,3) DEFAULT 0.5,
+  ca_dl NUMERIC(9,3) DEFAULT 0.5,
+  mg_dl NUMERIC(9,3) DEFAULT 0.5,
+  na_dl NUMERIC(9,3) DEFAULT 0.5,
+  hco3_dl NUMERIC(9,3) DEFAULT 0.5,
+  co3_dl NUMERIC(9,3) DEFAULT 0.5,
+  so4_dl NUMERIC(9,3) DEFAULT 0.5, 
+  cl_dl NUMERIC(9,3) DEFAULT 0.5,
+  ec_dl NUMERIC(9,3) DEFAULT 1, -- micro/cm
+  tds_dl NUMERIC(9,3) DEFAULT 10, -- 
   UNIQUE(dairy_id, fresh_water_source_id, sample_date, sample_desc, src_of_analysis),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
@@ -346,17 +385,24 @@ CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure_analysis(
   src_of_analysis VARCHAR(50) NOT NULL,
   moisture NUMERIC(5,2) NOT NULL,
   method_of_reporting VARCHAR(50) NOT NULL,
-  n_con NUMERIC(9,3),
-  p_con NUMERIC(9,3),
-  k_con NUMERIC(9,3),
-  
-  ca_con NUMERIC(9,3),
-  mg_con NUMERIC(9,3),
-  na_con NUMERIC(9,3),
-  s_con NUMERIC(9,3), -- sulfur
-  cl_con NUMERIC(9,3),
-
-  tfs NUMERIC(9,3), -- total fixed solids
+  n_con NUMERIC(12,3), -- 999,999,999.999
+  p_con NUMERIC(12,3),
+  k_con NUMERIC(12,3),
+  ca_con NUMERIC(12,3),
+  mg_con NUMERIC(12,3),
+  na_con NUMERIC(12,3),
+  s_con NUMERIC(12,3), -- sulfur
+  cl_con NUMERIC(12,3),
+  tfs NUMERIC(12,3), -- total fixed solids
+  n_dl NUMERIC(12,3) DEFAULT 100,
+  p_dl NUMERIC(12,3) DEFAULT 100,
+  k_dl NUMERIC(12,3) DEFAULT 100,
+  ca_dl NUMERIC(12,3) DEFAULT 100,
+  mg_dl NUMERIC(12,3) DEFAULT 100,
+  na_dl NUMERIC(12,3) DEFAULT 100,
+  s_dl NUMERIC(12,3) DEFAULT 100, -- sulfur
+  cl_dl NUMERIC(12,3) DEFAULT 100,
+  tfs_dl NUMERIC(12,3) DEFAULT .01, -- %
   UNIQUE(dairy_id, sample_date, sample_desc, src_of_analysis),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
@@ -569,8 +615,26 @@ CREATE TABLE IF NOT EXISTS export_manifest(
   n_con_mg_kg NUMERIC(12,2),
   p_con_mg_kg NUMERIC(12,2),
   k_con_mg_kg NUMERIC(12,2),
+
+
+  -- TODO Tomorrow
+  --  Remove the DL from here, not need, it is actually needed in field_crop_app_solidmanure....
+  ca_con_mg_kg NUMERIC(9,3),
+  mg_con_mg_kg NUMERIC(9,3),
+  na_con_mg_kg NUMERIC(9,3),
+  s_con_mg_kg NUMERIC(9,3), -- sulfur
+  cl_con_mg_kg NUMERIC(9,3),
   tfs NUMERIC(6,2),
   salt_lbs_rm NUMERIC(12,2),  --New
+  n_dl NUMERIC(9,3) DEFAULT 100,
+  p_dl NUMERIC(9,3) DEFAULT 100,
+  k_dl NUMERIC(9,3) DEFAULT 100,
+  ca_dl NUMERIC(9,3) DEFAULT 100,
+  mg_dl NUMERIC(9,3) DEFAULT 100,
+  na_dl NUMERIC(9,3) DEFAULT 100,
+  s_dl NUMERIC(9,3) DEFAULT 100, -- sulfur
+  cl_dl NUMERIC(9,3) DEFAULT 100,
+  tfs_dl NUMERIC(9,3) DEFAULT .01, -- %
   
   -- For Process wastewater
   kn_con_mg_l NUMERIC(12,2),
@@ -581,6 +645,7 @@ CREATE TABLE IF NOT EXISTS export_manifest(
   k_con_mg_l NUMERIC(12,2),
   ec_umhos_cm NUMERIC(12,2), -- New
   tds NUMERIC(6,2),
+  
   
   -- Shared between manure and wastewater -- New
   n_lbs_rm NUMERIC(12,2),

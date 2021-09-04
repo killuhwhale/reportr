@@ -12,28 +12,35 @@ export const FERTILIZER = 'field_crop_app_fertilizer'
 export const MANURE = 'export_manifest_manure'
 export const WASTEWATER = 'export_manifest_wastewater'
 
+const HARVEST = 'field_crop_harvest'
+
+
 export const TSV_INFO = {
+  [HARVEST]: {
+    numCols: 26, // 32 columns in process_wastewater spreadsheet/ TSV
+    tsvType: HARVEST
+  },
   [PROCESS_WASTEWATER]: {
-    numCols: 32, // 32 columns in process_wastewater spreadsheet/ TSV
+    numCols: 54, // 32 columns in process_wastewater spreadsheet/ TSV
     tsvType: PROCESS_WASTEWATER
   },
   [FRESHWATER]: {
-    numCols: 33,
+    numCols: 45,
     tsvType: FRESHWATER
   },
   [SOLIDMANURE]: {
-    numCols: 33,
+    numCols: 42,
     tsvType: SOLIDMANURE
   },
   [FERTILIZER]: {
     numCols: 27,
     tsvType: FERTILIZER
   },
-  [MANURE]: {
-    numCols: 50,
+  [MANURE]: { // exports
+    numCols: 64,
     tsvType: MANURE
   },
-  [WASTEWATER]: {
+  [WASTEWATER]: { // exports
     numCols: 51,
     tsvType: WASTEWATER
   }
@@ -308,6 +315,10 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
     p,
     k,
     tfs,
+    n_dl,
+    p_dl,
+    k_dl,
+    tfs_dl,
     n_lbs_acre,
     p_lbs_acre,
     k_lbs_acre,
@@ -377,6 +388,10 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
                   p: checkEmpty(p),
                   k: checkEmpty(k),
                   tfs: checkEmpty(tfs),
+                  n_dl: checkEmpty(n_dl),
+                  p_dl: checkEmpty(p_dl),
+                  k_dl: checkEmpty(k_dl),
+                  tfs_dl: checkEmpty(tfs_dl),
                   n_lbs_acre: checkEmpty(n_lbs_acre),
                   p_lbs_acre: checkEmpty(p_lbs_acre),
                   k_lbs_acre: checkEmpty(k_lbs_acre),
@@ -487,8 +502,30 @@ const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
     no3_con,
     p_con,
     k_con,
+    ca_con,
+    mg_con,
+    na_con,
+    hco3_con,
+    co3_con,
+    so4_con, 
+    cl_con,   
     ec,
     tds,
+    kn_dl,
+    nh4_dl,
+    nh3_dl,
+    no3_dl,
+    p_dl,
+    k_dl,
+    ca_dl,
+    mg_dl,
+    na_dl,
+    hco3_dl,
+    co3_dl,
+    so4_dl, 
+    cl_dl,   
+    ec_dl,
+    tds_dl,
     ph,
     app_desc,
     material_type,
@@ -505,15 +542,37 @@ const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
     sample_date,
     sample_desc,
     sample_data_src,
-    kn_con: checkEmpty(kn_con.replaceAll(',', '')),
-    nh4_con: checkEmpty(nh4_con.replaceAll(',', '')),
-    nh3_con: checkEmpty(nh3_con.replaceAll(',', '')),
-    no3_con: checkEmpty(no3_con.replaceAll(',', '')),
-    p_con: checkEmpty(p_con.replaceAll(',', '')),
-    k_con: checkEmpty(k_con.replaceAll(',', '')),
-    ec: checkEmpty(ec.replaceAll(',', '')),
-    tds: checkEmpty(tds.replaceAll(',', '')),
-    ph: checkEmpty(ph.replaceAll(',', '')),
+    kn_con: checkEmpty(kn_con),
+    nh4_con: checkEmpty(nh4_con),
+    nh3_con: checkEmpty(nh3_con),
+    no3_con: checkEmpty(no3_con),
+    p_con: checkEmpty(p_con),
+    k_con: checkEmpty(k_con),
+    ca_con: checkEmpty(ca_con),
+    mg_con: checkEmpty(mg_con),
+    na_con: checkEmpty(na_con),
+    hco3_con: checkEmpty(hco3_con),
+    co3_con: checkEmpty(co3_con),
+    so4_con: checkEmpty(so4_con),
+    cl_con: checkEmpty(cl_con),
+    ec: checkEmpty(ec),
+    tds: checkEmpty(tds),
+    kn_dl: checkEmpty(kn_dl),
+    nh4_dl: checkEmpty(nh4_dl),
+    nh3_dl: checkEmpty(nh3_dl),
+    no3_dl: checkEmpty(no3_dl),
+    p_dl: checkEmpty(p_dl),
+    k_dl: checkEmpty(k_dl),
+    ca_dl: checkEmpty(ca_dl),
+    mg_dl: checkEmpty(mg_dl),
+    na_dl: checkEmpty(na_dl),
+    hco3_dl: checkEmpty(hco3_dl),
+    co3_dl: checkEmpty(co3_dl),
+    so4_dl: checkEmpty(so4_dl),
+    cl_dl: checkEmpty(cl_dl),
+    ec_dl: checkEmpty(ec_dl),
+    tds_dl: checkEmpty(tds_dl),
+    ph: checkEmpty(ph),
   }
   // dairy_id, sample_date, sample_desc
   const field_crop_app_process_wastewater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}`
@@ -564,6 +623,18 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
     cl_con,
     ec,
     tds,
+    n_dl,
+    nh4_dl,
+    no2_dl,
+    ca_dl,
+    mg_dl,
+    na_dl,
+    hco3_dl,
+    co3_dl,
+    so4_dl,
+    cl_dl,
+    ec_dl,
+    tds_dl,
     app_rate,
     run_time,
     amount_applied,
@@ -612,7 +683,18 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
             cl_con: checkEmpty(cl_con),
             ec: checkEmpty(ec),
             tds: checkEmpty(tds),
-
+            n_dl: checkEmpty(n_dl),
+            nh4_dl: checkEmpty(nh4_dl),
+            no2_dl: checkEmpty(no2_dl),
+            ca_dl: checkEmpty(ca_dl),
+            mg_dl: checkEmpty(mg_dl),
+            na_dl: checkEmpty(na_dl),
+            hco3_dl: checkEmpty(hco3_dl),
+            co3_dl: checkEmpty(co3_dl),
+            so4_dl: checkEmpty(so4_dl),
+            cl_dl: checkEmpty(cl_dl),
+            ec_dl: checkEmpty(ec_dl),
+            tds_dl: checkEmpty(tds_dl)
           }
 
           lazyGet('field_crop_app_freshwater_analysis', field_crop_app_freshwater_analysis_search_url, freshwater_analysis_data, dairy_pk)
@@ -670,12 +752,21 @@ const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
     s_con,
     cl_con,
     tfs,
+    n_dl,
+    p_dl,
+    k_dl,
+    ca_dl,
+    mg_dl,
+    na_dl,
+    s_dl,
+    cl_dl,
+    tfs_dl,
     n_lbs_acre,
     p_lbs_acre,
     k_lbs_acre,
     salt_lbs_acre
 
-  ] = row.slice(11, TSV_INFO[FRESHWATER].numCols)
+  ] = row.slice(11, TSV_INFO[SOLIDMANURE].numCols)
 
   // dairy_id, sample_date, sample_desc
   const field_crop_app_solidmanure_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${encodeURIComponent(src_of_analysis)}`
@@ -695,7 +786,16 @@ const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
     na_con: checkEmpty(na_con),
     s_con: checkEmpty(s_con),
     cl_con: checkEmpty(cl_con),
-    tfs: checkEmpty(tfs)
+    tfs: checkEmpty(tfs),
+    n_dl: checkEmpty(n_dl),
+    p_dl: checkEmpty(p_dl),
+    k_dl: checkEmpty(k_dl),
+    ca_dl: checkEmpty(ca_dl),
+    mg_dl: checkEmpty(mg_dl),
+    na_dl: checkEmpty(na_dl),
+    s_dl: checkEmpty(s_dl),
+    cl_dl: checkEmpty(cl_dl),
+    tfs_dl: checkEmpty(tfs_dl),
   }
 
   // Get Source

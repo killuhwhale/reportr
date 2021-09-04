@@ -383,6 +383,10 @@ module.exports = {
         p,
         k,
         tfs,
+        n_dl,
+        p_dl,
+        k_dl,
+        tfs_dl,
         n_lbs_acre,
         p_lbs_acre,
         k_lbs_acre,
@@ -405,6 +409,10 @@ module.exports = {
            fch.n as actual_n,
            fch.p as actual_p,
            fch.k as actual_k,
+           fch.n_dl,
+           fch.p_dl,
+           fch.k_dl,
+           fch.tfs_dl,
            fch.tfs,
            fch.sample_date,
            fch.src_of_analysis,
@@ -413,6 +421,7 @@ module.exports = {
            fch.p_lbs_acre,
            fch.k_lbs_acre,
            fch.salt_lbs_acre,
+
 
            c.title as croptitle,
            f.title as fieldtitle,
@@ -588,7 +597,31 @@ module.exports = {
     return pool.query(
       format(`
         INSERT INTO field_crop_app_process_wastewater_analysis( 
-          dairy_id, sample_date, sample_desc, sample_data_src, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con, ec, tds, ph 
+          dairy_id, sample_date, sample_desc, sample_data_src, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con,
+          ca_con,
+          mg_con,
+          na_con,
+          hco3_con,
+          co3_con,
+          so4_con, 
+          cl_con,
+          ec, tds,
+          kn_dl,    
+          nh4_dl,   
+          nh3_dl,   
+          no3_dl,   
+          p_dl,   
+          k_dl,
+          ca_dl,
+          mg_dl,
+          na_dl,
+          hco3_dl,
+          co3_dl,
+          so4_dl, 
+          cl_dl,   
+          ec_dl,    
+          tds_dl,
+          ph 
         ) VALUES (%L)  RETURNING *`,
         values,
       ),
@@ -600,9 +633,11 @@ module.exports = {
     return pool.query(
       format(
         `SELECT  *
-          FROM field_crop_app_process_wastewater_analysis 
+          FROM field_crop_app_process_wastewater_analysis fcapwa
+          JOIN (select * FROM field_crop_app_process_wastewater fcapwA WHERE fcapwA.field_crop_app_process_wastewater_analysis_id = fcapwa.pk) fcapw
+          ON fcapwa.pk = fcapw.field_crop_app_process_wastewater_analysis_id
           WHERE 
-          dairy_id = %L
+          fcapwa.dairy_id = %L
         `, dairy_id),
       [],
       callback
@@ -792,7 +827,19 @@ module.exports = {
         so4_con,
         cl_con,
         ec, 
-        tds
+        tds,
+        n_dl,
+        nh4_dl,
+        no2_dl,
+        ca_dl,
+        mg_dl,
+        na_dl,
+        hco3_dl,
+        co3_dl,
+        so4_dl,
+        cl_dl,
+        ec_dl,
+        tds_dl
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -803,9 +850,15 @@ module.exports = {
       format(
         // nitrateN, totalP, totalK, totalTDS
         `SELECT *
-        FROM field_crop_app_freshwater_analysis
+
+
+
+        FROM field_crop_app_freshwater_analysis fcafwa
+        JOIN field_crop_app_freshwater_source fcafws
+        ON fcafws.pk = fcafwa.fresh_water_source_id
+
         WHERE 
-        dairy_id = %L
+        fcafwa.dairy_id = %L
         `, dairy_id),
       [],
       callback
@@ -942,7 +995,16 @@ module.exports = {
         na_con,
         s_con,
         cl_con,
-        tfs
+        tfs,
+        n_dl,
+        p_dl,
+        k_dl,
+        ca_dl,
+        mg_dl,
+        na_dl,
+        s_dl,
+        cl_dl,
+        tfs_dl
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -1467,7 +1529,21 @@ module.exports = {
         n_con_mg_kg,
         p_con_mg_kg,
         k_con_mg_kg,
+        ca_con_mg_kg,
+        mg_con_mg_kg,
+        na_con_mg_kg,
+        s_con_mg_kg,
+        cl_con_mg_kg,
         tfs,
+        n_dl,
+        p_dl,
+        k_dl,
+        ca_dl,
+        mg_dl,
+        na_dl,
+        s_dl,
+        cl_dl,
+        tfs_dl, 
         salt_lbs_rm,
 
         kn_con_mg_l,
@@ -1502,7 +1578,22 @@ module.exports = {
         em.n_con_mg_kg,
         em.p_con_mg_kg,
         em.k_con_mg_kg,
+
+        em.ca_con_mg_kg,
+        em.mg_con_mg_kg,
+        em.na_con_mg_kg,
+        em.s_con_mg_kg,
+        em.cl_con_mg_kg,
         em.tfs,
+        em.n_dl,
+        em.p_dl,
+        em.k_dl,
+        em.ca_dl,
+        em.mg_dl,
+        em.na_dl,
+        em.s_dl,
+        em.cl_dl,
+        em.tfs_dl,
 
 
         em.ec_umhos_cm,
@@ -1700,6 +1791,20 @@ module.exports = {
         em.n_con_mg_kg,
         em.p_con_mg_kg,
         em.k_con_mg_kg,
+        em.ca_con_mg_kg,
+        em.mg_con_mg_kg,
+        em.na_con_mg_kg,
+        em.s_con_mg_kg,
+        em.cl_con_mg_kg,
+        em.n_dl,
+        em.p_dl,
+        em.k_dl,
+        em.ca_dl,
+        em.mg_dl,
+        em.na_dl,
+        em.s_dl,
+        em.cl_dl,
+        em.tfs_dl,
         em.tfs,
 
 

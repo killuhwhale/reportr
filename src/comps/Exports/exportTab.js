@@ -401,9 +401,9 @@ class ExportTab extends Component {
   getExportManifests() {
     get(`${BASE_URL}/api/export_manifest/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
         let groupedManifests = groupBySortBy(res, 'recipient_id', 'last_date_hauled')
-        this.setState({ exportManifests: groupedManifests })
+        console.log(groupedManifests)
+        this.setState({ exportManifests: groupedManifests }, () => { console.log(this.state.exportManifests)})
       })
       .catch(err => {
         console.log(err)
@@ -899,7 +899,22 @@ class ExportTab extends Component {
           n_con_mg_kg,
           p_con_mg_kg,
           k_con_mg_kg,
+          ca_con_mg_kg,
+          mg_con_mg_kg,
+          na_con_mg_kg,
+          s_con_mg_kg,
+          cl_con_mg_kg,
           tfs,
+          n_dl,
+          p_dl,
+          k_dl,
+          ca_dl,
+          mg_dl,
+          na_dl,
+          s_dl,
+          cl_dl,
+          tfs_dl,
+
 
           n_lbs_rm,
           p_lbs_rm,
@@ -929,7 +944,21 @@ class ExportTab extends Component {
               n_con_mg_kg: checkEmpty(n_con_mg_kg),
               p_con_mg_kg: checkEmpty(p_con_mg_kg),
               k_con_mg_kg: checkEmpty(k_con_mg_kg),
+              ca_con_mg_kg: checkEmpty(ca_con_mg_kg),
+              mg_con_mg_kg: checkEmpty(mg_con_mg_kg),
+              na_con_mg_kg: checkEmpty(na_con_mg_kg),
+              s_con_mg_kg: checkEmpty(s_con_mg_kg),
+              cl_con_mg_kg: checkEmpty(cl_con_mg_kg),
               tfs: checkEmpty(tfs),
+              n_dl: checkEmpty(n_dl),
+              p_dl: checkEmpty(p_dl),
+              k_dl: checkEmpty(k_dl),
+              ca_dl: checkEmpty(ca_dl),
+              mg_dl: checkEmpty(mg_dl),
+              na_dl: checkEmpty(na_dl),
+              s_dl: checkEmpty(s_dl),
+              cl_dl: checkEmpty(cl_dl),
+              tfs_dl: checkEmpty(tfs_dl), 
 
               n_lbs_rm: checkEmpty(n_lbs_rm),
               p_lbs_rm: checkEmpty(p_lbs_rm),
@@ -1039,6 +1068,8 @@ class ExportTab extends Component {
           n_con_mg_l,
           p_con_mg_l,
           k_con_mg_l,
+
+          
           ec_umhos_cm,
           tds,
 
@@ -1395,7 +1426,7 @@ class ExportTab extends Component {
                   Manifests
                 </Typography>
               </Grid>
-              {this.state.exportManifests.length > 0 ?
+              {Object.keys(this.state.exportManifests).length > 0 ?
                 <List
                   height={this.state.windowHeight * 0.75}
                   itemCount={Object.keys(this.state.exportManifests).length}

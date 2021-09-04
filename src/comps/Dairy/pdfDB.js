@@ -86,6 +86,7 @@ export const getAnnualReportData = (dairy_id) => {
     getApplicationAreaB(dairy_id),
     getNutrientBudgetA(dairy_id),
     getNutrientBudgetB(dairy_id),
+    getNutrientAnalysisA(dairy_id),
   ]
 
   return new Promise((resolve, reject) => {
@@ -827,6 +828,108 @@ const getNutrientBudgetB = (dairy_id) => {
         resolve({
           'nutrientBudgetB': {
             allEvents
+          }
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
+}
+
+const getNutrientAnalysisA = (dairy_id) => {
+  // TODO add is_operator to table, need to add to UI as well to make sure the user can enable this.
+  return new Promise((resolve, rej) => {
+    
+    Promise.all([
+      get(`${BASE_URL}/api/field_crop_app_solidmanure_analysis/${dairy_id}`),
+      get(`${BASE_URL}/api/field_crop_app_process_wastewater_analysis/${dairy_id}`),
+      get(`${BASE_URL}/api/field_crop_app_freshwater_analysis/${dairy_id}`),
+      get(`${BASE_URL}/api/field_crop_harvest/${dairy_id}`),
+    ])
+      .then(([manures, wastewaters, freshwaters, harvests]) => {
+        // Fresh water grouped by src_desc
+        freshwaters = groupByKeys(freshwaters, ['src_desc'])
+
+        manures = manures.map(el => {
+          el.n_con = formatFloat(percentToPPM(el.n_con))
+          el.p_con = formatFloat(percentToPPM(el.p_con))
+          el.k_con = formatFloat(percentToPPM(el.k_con))
+          el.ca_con = formatFloat(percentToPPM(el.ca_con))
+          el.mg_con = formatFloat(percentToPPM(el.mg_con))
+          el.na_con = formatFloat(percentToPPM(el.na_con))
+          el.s_con = formatFloat(percentToPPM(el.s_con))
+          el.cl_con = formatFloat(percentToPPM(el.cl_con))
+          el.n_dl = formatFloat(el.n_dl)
+          el.p_dl = formatFloat(el.p_dl)
+          el.k_dl = formatFloat(el.k_dl)
+          el.ca_dl = formatFloat(el.ca_dl)
+          el.mg_dl = formatFloat(el.mg_dl)
+          el.na_dl = formatFloat(el.na_dl)
+          el.s_dl = formatFloat(el.s_dl)
+          el.cl_dl = formatFloat(el.cl_dl)
+          el.tfs_dl = formatFloat(el.tfs_dl)
+        
+          return el
+        })
+
+        wastewaters = wastewaters.map(el => {
+          el.kn_con = formatFloat(el.kn_con)
+          el.nh4_con = formatFloat(el.nh4_con)
+          el.nh3_con = formatFloat(el.nh3_con)
+          el.no3_con = formatFloat(el.no3_con)
+          el.p_con = formatFloat(el.p_con)
+          el.k_con = formatFloat(el.k_con)
+          el.ca_con = formatFloat(el.ca_con)
+          el.mg_con = formatFloat(el.mg_con)
+          el.na_con = formatFloat(el.na_con)
+          el.hco3_con = formatFloat(el.hco3_con)
+          el.co3_con = formatFloat(el.co3_con)
+          el.so4_con = formatFloat(el.so4_con)
+          el.cl_con = formatFloat(el.cl_con)
+          el.ec = formatFloat(el.ec)
+          el.tds = formatFloat(el.tds)
+
+          el.kn_dl = formatFloat(el.kn_dl)
+          el.nh4_dl = formatFloat(el.nh4_dl)
+          el.nh3_dl = formatFloat(el.nh3_dl)
+          el.no3_dl = formatFloat(el.no3_dl)
+          el.p_dl = formatFloat(el.p_dl)
+          el.k_dl = formatFloat(el.k_dl)
+          el.ca_dl = formatFloat(el.ca_dl)
+          el.mg_dl = formatFloat(el.mg_dl)
+          el.na_dl = formatFloat(el.na_dl)
+          el.hco3_dl = formatFloat(el.hco3_dl)
+          el.co3_dl = formatFloat(el.co3_dl)
+          el.so4_dl = formatFloat(el.so4_dl)
+          el.cl_dl = formatFloat(el.cl_dl)
+          el.ec_dl = formatFloat(el.ec_dl)
+          el.tds_dl = formatFloat(el.tds_dl)
+        
+          return el
+        })
+        
+        harvests = harvests.map(el => {
+          el.actual_n = formatFloat(percentToPPM(el.actual_n))
+          el.actual_p = formatFloat(percentToPPM(el.actual_p))
+          el.actual_k = formatFloat(percentToPPM(el.actual_k))
+          el.tfs = formatFloat(el.tfs)
+
+          el.n_dl = formatFloat(el.n_dl)
+          el.p_dl = formatFloat(el.p_dl)
+          el.k_dl = formatFloat(el.k_dl)
+          el.tfs_dl = formatFloat(el.tfs_dl)
+
+          return el
+        })
+        harvests = groupByKeys(harvests, ['field_id', 'plant_date', 'croptitle'])
+
+        
+
+        resolve({
+          'nutrientAnalysis': {
+            manures, wastewaters, freshwaters, harvests
           }
         })
       })

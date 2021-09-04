@@ -21,6 +21,7 @@ import ViewTSVsModal from "../Modals/viewTSVsModal"
 import { get, post } from '../../utils/requests';
 import { MG_KG, KG_MG } from '../../utils/convertCalc'
 import { isEmpty } from "../../utils/valid"
+import { TSV_INFO } from "../../utils/TSV"
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromHarvestTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
@@ -34,7 +35,7 @@ const BASE_URL = "http://localhost:3001"
 const BASIS = ['As-is', "Dry wt"]
 
 const HARVEST = 'field_crop_harvest'
-const NUM_COLS = 22
+const NUM_COLS = 26
 
 class HarvestTab extends Component {
   constructor(props) {
@@ -244,7 +245,7 @@ class HarvestTab extends Component {
 
   // Triggered when user presses Add btn in Modal
   uploadTSV() {
-    let rows = processTSVText(this.state.tsvText, NUM_COLS)
+    let rows = processTSVText(this.state.tsvText, TSV_INFO[HARVEST].numCols)
 
     // Create a set of fields to ensure duplicates are not attempted.
     let fields = createFieldSet(rows)
@@ -343,7 +344,7 @@ class HarvestTab extends Component {
           actionText="Upload"
           cancelText="Close"
           dairy_id={this.state.dairy.pk}
-          tsvType={HARVEST}
+          tsvType={TSV_INFO[HARVEST].tsvType}
           onClose={() => this.toggleShowTSVsModal(false)}
         />
 
