@@ -51,19 +51,6 @@ const MANIFEST_MATERIAL_TYPES = [
 ]
 const DEST_TYPES = ['Broker', 'Composting Facility', 'Farmer', 'Other']
 
-// const MANURE = 'export_manifest_manure'
-// const WASTEWATER = 'export_manifest_wastewater'
-// const EXPORT_TSV_TYPES = {
-//   [MANURE]: {
-//     numCols: 50,
-//     tsvType: MANURE
-//   },
-//   [WASTEWATER]: {
-//     numCols: 51,
-//     tsvType: WASTEWATER
-//   }
-// }
-
 
 
 const ContactView = (props) => {
@@ -174,7 +161,7 @@ const ManifestView = (props) => {
 
       {manifests.map((manifest, i) => {
         return (
-          <Grid item container xs={12}>
+          <Grid item container xs={12} key={`mvet${i}`}>
             <Grid item container xs={10}>
               <Grid item xs={6}>
                 <Typography variant="subtitle1">
@@ -899,21 +886,7 @@ class ExportTab extends Component {
           n_con_mg_kg,
           p_con_mg_kg,
           k_con_mg_kg,
-          ca_con_mg_kg,
-          mg_con_mg_kg,
-          na_con_mg_kg,
-          s_con_mg_kg,
-          cl_con_mg_kg,
           tfs,
-          n_dl,
-          p_dl,
-          k_dl,
-          ca_dl,
-          mg_dl,
-          na_dl,
-          s_dl,
-          cl_dl,
-          tfs_dl,
 
 
           n_lbs_rm,
@@ -944,21 +917,9 @@ class ExportTab extends Component {
               n_con_mg_kg: checkEmpty(n_con_mg_kg),
               p_con_mg_kg: checkEmpty(p_con_mg_kg),
               k_con_mg_kg: checkEmpty(k_con_mg_kg),
-              ca_con_mg_kg: checkEmpty(ca_con_mg_kg),
-              mg_con_mg_kg: checkEmpty(mg_con_mg_kg),
-              na_con_mg_kg: checkEmpty(na_con_mg_kg),
-              s_con_mg_kg: checkEmpty(s_con_mg_kg),
-              cl_con_mg_kg: checkEmpty(cl_con_mg_kg),
+             
               tfs: checkEmpty(tfs),
-              n_dl: checkEmpty(n_dl),
-              p_dl: checkEmpty(p_dl),
-              k_dl: checkEmpty(k_dl),
-              ca_dl: checkEmpty(ca_dl),
-              mg_dl: checkEmpty(mg_dl),
-              na_dl: checkEmpty(na_dl),
-              s_dl: checkEmpty(s_dl),
-              cl_dl: checkEmpty(cl_dl),
-              tfs_dl: checkEmpty(tfs_dl), 
+             
 
               n_lbs_rm: checkEmpty(n_lbs_rm),
               p_lbs_rm: checkEmpty(p_lbs_rm),

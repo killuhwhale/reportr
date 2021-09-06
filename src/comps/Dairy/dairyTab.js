@@ -156,12 +156,18 @@ class DairyTab extends Component {
     //   ]
     // ]
     let nutrientBudgetB = props[0]
-    let nutrientData = Object.keys(nutrientBudgetB).map(key => {
-      const ev = nutrientBudgetB[key]
-      
+    let summary = props[1]
 
+
+    let nutrientData = Object.keys(nutrientBudgetB).map(key => {
+      const ev = nutrientBudgetB[key]  
       return {key: key, data: [ev.total_app, ev.anti_harvests, ev.actual_harvests]}
     })
+
+    let allNutrientData = [summary.total_app, summary.anti_harvests, summary.actual_harvests]
+    console.log("Creating Overall Summary Chart:", allNutrientData, summary)
+
+
 
     let materialLabels = [
       'Existing soil nutrient content',
@@ -182,13 +188,15 @@ class DairyTab extends Component {
       let nutrientPromises = nutrientData.map((row, i) => {
         return this._createBarChart(row.key, nutrientLabels, row.data)
       })
+      let allNutrientDataPromise = this._createBarChart('allNutrientData', nutrientLabels, allNutrientData) 
+      
 
       // Summarys in report
       let materialPromises = materialData.map((row, i) => {
         return this._createHoriBarChart(`materialHoriBar${i}`, materialLabels, row.slice(0, -1), row.slice(-1))
       })
 
-      Promise.all([...nutrientPromises, ...materialPromises])
+      Promise.all([...nutrientPromises, allNutrientDataPromise, ...materialPromises])
         .then((res) => {
           console.log(res)
           resolve(Object.fromEntries(res))
@@ -506,7 +514,7 @@ class DairyTab extends Component {
         });
       }
     });
-    this.createCharts([props.nutrientBudgetB.allEvents])
+    this.createCharts([props.nutrientBudgetB.allEvents, props.naprbalA])
       .then(images => {
         console.log(images)
         pdfMake.createPdf(dd(props, images)).open()
@@ -543,7 +551,7 @@ class DairyTab extends Component {
                 </Grid>
                 <Grid item xs={9} align="left">
                     <Tooltip title='Update Reporting Period'>
-                      <IconButton variant="outlined" fullwidth color="secondary"
+                      <IconButton variant="outlined" color="secondary"
                         onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
                       >
                         <ImportExport />
@@ -585,7 +593,7 @@ class DairyTab extends Component {
                 </Grid>
                 <Grid item xs={9} align="left">
                   <Tooltip title='Update Address'>
-                    <IconButton variant="outlined" fullwidth color="secondary"
+                    <IconButton variant="outlined" color="secondary"
                       onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
                     >
                       <ImportExport />
@@ -737,7 +745,7 @@ class DairyTab extends Component {
                 <Tooltip title="Add parcel to dairy">
                   <Button
                     onClick={() => this.toggleParcelModal(true)}
-                    fullwidth variant="outlined" color="primary"
+                   variant="outlined" color="primary"
                     style={{ marginTop: "16px" }}
                   >
                     <Typography variant="subtitle2">
@@ -753,7 +761,7 @@ class DairyTab extends Component {
                 <Tooltip title="Add field to dairy">
                   <Button
                     onClick={() => this.toggleFieldModal(true)}
-                    fullwidth variant="outlined" color="primary"
+                     variant="outlined" color="primary"
                     style={{ marginTop: "16px" }}
                   >
                     <Typography variant="subtitle2">

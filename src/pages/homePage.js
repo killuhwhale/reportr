@@ -198,7 +198,7 @@ class HomePage extends Component {
 
 
           <Tooltip title="Add Dairy">
-            <Button color="primary" fullwidth variant="outlined" style={{ marginTop: "16px" }}
+            <Button color="primary" variant="outlined" style={{ marginTop: "16px" }}
               onClick={() => this.toggleDairyModal(true)} >
 
               <Grid item container xs={12} >

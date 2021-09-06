@@ -144,7 +144,7 @@ class HerdTable extends Component {
           </Grid>
           <Grid item xs={7} align='left'>
             <Tooltip title="Update herds">
-              <IconButton color="primary" variant="outlined" fullwidth
+              <IconButton color="primary" variant="outlined"
                 onClick={() => { this.updateHerds() }}
               >
                 <ImportExport />
@@ -713,7 +713,7 @@ class HerdTable extends Component {
             :
             <Grid item xs={2}>
               <Tooltip title="Create new herd sheet">
-                <Button variant="outlined" fullwidth color="primary"
+                <Button variant="outlined" color="primary"
                   onClick={this.createHerds.bind(this)}
                 >
                   <Typography variant="subtitle2">

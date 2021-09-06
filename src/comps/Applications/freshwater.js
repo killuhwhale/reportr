@@ -271,7 +271,7 @@ class Freshwater extends Component {
     createObj.amt_applied_per_acre = checkEmpty(createObj.amt_applied_per_acre)
     createObj.totalN = checkEmpty(createObj.totalN)
 
-    console.log("creating freshwater event: ", createObj)
+    console.log("creating freshwater event: ", createObj, this.state.fieldCropAppFreshwaterAnalyses[createObj.field_crop_app_freshwater_analysis_idx])
     post(`${BASE_URL}/api/field_crop_app_freshwater/create`, createObj)
       .then(res => {
         console.log(res)

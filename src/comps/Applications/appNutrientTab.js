@@ -172,6 +172,7 @@ class NutrientApplicationTab extends Component {
   getFieldCropAppFreshwaterAnalysis() {
     get(`${BASE_URL}/api/field_crop_app_freshwater_analysis/${this.state.dairy.pk}`)
       .then(res => {
+        console.log('field_crop_app_freshwater_analysis', res)
         this.setState({ fieldCropAppFreshwaterAnalyses: res })
       })
       .catch(err => {
@@ -265,7 +266,8 @@ class NutrientApplicationTab extends Component {
 
           post(`${BASE_URL}/api/field_crop_app/create`, createObj)
             .then(res => {
-              console.log(res)
+              this.getFieldCropAppEvents()
+              this.toggleShowAddFieldCropAppModal(false)
             })
             .catch(err => {
               console.log(err)
@@ -315,7 +317,7 @@ class NutrientApplicationTab extends Component {
 
             <Grid item xs={5} align="center" >
 
-              <Button variant="outlined" color="primary" fullwidth
+              <Button variant="outlined" color="primary"
                 onClick={() => this.toggleShowAddFieldCropAppModal(true)}>
                 Create New Application Event
               </Button>

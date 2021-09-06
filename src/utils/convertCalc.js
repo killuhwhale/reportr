@@ -4,7 +4,7 @@ export const TO_MG_KG = 1e4    // converts percent to decimal 1e-2 and mg to kg 
 export const TO_KG_MG = 1e-4       //        if 5% of 1 kg is nitrogen, how many mg is that. 1kg == 1mg * 1e6. ==> (0.5%)*1e-2 * 1mg * 1e6 == (0.5)1mg*1e4 == .5e4mg == 5000mg / kg
 
 export const toFloat = (num) => {
-  return typeof(num) === typeof('') ? parseFloat(num.replaceAll(',', '')) : num
+  return num && typeof(num) === typeof('') && num.length > 0 ? parseFloat(num.replaceAll(',', '')) : typeof(num) === typeof(0) || typeof(num) === typeof(0.0) ? num : 0
 }
 
 export const  MG_KG = (num) => {

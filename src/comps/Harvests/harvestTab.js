@@ -283,7 +283,7 @@ class HarvestTab extends Component {
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
           <Grid item container xs={12}>
-            {/* <Button variant="outlined" fullwidth color="secondary"
+            {/* <Button variant="outlined"  color="secondary"
                 onClick={this.updateFieldCropHarvest.bind(this)}>
                 Update Harvests
               </Button> */}

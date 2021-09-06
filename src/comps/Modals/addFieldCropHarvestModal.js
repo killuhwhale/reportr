@@ -169,7 +169,7 @@ class AddFieldCropHarvestModal extends Component{
                   name='n'
                   value={this.state.createFieldCropHarvestObj.n}
                   onChange={this.props.onChange.bind(this)}
-                  label="n (mg/kg)"
+                  label="N (%)"
                   style={{ width: "100%" }}
                 /> 
 							</Grid>
@@ -178,7 +178,7 @@ class AddFieldCropHarvestModal extends Component{
                   name='p'
                   value={this.state.createFieldCropHarvestObj.p}
                   onChange={this.props.onChange.bind(this)}
-                  label="p (mg/kg)"
+                  label="P (%)"
                   style={{ width: "100%" }}
                 /> 
 							</Grid>
@@ -187,7 +187,7 @@ class AddFieldCropHarvestModal extends Component{
                   name='k'
                   value={this.state.createFieldCropHarvestObj.k}
                   onChange={this.props.onChange.bind(this)}
-                  label="k (mg/kg)"
+                  label="K (%)"
                   style={{ width: "100%" }}
                 /> 
 							</Grid>
@@ -196,7 +196,7 @@ class AddFieldCropHarvestModal extends Component{
                   name='tfs'
                   value={this.state.createFieldCropHarvestObj.tfs}
                   onChange={this.props.onChange.bind(this)}
-                  label="tfs"
+                  label="TFS %"
                   style={{ width: "100%" }}
                 /> 
 							</Grid>
@@ -205,7 +205,7 @@ class AddFieldCropHarvestModal extends Component{
                   name='n_lbs_acre'
                   value={this.state.createFieldCropHarvestObj.n_lbs_acre}
                   onChange={this.props.onChange.bind(this)}
-                  label="Nitrogen lbs/ acre"
+                  label="Nitrogen (lbs/ acre)"
                   style={{ width: "100%" }}
                 /> 
 							</Grid>
@@ -214,7 +214,7 @@ class AddFieldCropHarvestModal extends Component{
                   name='p_lbs_acre'
                   value={this.state.createFieldCropHarvestObj.p_lbs_acre}
                   onChange={this.props.onChange.bind(this)}
-                  label="Phosphorus lbs/ acre"
+                  label="Phosphorus (lbs/ acre)"
                   style={{ width: "100%" }}
                 /> 
 							</Grid>
@@ -223,7 +223,7 @@ class AddFieldCropHarvestModal extends Component{
                   name='k_lbs_acre'
                   value={this.state.createFieldCropHarvestObj.k_lbs_acre}
                   onChange={this.props.onChange.bind(this)}
-                  label="Potassium lbs/ acre"
+                  label="Potassium (lbs/ acre)"
                   style={{ width: "100%" }}
                 /> 
 							</Grid>
@@ -232,7 +232,7 @@ class AddFieldCropHarvestModal extends Component{
                   name='salt_lbs_acre'
                   value={this.state.createFieldCropHarvestObj.salt_lbs_acre}
                   onChange={this.props.onChange.bind(this)}
-                  label="Salt lbs/ acre"
+                  label="Salt (lbs/ acre)"
                   style={{ width: "100%" }}
                 /> 
 							</Grid>

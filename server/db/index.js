@@ -632,10 +632,15 @@ module.exports = {
   getFieldCropApplicationProcessWastewaterAnalysis: (dairy_id, callback) => {
     return pool.query(
       format(
-        `SELECT  *
+        `SELECT  *,
+        fcapwa.pk,
+        fcapw.pk as wastewater_id
+
           FROM field_crop_app_process_wastewater_analysis fcapwa
+          
           JOIN (select * FROM field_crop_app_process_wastewater fcapwA WHERE fcapwA.field_crop_app_process_wastewater_analysis_id = fcapwa.pk) fcapw
           ON fcapwa.pk = fcapw.field_crop_app_process_wastewater_analysis_id
+          
           WHERE 
           fcapwa.dairy_id = %L
         `, dairy_id),
@@ -849,8 +854,9 @@ module.exports = {
     return pool.query(
       format(
         // nitrateN, totalP, totalK, totalTDS
-        `SELECT *
-
+        `SELECT *,
+        fcafwa.pk,
+        fcafws.pk as freshwater_source_id
 
 
         FROM field_crop_app_freshwater_analysis fcafwa
@@ -1529,21 +1535,9 @@ module.exports = {
         n_con_mg_kg,
         p_con_mg_kg,
         k_con_mg_kg,
-        ca_con_mg_kg,
-        mg_con_mg_kg,
-        na_con_mg_kg,
-        s_con_mg_kg,
-        cl_con_mg_kg,
+    
         tfs,
-        n_dl,
-        p_dl,
-        k_dl,
-        ca_dl,
-        mg_dl,
-        na_dl,
-        s_dl,
-        cl_dl,
-        tfs_dl, 
+       
         salt_lbs_rm,
 
         kn_con_mg_l,
@@ -1579,21 +1573,9 @@ module.exports = {
         em.p_con_mg_kg,
         em.k_con_mg_kg,
 
-        em.ca_con_mg_kg,
-        em.mg_con_mg_kg,
-        em.na_con_mg_kg,
-        em.s_con_mg_kg,
-        em.cl_con_mg_kg,
+       
         em.tfs,
-        em.n_dl,
-        em.p_dl,
-        em.k_dl,
-        em.ca_dl,
-        em.mg_dl,
-        em.na_dl,
-        em.s_dl,
-        em.cl_dl,
-        em.tfs_dl,
+        
 
 
         em.ec_umhos_cm,
@@ -1791,20 +1773,7 @@ module.exports = {
         em.n_con_mg_kg,
         em.p_con_mg_kg,
         em.k_con_mg_kg,
-        em.ca_con_mg_kg,
-        em.mg_con_mg_kg,
-        em.na_con_mg_kg,
-        em.s_con_mg_kg,
-        em.cl_con_mg_kg,
-        em.n_dl,
-        em.p_dl,
-        em.k_dl,
-        em.ca_dl,
-        em.mg_dl,
-        em.na_dl,
-        em.s_dl,
-        em.cl_dl,
-        em.tfs_dl,
+        
         em.tfs,
 
 

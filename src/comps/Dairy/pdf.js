@@ -2954,7 +2954,7 @@ const nutrientBudgetBTable = (props, img) => {
             [{
               border: [true, false, true, false],
               table: {
-                widths: ['15%', '15%', '15%', '15%', '15%', '15%'],
+                widths: ['8%', '15%', '5%', '15%', '8%', '15%'],
                 body: [
                   [
                     {
@@ -2966,7 +2966,7 @@ const nutrientBudgetBTable = (props, img) => {
                     {
                       border: [false, false, false, true],
                       text: {
-                        text: 'props.headerInfo.fieldtitle', fontSize: 8,
+                        text: props.headerInfo.fieldtitle, fontSize: 8,
                       }
                     },
                     {
@@ -5671,6 +5671,27 @@ const nutrientAnalysisF = (props) => {
 
 //  naprbal NUTRIENT APPLICATIONS, POTENTIAL REMOVAL, AND BALANCE
 const naprbalA = (props) => {
+  console.log(props)
+
+  props = Object.fromEntries(Object.keys(props).map(key => {
+    let val = props[key]
+    if (['fertilizers',
+      'manures',
+      'wastewaters',
+      'freshwaters',
+      'anti_harvests',
+      'actual_harvests',
+      'freshwater_app',
+      'wastewater_app',
+      'total_app',
+      'total_app',
+      'nutrient_bal',
+      'nutrient_bal_ratio',].indexOf(key) >= 0) {
+      return [key, val.map(l => formatFloat(l))]
+    }
+    return [key, val]
+  }))
+
   return {
     pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -5742,25 +5763,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '2,552,416.54', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -5772,25 +5793,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -5802,25 +5823,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.fertilizers[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.fertilizers[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.fertilizers[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.fertilizers[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -5832,25 +5853,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.manures[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.manures[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.manures[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.manures[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -5862,25 +5883,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.wastewaters[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.wastewaters[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.wastewaters[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.wastewaters[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -5892,25 +5913,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.freshwaters[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.freshwaters[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.freshwaters[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.freshwaters[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -5922,25 +5943,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.atmospheric_depo, fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: '0', fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -5952,25 +5973,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.total_app[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.total_app[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.total_app[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.total_app[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -5982,25 +6003,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.anti_harvests[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.anti_harvests[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.anti_harvests[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.anti_harvests[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -6012,25 +6033,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.actual_harvests[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.actual_harvests[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.actual_harvests[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.actual_harvests[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -6042,25 +6063,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.nutrient_bal[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.nutrient_bal[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.nutrient_bal[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.nutrient_bal[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -6072,25 +6093,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.nutrient_bal_ratio[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.nutrient_bal_ratio[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.nutrient_bal_ratio[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, true],
                 text: {
-                  text: '0.00', fontSize: 8, alignment: 'right',
+                  text: props.nutrient_bal_ratio[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -6105,7 +6126,7 @@ const naprbalA = (props) => {
     ]
   }
 }
-const naprbalB = (props, images) => {
+const naprbalB = (props, img) => {
   return {
     stack: [
       {
@@ -6127,7 +6148,7 @@ const naprbalB = (props, images) => {
           {
             width: '90%',
             stack: [
-              image(images.nutrientHoriBar1, 475, 175),
+              image(img, 475, 175),
             ]
           }
         ]
@@ -6724,6 +6745,7 @@ const attachmentsA = (props) => {
  *  
  */
 export default function dd(props, images) {
+  console.log(images)
   const body = [
     dairyInformationA(props.dairyInformationA),
     dairyInformationB(props.dairyInformationB),
@@ -6751,8 +6773,8 @@ export default function dd(props, images) {
     nutrientAnalysisE(props.nutrientAnalysis.harvests), // 
     nutrientAnalysisF(props), // Tile drainage
 
-    naprbalA(props),
-    // naprbalB(props, images), 
+    naprbalA(props.naprbalA),
+    naprbalB(props, images.allNutrientData), 
     // naprbalC(props, images),
 
     // Minimal data below, need to create, answers to basic questions.

@@ -731,7 +731,7 @@ app.post("/api/field_crop_app_process_wastewater_analysis/create", (req, res) =>
       ec_dl,    
       tds_dl,
       ph,
-    ],
+    ].map(el => el === null ? 0: el),
     (err, result) => {
 
       if (!err) {
@@ -947,7 +947,7 @@ app.post("/api/field_crop_app_freshwater_analysis/create", (req, res) => {
       cl_dl,
       ec_dl,
       tds_dl
-    ],
+    ].map(el => el === null ? 0: el),
     (err, result) => {
 
       if (!err) {
@@ -985,6 +985,8 @@ app.post("/api/field_crop_app_freshwater_analysis/delete", (req, res) => {
 });
 
 app.post("/api/field_crop_app_freshwater/create", (req, res) => {
+  console.log('Creating freshwater', req.body)
+  
   const {
     dairy_id,
     field_crop_app_id,
@@ -1622,21 +1624,7 @@ app.post("/api/export_manifest/create", (req, res) => {
     n_con_mg_kg,
     p_con_mg_kg,
     k_con_mg_kg,
-    ca_con_mg_kg,
-    mg_con_mg_kg,
-    na_con_mg_kg,
-    s_con_mg_kg,
-    cl_con_mg_kg,
     tfs,
-    n_dl,
-    p_dl,
-    k_dl,
-    ca_dl,
-    mg_dl,
-    na_dl,
-    s_dl,
-    cl_dl,
-    tfs_dl, 
     salt_lbs_rm,
 
     n_con_mg_l,
@@ -1670,21 +1658,8 @@ app.post("/api/export_manifest/create", (req, res) => {
       n_con_mg_kg,
       p_con_mg_kg,
       k_con_mg_kg,
-      ca_con_mg_kg,
-      mg_con_mg_kg,
-      na_con_mg_kg,
-      s_con_mg_kg,
-      cl_con_mg_kg,
+     
       tfs,
-      n_dl,
-      p_dl,
-      k_dl,
-      ca_dl,
-      mg_dl,
-      na_dl,
-      s_dl,
-      cl_dl,
-      tfs_dl, 
       salt_lbs_rm,
 
       n_con_mg_l,

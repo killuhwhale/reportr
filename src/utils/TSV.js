@@ -37,7 +37,7 @@ export const TSV_INFO = {
     tsvType: FERTILIZER
   },
   [MANURE]: { // exports
-    numCols: 64,
+    numCols: 50,
     tsvType: MANURE
   },
   [WASTEWATER]: { // exports
