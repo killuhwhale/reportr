@@ -58,9 +58,20 @@ QUESTIONS::
 
 Missing:
 
+PDF Report
+ - Dairy info in Footer
+ - Date in Footer
+ - Logos in Header for Each Dairy.
+
+Functions
+ - to determine the number of days in reporting peroid.....
+
 Certification
   - Select and owner or operator for certification.
-  
+
+
+
+
 
 TODO
 Add to PDF REPORT:
