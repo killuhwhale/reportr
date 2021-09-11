@@ -94,7 +94,7 @@ const FreshwaterAppEvent = (props) => {
               </Grid>
               <Grid item container xs={2} justifyContent="center" >
                 <Tooltip title="Delete Freshwater Event">
-                  <IconButton onClick={() => props.onConfirmFreshwaterDelete(freshwater)}>
+                  <IconButton onClick={() => props.onDelete(freshwater)}>
                     <DeleteIcon color="error" />
                   </IconButton>
                 </Tooltip>

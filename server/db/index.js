@@ -632,13 +632,13 @@ module.exports = {
   getFieldCropApplicationProcessWastewaterAnalysis: (dairy_id, callback) => {
     return pool.query(
       format(
-        `SELECT  *,
-        fcapwa.pk,
+        `SELECT  DISTINCT ON(fcapwa.pk) *,
         fcapw.pk as wastewater_id
 
           FROM field_crop_app_process_wastewater_analysis fcapwa
           
-          JOIN (select * FROM field_crop_app_process_wastewater fcapwA WHERE fcapwA.field_crop_app_process_wastewater_analysis_id = fcapwa.pk) fcapw
+          JOIN field_crop_app_process_wastewater fcapw 
+          
           ON fcapwa.pk = fcapw.field_crop_app_process_wastewater_analysis_id
           
           WHERE 
@@ -1249,6 +1249,7 @@ module.exports = {
         ni.import_desc,
         ni.import_date,
         ni.material_type,
+        ni.method_of_reporting,
         ni.amount_imported,
         ni.moisture,
         ni.n_con,
@@ -1304,6 +1305,284 @@ module.exports = {
       callback
     )
   },
+
+
+
+  insertFieldCropApplicationSoilAnalysis: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO field_crop_app_soil_analysis(
+        dairy_id,
+        field_id,
+        sample_desc,
+        sample_date,
+        src_of_analysis,
+        n_con,
+        total_p_con,
+        p_con,
+        k_con,
+        ec,
+        org_matter,
+        n_dl,
+        total_p_dl,
+        p_dl,
+        k_dl,
+        ec_dl,
+        org_matter_dl
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationSoilAnalysis: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT *,
+        fcasa.pk,
+        f.pk as field_pk
+        FROM field_crop_app_soil_analysis fcasa
+
+        JOIN fields f
+        ON f.pk = fcasa.field_id
+
+        WHERE 
+        fcasa.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmFieldCropApplicationSoilAnalysis: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_soil_analysis where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  searchFieldCropApplicationSoilAnalysis: (values, callback) => {
+    return pool.query(
+      `SELECT * FROM field_crop_app_soil_analysis
+      where field_id = $1 and sample_date = $2 and dairy_id = $3`,
+      values,
+      callback
+    )
+  },
+
+  insertFieldCropApplicationSoil: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO field_crop_app_soil(
+        dairy_id,
+        field_crop_app_id,
+        src_desc,
+        n_lbs_acre,
+        p_lbs_acre,
+        k_lbs_acre,
+        salt_lbs_acre
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationSoil: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT
+        fcas.pk,
+        fcas.src_desc,
+        fcas.n_lbs_acre,
+        fcas.p_lbs_acre,
+        fcas.k_lbs_acre,
+        fcas.salt_lbs_acre,
+
+        f.title as fieldtitle,
+        f.pk as field_id,
+        c.title as croptitle,
+        fc.plant_date,
+        fc.acres_planted,
+        fca.app_date,
+        fca.pk as field_crop_app_id
+
+        FROM field_crop_app_soil fcas
+
+        JOIN field_crop_app fca
+        on fca.pk = fcas.field_crop_app_id
+
+        JOIN field_crop fc
+        ON fc.pk = fca.field_crop_id
+
+        JOIN fields f
+        ON f.pk = fc.field_id
+
+        JOIN crops c
+        ON c.pk = fc.crop_id
+
+
+        WHERE 
+        fcas.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmFieldCropApplicationSoil: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_soil where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+  insertFieldCropApplicationPlowdownCredit: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO field_crop_app_plowdown_credit(
+        dairy_id,
+        field_crop_app_id,
+        src_desc,
+        n_lbs_acre,
+        p_lbs_acre,
+        k_lbs_acre,
+        salt_lbs_acre
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getFieldCropApplicationPlowdownCredit: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT
+        fcapc.pk,
+        fcapc.src_desc,
+        fcapc.n_lbs_acre,
+        fcapc.p_lbs_acre,
+        fcapc.k_lbs_acre,
+        fcapc.salt_lbs_acre,
+
+        f.title as fieldtitle,
+        f.pk as field_id,
+        c.title as croptitle,
+        fc.plant_date,
+        fc.acres_planted,
+        fca.app_date,
+        fca.pk as field_crop_app_id
+
+        FROM field_crop_app_plowdown_credit fcapc
+
+        JOIN field_crop_app fca
+        on fca.pk = fcapc.field_crop_app_id
+
+        JOIN field_crop fc
+        ON fc.pk = fca.field_crop_id
+
+        JOIN fields f
+        ON f.pk = fc.field_id
+
+        JOIN crops c
+        ON c.pk = fc.crop_id
+
+
+        WHERE 
+        fcapc.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmFieldCropApplicationPlowdownCredit: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_plowdown_credit where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+  insertDrainSource: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO drain_source(
+        dairy_id,
+        src_desc
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getDrainSource: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT *
+        FROM drain_source
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmDrainSource: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM drain_source where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  searchDrainSource: (values, callback) => {
+    return pool.query(
+      `SELECT * FROM drain_source
+      where src_desc = $1 and dairy_id = $2`,
+      values,
+      callback
+    )
+  },
+
+  insertDrainAnalysis: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO drain_analysis(
+        dairy_id,
+        drain_source_id,
+        sample_date,
+        sample_desc,
+        src_of_analysis,
+        nh4_con,
+        no2_con,
+        p_con,
+        ec,
+        tds,
+        nh4_dl, 
+        no2_dl,
+        p_dl,
+        ec_dl,
+        tds_dl
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getDrainAnalysis: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        // nitrateN, totalP, totalK, totalTDS
+        `SELECT *
+        FROM drain_analysis da
+        JOIN drain_source ds
+        ON ds.pk = da.drain_source_id
+        WHERE 
+        da.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmDrainAnalysis: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM drain_analysis where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
 
 
   insertExportHauler: (values, callback) => {
@@ -1866,6 +2145,8 @@ module.exports = {
       callback
     )
   },
+
+
 
 }
 

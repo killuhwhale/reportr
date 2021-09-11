@@ -128,7 +128,7 @@ const CropViewTable = withTheme((props) => {
             </Grid>
             <Grid item xs={1}>
               <Tooltip title="Remove Crop">
-                <IconButton onClick={() => this.props.onDelete(field_crop)}>
+                <IconButton onClick={() => props.onDelete(field_crop)}>
                   <DeleteIcon color="error" />
                 </IconButton>
               </Tooltip>

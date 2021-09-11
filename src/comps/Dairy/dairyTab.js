@@ -164,8 +164,8 @@ class DairyTab extends Component {
       return {key: key, data: [ev.total_app, ev.anti_harvests, ev.actual_harvests]}
     })
 
-    let allNutrientData = [summary.total_app, summary.anti_harvests, summary.actual_harvests]
-    console.log("Creating Overall Summary Chart:", allNutrientData, summary)
+    let totalNutrientAppAntiHarvestData = [summary.total_app, summary.anti_harvests, summary.actual_harvests]
+    console.log("Creating Overall Summary Chart:", totalNutrientAppAntiHarvestData, summary)
 
 
 
@@ -179,24 +179,40 @@ class DairyTab extends Component {
       'Atmospheric deposition',
     ]
 
-    let materialData = [
-      [31, 10, 52, 61, 73, 84, 20550540, "Nitrogen"]
-    ]
+    // let materialData = [
+    //   [31, 10, 52, 61, 73, 84, 20550540, "Nitrogen"]
+    // ]
+
+    //              n,p,k,salt
+    let materialData = [0,0,0,0].map((_, i) => {
+      return [
+        0, // Existing soil content
+        0, // Plowdown credit
+        summary.fertilizers [i],
+        summary.manures [i],
+        summary.wastewaters [i],
+        summary.freshwaters [i],
+        i === 0 ? summary.atmospheric_depo: 0, // Atmoshperic depo is only for nitrogen.
+        i === 0? 'Nitrogen': i === 1? 'Phosphorus': i === 2? 'Potassium': 'Salt'
+      ]
+    })
+
 
     return new Promise((resolve, rej) => {
       // for fields and a single summery in report
       let nutrientPromises = nutrientData.map((row, i) => {
         return this._createBarChart(row.key, nutrientLabels, row.data)
       })
-      let allNutrientDataPromise = this._createBarChart('allNutrientData', nutrientLabels, allNutrientData) 
+      let totalNutrientAppAntiHarvestDataPromise = this._createBarChart('totalNutrientAppAntiHarvestData', nutrientLabels, totalNutrientAppAntiHarvestData) 
       
 
       // Summarys in report
       let materialPromises = materialData.map((row, i) => {
-        return this._createHoriBarChart(`materialHoriBar${i}`, materialLabels, row.slice(0, -1), row.slice(-1))
+        let key = row && row.length === 8? row[row.length - 1]: ''
+        return this._createHoriBarChart(key, materialLabels, row.slice(0, -1), row.slice(-1))
       })
 
-      Promise.all([...nutrientPromises, allNutrientDataPromise, ...materialPromises])
+      Promise.all([...nutrientPromises, totalNutrientAppAntiHarvestDataPromise, ...materialPromises])
         .then((res) => {
           console.log(res)
           resolve(Object.fromEntries(res))
@@ -213,6 +229,7 @@ class DairyTab extends Component {
   }
 
   _createHoriBarChart(key, labels, data, title) {
+   
     let canvas = document.createElement('canvas')
     canvas.style.width = HORIBAR_WIDTH
     canvas.style.height = HORIBAR_HEIGHT
@@ -221,6 +238,10 @@ class DairyTab extends Component {
     console.log("Creating horibarChart")
     console.log(key, labels, data, title)
     return new Promise((res, rej) => {
+      if(key.length <= 0){
+        rej('Error: invalid key for horizontal bar chart. Data:', data)
+        return 
+      }
       let chart = null
       chart = new Chart(canvas, {
         type: 'bar',

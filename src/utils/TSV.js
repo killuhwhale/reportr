@@ -1,5 +1,5 @@
 import { get, post } from './requests'
-
+import { toFloat } from './convertCalc'
 export default function mTea() { }
 const BASE_URL = "http://localhost:3001"
 
@@ -14,8 +14,24 @@ export const WASTEWATER = 'export_manifest_wastewater'
 
 const HARVEST = 'field_crop_harvest'
 
+export const SOIL = 'field_crop_app_soil'
+export const PLOWDOWN_CREDIT = 'field_crop_app_plowdown_credit'
+export const DRAIN = 'DRAIN'
+
 
 export const TSV_INFO = {
+  [DRAIN]: {
+    numCols: 14,
+    tsvType: DRAIN
+  },
+  [PLOWDOWN_CREDIT]: {
+    numCols: 16,
+    tsvType: PLOWDOWN_CREDIT
+  },
+  [SOIL]: {
+    numCols: 57,
+    tsvType: SOIL
+  },
   [HARVEST]: {
     numCols: 26, // 32 columns in process_wastewater spreadsheet/ TSV
     tsvType: HARVEST
@@ -146,6 +162,10 @@ export const processTSVText = (csvText, numCols) => {
   return rows
 }
 export const createFieldSet = (rows) => {
+  /**
+   * Returns list of list where each list is [title, acres, planted] the minimum required info
+   */
+
   let fields = []
   let fieldSet = new Set()
   // Create a set of fields to ensure duplicates are not attempted.
@@ -160,6 +180,7 @@ export const createFieldSet = (rows) => {
   })
   return fields
 }
+
 /**
  *  TSV files rely upon existing fields, crops, and field_crop entities to successfully create 
  *      field_crop_harvest, AND all nutrient applications where a field_crop_app will need to be created prior to
@@ -438,7 +459,7 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
  */
 export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
   const [app_date, field_title, acres_planted, cropable, acres, crop_title, plant_date,
-    precip_before, precip_during, precip_after, app_method] = row.slice(0, 11)
+    precip_before, precip_during, precip_after, app_method] = row.slice(0, 11)  // First 10 rows are common rows to create a field_crop_app
   /**
     * 
     *  For all TSV sheets, the data relies on a Field, Field_crop, Field_crop_app. 
@@ -469,6 +490,13 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
         else if (tsvType === FERTILIZER) {
           // Creates Nutrient Import, Fertilizer
           resolve(createFertilizerApplication(row, field_crop_app, dairy_pk))
+        }
+        else if (tsvType === SOIL) {
+          // Creates Nutrient Import, Fertilizer
+          resolve(createSoilApplication(row, field_crop_app, dairy_pk))
+        } else if (tsvType === PLOWDOWN_CREDIT) {
+          // Creates Nutrient Import, Fertilizer
+          resolve(createPlowdownCreditApplication(row, field_crop_app, dairy_pk))
         }
 
       })
@@ -507,8 +535,8 @@ const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
     na_con,
     hco3_con,
     co3_con,
-    so4_con, 
-    cl_con,   
+    so4_con,
+    cl_con,
     ec,
     tds,
     kn_dl,
@@ -522,8 +550,8 @@ const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
     na_dl,
     hco3_dl,
     co3_dl,
-    so4_dl, 
-    cl_dl,   
+    so4_dl,
+    cl_dl,
     ec_dl,
     tds_dl,
     ph,
@@ -915,8 +943,219 @@ const createFertilizerApplication = (row, field_crop_app, dairy_pk) => {
         rej(err)
       })
   })
-
-
 }
 
+const createSoilApplication = (row, field_crop_app, dairy_pk) => {
+  const [
+    src_desc,
 
+    sample_date_0,
+    sample_desc_0,
+    src_of_analysis_0,
+    n_con_0,
+    total_p_con_0,
+    p_con_0,
+    k_con_0,
+    ec_0,
+    org_matter_0,
+    n_dl_0,
+    total_p_dl_0,
+    p_dl_0,
+    k_dl_0,
+    ec_dl_0,
+    org_matter_dl_0,
+
+    sample_date_1,
+    sample_desc_1,
+    src_of_analysis_1,
+    n_con_1,
+    total_p_con_1,
+    p_con_1,
+    k_con_1,
+    ec_1,
+    org_matter_1,
+    n_dl_1,
+    total_p_dl_1,
+    p_dl_1,
+    k_dl_1,
+    ec_dl_1,
+    org_matter_dl_1,
+
+    sample_date_2,
+    sample_desc_2,
+    src_of_analysis_2,
+    n_con_2,
+    total_p_con_2,
+    p_con_2,
+    k_con_2,
+    ec_2,
+    org_matter_2,
+    n_dl_2,
+    total_p_dl_2,
+    p_dl_2,
+    k_dl_2,
+    ec_dl_2,
+    org_matter_dl_2,
+  ] = row.slice(11, TSV_INFO[SOIL].numCols)
+  let fieldData = {
+    data: {
+      title: row[1],
+      cropable: row[3],
+      acres: row[4],
+      dairy_id: dairy_pk
+    }
+  }
+  return new Promise((resolve, reject) => {
+    lazyGet('fields', row[1], fieldData, dairy_pk)
+      .then(([field]) => {
+        console.log('Field: ', field)
+        console.log("Create all fca_soil_analysis here")
+
+        const sampleData0 = {
+          dairy_id: dairy_pk,
+          field_id: field.pk,
+          sample_desc: sample_desc_0,
+          sample_date: sample_date_0,
+          src_of_analysis: src_of_analysis_0,
+          n_con: n_con_0,
+          total_p_con: total_p_con_0,
+          p_con: p_con_0,
+          k_con: k_con_0,
+          ec: ec_0,
+          org_matter: org_matter_0,
+          n_dl: n_dl_0,
+          total_p_dl: total_p_dl_0,
+          p_dl: p_dl_0,
+          k_dl: k_dl_0,
+          ec_dl: ec_dl_0,
+          org_matter_dl: org_matter_dl_0
+        }
+        const sampleData1 = {
+          dairy_id: dairy_pk,
+          field_id: field.pk,
+          sample_desc: sample_desc_1,
+          sample_date: sample_date_1,
+          src_of_analysis: src_of_analysis_1,
+          n_con: n_con_1,
+          total_p_con: total_p_con_1,
+          p_con: p_con_1,
+          k_con: k_con_1,
+          ec: ec_1,
+          org_matter: org_matter_1,
+          n_dl: n_dl_1,
+          total_p_dl: total_p_dl_1,
+          p_dl: p_dl_1,
+          k_dl: k_dl_1,
+          ec_dl: ec_dl_1,
+          org_matter_dl: org_matter_dl_1
+        }
+        const sampleData2 = {
+          dairy_id: dairy_pk,
+          field_id: field.pk,
+          sample_desc: sample_desc_2,
+          sample_date: sample_date_2,
+          src_of_analysis: src_of_analysis_2,
+          n_con: n_con_2,
+          total_p_con: total_p_con_2,
+          p_con: p_con_2,
+          k_con: k_con_2,
+          ec: ec_2,
+          org_matter: org_matter_2,
+          n_dl: n_dl_2,
+          total_p_dl: total_p_dl_2,
+          p_dl: p_dl_2,
+          k_dl: k_dl_2,
+          ec_dl: ec_dl_2,
+          org_matter_dl: org_matter_dl_2
+        }
+
+        Promise.all([
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_0)}`, sampleData0, dairy_pk),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_1)}`, sampleData1, dairy_pk),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_2)}`, sampleData2, dairy_pk),
+        ])
+          .then(([[analysis0], [analysis1], [analysis2]]) => {
+            console.log("3 depths, 3 analyses for NPKSalt", analysis0, analysis1, analysis2)
+            console.log("Calculate them noW!!!!!! muahaha")
+            let n_lbs_acre = (toFloat(n_con_0) + toFloat(n_con_1) + toFloat(n_con_2)) * 4.0  // Testing in the calc gave me the number 4.... 1mg/kg  == 4lbs/acre
+            let p_lbs_acre = (toFloat(p_con_0) + toFloat(p_con_1) + toFloat(p_con_2)) * 4.0  // _con is in mg/ kg
+            let k_lbs_acre = (toFloat(k_con_0) + toFloat(k_con_1) + toFloat(k_con_2)) * 4.0
+            let salt_lbs_acre = (toFloat(ec_0) + toFloat(ec_1) + toFloat(ec_2)) * 2.4
+
+            const fca_soil_data = {
+              dairy_id: dairy_pk,
+              field_crop_app_id: field_crop_app.pk,
+              src_desc,
+              n_lbs_acre,
+              p_lbs_acre,
+              k_lbs_acre,
+              salt_lbs_acre
+            }
+            post(`${BASE_URL}/api/field_crop_app_soil/create`, fca_soil_data)
+              .then(res => {
+                resolve(res)
+              })
+              .catch(err => {
+                console.log(err)
+                reject(err)
+              })
+          })
+          .catch(err => {
+            console.log("Get all fca_soil_analysis", err)
+            reject(err)
+          })
+      })
+      .catch(err => {
+        console.log('Lazy get field for fca_soil_analysis error:', err)
+        reject(err)
+      })
+  })
+}
+
+const createPlowdownCreditApplication = (row, field_crop_app, dairy_pk) => {
+  const [
+    src_desc,
+    n_lbs_acre,
+    p_lbs_acre,
+    k_lbs_acre,
+    salt_lbs_acre,
+  ] = row.slice(11, TSV_INFO[PLOWDOWN_CREDIT].numCols)
+  let fieldData = {
+    data: {
+      title: row[1],
+      cropable: row[3],
+      acres: row[4],
+      dairy_id: dairy_pk
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    lazyGet('fields', row[1], fieldData, dairy_pk)
+      .then(([field]) => {
+        console.log('Field: ', field)
+        console.log("Create all fca_soil_analysis here")
+        const fca_plowdown_credit_data = {
+          dairy_id: dairy_pk,
+          field_crop_app_id: field_crop_app.pk,
+          src_desc,
+          n_lbs_acre,
+          p_lbs_acre,
+          k_lbs_acre,
+          salt_lbs_acre
+        }
+        post(`${BASE_URL}/api/field_crop_app_plowdown_credit/create`, fca_plowdown_credit_data)
+          .then(res => {
+            resolve(res)
+          })
+          .catch(err => {
+            console.log(err)
+            reject(err)
+          })
+
+      })
+      .catch(err => {
+        console.log('Lazy get field for fields error:', err)
+        reject(err)
+      })
+  })
+}

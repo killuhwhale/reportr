@@ -303,10 +303,10 @@ class ProcessWastewater extends Component {
   }
 
   /** TSV: toggle, onChange, onUpload, View */
-  toggleShowUploadFieldCropAppProcessWastewateTSVModal(val) {
+  toggleShowUploadFieldCropAppProcessWastewaterTSVModal(val) {
     this.setState({ showUploadFieldCropAppProcessWastewateTSVModal: val })
   }
-  onUploadFieldCropAppProcessWastewateTSVModalChange(ev) {
+  onUploadFieldCropAppProcessWastewaterTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
       readTSV(files[0], (_ev) => {
@@ -315,7 +315,7 @@ class ProcessWastewater extends Component {
       })
     }
   }
-  onUploadFieldCropAppProcessWastewateTSV() {
+  onUploadFieldCropAppProcessWastewaterTSV() {
     // 24 columns from TSV
     let dairy_pk = this.state.dairy_id
     let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
@@ -333,7 +333,7 @@ class ProcessWastewater extends Component {
           .then(res => {
             console.log("Completed uploading Process Wastewater TSV")
             uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-            this.toggleShowUploadFieldCropAppProcessWastewateTSVModal(false)
+            this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
             this.props.getFieldCropAppEvents()
             this.props.getFieldCropAppProcessWastewater()
           })
@@ -385,7 +385,7 @@ class ProcessWastewater extends Component {
         <Grid item xs={10} align="right">
          <Tooltip title='Upload TSV'>
             <IconButton color="primary" variant="outlined"
-              onClick={() => this.toggleShowUploadFieldCropAppProcessWastewateTSVModal(true)}
+              onClick={() => this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(true)}
             >
               <CloudUpload />
             </IconButton>
@@ -461,9 +461,9 @@ class ProcessWastewater extends Component {
           cancelText="Cancel"
           modalText={`Upload Process Wastewater TSV`}
           uploadedFilename={this.state.uploadedFilename}
-          onAction={this.onUploadFieldCropAppProcessWastewateTSV.bind(this)}
-          onChange={this.onUploadFieldCropAppProcessWastewateTSVModalChange.bind(this)}
-          onClose={() => this.toggleShowUploadFieldCropAppProcessWastewateTSVModal(false)}
+          onAction={this.onUploadFieldCropAppProcessWastewaterTSV.bind(this)}
+          onChange={this.onUploadFieldCropAppProcessWastewaterTSVModalChange.bind(this)}
+          onClose={() => this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)}
         />
       </Grid>
     )

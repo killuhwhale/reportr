@@ -514,6 +514,127 @@ CREATE TABLE IF NOT EXISTS field_crop_app_fertilizer(
 );
 
 
+CREATE TABLE IF NOT EXISTS field_crop_app_soil_analysis(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  field_id INT NOT NULL,
+  sample_desc VARCHAR(50) NOT NULL,
+  sample_date TIMESTAMP NOT NULL,
+  src_of_analysis VARCHAR(50) NOT NULL,
+  n_con NUMERIC(8,2) DEFAULT 0.0, -- 999,999.99    mg/kg
+  total_p_con NUMERIC(8,2) DEFAULT 0.0,
+  p_con NUMERIC(8,2) DEFAULT 0.0,
+  k_con NUMERIC(8,2) DEFAULT 0.0,
+  ec NUMERIC(8,2) DEFAULT 0.0,
+  org_matter NUMERIC(8,2) DEFAULT 0.0,
+  
+  n_dl NUMERIC(8,2) DEFAULT 100,
+  total_p_dl NUMERIC(8,2) DEFAULT 100,
+  p_dl NUMERIC(8,2) DEFAULT 100,
+  k_dl NUMERIC(8,2) DEFAULT 100,
+  ec_dl NUMERIC(8,2) DEFAULT 0.0,
+  org_matter_dl NUMERIC(8,2) DEFAULT 0.0,
+  UNIQUE(dairy_id, field_id, sample_date),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+    REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field
+    FOREIGN KEY(field_id) 
+    REFERENCES fields(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS field_crop_app_soil(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  field_crop_app_id INT NOT NULL,
+  src_desc VARCHAR(50) NOT NULL,
+  -- Spreadsheet will have 3 analyses, possibly same one, but we will use them to calculate the totals.
+  n_lbs_acre NUMERIC(5,0), -- 0 -> 10,000
+  p_lbs_acre NUMERIC(5,0),
+  k_lbs_acre NUMERIC(5,0),
+  salt_lbs_acre NUMERIC(5,0),
+  UNIQUE(dairy_id, field_crop_app_id, src_desc),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+    REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field_crop_app
+    FOREIGN KEY(field_crop_app_id) 
+    REFERENCES field_crop_app(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS field_crop_app_plowdown_credit(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  field_crop_app_id INT NOT NULL,
+  src_desc VARCHAR(50) NOT NULL,
+  -- Spreadsheet will have 3 analyses, possibly same one, but we will use them to calculate the totals.
+  n_lbs_acre NUMERIC(5,0), -- 0 -> 10,000
+  p_lbs_acre NUMERIC(5,0),
+  k_lbs_acre NUMERIC(5,0),
+  salt_lbs_acre NUMERIC(5,0),
+  UNIQUE(dairy_id, field_crop_app_id, src_desc),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+    REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_field_crop_app
+    FOREIGN KEY(field_crop_app_id) 
+    REFERENCES field_crop_app(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS drain_source(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  src_desc VARCHAR(50) NOT NULL,
+  UNIQUE(dairy_id, src_desc),
+   CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS drain_analysis(
+   pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  drain_source_id INT NOT NULL,
+  sample_date TIMESTAMP NOT NULL,
+  
+  sample_desc VARCHAR(50) NOT NULL,
+  src_of_analysis VARCHAR(50) NOT NULL,
+
+  nh4_con NUMERIC(8,2) DEFAULT 0.0, 
+  no2_con NUMERIC(8,2) DEFAULT 0.0,
+  p_con NUMERIC(8,2) DEFAULT 0.0,
+  ec NUMERIC(7,2) DEFAULT 0.0, 
+  tds NUMERIC(5,0) DEFAULT 0.0,
+  nh4_dl NUMERIC(8,2) DEFAULT 0.5, 
+  no2_dl NUMERIC(8,2) DEFAULT 0.5,
+  p_dl NUMERIC(8,2) DEFAULT 0.5, -- mg/ L 
+  ec_dl NUMERIC(7,2) DEFAULT 1, -- micro/cm
+  tds_dl NUMERIC(5,0) DEFAULT 10, -- 
+  UNIQUE(dairy_id, drain_source_id, sample_date, sample_desc, src_of_analysis),
+  CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+    REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_drain_source
+    FOREIGN KEY(drain_source_id) 
+    REFERENCES drain_source(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+
+
+
+
 -- Contact information for export haulers
 CREATE TABLE IF NOT EXISTS export_hauler(
   pk SERIAL PRIMARY KEY,
@@ -674,3 +795,5 @@ CREATE TABLE IF NOT EXISTS TSVs(
 	  REFERENCES dairies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+

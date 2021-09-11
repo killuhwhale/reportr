@@ -13,6 +13,9 @@ import ProcessWastewater from "./processWastewater"
 import Freshwater from "./freshwater"
 import Solidmanure from "./solidmanure"
 import Fertilizer from "./fertilizer"
+import Soil from "./soil"
+import PlowdownCredit from "./plowdownCredit"
+
 import AddFieldCropApplicationModal from "../Modals/addFieldCropApplicationModal"
 import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
@@ -83,6 +86,8 @@ class NutrientApplicationTab extends Component {
         1: "hide",
         2: "hide",
         3: "hide",
+        4: 'hide',
+        5: 'hide',
       },
       tabIndex: 0,
     }
@@ -172,7 +177,6 @@ class NutrientApplicationTab extends Component {
   getFieldCropAppFreshwaterAnalysis() {
     get(`${BASE_URL}/api/field_crop_app_freshwater_analysis/${this.state.dairy.pk}`)
       .then(res => {
-        console.log('field_crop_app_freshwater_analysis', res)
         this.setState({ fieldCropAppFreshwaterAnalyses: res })
       })
       .catch(err => {
@@ -334,13 +338,14 @@ class NutrientApplicationTab extends Component {
                 <Tab label="Fresh Water" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab1' />
                 <Tab label="Solid Manure" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab2' />
                 <Tab label="Commercial Fertilizer" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab3' />
+                <Tab label="Soil" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab4' />
+                <Tab label="Plowdown Credit" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab5' />
               </Tabs>
             </AppBar>
 
             {
-              this.state.tabs[0] == "show" ?
+              this.state.tabs[0] === "show" ?
                 <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab0'>
-
                   <ProcessWastewater
                     dairy_id={this.state.dairy.pk}
                     fieldCropAppEvents={this.state.fieldCropAppEvents}
@@ -352,7 +357,7 @@ class NutrientApplicationTab extends Component {
                   />
                 </Grid>
 
-                : this.state.tabs[1] == "show" ?
+                : this.state.tabs[1] === "show" ?
                   <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab1'>
                     <Freshwater
                       dairy_id={this.state.dairy.pk}
@@ -371,7 +376,7 @@ class NutrientApplicationTab extends Component {
 
                   </Grid>
 
-                  : this.state.tabs[2] == "show" ?
+                  : this.state.tabs[2] === "show" ?
                     <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab2'>
 
                       <Solidmanure
@@ -392,7 +397,7 @@ class NutrientApplicationTab extends Component {
 
                     </Grid>
 
-                    : this.state.tabs[3] == "show" ?
+                    : this.state.tabs[3] === "show" ?
                       <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab3'>
                         <Fertilizer
                           dairy_id={this.state.dairy.pk}
@@ -410,6 +415,18 @@ class NutrientApplicationTab extends Component {
                         />
                       </Grid>
 
+                      : this.state.tabs[4] === "show" ?
+                      <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab4'>
+                        <Soil 
+                          dairy_id={this.state.dairy.pk}
+                        />
+                      </Grid>
+                      : this.state.tabs[5] === 'show' ?
+                        <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab5'>
+                          <PlowdownCredit 
+                            dairy_id={this.state.dairy.pk}
+                          />
+                        </Grid>
                       : <React.Fragment></React.Fragment>
             }
             <AddFieldCropApplicationModal

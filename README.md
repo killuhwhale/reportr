@@ -81,12 +81,76 @@ Applications
 
 
 
-ToDO tomorrow
-- Fill out the rest of the PDF. 
-- Then attempt to make it accurate. AKA fix the problems below...
+TODO
+
+Missing:
+- Soil analysis 
+  - Need to add to PDF still and create the table for it.
+  
+- Plowdown analyses 
+- SUBSURFACE (TILE) DRAINAGE analyses/ sources
+- Exception Reporting
+  - 3 types of discharge events
+- EXPORT AGREEMENT STATEMENT
+  - 4 questions, yes or no
+- Notes
+  - Unkown format
+
+
+Above missing elements go into the report as follows:
+
+Available Nutrients
+  - SUBSURFACE (TILE) DRAINAGE sources
+
+Nutrient Budget B. & Overall Summary
+  - Soil analysis 
+  - Plowdown Credit
+
+Nutrient analyses:
+ - Soil analysis 
+ - Plowdown analyses 
+ - SUBSURFACE (TILE) DRAINAGE analyses
+ 
+Exception Reporting
+  - A. MANURE, PROCESS WASTEWATER, AND OTHER DAIRY WASTE DISCHARGES
+  - B. STORM WATER DISCHARGES
+  - C. LAND APPLICATION AREA TO SURFACE WATER DISCHARGES
+
+Agreement Statements
+  A. NUTRIENT MANAGEMENT PLAN STATEMENTS
+    1. Was the facility's NMP updated in the reporting period?
+    2. Was the facility's NMP developed by a certified nutrient management planner
+    (specialist) as specified in Attachment C of the General Order?
+    3. Was the facility's NMP approved by a certified nutrient management planner
+    (specialist) as specified in Attachment C of the General Order?
+  B. EXPORT AGREEMENT STATEMENT
+    4. Are there any written agreements with third parties to receive manure or process
+    wastewater that are new or were revised within the reporting period?
+  
+Notes
+
+
+
+
+
+
 
 Problems:
-  - (Bug) Freshwater Delete onConfrim is not a func.... error
+
+  - (Huge Bug)
+    - Cant select change dairy year 
+
+
+  - (ERROR) Manually entering information may be faulty, REPORT LOOKS FOR LBS PER ACRE, but user might not enter that. Or want to calculate it. 
+
+    - Need to check:
+      - Does Process wastewater actually create and check for an existing analysis?
+      - Process Wastewater Analysis Add Modal Button is missing
+      - It should NOT just create a new a analysis willy nilly.
+   
+    - NEED TO VERIFY THAT ALL MANUALLY ENTERED FIELDS REFLECT NECCESSARY FIELDS
+     - All calculated fields like lbs per acre are there as needed. 
+       
   - (BUG) DLs created manually with null are null and do not get the default value of zero.
   - (BUG) No validation checks on entering concentations
     - Total kn must be higher than combined nitrogen nh4 nh3 no2,
@@ -99,14 +163,27 @@ Problems:
   - (BUG) Disable GENERATE PDF plus button until the data is loaded.
 
   - (Quality Check) Unsure if total number are correct in naprb summary table.
+      - Freshwaters might have an error due to the query used to get them? Producing less results maybe?
       - Most fields match in Total Summary Table except:
         - Dry Manure: P
         - Freshwater: N, Salt
         - Actual removal, Production Records: P, Salt
         - ** I think there is human error inputting data from spreadsheet to Merced App.
-        
+
   - (Performance) Typing into Modals is slow, presumably the models should handle state separtely from the view state since it may be slowing it down.
-  - (Feature decison, unsure to have them manually add them or only have TSV entries) Process Wastewater Analysis Add Modal Button is missing
+ 
+ 
+ 
+  - Feature decisons
+   - unsure to have them manually add them or only have TSV entries
+   - Spreadsheet shouldnt calculate antything to reduce size.
+    - But i dont want to alter it too much before talking to them
+    - using calculated fields made it a little easier but cant easily be updated.
+    -  But when manually creating entries, it seems weird to have users calculate stuff by hand or assume they have the spreadsheet with them.
+
+
+    // TODO Update calcuation methods
+
   
 
 

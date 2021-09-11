@@ -47,7 +47,7 @@ class AddFieldCropHarvestModal extends Component{
 				<div style={{ position: 'absolute', top: "50%", left: "50%", width: "80vw", transform: "translate(-50%, -50%)",
 				}}>
 					<Grid item align="center" xs={12}>
-					<Paper style={{height:"35vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
+					<Paper style={{height:"75vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
 						<Grid item container spacing={2} xs={12}>
 							<Grid item xs={12}>
 								<Typography style={{marginTop: "32px"}}>

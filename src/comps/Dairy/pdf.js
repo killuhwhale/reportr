@@ -6181,13 +6181,13 @@ const naprbalC = (props, images) => {
               {
                 width: '50%',
                 stack: [
-                  image(images.materialHoriBar0, 350, 175),
+                  image(images.Nitrogen, 350, 175),
                 ]
               },
               {
                 width: '50%',
                 stack: [
-                  image(images.materialHoriBar0, 350, 175),
+                  image(images.Phosphorus, 350, 175),
                 ]
               }
             ]
@@ -6197,13 +6197,13 @@ const naprbalC = (props, images) => {
               {
                 width: '50%',
                 stack: [
-                  image(images.materialHoriBar0, 350, 175),
+                  image(images.Potassium, 350, 175),
                 ]
               },
               {
                 width: '50%',
                 stack: [
-                  image(images.materialHoriBar0, 350, 175),
+                  image(images.Salt, 350, 175),
                 ]
               }
             ]
@@ -6750,8 +6750,6 @@ export default function dd(props, images) {
     dairyInformationA(props.dairyInformationA),
     dairyInformationB(props.dairyInformationB),
     dairyInformationC(props.dairyInformationC),
-    // 'text\n\n\n\n\n\n\n\nZ',
-    // 'text\n\n\n\nZZ',
     availableNutrientsA({ ...props.availableNutrientsAB, p_breed: props.dairyInformationA.p_breed }),   // bind last two rows and last row of table together...
     availableNutrientsB(props.availableNutrientsAB),  // bind this section together
     availableNutrientsC(props.availableNutrientsC), // bind this section together
@@ -6763,9 +6761,6 @@ export default function dd(props, images) {
     applicationAreaB(props.applicationAreaB),
     nutrientBudgetA(props.nutrientBudgetA),
     nutrientBudgetB(props.nutrientBudgetB, images), // Graph
-
-    // Almost there, just theses tables, show data, no calculations here
-    // Need to add Detection limit, I think each analysis needs DL and its not in the spreadsheet or anywhere.... :(
     nutrientAnalysisA(props.nutrientAnalysis.manures),
     nutrientAnalysisB(props.nutrientAnalysis.wastewaters),
     nutrientAnalysisC(props.nutrientAnalysis.freshwaters),
@@ -6774,8 +6769,8 @@ export default function dd(props, images) {
     nutrientAnalysisF(props), // Tile drainage
 
     naprbalA(props.naprbalA),
-    naprbalB(props, images.allNutrientData), 
-    // naprbalC(props, images),
+    naprbalB(props, images.totalNutrientAppAntiHarvestData),
+    naprbalC(props, images),
 
     // Minimal data below, need to create, answers to basic questions.
     exceptionReportingABC(props),

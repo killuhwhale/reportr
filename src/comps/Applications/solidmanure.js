@@ -72,7 +72,6 @@ const SolidmanureAppEvent = (props) => {
                   <TextField disabled
                     label="Amount Applied"
                     value={solidmanure.amount_applied}
-                    fullwidth
                   />
                 </Grid>
                 <Grid item xs={2}>
@@ -85,7 +84,6 @@ const SolidmanureAppEvent = (props) => {
                   <TextField disabled
                     label="Phosphorus lbs / acre"
                     value={solidmanure.p_lbs_acre}
-                    fullwidth
                   />
                 </Grid>
                 <Grid item xs={2}>
