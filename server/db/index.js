@@ -2146,7 +2146,126 @@ module.exports = {
     )
   },
 
+  insertDischarge: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO discharge(
+        dairy_id,
+        discharge_type,
+        discharge_datetime,
+        discharge_loc,
+        vol,
+        vol_unit,
+        duration_of_discharge,
+        discharge_src,
+        method_of_measuring,
+        sample_location_reason,
+        ref_number
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getDischarge: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT *
+        FROM discharge
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmDischarge: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM discharge where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+  insertAgreement: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO agreement(
+        dairy_id,
+        nmp_updated,
+        nmp_developed,
+        nmp_approved,
+        new_agreements
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getAgreement: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT *
+        FROM agreement
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmAgreement: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM agreement where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  updateAgreement: (values, callback) => {
+    return pool.query(`UPDATE agreement SET
+      nmp_updated = $1,
+      nmp_developed = $2,
+      nmp_approved = $3,
+      new_agreements = $4
+      WHERE pk=$5`,
+      values,
+      callback
+    )
+  },
 
 
+  insertNote: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO note(
+        dairy_id,
+        note
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getNote: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT *
+        FROM note
+        WHERE 
+        dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmNote: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM note where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  updateNote: (values, callback) => {
+    return pool.query(`UPDATE note SET
+      note = $1
+      WHERE pk=$2`,
+      values,
+      callback
+    )
+  },
 }
 

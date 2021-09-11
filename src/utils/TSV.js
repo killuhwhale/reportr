@@ -17,9 +17,14 @@ const HARVEST = 'field_crop_harvest'
 export const SOIL = 'field_crop_app_soil'
 export const PLOWDOWN_CREDIT = 'field_crop_app_plowdown_credit'
 export const DRAIN = 'DRAIN'
+export const DISCHARGE = 'Discharge'
 
 
 export const TSV_INFO = {
+  [DISCHARGE]: {
+    numCols: 10,
+    tsvType: DISCHARGE
+  },
   [DRAIN]: {
     numCols: 14,
     tsvType: DRAIN

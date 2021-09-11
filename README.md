@@ -56,48 +56,17 @@ QUESTIONS::
 
 
 
-MISSING
+Missing:
 
-Analysis
- - Detection limits on analyses freshwater, wastewater, solidmanure, fertilizers, harvests aka plant tissue....
- - Tile Drain sources and analyses
- - Soil
-
-Applications 
- - Plowdown Credits
- - Existing Soil nutrient content
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Certification
+  - Select and owner or operator for certification.
+  
 
 TODO
+Add to PDF REPORT:
+ - Create Views in pdf.js
+ - Create data in pdfDB.js
 
-Missing:
-- Soil analysis 
-  - Need to add to PDF still and create the table for it.
-  
-- Plowdown analyses 
-- SUBSURFACE (TILE) DRAINAGE analyses/ sources
-- Exception Reporting
-  - 3 types of discharge events
-- EXPORT AGREEMENT STATEMENT
-  - 4 questions, yes or no
-- Notes
-  - Unkown format
-
-
-Above missing elements go into the report as follows:
 
 Available Nutrients
   - SUBSURFACE (TILE) DRAINAGE sources
@@ -140,7 +109,12 @@ Problems:
   - (Huge Bug)
     - Cant select change dairy year 
 
+  - (Bug) TSV should be updated when uploaded each time. and possibly delete from those tables first 
+  - (Bug) Datetime zones are not coordinated well 
+    - (Using Date Picker to Display it seems to  have the correct timezones...)
 
+
+----- I dont think I want to enable manual entries. ----------
   - (ERROR) Manually entering information may be faulty, REPORT LOOKS FOR LBS PER ACRE, but user might not enter that. Or want to calculate it. 
 
     - Need to check:
@@ -151,16 +125,36 @@ Problems:
     - NEED TO VERIFY THAT ALL MANUALLY ENTERED FIELDS REFLECT NECCESSARY FIELDS
      - All calculated fields like lbs per acre are there as needed. 
        
-  - (BUG) DLs created manually with null are null and do not get the default value of zero.
-  - (BUG) No validation checks on entering concentations
-    - Total kn must be higher than combined nitrogen nh4 nh3 no2,
-    - Limits betweem 0-999,999.99
-    - TDS 1-20,0000
-    - EC 0 - 99,9999.99 (something like this)
-    - Percentages are 0-100
-    - Check website by entering wrong info and implement it.
+  - (BUG) DLs created manually with null are null and do not get the default value of zero. 
+  - (Performance) Typing into Modals is slow, presumably the models should handle state separtely from the view state since it may be slowing it down. (Probably wont need to type)
+---------------------------------------------------------------
+ 
+ 
+  - (BUG) No validation checks
+    - All Spreadsheets need Numeric Data Validation. Could add to Spreadsheet but should also be in the code.
+      - Check website by entering wrong info and implement it.
+      - Total kn must be higher than combined nitrogen nh4 nh3 no2,
+      - Limits betweem 0-999,999.99
+      - TDS 1-20,0000
+      - EC 0 - 99,9999.99 (something like this)
+      - Percentages are 0-100
 
   - (BUG) Disable GENERATE PDF plus button until the data is loaded.
+  - (Bug) Operator: Controlled input onDelete Operator
+    - A component is changing a controlled input to be uncontrolled
+    - @	operatorView.js:82
+
+
+  - (Bug) Dairy Info, County, P Breed, Basin Plan onSelect
+    - default select value is not being used. Blank fields .
+    - User must change the select to actualy register the value at index 0
+      - Ex: County is empty when the first option is Merced, app is not storing the value.....
+
+  - (Bug) Generate PDF Annual Report
+    - When data is updated, the data fetched for the report is not up to date.
+    - Need a better strategy
+      - Most likely, when button is clicked, thats when the data should be generated.
+
 
   - (Quality Check) Unsure if total number are correct in naprb summary table.
       - Freshwaters might have an error due to the query used to get them? Producing less results maybe?
@@ -170,35 +164,14 @@ Problems:
         - Actual removal, Production Records: P, Salt
         - ** I think there is human error inputting data from spreadsheet to Merced App.
 
-  - (Performance) Typing into Modals is slow, presumably the models should handle state separtely from the view state since it may be slowing it down.
- 
  
  
   - Feature decisons
    - unsure to have them manually add them or only have TSV entries
-   - Spreadsheet shouldnt calculate antything to reduce size.
+   - Spreadsheet shouldnt calculate antything to reduce size. 
+          - (No longer using pre calculated numbers from spreadsheet :) but need to double check)
+          -  But when manually creating entries, it seems weird to have users calculate stuff by hand or assume they have the          spreadsheet with them.
     - But i dont want to alter it too much before talking to them
-    - using calculated fields made it a little easier but cant easily be updated.
-    -  But when manually creating entries, it seems weird to have users calculate stuff by hand or assume they have the spreadsheet with them.
-
-
-    // TODO Update calcuation methods
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

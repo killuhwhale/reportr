@@ -2042,6 +2042,204 @@ app.post("/api/export_manifest/delete", (req, res) => {
 });
 
 
+app.post("/api/discharge/create", (req, res) => {
+  console.log("Creating.... discharge", req.body)
+  const {
+    dairy_id,
+    discharge_type,
+    discharge_datetime,
+    discharge_loc,
+    vol,
+    vol_unit,
+    duration_of_discharge,
+    discharge_src,
+    method_of_measuring,
+    sample_location_reason,
+    ref_number
+  } = req.body
+  db.insertDischarge(
+    [
+      dairy_id,
+      discharge_type,
+      discharge_datetime,
+      discharge_loc,
+      vol,
+      vol_unit,
+      duration_of_discharge,
+      discharge_src,
+      method_of_measuring,
+      sample_location_reason,
+      ref_number
+    ],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created discharge unsuccessful" });
+    }
+  )
+});
+app.get("/api/discharge/:dairy_id", (req, res) => {
+  db.getDischarge(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all discharge unsuccessful" });
+    })
+});
+app.post("/api/discharge/delete", (req, res) => {
+  console.log("Deleting.... discharge", req.body.pk)
+  db.rmDischarge(req.body.pk, (err, result) => {
+    if (!err) {
+      res.json({ "test": "Deleted discharge successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted discharge unsuccessful" });
+  })
+});
+
+
+app.post("/api/agreement/create", (req, res) => {
+  console.log("Creating.... agreement", req.body)
+  const {
+    dairy_id,
+    nmp_updated,
+    nmp_developed,
+    nmp_approved,
+    new_agreements
+  } = req.body
+  db.insertAgreement(
+    [
+      dairy_id,
+      nmp_updated,
+      nmp_developed,
+      nmp_approved,
+      new_agreements
+    ],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created agreement unsuccessful" });
+    }
+  )
+});
+app.get("/api/agreement/:dairy_id", (req, res) => {
+  db.getAgreement(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all agreement unsuccessful" });
+    })
+});
+app.post("/api/agreement/delete", (req, res) => {
+  console.log("Deleting.... agreement", req.body.pk)
+  db.rmAgreement(req.body.pk, (err, result) => {
+    if (!err) {
+      res.json({ "test": "Deleted agreement successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted agreement unsuccessful" });
+  })
+});
+app.post("/api/agreement/update", (req, res) => {
+  console.log("Updating.... agreement", req.body)
+  const {
+    nmp_updated,
+    nmp_developed,
+    nmp_approved,
+    new_agreements, pk
+  } = req.body
+  db.updateAgreement([
+    nmp_updated,
+    nmp_developed,
+    nmp_approved,
+    new_agreements, pk
+  ], (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Updated agreement successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Updated agreement unsuccessful" });
+  })
+});
+
+
+app.post("/api/note/create", (req, res) => {
+  console.log("Creating.... note", req.body)
+  const {
+    dairy_id,
+    note
+  } = req.body
+  db.insertNote(
+    [
+      dairy_id,
+      note
+    ],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created note unsuccessful" });
+    }
+  )
+});
+app.get("/api/note/:dairy_id", (req, res) => {
+  db.getNote(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all note unsuccessful" });
+    })
+});
+app.post("/api/note/delete", (req, res) => {
+  console.log("Deleting.... note", req.body.pk)
+  db.rmNote(req.body.pk, (err, result) => {
+    if (!err) {
+      res.json({ "test": "Deleted note successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted note unsuccessful" });
+  })
+});
+app.post("/api/note/update", (req, res) => {
+  console.log("Updating.... note", req.body)
+  const {
+    note, pk
+  } = req.body
+  db.updateNote([
+    note, pk
+  ], (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Updated note successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Updated note unsuccessful" });
+  })
+});
+
 
 
 // Search used for lazy gets.

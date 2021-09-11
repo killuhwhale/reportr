@@ -782,7 +782,6 @@ CREATE TABLE IF NOT EXISTS export_manifest(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-
 CREATE TABLE IF NOT EXISTS TSVs(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -796,4 +795,56 @@ CREATE TABLE IF NOT EXISTS TSVs(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+
+CREATE TABLE IF NOT EXISTS discharge(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+
+  discharge_type VARCHAR(50) NOT NULL,
+  discharge_datetime TIMESTAMP NOT NULL,
+  discharge_loc VARCHAR(250) NOT NULL, 
+  vol INT NOT NULL,
+  vol_unit VARCHAR(10) NOT NULL,
+  duration_of_discharge INT, -- Storm water, in mins.
+  discharge_src VARCHAR(100), -- Land app to surface water
+
+  method_of_measuring TEXT NOT NULL,
+  sample_location_reason TEXT NOT NULL,
+  ref_number VARCHAR(100) NOT NULL,
+
+  UNIQUE(dairy_id, discharge_type, discharge_datetime, discharge_loc),
+   CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS agreement(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  nmp_updated BOOLEAN DEFAULT false,
+  nmp_developed BOOLEAN DEFAULT false,
+  nmp_approved BOOLEAN DEFAULT false,
+  new_agreements BOOLEAN DEFAULT false,
+
+  UNIQUE(dairy_id),
+   CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS note(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  note TEXT,
+
+  UNIQUE(dairy_id),
+   CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
 

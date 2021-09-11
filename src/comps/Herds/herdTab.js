@@ -3,13 +3,16 @@ import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField, AppBar, Tabs, Tab
 } from '@material-ui/core'
 import {
-  DatePicker
+  DatePicker, DateTimePicker
 } from '@material-ui/pickers'
 import AddIcon from '@material-ui/icons/Add'
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import HerdTable from './herdTable'
+import Discharge from './discharge'
+import Agreement from './agreement'
+
 import Drain from './drain'
 import { get, post } from '../../utils/requests'
 
@@ -33,6 +36,8 @@ class HerdTab extends Component {
       tabs: {
         0: "show",
         1: "hide",
+        2: "hide",
+        3: "hide",
       },
       tabIndex: 0,
     }
@@ -50,7 +55,7 @@ class HerdTab extends Component {
   componentDidMount() {
     this.getHerds()
   }
-  
+
   getHerds() {
     // Get herds for Dairy
     // If no Dairy create empty default by proving dairy_pk
@@ -69,7 +74,7 @@ class HerdTab extends Component {
   }
 
   onChange(ev) {
-      
+
   }
 
   createHerds() {
@@ -94,24 +99,38 @@ class HerdTab extends Component {
                 onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='herdTabs'>
                 <Tab label="Herds" style={{ color: "#ec00d9" }} key='herdTab0' />
                 <Tab label="Tile Drainage" style={{ color: "#ec00d9" }} key='herdTab1' />
+                <Tab label="Discharges" style={{ color: "#ec00d9" }} key='herdTab2' />
+                <Tab label="NMP and Export Agreements" style={{ color: "#ec00d9" }} key='herdTab3' />
               </Tabs>
             </AppBar>
             {
-              this.state.tabs[0] === "show" ? 
+              this.state.tabs[0] === "show" ?
                 <Grid item xs={12}>
-                <HerdTable 
-                  dairy={this.state.dairy}
-                  herds={this.state.herds}
-                />
-              </Grid>
-              : this.state.tabs[1] === 'show' ? 
-                <Grid item xs={12}>
-                    <Drain 
+                  <HerdTable
+                    dairy={this.state.dairy}
+                    herds={this.state.herds}
+                  />
+                </Grid>
+                : this.state.tabs[1] === 'show' ?
+                  <Grid item xs={12}>
+                    <Drain
                       dairy_id={this.state.dairy.pk}
                     />
                   </Grid>
-              :
-              <React.Fragment></React.Fragment>
+                  : this.state.tabs[2] === 'show' ?
+                    <Grid item xs={12}>
+                      <Discharge
+                        dairy_id={this.state.dairy.pk}
+                      />
+                    </Grid>
+                    : this.state.tabs[3] === 'show' ?
+                      <Grid item xs={12}>
+                        <Agreement
+                          dairy_id={this.state.dairy.pk}
+                        />
+                      </Grid>
+                      :
+                      <React.Fragment></React.Fragment>
             }
           </Grid>
 
