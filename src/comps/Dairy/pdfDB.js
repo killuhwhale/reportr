@@ -91,6 +91,9 @@ export const getAnnualReportData = (dairy_id) => {
     getNutrientBudgetB(dairy_id),
     getNutrientAnalysisA(dairy_id),
     getNaprbalABC(dairy_id),
+    getNmpeaStatementsAB(dairy_id),
+    getNotesA(dairy_id),
+    getCertificationA(dairy_id),
   ]
 
   return new Promise((resolve, reject) => {
@@ -768,7 +771,6 @@ const getNutrientBudgetInfo = (dairy_id) => {
 
           events.map(ev => {
             if (ev.entry_type === 'fertilizer') {
-              console.log(NUTRIENT_IMPORT_MATERIAL_TYPES)
               // Calc total app in lbs/ acres
               info.fertilizers[0] += toFloat(ev.n_lbs_acre)
               info.fertilizers[1] += toFloat(ev.p_lbs_acre)
@@ -1035,3 +1037,52 @@ const getNaprbalABC = (dairy_id) => {
 }
 
 
+
+const getNmpeaStatementsAB = (dairy_id) => {
+  return new Promise((resolve, rej) => {
+    get(`${BASE_URL}/api/agreement/${dairy_id}`)
+      .then(([statement]) => {
+        statement = statement && statement.test === undefined ? statement : {}
+      
+        resolve({
+          'nmpeaStatementsAB': statement
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
+}
+
+const getNotesA = (dairy_id) => {
+  return new Promise((resolve, rej) => {
+    get(`${BASE_URL}/api/note/${dairy_id}`)
+      .then(([note]) => {
+        note = note && note.test === undefined ? note : {}
+        resolve({
+          'notesA': note
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
+}
+
+const getCertificationA = (dairy_id) => {
+  return new Promise((resolve, rej) => {
+    get(`${BASE_URL}/api/certification/${dairy_id}`)
+      .then(([certification]) => {
+        certification = certification && certification.test === undefined ? certification : {}
+        resolve({
+          'certificationA': certification
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
+}

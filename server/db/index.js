@@ -2267,5 +2267,89 @@ module.exports = {
       callback
     )
   },
+
+
+  insertCertification: (values, callback) => {
+    return pool.query(
+      format(`INSERT INTO certification(
+        dairy_id,
+        owner_id,
+        operator_id,
+        responsible_id
+        ) VALUES (%L)  RETURNING *`, values),
+      [],
+      callback
+    )
+  },
+  getCertification: (dairy_id, callback) => {
+    return pool.query(
+      format(
+        `SELECT 
+        c.pk,
+        c.owner_id,
+        c.operator_id,
+        c.responsible_id,
+        owner.title as ownertitle,
+        operator.title as operatortitle
+
+        FROM certification c
+
+        JOIN operators owner
+        ON owner.pk = c.owner_id
+        
+        JOIN operators operator
+        ON operator.pk = c.operator_id
+
+  
+
+        WHERE 
+        c.dairy_id = %L
+        `, dairy_id),
+      [],
+      callback
+    )
+  },
+  rmCertification: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM certification where pk = %L", id),
+      [],
+      callback
+    )
+  },
+  updateCertification: (values, callback) => {
+    return pool.query(`UPDATE certification SET
+      owner_id = $1,
+      operator_id = $2,
+      responsible_id = $3
+      WHERE pk=$4`,
+      values,
+      callback
+    )
+  },
+  searchCertification: (values, callback) => {
+    console.log("Searching export_dest", values)
+    return pool.query(
+      `SELECT 
+      c.pk,
+      c.owner_id,
+      c.operator_id,
+      c.responsible_id,
+    
+      owner.title as ownertitle,
+      operator.title as operatortitle
+
+      FROM certification c
+
+      JOIN operators owner
+      ON owner.pk = c.owner_id
+      
+      JOIN operators operator
+      ON operator.pk = c.operator_id
+
+      where c.dairy_id = $1`,
+      values,
+      callback
+    )
+  },
 }
 

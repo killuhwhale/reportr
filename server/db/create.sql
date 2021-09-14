@@ -848,3 +848,32 @@ CREATE TABLE IF NOT EXISTS note(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+
+CREATE TABLE IF NOT EXISTS certification(
+  pk SERIAL PRIMARY KEY,
+  dairy_id INT NOT NULL,
+  owner_id INT NOT NULL,
+  operator_id INT,
+  responsible_id INT NOT NULL,
+
+  UNIQUE(dairy_id),
+   CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  
+  CONSTRAINT fk_owner_id
+    FOREIGN KEY(owner_id) 
+	  REFERENCES operators(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_operator_id
+    FOREIGN KEY(operator_id) 
+	  REFERENCES operators(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_responsible_id
+    FOREIGN KEY(responsible_id) 
+	  REFERENCES operators(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+

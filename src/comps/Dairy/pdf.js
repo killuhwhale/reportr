@@ -1023,12 +1023,12 @@ const availableNutrientsC = (props) => {
     columns: [
       {
         margin: 0,
+        width: "60%",
         stack: [ // Header and first row - unindented
           {
             table: {
               margin: [0, 0],
-              widths: ['auto'],
-              heights: [1],
+              widths: ['98%'],
               body: [
                 [{// row 1
                   border: [false, false, false, false],
@@ -1043,7 +1043,7 @@ const availableNutrientsC = (props) => {
           {
             margin: [10, 0, 0, 0],
             table: {
-              widths: ["45%", "30%", "*"],
+              widths: ["45%", "30%", "25%"],
               body: [
                 [
                   {
@@ -1172,12 +1172,11 @@ const availableNutrientsC = (props) => {
       },
       {
         margin: [0, 20, 80, 0], // content - indented
-        width: 300,
-
+        width: "40%",
         stack: [
           {
             table: {
-              widths: ['10%', "30%", '*'],
+              widths: ['10%', "30%", '60%'],
 
               body: [
                 [
@@ -1337,9 +1336,7 @@ const availableNutrientsD = (props) => {
     stack: [
       {
         table: {
-          margin: [0, 0],
-          widths: ['auto'],
-          heights: [1],
+          widths: ['98%'],
           body: [
             [{// row 1
               border: [false, false, false, false],
@@ -1353,7 +1350,7 @@ const availableNutrientsD = (props) => {
 
       },
       {
-        margin: [10, 0, 80, 0],
+        margin: [10, 0, 0, 0],
         table: {
           widths: ['75%', '25%'],
           body: body
@@ -1363,40 +1360,63 @@ const availableNutrientsD = (props) => {
   }
 }
 const availableNutrientsE = (props) => {
+  let sources = [{src_desc: "Test drain1"}].map(source => {
+    return [
+      {
+        text: {
+          text: source.src_desc, fontSize: 9,
+        }
+      }
+    ]
+  })
+  const fullBody = [
+    [
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Source Description', fontSize: 9,
+        }
+      },
+    ],
+    ...sources,
+  ]
+  const emptyBody = [
+    [
+      {// row 1
+        border: [false, false, false, false],
+        colSpan: 2,
+        text: {
+          text: 'No subsurface (tile) drainage entered.', fontSize: 9,
+        }
+      },
+    ]
+  ]
+  // const body = props.sources.length > 0 ? fullBody : emptyBody
+  const body = fullBody
+
+ 
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [
       {
         table: {
           margin: [0, 0],
-          widths: ['auto'],
-          heights: [1],
+          widths: ['98%'],
           body: [
             [{// row 1
               border: [false, false, false, false],
               text: {
                 text: 'E. SUBSURFACE (TILE) DRAINAGE SOURCES:', bold: true, fontSize: 9,
               }
-            },
-            ]
+            }]
           ]
         },
-
       },
       {
-        margin: [10, 0, 80, 0],
+        margin: [10, 0, 0, 0],
         table: {
-          widths: ['*'],
-          body: [
-            [
-              {// row 1
-                border: [false],
-                text: {
-                  text: 'No subsurface (tile) drainage sources entered.', fontSize: 9,
-                }
-              }
-            ]
-          ]
+          widths: ['98%'],
+          body: body
         }
       },
     ]
@@ -4251,69 +4271,59 @@ const nutrientAnalysisA = (props) => {
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.n_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.p_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.k_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.ca_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.mg_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.na_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.s_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.cl_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: " ", fontSize: 7,
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.tfs, fontSize: 7,
                         alignment: 'right',
@@ -4327,69 +4337,59 @@ const nutrientAnalysisA = (props) => {
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.n_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.p_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.k_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.ca_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.mg_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.na_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.s_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.cl_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: " ", fontSize: 7,
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.tfs_dl, fontSize: 7,
                         alignment: 'right',
@@ -4656,105 +4656,90 @@ const nutrientAnalysisB = (props) => {
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.kn_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.nh4_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.nh3_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.no3_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.p_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.k_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.ca_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.mg_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.na_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.hco3_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.co3_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.so4_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.cl_con, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.ec, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.tds, fontSize: 7,
                         alignment: 'right',
@@ -4768,98 +4753,84 @@ const nutrientAnalysisB = (props) => {
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.kn_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.nh4_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.nh3_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.no3_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.p_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.k_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.ca_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.mg_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.na_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.hco3_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.co3_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.so4_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.cl_dl, fontSize: 7,
                         alignment: 'right',
                       }
                     },
                     {
-                      fillColor: gray,
                       text: {
                         text: analysis.ec_dl, fontSize: 7,
                         alignment: 'right',
@@ -4867,7 +4838,6 @@ const nutrientAnalysisB = (props) => {
                     },
                     {
                       headlineLevel: `processWastewaterAnalyses${i}`,
-                      fillColor: gray,
                       text: {
                         text: analysis.tds_dl, fontSize: 7,
                         alignment: 'right',
@@ -5001,19 +4971,19 @@ const nutrientAnalysisC = (props) => {
                       {
                         fillColor: gray,
                         text: {
+                          text: "Total N (mg/L)", fontSize: 7,
+                        }
+                      },
+                      {
+                        fillColor: gray,
+                        text: {
+                          text: "NH4-N (mg/L)", fontSize: 7,
+                        }
+                      },
+                      {
+                        fillColor: gray,
+                        text: {
                           text: "Nitrate-N (mg/L)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Total P (mg/L)", fontSize: 7,
-                        }
-                      },
-                      {
-                        fillColor: gray,
-                        text: {
-                          text: "Total K (mg/L)", fontSize: 7,
                         }
                       },
                       {
@@ -5079,73 +5049,61 @@ const nutrientAnalysisC = (props) => {
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.n_con, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.nh4_con, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.no2_con, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.ca_con, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.mg_con, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.na_con, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.hco3_con, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.co3_con, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.so4_con, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.cl_con, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.ec, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.tds, fontSize: 7,
                         }
@@ -5158,74 +5116,62 @@ const nutrientAnalysisC = (props) => {
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.n_dl, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.nh4_dl, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.no2_dl, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.ca_dl, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.mg_dl, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.na_dl, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.hco3_dl, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.co3_dl, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.so4_dl, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.cl_dl, fontSize: 7,
                         }
                       },
                       {
-                        fillColor: gray,
                         text: {
                           text: props.ec_dl, fontSize: 7,
                         }
                       },
                       {
                         headlineLevel: `freshWaterAnalyses${i}`,
-                        fillColor: gray,
                         text: {
                           text: props.tds_dl, fontSize: 7,
                         }
@@ -5276,6 +5222,9 @@ const nutrientAnalysisC = (props) => {
     }
   })
 
+
+
+
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -5300,6 +5249,276 @@ const nutrientAnalysisC = (props) => {
   }
 }
 const nutrientAnalysisD = (props) => {
+  const subTable = (props, i) => {
+    return [
+      {
+        border: [true, false, true, false],
+        table: {
+          widths: ['20%', '73%'],
+          body: [
+            [
+              {
+                border: [true, true, false, true],
+                fillColor: gray,
+                text: {
+                  text: props.sample_desc, alignment: 'left',
+                  fontSize: 9,
+                }
+              },
+              {
+                border: [false, true, true, true],
+                fillColor: gray,
+                text: ' '
+              }
+            ],
+            [
+              {
+                border: [true, false, false, false],
+                text: {
+                  text: "Sample source and description:", fontSize: 8, alignment: 'right'
+                }
+              },
+              {
+                border: [false, false, true, true],
+                text: {
+                  text: props.sample_desc, fontSize: 8,
+                  alignment: 'left'
+                }
+              }
+            ],
+            [
+              {
+                colSpan: 2,
+                border: [true, false, true, false],
+                table: {
+                  widths: ['21%', '10%', '13%', '15%',],
+                  body: [
+                    [
+                      {
+                        border: [false, false, false, false],
+                        text: {
+                          text: "Sample date:", fontSize: 8,
+                          alignment: 'right',
+                        }
+                      },
+                      {
+                        border: [false, false, false, true],
+                        text: {
+                          text: props.sample_date ? props.sample_date.split('T')[0] : '', fontSize: 8,
+                        }
+                      },
+                      {
+                        border: [false, false, false, false],
+                        text: {
+                          text: "Source of analysis:", fontSize: 8,
+                          alignment: 'right',
+                        }
+                      },
+                      {
+                        border: [false, false, false, true],
+                        text: {
+                          text: props.src_of_analysis, fontSize: 8,
+                        }
+                      },
+                    ],
+                  ]
+                }
+              }, { text: ' ' }
+            ],
+            [
+              {
+                colSpan: 2,
+                border: [true, false, true, true],
+                table: {
+                  widths: ['8%', '16%', '12%', '12%',    '12%', '12%', '12%', '12%'],
+                  body: [
+                    [
+                      {
+                        text: {
+                          text: "", fontSize: 8,
+                        }
+                      },
+                      {
+                        fillColor: gray,
+                        text: {
+                          text: "Nitrate-N (mg/kg)", fontSize: 7,
+                        }
+                      },
+                      {
+                        fillColor: gray,
+                        text: {
+                          text: "Total P (mg/kg)", fontSize: 7,
+                        }
+                      },
+                      {
+                        fillColor: gray,
+                        text: {
+                          text: "Soluable P (mg/kg)", fontSize: 7,
+                        }
+                      },
+                      {
+                        fillColor: gray,
+                        text: {
+                          text: "K (mg/kg)", fontSize: 7,
+                        }
+                      },
+                      {
+                        fillColor: gray,
+                        text: {
+                          text: "EC (μmhos/cm)", fontSize: 7,
+                        }
+                      },
+                      {
+                        fillColor: gray,
+                        text: {
+                          text: "Organic matter (%)", fontSize: 7,
+                        }
+                      },
+                      {
+                        fillColor: gray,
+                        text: {
+                          text: "Total salt (mg/kg)", fontSize: 7,
+                        }
+                      }
+
+                    ],
+                    [
+                      {
+                        text: {
+                          text: "Value", fontSize: 8, bold: true,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.n_con, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.total_p_con, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.p_con, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.k_con, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.ec, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.org_matter, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: '', fontSize: 7,
+                        }
+                      },
+                      
+                      
+                    ],
+                    [
+                      {
+                        text: {
+                          text: "DL", fontSize: 8, bold: true,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.n_dl, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.total_p_dl, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.p_dl, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.k_dl, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.ec_dl, fontSize: 7,
+                        }
+                      },
+                      {
+                        text: {
+                          text: props.org_matter_dl, fontSize: 7,
+                        }
+                      },
+                     
+                      {
+                        headlineLevel: `soilAnalyses${i}`,
+                        text: {
+                          text: '', fontSize: 7,
+                        }
+                      },
+                    ],
+                  ]
+                }
+              }, { text: ' ' }
+            ]
+          ]
+        }
+      }
+    ]
+  }
+
+  let _props = {}
+  _props['A'] = [{testKey: 1}]
+
+  const tables = Object.keys(_props).map((key, i) => {
+    let analyses = _props[key]
+    let headerInfo = analyses && analyses[0] ? analyses[0] : {}
+    
+    const subTables = analyses.map((analysis) => {
+      return subTable(analysis, i)
+    })
+
+    return {
+      headlineLevel: `soilAnalyses${i}`,
+      margin: [10, 0, 0, 5],
+      table: {
+        widths: ['98%'],
+        body: [
+          [
+            {// row 1
+              fillColor: gray,
+              text: {
+                text: headerInfo.src_desc, bold: true, fontSize: 9,
+              }
+            },
+          ],
+          ...subTables,
+          [
+            {// row for bottom border
+              border: [true, false, true, true],
+              text: {
+                text: '',
+              }
+            },
+          ]
+        ]
+      }
+    }
+  })
+  
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -5312,18 +5531,11 @@ const nutrientAnalysisD = (props) => {
               border: [false, false, false, false],
               // border: [false, false, false, false],
               text: 'D. SOIL ANALYSES', fontSize: 10, bold: true,
-            }],
-            [
-              {
-                border: [false, false, false, false],
-                text: { text: 'No soil analyses entered.', fontSize: 7, italics: true }
-              }
-            ]
+            }]
           ]
         }
       },
-
-
+      ...tables,
     ]
   }
 }
@@ -5508,31 +5720,26 @@ const nutrientAnalysisE = (props) => {
                           }
                         },
                         {
-                          fillColor: gray,
                           text: {
                             text: props.actual_n, fontSize: 7,
                           }
                         },
                         {
-                          fillColor: gray,
                           text: {
                             text: props.actual_p, fontSize: 7,
                           }
                         },
                         {
-                          fillColor: gray,
                           text: {
                             text: props.actual_k, fontSize: 7,
                           }
                         },
                         {
-                          fillColor: gray,
                           text: {
                             text: '', fontSize: 7,
                           }
                         },
                         {
-                          fillColor: gray,
                           text: {
                             text: props.tfs, fontSize: 7,
                           }
@@ -5546,32 +5753,27 @@ const nutrientAnalysisE = (props) => {
                           }
                         },
                         {
-                          fillColor: gray,
                           text: {
                             text: props.n_dl, fontSize: 7,
                           }
                         },
                         {
-                          fillColor: gray,
                           text: {
                             text: props.p_dl, fontSize: 7,
                           }
                         },
                         {
-                          fillColor: gray,
                           text: {
                             text: props.k_dl, fontSize: 7,
                           }
                         },
                         {
-                          fillColor: gray,
                           text: {
                             text: '', fontSize: 7,
                           }
                         },
                         {
                           headlineLevel: `soilAnalyses${i}`,
-                          fillColor: gray,
                           text: {
                             text: props.tfs_dl, fontSize: 7,
                           }
@@ -5627,20 +5829,257 @@ const nutrientAnalysisE = (props) => {
           body: [
             [{
               border: [false, false, false, false],
-              // border: [false, false, false, false],
               text: 'E. PLANT TISSUE ANALYSES', fontSize: 10, bold: true,
             }]
           ]
         }
       },
       ...tables
-
-
-
     ]
   }
 }
 const nutrientAnalysisF = (props) => {
+  
+  let _props = {}
+  
+  _props['drain_src_A'] = [{
+    src_desc: "drain_src_a"
+  }]
+  
+  const tables = Object.keys(_props).map((key, i) => {
+    let analyses = _props[key]
+    console.log(key, analyses)
+    let headerInfo = analyses && analyses[0] ? analyses[0] : {}
+
+    const subTable = (props) => {
+      return [
+        {
+          border: [true, false, true, false],
+          table: {
+            widths: ['20%', '73%'],
+            body: [
+              [
+                {
+                  border: [true, true, false, true],
+                  fillColor: gray,
+                  text: {
+                    text: props.sample_desc, alignment: 'left',
+                    fontSize: 9,
+                  }
+                },
+                {
+                  border: [false, true, true, true],
+                  fillColor: gray,
+                  text: ''
+                }
+              ],
+              [
+                {
+                  border: [true, false, false, false],
+                  text: {
+                    text: "Sample source and description:", fontSize: 8, alignment: 'right'
+                  }
+                },
+                {
+                  border: [false, false, true, true],
+                  text: {
+                    text: props.sample_desc, fontSize: 8,
+                    alignment: 'left'
+                  }
+                }
+              ],
+              [
+                {
+                  colSpan: 2,
+                  border: [true, false, true, false],
+                  table: {
+                    widths: ['21%', '10%', '13%', '15%'],
+                    body: [
+                      [
+                        {
+                          border: [false, false, false, false],
+                          text: {
+                            text: "Sample date:", fontSize: 8,
+                            alignment: 'right',
+                          }
+                        },
+                        {
+                          border: [false, false, false, true],
+                          text: {
+                            text: props.sample_date? props.sample_date.split('T')[0]: '', fontSize: 8,
+                          }
+                        },
+                        {
+                          border: [false, false, false, false],
+                          text: {
+                            text: "Source of analysis:", fontSize: 8,
+                            alignment: 'right',
+                          }
+                        },
+                        {
+                          border: [false, false, false, true],
+                          text: {
+                            text: props.src_of_analysis, fontSize: 8,
+                          }
+                        }
+                      ],
+                    ]
+                  }
+                }, { text: '' }
+              ],
+              [
+                {
+                  colSpan: 2,
+                  border: [true, false, true, true],
+                  margin: [10, 0, 0, 0],
+                  table: {
+                    widths: ['4%', '10%', '10%', '10%', '10%', '10%'],
+                    body: [
+                      [
+                        {
+                          text: {
+                            text: "", fontSize: 8,
+                          }
+                        },
+                        {
+                          fillColor: gray,
+                          text: {
+                            text: "NH4-N (mg/L)", fontSize: 7,
+                          }
+                        },
+                        {
+                          fillColor: gray,
+                          text: {
+                            text: "Nitrate-N (mg/L)", fontSize: 7,
+                          }
+                        },
+                        {
+                          fillColor: gray,
+                          text: {
+                            text: "Total P (mg/L)", fontSize: 7,
+                          }
+                        },
+                        {
+                          fillColor: gray,
+                          text: {
+                            text: "EC (μmhos/cm)", fontSize: 7,
+                          }
+                        },
+                        {
+                          fillColor: gray,
+                          text: {
+                            text: "TDS (mg/L)", fontSize: 7,
+                          }
+                        },
+                      ],
+                      [
+                        {
+                          text: {
+                            text: "Value", fontSize: 8, bold: true,
+                          }
+                        },
+                        {
+                          text: {
+                            text: props.nh4_con, fontSize: 7,
+                          }
+                        },
+                        {
+                          text: {
+                            text: props.no2_con, fontSize: 7,
+                          }
+                        },
+                        {
+                          text: {
+                            text: props.p_con, fontSize: 7,
+                          }
+                        },
+                        {
+                          text: {
+                            text: props.ec, fontSize: 7,
+                          }
+                        },
+                        {
+                          text: {
+                            text: props.tds, fontSize: 7,
+                          }
+                        },
+
+                      ],
+                      [
+                        {
+                          text: {
+                            text: "DL", fontSize: 8, bold: true,
+                          }
+                        },
+                        {
+                          text: {
+                            text: props.nh4_dl, fontSize: 7,
+                          }
+                        },
+                        {
+                          text: {
+                            text: props.no2_dl, fontSize: 7,
+                          }
+                        },
+                        {
+                          text: {
+                            text: props.p_dl, fontSize: 7,
+                          }
+                        },
+                        {
+                          text: {
+                            text: props.ec_dl, fontSize: 7,
+                          }
+                        },
+                        {
+                          headlineLevel: `drainAnalyses${i}`,
+                          text: {
+                            text: props.tds_dl, fontSize: 7,
+                          }
+                        },
+                      ],
+                    ]
+                  }
+                }, { text: '' }
+              ]
+            ]
+          }
+        }
+      ]
+    }
+
+    const subTables = analyses.map(analysis => subTable(analysis))
+    
+    return {
+      headlineLevel: `drainAnalyses${i}`,
+      margin: [10, 0, 0, 5],
+      table: {
+        widths: ['98%'],
+        body: [
+          [
+            {// row 1
+              fillColor: gray,
+              text: {
+                text: `${headerInfo.fieldtitle} - ${headerInfo.plant_date}: ${headerInfo.croptitle}`,
+                bold: true, fontSize: 9,
+              }
+            },
+          ],
+          ...subTables,
+          [
+            {// bottom row border
+            border: [true, false, true, true],
+            text: ''
+          },
+        ]
+
+        ]
+      }
+    }
+  })
+
+  
+  
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -5654,15 +6093,10 @@ const nutrientAnalysisF = (props) => {
               // border: [false, false, false, false],
               text: 'F. SUBSURFACE (TILE) DRAINAGE ANALYSES', fontSize: 10, bold: true,
             }],
-            [
-              {
-                border: [false, false, false, false],
-                text: { text: 'No subsurface (tile) drainage analyses entered.', fontSize: 7, italics: true }
-              }
-            ]
           ]
         }
       },
+      ...tables,
 
 
     ]
@@ -6213,6 +6647,317 @@ const naprbalC = (props, images) => {
     ]
   }
 }
+
+
+
+const exceptionReportingATable = (props) => {
+  props = [{}]
+  let rows = props.map((row, i) => {
+    return [
+      {
+        text: {
+          text: row.discharge_datetime, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.discharge_loc, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.ref_number, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.method_of_measuring, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.sample_location_reason, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.vol, fontSize: 7,
+        }
+      },
+    ]
+  })
+  
+  let body = [
+    [
+      {
+        fillColor: gray,
+        text: {
+          text: 'Discharge date', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Location', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Map reference #', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Method of measuring discharge', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Rationale for sample locations', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Volume', fontSize: 7,
+        }
+      },
+    ],
+    ...rows
+  ]
+  
+  let table = {
+    margin: [10,5,0,5],
+    table: {
+      widths: ['16%', '16%', '16%', '16%', '16%', '16%'],
+      body: body
+    }
+  }
+  let noTable = {
+    margin: [10, 10, 0, 10],
+    text: {
+      text: 'No manure or process wastewater discharges occurred during the reporting period.', italics: true, fontSize: 7
+    }
+  }
+
+  return props && props.manure && props.manure.length > 0 ? table: noTable 
+}
+const exceptionReportingBTable = (props) => {
+  props = [{}]
+  let rows = props.map((row, i) => {
+    return [
+      {
+        text: {
+          text: row.discharge_datetime, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.discharge_loc, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.ref_number, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.method_of_measuring, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.sample_location_reason, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.duration_of_discharge, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.vol, fontSize: 7,
+        }
+      },
+    ]
+  })
+  
+  let body = [
+    [
+      {
+        fillColor: gray,
+        text: {
+          text: 'Discharge date', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Location', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Map reference #', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Method of measuring discharge', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Rationale for sample locations', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Duration (min)', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Volume', fontSize: 7,
+        }
+      },
+    ],
+    ...rows
+  ]
+  
+  let table = {
+    margin: [10, 5, 0, 5],
+    table: {
+      widths: ['14%', '14%', '14%', '14%', '14%', '14%', '14%'],
+      body: body
+    }
+  }
+  let noTable = {
+    margin: [10, 10, 0, 10],
+    text: {
+      text: 'No stormwater discharges occurred during the reporting period.', italics: true, fontSize: 7
+    }
+  }
+
+  return props && props.stormwater && props.stormwater.length > 0 ? table: noTable 
+}
+const exceptionReportingCTable = (props) => {
+  props = [{}]
+  let rows = props.map((row, i) => {
+    return [
+      {
+        text: {
+          text: row.discharge_datetime, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.discharge_loc, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.ref_number, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.method_of_measuring, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.sample_location_reason, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.discharge_src, fontSize: 7,
+        }
+      },
+      {
+        text: {
+          text: row.vol, fontSize: 7,
+        }
+      },
+    ]
+  })
+  
+  let body = [
+    [
+      {
+        fillColor: gray,
+        text: {
+          text: 'Discharge date', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Location', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Map reference #', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Method of measuring discharge', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Rationale for sample locations', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Source of discharge', fontSize: 7,
+        }
+      },
+      {
+        fillColor: gray,
+        text: {
+          text: 'Volume', fontSize: 7,
+        }
+      },
+    ],
+    ...rows
+  ]
+
+  let table = {
+    margin: [10, 10, 0, 10],
+    table: {
+      widths: ['14%', '14%', '14%', '14%', '14%', '14%', '14%'],
+      body: body
+    }
+  }
+
+  let noTable = {
+    margin: [10, 5, 0, 5],
+    text: {
+      text: 'No manure or process wastewater discharges occurred during the reporting period.', italics: true, fontSize: 7
+    }
+  }
+  
+  return props && props.land && props.land.length > 0 ? table: noTable 
+}
 const exceptionReportingABC = (props) => {
   return {
     pageBreak: 'before', // super useful soltion just dont need on the first on
@@ -6228,115 +6973,52 @@ const exceptionReportingABC = (props) => {
           ]
         }
       },
-      {
-        table: {
-          widths: ['98%'],
-          body: [
-            [
-              {
-                border: [false, false, false, false],
-                // border: [false, false, false, false],
-                text: { text: 'A. MANURE, PROCESS WASTEWATER, AND OTHER DAIRY WASTE DISCHARGES', fontSize: 10, bold: true, }
-              },
 
-            ],
-            [
-              {
-                border: [false, false, false, false],
-                // border: [false, false, false, false],
-                text: {
-                  text: "The following is a summary of all manure and process wastewater discharges from the production area to surface water or to land areas (land application areas or otherwise)" +
-                    " when not in accordance with the facility's Nutrient Management Plan.", fontSize: 8
-                }
-              }
-            ],
-            [
-              {
-                border: [false, false, false, false],
-                // border: [false, false, false, false],
-                text: { text: "No manure or process wastewater discharges occurred during the reporting period", fontSize: 7, italics: true, }
-              }
-            ],
-          ]
-        }
+      {
+        text: { text: 'A. MANURE, PROCESS WASTEWATER, AND OTHER DAIRY WASTE DISCHARGES', fontSize: 10, bold: true, }
       },
       {
-        table: {
-          widths: ['98%'],
-          body: [
-            [
-              {
-                border: [false, false, false, false],
-                // border: [false, false, false, false],
-                text: { text: 'B. STORM WATER DISCHARGES', fontSize: 10 }
-              },
-
-            ],
-            [
-              {
-                border: [false, false, false, false],
-                // border: [false, false, false, false],
-                text: {
-                  text: "The following is a summary of all storm water discharges from the production area to surface water during the reporting period when not in accordance with the facility 's Nutrient" +
-                    " Management Plan.", fontSize: 8
-                }
-              }
-            ],
-            [
-              {
-                border: [false, false, false, false],
-                // border: [false, false, false, false],
-                text: { text: "No stormwater discharges occurred during the reporting period.", fontSize: 7, italics: true, }
-              }
-            ],
-          ]
+        text: {
+          text: "The following is a summary of all manure and process wastewater discharges from the production area to surface water or to land areas (land application areas or otherwise)" +
+          " when not in accordance with the facility's Nutrient Management Plan.", fontSize: 8
         }
+      },
+      exceptionReportingATable(props),
+
+      {
+        text: { text: 'B. STORM WATER DISCHARGES', fontSize: 10, bold: true, }
       },
       {
-        table: {
-          widths: ['98%'],
-          body: [
-            [
-              {
-                border: [false, false, false, false],
-                // border: [false, false, false, false],
-                text: { text: 'C. LAND APPLICATION AREA TO SURFACE WATER DISCHARGES', fontSize: 10 }
-              },
-
-            ],
-            [
-              {
-                border: [false, false, false, false],
-                // border: [false, false, false, false],
-                text: {
-                  text: "The following is a summary of all discharges from the land application area to surface water that have occurred during the reporting period when not in accordance with the" +
-                    " facility's Nutrient Management Plan.", fontSize: 8
-                }
-              }
-            ],
-            [
-              {
-                border: [false, false, false, false],
-                // border: [false, false, false, false],
-                text: { text: "No land application area to surface water discharges occurred during the reporting period", fontSize: 7, italics: true, }
-              }
-            ],
-          ]
+        text: {
+          text:"The following is a summary of all storm water discharges from the production area to surface water during the reporting period when not in accordance with the facility 's Nutrient" +
+          " Management Plan.", fontSize: 8
         }
       },
+      exceptionReportingBTable(props),
+
+      {
+        text: { text: 'C. LAND APPLICATION AREA TO SURFACE WATER DISCHARGES', fontSize: 10, bold: true, }
+      },
+      {
+        text: {
+          text: "The following is a summary of all discharges from the land application area to surface water that have occurred during the reporting period when not in accordance with the" +
+          " facility's Nutrient Management Plan.", fontSize: 8
+        }
+      },
+      exceptionReportingCTable(props),
     ]
   }
 }
 
+
+
+
 //  nmpeaStatements NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS
 const nmpeaStatementsAB = (props) => {
   const q1 = `Was the facility's NMP updated in the reporting period?`
-  const q2 = `Was the facility's NMP developed by a certified nutrient management planner
-  (specialist) as specified in Attachment C of the General Order?`
-  const q3 = `Was the facility's NMP approved by a certified nutrient management planner
-  (specialist) as specified in Attachment C of the General Order?`
-  const q4 = `Are there any written agreements with third parties to receive manure or process
-  wastewater that are new or were revised within the reporting period?`
+  const q2 = `Was the facility's NMP developed by a certified nutrient management planner (specialist) as specified in Attachment C of the General Order?`
+  const q3 = `Was the facility's NMP approved by a certified nutrient management planner (specialist) as specified in Attachment C of the General Order?`
+  const q4 = `Are there any written agreements with third parties to receive manure or process wastewater that are new or were revised within the reporting period?`
 
   return {
     stack: [
@@ -6365,7 +7047,7 @@ const nmpeaStatementsAB = (props) => {
       },
       {
         table: {
-          widths: ['30%', '30%', '30%'],
+          widths: ['95%', '3%', '1%'],
           body: [
             [
               {
@@ -6374,7 +7056,7 @@ const nmpeaStatementsAB = (props) => {
               },
               {
                 border: [false, false, false, true],
-                text: { text: 'No', fontSize: 10 }
+                text: { text: props.nmp_updated? 'Yes': 'No', fontSize: 10 }
               },
               {
                 border: [false, false, false, false],
@@ -6388,7 +7070,7 @@ const nmpeaStatementsAB = (props) => {
               },
               {
                 border: [false, false, false, true],
-                text: { text: 'Yes', fontSize: 10 }
+                text: { text: props.nmp_developed? 'Yes': 'No', fontSize: 10 }
               },
               {
                 border: [false, false, false, false],
@@ -6402,7 +7084,7 @@ const nmpeaStatementsAB = (props) => {
               },
               {
                 border: [false, false, false, true],
-                text: { text: 'Yes', fontSize: 10 }
+                text: { text: props.nmp_approved? 'Yes': 'No', fontSize: 10 }
               },
               {
                 border: [false, false, false, false],
@@ -6427,7 +7109,7 @@ const nmpeaStatementsAB = (props) => {
       },
       {
         table: {
-          widths: ['30%', '30%', '30%'],
+          widths: ['95%', '3%', '1%'],
           body: [
             [
               {
@@ -6436,7 +7118,7 @@ const nmpeaStatementsAB = (props) => {
               },
               {
                 border: [false, false, false, true],
-                text: { text: 'No', fontSize: 10 }
+                text: { text: props.new_agreements? 'Yes': 'No', fontSize: 10 }
               },
               {
                 border: [false, false, false, false],
@@ -6452,7 +7134,7 @@ const nmpeaStatementsAB = (props) => {
 }
 
 const notesA = (props) => {
-  const noNotesText = `No notes entered for this annual report.`
+  const noNotesText = props.note
 
   return {
     pageBreak: 'before',
@@ -6481,7 +7163,7 @@ const notesA = (props) => {
               {
                 border: [false, false, false, false],
                 text: {
-                  text: noNotesText, fontSize: 6, italics: true
+                  text: noNotesText, fontSize: 9, italics: true
                 }
               }
             ],
@@ -6492,6 +7174,7 @@ const notesA = (props) => {
   }
 }
 const certificationA = (props) => {
+  console.log("Cert props", props)
   const certiText = `I certify under penalty of law that I have personally examined and am familiar with the information submitted in this document and all attachments and that, based on my inquiry
   of those individuals immediately responsible for obtaining the information, I believe that the information is true, accurate, and complete. I am aware that there are significant
   penalties for submitting false information, including the possibility of fine and imprisonment.`
@@ -6562,13 +7245,13 @@ const certificationA = (props) => {
             {
               width: "50%",
               text: {
-                text: 'Rodney V Nylund ', fontSize: 7,
+                text: props.ownertitle, fontSize: 10,
               }
             },
             {
               width: "50%",
               text: {
-                text: 'SAME AS OWNER', fontSize: 7,
+                text:props.operatortitle, fontSize: 10,
               }
             },
           ],
@@ -6774,9 +7457,9 @@ export default function dd(props, images) {
 
     // Minimal data below, need to create, answers to basic questions.
     exceptionReportingABC(props),
-    nmpeaStatementsAB(props),
-    notesA(props),
-    certificationA(props),
+    nmpeaStatementsAB(props.nmpeaStatementsAB),
+    notesA(props.notesA),
+    certificationA(props.certificationA),
     attachmentsA(props),
 
   ]

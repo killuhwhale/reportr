@@ -66,17 +66,16 @@ PDF Report
 Functions
  - to determine the number of days in reporting peroid.....
 
-Certification
-  - Select and owner or operator for certification.
-
 
 
 
 
 TODO
-Add to PDF REPORT:
- - Create Views in pdf.js
- - Create data in pdfDB.js
+
+ -- Missing views:
+    F. Nutrient Imports
+      No dry manure nutrient imports entered.
+      No process wastewater nutrient imports entered
 
 
 Available Nutrients
@@ -96,18 +95,6 @@ Exception Reporting
   - B. STORM WATER DISCHARGES
   - C. LAND APPLICATION AREA TO SURFACE WATER DISCHARGES
 
-Agreement Statements
-  A. NUTRIENT MANAGEMENT PLAN STATEMENTS
-    1. Was the facility's NMP updated in the reporting period?
-    2. Was the facility's NMP developed by a certified nutrient management planner
-    (specialist) as specified in Attachment C of the General Order?
-    3. Was the facility's NMP approved by a certified nutrient management planner
-    (specialist) as specified in Attachment C of the General Order?
-  B. EXPORT AGREEMENT STATEMENT
-    4. Are there any written agreements with third parties to receive manure or process
-    wastewater that are new or were revised within the reporting period?
-  
-Notes
 
 
 

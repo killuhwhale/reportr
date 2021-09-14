@@ -2240,6 +2240,76 @@ app.post("/api/note/update", (req, res) => {
   })
 });
 
+app.post("/api/certification/create", (req, res) => {
+  console.log("Creating.... certification", req.body)
+  const {
+    dairy_id,
+    owner_id,
+    operator_id,
+    responsible_id
+  } = req.body
+  db.insertCertification(
+    [
+      dairy_id,
+      owner_id,
+      operator_id,
+      responsible_id
+    ],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created certification unsuccessful" });
+    }
+  )
+});
+app.get("/api/certification/:dairy_id", (req, res) => {
+  db.getCertification(req.params.dairy_id,
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all certification unsuccessful" });
+    })
+});
+app.post("/api/certification/delete", (req, res) => {
+  console.log("Deleting.... certification", req.body.pk)
+  db.rmCertification(req.body.pk, (err, result) => {
+    if (!err) {
+      res.json({ "test": "Deleted certification successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted certification unsuccessful" });
+  })
+});
+app.post("/api/certification/update", (req, res) => {
+  console.log("Updating.... certification", req.body)
+  const {
+    owner_id,
+    operator_id,
+    responsible_id, pk
+  } = req.body
+  db.updateCertification([
+    owner_id,
+    operator_id,
+    responsible_id, pk
+  ], (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Updated certification successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Updated certification unsuccessful" });
+  })
+});
+
+
 
 
 // Search used for lazy gets.
@@ -2513,7 +2583,20 @@ app.get("/api/search/drain_source/:src_desc/:dairy_pk", (req, res) => {
     })
 });
 
-
+app.get("/api/search/certification/:no_val/:dairy_pk", (req, res) => {
+  db.searchCertification(
+    [
+      req.params.dairy_pk,
+    ],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Search all certifications unsuccessful" });
+    })
+});
 
 
 
