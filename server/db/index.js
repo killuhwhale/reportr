@@ -1388,6 +1388,7 @@ module.exports = {
       format(
         // nitrateN, totalP, totalK, totalTDS
         `SELECT
+        'soil' as entry_type,
         fcas.pk,
         fcas.src_desc,
         fcas.n_lbs_acre,
@@ -1453,6 +1454,7 @@ module.exports = {
       format(
         // nitrateN, totalP, totalK, totalTDS
         `SELECT
+        'plowdown' as entry_type,
         fcapc.pk,
         fcapc.src_desc,
         fcapc.n_lbs_acre,

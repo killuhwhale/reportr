@@ -78,25 +78,6 @@ TODO
       No process wastewater nutrient imports entered
 
 
-Available Nutrients
-  - SUBSURFACE (TILE) DRAINAGE sources
-
-Nutrient Budget B. & Overall Summary
-  - Soil analysis 
-  - Plowdown Credit
-
-Nutrient analyses:
- - Soil analysis 
- - Plowdown analyses 
- - SUBSURFACE (TILE) DRAINAGE analyses
- 
-Exception Reporting
-  - A. MANURE, PROCESS WASTEWATER, AND OTHER DAIRY WASTE DISCHARGES
-  - B. STORM WATER DISCHARGES
-  - C. LAND APPLICATION AREA TO SURFACE WATER DISCHARGES
-
-
-
 
 
 
@@ -106,27 +87,16 @@ Problems:
 
   - (Huge Bug)
     - Cant select change dairy year 
-
+  - (Huge, Quality Check) Deletes work as expected, If a Field is deleted, everything related to it is also deleted....
+  
+  - (Feature) Button to delete all entries in a table....
+  
   - (Bug) TSV should be updated when uploaded each time. and possibly delete from those tables first 
-  - (Bug) Datetime zones are not coordinated well 
+  - (Bug) Datetime zones need to be checked to make sure they are compliant/ aware of timezone...
     - (Using Date Picker to Display it seems to  have the correct timezones...)
 
 
------ I dont think I want to enable manual entries. ----------
-  - (ERROR) Manually entering information may be faulty, REPORT LOOKS FOR LBS PER ACRE, but user might not enter that. Or want to calculate it. 
 
-    - Need to check:
-      - Does Process wastewater actually create and check for an existing analysis?
-      - Process Wastewater Analysis Add Modal Button is missing
-      - It should NOT just create a new a analysis willy nilly.
-   
-    - NEED TO VERIFY THAT ALL MANUALLY ENTERED FIELDS REFLECT NECCESSARY FIELDS
-     - All calculated fields like lbs per acre are there as needed. 
-       
-  - (BUG) DLs created manually with null are null and do not get the default value of zero. 
-  - (Performance) Typing into Modals is slow, presumably the models should handle state separtely from the view state since it may be slowing it down. (Probably wont need to type)
----------------------------------------------------------------
- 
  
   - (BUG) No validation checks
     - All Spreadsheets need Numeric Data Validation. Could add to Spreadsheet but should also be in the code.
@@ -171,7 +141,21 @@ Problems:
           -  But when manually creating entries, it seems weird to have users calculate stuff by hand or assume they have the          spreadsheet with them.
     - But i dont want to alter it too much before talking to them
 
+----- I dont think I want to enable manual entries. ----------
+  - (ERROR) Manually entering information may be faulty, REPORT LOOKS FOR LBS PER ACRE, but user might not enter that. Or want to calculate it. 
 
+    - Need to check:
+      - Does Process wastewater actually create and check for an existing analysis?
+      - Process Wastewater Analysis Add Modal Button is missing
+      - It should NOT just create a new a analysis willy nilly.
+   
+    - NEED TO VERIFY THAT ALL MANUALLY ENTERED FIELDS REFLECT NECCESSARY FIELDS
+     - All calculated fields like lbs per acre are there as needed. 
+       
+  - (BUG) DLs created manually with null are null and do not get the default value of zero. 
+  - (Performance) Typing into Modals is slow, presumably the models should handle state separtely from the view state since it may be slowing it down. (Probably wont need to type)
+---------------------------------------------------------------
+ 
 
 
 ##### Rosies website notes.

@@ -474,7 +474,7 @@ CREATE TABLE IF NOT EXISTS nutrient_import(
   n_con NUMERIC(8,2),
   p_con NUMERIC(8,2),
   k_con NUMERIC(8,2),
-  salt_con NUMERIC(8,2),
+  salt_con NUMERIC(8,2), -- tds for dry manure, x
   
   
   UNIQUE(dairy_id, import_date, material_type, import_desc),
@@ -571,7 +571,7 @@ CREATE TABLE IF NOT EXISTS field_crop_app_plowdown_credit(
   dairy_id INT NOT NULL,
   field_crop_app_id INT NOT NULL,
   src_desc VARCHAR(50) NOT NULL,
-  -- Spreadsheet will have 3 analyses, possibly same one, but we will use them to calculate the totals.
+
   n_lbs_acre NUMERIC(5,0), -- 0 -> 10,000
   p_lbs_acre NUMERIC(5,0),
   k_lbs_acre NUMERIC(5,0),

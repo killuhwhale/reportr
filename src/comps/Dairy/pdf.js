@@ -1360,7 +1360,9 @@ const availableNutrientsD = (props) => {
   }
 }
 const availableNutrientsE = (props) => {
-  let sources = [{src_desc: "Test drain1"}].map(source => {
+  let sources = props && props.sources && typeof props.sources === typeof [] && props.sources.length > 0 ? props.sources : []
+
+  sources = sources.map(source => {
     return [
       {
         text: {
@@ -1394,7 +1396,7 @@ const availableNutrientsE = (props) => {
   // const body = props.sources.length > 0 ? fullBody : emptyBody
   const body = fullBody
 
- 
+
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [
@@ -1422,7 +1424,10 @@ const availableNutrientsE = (props) => {
     ]
   }
 }
-const availableNutrientsFTableRow = (props) => {
+
+const availableNutrientsFTableDryManure = (props) => {
+  
+  const row = (props) => {
   return [
     {// row 1
       text: {
@@ -1470,14 +1475,273 @@ const availableNutrientsFTableRow = (props) => {
         text: props.salt_con, fontSize: 8,
       }
     },
+     {// row 1
+      text: {
+        text: props.salt_con, fontSize: 8, 
+      }
+    },
   ]
 }
-const availableNutrientsF = (props) => {
-  let importRowData = [{}, {}, {}, {}]
-  let importRows = props.commercial.map(n_import => {
-    return availableNutrientsFTableRow(n_import)
+  
+  
+  let rows = props.map(n_import => {
+    return row(n_import)
   })
-  let importRowsBody = [
+  let body = [
+    [
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Date', fontSize: 9,
+        }
+      },
+      {// row 
+        fillColor: gray,
+        text: {
+          text: 'Material Type/ Description', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Quantity (tons)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Reporting basis', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Moisture (%)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'N (mg/kg)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'P (mg/kg)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'K (mg/kg)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Salt (mg/kg)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'TFS (%)', fontSize: 9,
+        }
+      },
+    ],
+    ...rows
+  ]
+
+  const table =  {
+    margin: [10, 0, 0, 0],
+    table: {
+      widths: ['10%', '15%', '10%', '10%', '10%', '10%', '10%', '10%', '10%', "5%"],
+      body: body
+    }
+  }
+
+  return rows && rows.length > 0? table: {text: {text: 'No dry manure nutrient imports entered.', fontSize: 7, italics: true}}
+}
+const availableNutrientsFTableWastewater = (props) => {
+  
+  const row = (props) => {
+  return [
+    {// row 1
+      text: {
+        text: props.import_date && props.import_date.length > 0 ? props.import_date.split("T")[0] : '',
+        fontSize: 8,
+      }
+    },
+    {// row 
+      text: {
+        text: props.import_desc, fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: props.amount_imported, fontSize: 8,
+      }
+    },
+    
+    {// row 1
+      text: {
+        text: props.n_con, fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: props.p_con, fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: props.k_con, fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: props.salt_con, fontSize: 8,
+      }
+    },
+     {// row 1
+      text: {
+        text: props.salt_con, fontSize: 8, 
+      }
+    },
+  ]
+}
+  
+  
+  let rows = props.map(n_import => {
+    return row(n_import)
+  })
+  let body = [
+    [
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Date', fontSize: 9,
+        }
+      },
+      {// row 
+        fillColor: gray,
+        text: {
+          text: 'Material Type/ Description', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Quantity (gals)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'N (mg/L)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'P (mg/L)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'K (mg/L)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'Salt (mg/L)', fontSize: 9,
+        }
+      },
+      {// row 1
+        fillColor: gray,
+        text: {
+          text: 'TDS (mg/L)', fontSize: 9,
+        }
+      },
+    ],
+    ...rows
+  ]
+
+  const table =  {
+    margin: [10, 0, 0, 0],
+    table: {
+      widths: ['10%', '15%', '10%', '10%', '10%', '10%', '10%', "10%"],
+      body: body
+    }
+  }
+
+  return rows && rows.length > 0? table: {text: {text: 'No process wastewater nutrient imports entered.', fontSize: 7, italics: true}}
+}
+const availableNutrientsFTableFertilizer = (props) => {
+  
+  const row = (props) => {
+    const unit = props && props.material_type && typeof props.material_type === typeof '' &&
+       props.material_type.toLowerCase().indexOf('solid') >= 0 ? 'tons': 'gals'
+
+
+    return [
+    {// row 1
+      text: {
+        text: props.import_date && props.import_date.length > 0 ? props.import_date.split("T")[0] : '',
+        fontSize: 8,
+      }
+    },
+    {// row 
+      text: {
+        text: props.import_desc, fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: `${props.amount_imported} ${unit}`, fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: unit === 'tons'? props.method_of_reporting: '', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: unit === 'tons'? props.moisture: '', fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: props.n_con, fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: props.p_con, fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: props.k_con, fontSize: 8,
+      }
+    },
+    {// row 1
+      text: {
+        text: props.salt_con, fontSize: 8,
+      }
+    },
+  ]
+}
+  
+  
+  let rows = props.map(n_import => {
+    return row(n_import)
+  })
+  let body = [
     [
       {// row 1
         fillColor: gray,
@@ -1534,8 +1798,25 @@ const availableNutrientsF = (props) => {
         }
       },
     ],
-    ...importRows
+    ...rows
   ]
+
+  const table =  {
+    margin: [10, 0, 0, 0],
+    table: {
+      widths: ['10%', '15%', '10%', '10%', '10%', '5%', '10%', '10%', '10%', "10%"],
+      body: body
+    }
+  }
+
+  return rows && rows.length > 0? table: {text: {text: 'No commercial fertilizer nutrient imports entered.', fontSize: 7, italics: true}}
+}
+
+const availableNutrientsF = (props) => {
+
+ let fertilizerTable = availableNutrientsFTableFertilizer(props.commercial)
+ let dryManureTable = availableNutrientsFTableDryManure(props.dry)
+ let wastewaterTable = availableNutrientsFTableWastewater(props.process)
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [
@@ -1554,36 +1835,9 @@ const availableNutrientsF = (props) => {
         },
 
       },
-      {
-        table: {
-          widths: ['100%'],
-          body: [
-            [
-              {// row 1
-                border: [false, false, false, false],
-                text: {
-                  text: 'No dry manure nutrient imports entered.', fontSize: 9,
-                }
-              }
-            ],
-            [
-              {// row 1
-                border: [false],
-                text: {
-                  text: 'No process wastewater nutrient imports entered.', fontSize: 9,
-                }
-              }
-            ]
-          ]
-        }
-      },
-      {
-        margin: [10, 0, 0, 0],
-        table: {
-          widths: ['10%', '15%', '10%', '10%', '10%', '5%', '5%', '5%', '5%', "10%"],
-          body: importRowsBody
-        }
-      },
+      dryManureTable,
+      wastewaterTable,
+      fertilizerTable,
       {
         margin: [10, 5, 0, 0],
         table: {
@@ -1599,28 +1853,28 @@ const availableNutrientsF = (props) => {
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: 'N (%)', fontSize: 9,
+                  text: 'N (lbs)', fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: 'P (%)', fontSize: 9,
+                  text: 'P (lbs)', fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: 'K (%)', fontSize: 9,
+                  text: 'K (lbs)', fontSize: 9,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: 'Salt (%)', fontSize: 9,
+                  text: 'Salt (lbs)', fontSize: 9,
                   alignment: 'right',
                 }
               },
@@ -2938,9 +3192,13 @@ const applicationAreaB = (props) => {
 const nutrientBudgetBTable = (props, img) => {
   let plant_date = props.headerInfo && props.headerInfo.plant_date ? props.headerInfo.plant_date.split('T')[0] : ''
 
+  // Format values
   props = Object.fromEntries(Object.keys(props).map(key => {
     let val = props[key]
-    if (['fertilizers',
+    if ([
+      'soils',
+      'plows',
+      'fertilizers',
       'manures',
       'wastewaters',
       'freshwaters',
@@ -2956,6 +3214,7 @@ const nutrientBudgetBTable = (props, img) => {
     }
     return [key, val]
   }))
+
   return {
     columns: [
       {// Main Table
@@ -3074,26 +3333,26 @@ const nutrientBudgetBTable = (props, img) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.soils[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.soils[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.soils[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.soils[3], fontSize: 8,
                             }
                           },
 
@@ -3108,26 +3367,26 @@ const nutrientBudgetBTable = (props, img) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.plows[0], fontSize: 8,
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.plows[1], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.plows[2], fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: props.plows[3], fontSize: 8,
                             }
                           },
                         ],
@@ -5330,7 +5589,7 @@ const nutrientAnalysisD = (props) => {
                 colSpan: 2,
                 border: [true, false, true, true],
                 table: {
-                  widths: ['8%', '16%', '12%', '12%',    '12%', '12%', '12%', '12%'],
+                  widths: ['8%', '16%', '12%', '12%', '12%', '12%', '12%', '12%'],
                   body: [
                     [
                       {
@@ -5423,8 +5682,8 @@ const nutrientAnalysisD = (props) => {
                           text: '', fontSize: 7,
                         }
                       },
-                      
-                      
+
+
                     ],
                     [
                       {
@@ -5462,7 +5721,7 @@ const nutrientAnalysisD = (props) => {
                           text: props.org_matter_dl, fontSize: 7,
                         }
                       },
-                     
+
                       {
                         headlineLevel: `soilAnalyses${i}`,
                         text: {
@@ -5480,13 +5739,12 @@ const nutrientAnalysisD = (props) => {
     ]
   }
 
-  let _props = {}
-  _props['A'] = [{testKey: 1}]
+  props = props && typeof props === typeof {} ? props : {}
 
-  const tables = Object.keys(_props).map((key, i) => {
-    let analyses = _props[key]
+  const tables = Object.keys(props).map((key, i) => {
+    let analyses = props[key]
     let headerInfo = analyses && analyses[0] ? analyses[0] : {}
-    
+
     const subTables = analyses.map((analysis) => {
       return subTable(analysis, i)
     })
@@ -5501,7 +5759,7 @@ const nutrientAnalysisD = (props) => {
             {// row 1
               fillColor: gray,
               text: {
-                text: headerInfo.src_desc, bold: true, fontSize: 9,
+                text: headerInfo.title, bold: true, fontSize: 9,
               }
             },
           ],
@@ -5518,7 +5776,9 @@ const nutrientAnalysisD = (props) => {
       }
     }
   })
-  
+
+
+  const content = tables && tables.length > 0 ? tables : [{ margin: [10, 0], text: { text: 'No Soil analyses entered.', italics: true, fontSize: 8 } }]
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -5535,12 +5795,12 @@ const nutrientAnalysisD = (props) => {
           ]
         }
       },
-      ...tables,
+      ...content,
     ]
   }
 }
 const nutrientAnalysisE = (props) => {
-  
+  props = props && typeof props === typeof {} ? props : {}
   const tables = Object.keys(props).map((key, i) => {
     let harvests = props[key]
     let headerInfo = harvests && harvests[0] ? harvests[0] : {}
@@ -5600,7 +5860,7 @@ const nutrientAnalysisE = (props) => {
                         {
                           border: [false, false, false, true],
                           text: {
-                            text: props.sample_date? props.sample_date.split('T')[0]: '', fontSize: 8,
+                            text: props.sample_date ? props.sample_date.split('T')[0] : '', fontSize: 8,
                           }
                         },
                         {
@@ -5773,7 +6033,7 @@ const nutrientAnalysisE = (props) => {
                           }
                         },
                         {
-                          headlineLevel: `soilAnalyses${i}`,
+                          headlineLevel: `ptAnalyses${i}`,
                           text: {
                             text: props.tfs_dl, fontSize: 7,
                           }
@@ -5790,7 +6050,7 @@ const nutrientAnalysisE = (props) => {
     }
 
     const subTables = harvests.map(harvest => subTable(harvest))
-    
+
     return {
       headlineLevel: `ptAnalyses${i}`,
       margin: [10, 0, 0, 5],
@@ -5809,16 +6069,16 @@ const nutrientAnalysisE = (props) => {
           ...subTables,
           [
             {// bottom row border
-            border: [true, false, true, true],
-            text: ''
-          },
-        ]
+              border: [true, false, true, true],
+              text: ''
+            },
+          ]
 
         ]
       }
     }
   })
-
+  const content = tables && tables.length > 0 ? tables : [{ margin: [10, 0], text: { text: 'No plant tissue analyses entered.', italics: true, fontSize: 8 } }]
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -5834,20 +6094,15 @@ const nutrientAnalysisE = (props) => {
           ]
         }
       },
-      ...tables
+      ...content
     ]
   }
 }
 const nutrientAnalysisF = (props) => {
-  
-  let _props = {}
-  
-  _props['drain_src_A'] = [{
-    src_desc: "drain_src_a"
-  }]
-  
-  const tables = Object.keys(_props).map((key, i) => {
-    let analyses = _props[key]
+
+
+  const tables = Object.keys(props).map((key, i) => {
+    let analyses = props[key]
     console.log(key, analyses)
     let headerInfo = analyses && analyses[0] ? analyses[0] : {}
 
@@ -5906,7 +6161,7 @@ const nutrientAnalysisF = (props) => {
                         {
                           border: [false, false, false, true],
                           text: {
-                            text: props.sample_date? props.sample_date.split('T')[0]: '', fontSize: 8,
+                            text: props.sample_date ? props.sample_date.split('T')[0] : '', fontSize: 8,
                           }
                         },
                         {
@@ -6049,7 +6304,7 @@ const nutrientAnalysisF = (props) => {
     }
 
     const subTables = analyses.map(analysis => subTable(analysis))
-    
+
     return {
       headlineLevel: `drainAnalyses${i}`,
       margin: [10, 0, 0, 5],
@@ -6060,7 +6315,7 @@ const nutrientAnalysisF = (props) => {
             {// row 1
               fillColor: gray,
               text: {
-                text: `${headerInfo.fieldtitle} - ${headerInfo.plant_date}: ${headerInfo.croptitle}`,
+                text: headerInfo.src_desc,
                 bold: true, fontSize: 9,
               }
             },
@@ -6068,18 +6323,18 @@ const nutrientAnalysisF = (props) => {
           ...subTables,
           [
             {// bottom row border
-            border: [true, false, true, true],
-            text: ''
-          },
-        ]
+              border: [true, false, true, true],
+              text: ''
+            },
+          ]
 
         ]
       }
     }
   })
 
-  
-  
+
+
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -6105,26 +6360,29 @@ const nutrientAnalysisF = (props) => {
 
 //  naprbal NUTRIENT APPLICATIONS, POTENTIAL REMOVAL, AND BALANCE
 const naprbalA = (props) => {
-  console.log(props)
 
-  props = Object.fromEntries(Object.keys(props).map(key => {
-    let val = props[key]
-    if (['fertilizers',
-      'manures',
-      'wastewaters',
-      'freshwaters',
-      'anti_harvests',
-      'actual_harvests',
-      'freshwater_app',
-      'wastewater_app',
-      'total_app',
-      'total_app',
-      'nutrient_bal',
-      'nutrient_bal_ratio',].indexOf(key) >= 0) {
-      return [key, val.map(l => formatFloat(l))]
-    }
-    return [key, val]
-  }))
+  props = props && typeof props === typeof {} && Object.keys(props).length > 0 ?
+    Object.fromEntries(Object.keys(props).map(key => {
+      let val = props[key]
+      if ([
+        'soils',
+        'plows',
+        'fertilizers',
+        'manures',
+        'wastewaters',
+        'freshwaters',
+        'anti_harvests',
+        'actual_harvests',
+        'freshwater_app',
+        'wastewater_app',
+        'total_app',
+        'total_app',
+        'nutrient_bal',
+        'nutrient_bal_ratio',].indexOf(key) >= 0) {
+        return [key, val.map(l => formatFloat(l))]
+      }
+      return [key, val]
+    })) : {}
 
   return {
     pageBreak: 'before', // super useful soltion just dont need on the first on
@@ -6197,25 +6455,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0', fontSize: 8, alignment: 'right',
+                  text: props.soils[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0', fontSize: 8, alignment: 'right',
+                  text: props.soils[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0', fontSize: 8, alignment: 'right',
+                  text: props.soils[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0', fontSize: 8, alignment: 'right',
+                  text: props.soils[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -6227,25 +6485,25 @@ const naprbalA = (props) => {
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0', fontSize: 8, alignment: 'right',
+                  text: props.plows[0], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0', fontSize: 8, alignment: 'right',
+                  text: props.plows[1], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0', fontSize: 8, alignment: 'right',
+                  text: props.plows[2], fontSize: 8, alignment: 'right',
                 }
               },
               {
                 border: [true, false, true, false],
                 text: {
-                  text: '0', fontSize: 8, alignment: 'right',
+                  text: props.plows[3], fontSize: 8, alignment: 'right',
                 }
               },
             ],
@@ -6651,7 +6909,7 @@ const naprbalC = (props, images) => {
 
 
 const exceptionReportingATable = (props) => {
-  props = [{}]
+  props = props && typeof props === typeof [] ? props : []
   let rows = props.map((row, i) => {
     return [
       {
@@ -6686,7 +6944,7 @@ const exceptionReportingATable = (props) => {
       },
     ]
   })
-  
+
   let body = [
     [
       {
@@ -6728,9 +6986,9 @@ const exceptionReportingATable = (props) => {
     ],
     ...rows
   ]
-  
+
   let table = {
-    margin: [10,5,0,5],
+    margin: [10, 5, 0, 5],
     table: {
       widths: ['16%', '16%', '16%', '16%', '16%', '16%'],
       body: body
@@ -6743,10 +7001,10 @@ const exceptionReportingATable = (props) => {
     }
   }
 
-  return props && props.manure && props.manure.length > 0 ? table: noTable 
+  return props && props.length > 0 ? table : noTable
 }
 const exceptionReportingBTable = (props) => {
-  props = [{}]
+  props = props && typeof props === typeof [] ? props : []
   let rows = props.map((row, i) => {
     return [
       {
@@ -6786,7 +7044,7 @@ const exceptionReportingBTable = (props) => {
       },
     ]
   })
-  
+
   let body = [
     [
       {
@@ -6834,7 +7092,7 @@ const exceptionReportingBTable = (props) => {
     ],
     ...rows
   ]
-  
+
   let table = {
     margin: [10, 5, 0, 5],
     table: {
@@ -6849,10 +7107,11 @@ const exceptionReportingBTable = (props) => {
     }
   }
 
-  return props && props.stormwater && props.stormwater.length > 0 ? table: noTable 
+  return props && props.length > 0 ? table : noTable
 }
 const exceptionReportingCTable = (props) => {
-  props = [{}]
+  props = props && typeof props === typeof [] ? props : []
+  // Generate rows for Report, simple table :)
   let rows = props.map((row, i) => {
     return [
       {
@@ -6892,7 +7151,7 @@ const exceptionReportingCTable = (props) => {
       },
     ]
   })
-  
+
   let body = [
     [
       {
@@ -6955,10 +7214,11 @@ const exceptionReportingCTable = (props) => {
       text: 'No manure or process wastewater discharges occurred during the reporting period.', italics: true, fontSize: 7
     }
   }
-  
-  return props && props.land && props.land.length > 0 ? table: noTable 
+
+  return props && props.length > 0 ? table : noTable
 }
 const exceptionReportingABC = (props) => {
+
   return {
     pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -6980,21 +7240,21 @@ const exceptionReportingABC = (props) => {
       {
         text: {
           text: "The following is a summary of all manure and process wastewater discharges from the production area to surface water or to land areas (land application areas or otherwise)" +
-          " when not in accordance with the facility's Nutrient Management Plan.", fontSize: 8
+            " when not in accordance with the facility's Nutrient Management Plan.", fontSize: 8
         }
       },
-      exceptionReportingATable(props),
+      exceptionReportingATable(props['Manure/process wastewater']),
 
       {
         text: { text: 'B. STORM WATER DISCHARGES', fontSize: 10, bold: true, }
       },
       {
         text: {
-          text:"The following is a summary of all storm water discharges from the production area to surface water during the reporting period when not in accordance with the facility 's Nutrient" +
-          " Management Plan.", fontSize: 8
+          text: "The following is a summary of all storm water discharges from the production area to surface water during the reporting period when not in accordance with the facility 's Nutrient" +
+            " Management Plan.", fontSize: 8
         }
       },
-      exceptionReportingBTable(props),
+      exceptionReportingBTable(props['Storm water']),
 
       {
         text: { text: 'C. LAND APPLICATION AREA TO SURFACE WATER DISCHARGES', fontSize: 10, bold: true, }
@@ -7002,10 +7262,10 @@ const exceptionReportingABC = (props) => {
       {
         text: {
           text: "The following is a summary of all discharges from the land application area to surface water that have occurred during the reporting period when not in accordance with the" +
-          " facility's Nutrient Management Plan.", fontSize: 8
+            " facility's Nutrient Management Plan.", fontSize: 8
         }
       },
-      exceptionReportingCTable(props),
+      exceptionReportingCTable(props['Land application']),
     ]
   }
 }
@@ -7056,7 +7316,7 @@ const nmpeaStatementsAB = (props) => {
               },
               {
                 border: [false, false, false, true],
-                text: { text: props.nmp_updated? 'Yes': 'No', fontSize: 10 }
+                text: { text: props.nmp_updated ? 'Yes' : 'No', fontSize: 10 }
               },
               {
                 border: [false, false, false, false],
@@ -7070,7 +7330,7 @@ const nmpeaStatementsAB = (props) => {
               },
               {
                 border: [false, false, false, true],
-                text: { text: props.nmp_developed? 'Yes': 'No', fontSize: 10 }
+                text: { text: props.nmp_developed ? 'Yes' : 'No', fontSize: 10 }
               },
               {
                 border: [false, false, false, false],
@@ -7084,7 +7344,7 @@ const nmpeaStatementsAB = (props) => {
               },
               {
                 border: [false, false, false, true],
-                text: { text: props.nmp_approved? 'Yes': 'No', fontSize: 10 }
+                text: { text: props.nmp_approved ? 'Yes' : 'No', fontSize: 10 }
               },
               {
                 border: [false, false, false, false],
@@ -7118,7 +7378,7 @@ const nmpeaStatementsAB = (props) => {
               },
               {
                 border: [false, false, false, true],
-                text: { text: props.new_agreements? 'Yes': 'No', fontSize: 10 }
+                text: { text: props.new_agreements ? 'Yes' : 'No', fontSize: 10 }
               },
               {
                 border: [false, false, false, false],
@@ -7251,7 +7511,7 @@ const certificationA = (props) => {
             {
               width: "50%",
               text: {
-                text:props.operatortitle, fontSize: 10,
+                text: props.operatortitle, fontSize: 10,
               }
             },
           ],
@@ -7437,7 +7697,7 @@ export default function dd(props, images) {
     availableNutrientsB(props.availableNutrientsAB),  // bind this section together
     availableNutrientsC(props.availableNutrientsC), // bind this section together
     availableNutrientsD(props.availableNutrientsD),
-    availableNutrientsE(props), // subsurface tile drainage
+    availableNutrientsE(props.availableNutrientsE), // subsurface tile drainage
     availableNutrientsF(props.availableNutrientsF),
     availableNutrientsG(props.availableNutrientsG),
     applicationAreaA(props.applicationAreaA),
@@ -7447,16 +7707,16 @@ export default function dd(props, images) {
     nutrientAnalysisA(props.nutrientAnalysis.manures),
     nutrientAnalysisB(props.nutrientAnalysis.wastewaters),
     nutrientAnalysisC(props.nutrientAnalysis.freshwaters),
-    nutrientAnalysisD(props), // soil
+    nutrientAnalysisD(props.nutrientAnalysis.soils), // soil
     nutrientAnalysisE(props.nutrientAnalysis.harvests), // 
-    nutrientAnalysisF(props), // Tile drainage
+    nutrientAnalysisF(props.nutrientAnalysis.drains), // Tile drainage analyses
 
     naprbalA(props.naprbalA),
     naprbalB(props, images.totalNutrientAppAntiHarvestData),
     naprbalC(props, images),
 
     // Minimal data below, need to create, answers to basic questions.
-    exceptionReportingABC(props),
+    exceptionReportingABC(props.exceptionReportingABC),
     nmpeaStatementsAB(props.nmpeaStatementsAB),
     notesA(props.notesA),
     certificationA(props.certificationA),

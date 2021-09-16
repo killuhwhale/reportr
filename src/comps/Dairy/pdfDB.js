@@ -83,6 +83,7 @@ export const getAnnualReportData = (dairy_id) => {
     getAvailableNutrientsAB(dairy_id),
     getAvailableNutrientsC(dairy_id),
     getAvailableNutrientsD(dairy_id),
+    getAvailableNutrientsE(dairy_id),
     getAvailableNutrientsF(dairy_id),
     getAvailableNutrientsG(dairy_id),
     getApplicationAreaA(dairy_id),
@@ -91,6 +92,7 @@ export const getAnnualReportData = (dairy_id) => {
     getNutrientBudgetB(dairy_id),
     getNutrientAnalysisA(dairy_id),
     getNaprbalABC(dairy_id),
+    getExceptionReportingABC(dairy_id),
     getNmpeaStatementsAB(dairy_id),
     getNotesA(dairy_id),
     getCertificationA(dairy_id),
@@ -252,6 +254,7 @@ const getAvailableNutrientsC = (dairy_id) => {
 
         imported = imported && imported.length > 0 ?
           imported.map((el) => {
+            console.log("Nutrient Import: ", el)
             return [
               el.amount_imported,
               // Import process waste water is recorded in PPM not percent
@@ -268,10 +271,10 @@ const getAvailableNutrientsC = (dairy_id) => {
 
         resolve({
           'availableNutrientsC': {
-            applied: applied.map(el => new Intl.NumberFormat().format(el.toFixed(2))),
-            exported: exported.map(el => new Intl.NumberFormat().format(el.toFixed(2))),
-            imported: imported.map(el => new Intl.NumberFormat().format(el.toFixed(2))),
-            generated: generated.map(el => new Intl.NumberFormat().format(el.toFixed(2))),
+            applied: applied.map(el => formatFloat(el) ),
+            exported: exported.map(el => formatFloat(el) ),
+            imported: imported.map(el => formatFloat(el) ),
+            generated: generated.map(el => formatFloat(el) ),
           }
         })
       })
@@ -289,6 +292,23 @@ const getAvailableNutrientsD = (dairy_id) => {
       .then((sources) => {
         resolve({
           'availableNutrientsD': {
+            sources
+          }
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
+}
+const getAvailableNutrientsE = (dairy_id) => {
+  // TODO add is_operator to table, need to add to UI as well to make sure the user can enable this.
+  return new Promise((resolve, rej) => {
+    get(`${BASE_URL}/api/drain_source/${dairy_id}`)
+      .then((sources) => {
+        resolve({
+          'availableNutrientsE': {
             sources
           }
         })
@@ -707,15 +727,19 @@ const getNutrientBudgetA = (dairy_id) => {
 const getNutrientBudgetInfo = (dairy_id) => {
   return new Promise((resolve, rej) => {
     Promise.all([
+      get(`${BASE_URL}/api/field_crop_app_plowdown_credit/${dairy_id}`),
+      get(`${BASE_URL}/api/field_crop_app_soil/${dairy_id}`),
       get(`${BASE_URL}/api/field_crop_app_fertilizer/${dairy_id}`),
       get(`${BASE_URL}/api/field_crop_app_solidmanure/${dairy_id}`),
       get(`${BASE_URL}/api/field_crop_app_process_wastewater/${dairy_id}`),
       get(`${BASE_URL}/api/field_crop_app_freshwater/${dairy_id}`),
       get(`${BASE_URL}/api/field_crop_harvest/${dairy_id}`),
     ])
-      .then(([fertilizers, manures, wastewaters, freshwaters, harvests]) => {
+      .then(([plows, soils, fertilizers, manures, wastewaters, freshwaters, harvests]) => {
 
         let allEvents = groupByKeys([
+          ...plows,
+          ...soils,
           ...fertilizers,
           ...manures,
           ...wastewaters,
@@ -732,6 +756,8 @@ const getNutrientBudgetInfo = (dairy_id) => {
         
         // Stores all total applciations for dairy in LBS
         let infoLBS = {
+          soils: [0,0,0,0],
+          plows: [0,0,0,0],
           fertilizers: [0, 0, 0, 0],
           manures: [0, 0, 0, 0],
           wastewaters: [0, 0, 0, 0],
@@ -751,6 +777,8 @@ const getNutrientBudgetInfo = (dairy_id) => {
           let headerInfo = events && events.length > 0 ? events[0] : {}          
           // Stores all total application for each fieldCrop (field & plant date) LBS/ ACRE
           let info = {
+            soils: [0,0,0,0],
+            plows: [0,0,0,0],
             fertilizers: [0, 0, 0, 0],
             manures: [0, 0, 0, 0],
             wastewaters: [0, 0, 0, 0],
@@ -768,9 +796,33 @@ const getNutrientBudgetInfo = (dairy_id) => {
 
 
           // TODO instead of using _lbs_acre, use raw info, dont use calculated fields from spreadsheet.
-
           events.map(ev => {
-            if (ev.entry_type === 'fertilizer') {
+            if (ev.entry_type === 'soil') {
+              // This is calculated by the program when created via uploading spreadsheet.
+              console.log(ev)
+              infoLBS.soils[0] += toFloat(ev.n_lbs_acre) * toFloat(ev.acres_planted)
+              infoLBS.soils[1] += toFloat(ev.p_lbs_acre) * toFloat(ev.acres_planted)
+              infoLBS.soils[2] += toFloat(ev.k_lbs_acre) * toFloat(ev.acres_planted)
+              infoLBS.soils[3] += toFloat(ev.salt_lbs_acre) * toFloat(ev.acres_planted)
+
+              info.soils[0] += toFloat(ev.n_lbs_acre)
+              info.soils[1] += toFloat(ev.p_lbs_acre)
+              info.soils[2] += toFloat(ev.k_lbs_acre)
+              info.soils[3] += toFloat(ev.salt_lbs_acre)
+            }
+            else if (ev.entry_type === 'plowdown') {
+              console.log(ev)
+              infoLBS.plows[0] += toFloat(ev.n_lbs_acre) * toFloat(ev.acres_planted)
+              infoLBS.plows[1] += toFloat(ev.p_lbs_acre) * toFloat(ev.acres_planted)
+              infoLBS.plows[2] += toFloat(ev.k_lbs_acre) * toFloat(ev.acres_planted)
+              infoLBS.plows[3] += toFloat(ev.salt_lbs_acre) * toFloat(ev.acres_planted)
+
+              info.plows[0] += toFloat(ev.n_lbs_acre)
+              info.plows[1] += toFloat(ev.p_lbs_acre)
+              info.plows[2] += toFloat(ev.k_lbs_acre)
+              info.plows[3] += toFloat(ev.salt_lbs_acre)
+            }
+            else if (ev.entry_type === 'fertilizer') {
               // Calc total app in lbs/ acres
               info.fertilizers[0] += toFloat(ev.n_lbs_acre)
               info.fertilizers[1] += toFloat(ev.p_lbs_acre)
@@ -875,7 +927,8 @@ const getNutrientBudgetInfo = (dairy_id) => {
           // Atmospheric deposition
           // 14 pounds wet and dry deposition per planted crop acre per year
           // = RATE / (# of harvests for all crops on the field) * (of harvests for the crop)
-          let total_app = opArrayByPos(info.fertilizers, opArrayByPos(info.manures, opArrayByPos(info.wastewaters, info.freshwaters)))
+          let total_app = opArrayByPos(info.soils, opArrayByPos(info.plows, opArrayByPos(info.fertilizers, opArrayByPos(info.manures, opArrayByPos(info.wastewaters, info.freshwaters)))))
+         
           const fieldAndCropHarvestCount = toFloat(totalHarvestByFieldId[headerInfo.field_id]) * info.totalHarvests
           let atmospheric_depo = AND_RATE / (fieldAndCropHarvestCount !== 0.0 ? fieldAndCropHarvestCount: 1)
           
@@ -917,12 +970,15 @@ const getNutrientAnalysisA = (dairy_id) => {
       get(`${BASE_URL}/api/field_crop_app_solidmanure_analysis/${dairy_id}`),
       get(`${BASE_URL}/api/field_crop_app_process_wastewater_analysis/${dairy_id}`),
       get(`${BASE_URL}/api/field_crop_app_freshwater_analysis/${dairy_id}`),
+      get(`${BASE_URL}/api/field_crop_app_soil_analysis/${dairy_id}`),
       get(`${BASE_URL}/api/field_crop_harvest/${dairy_id}`),
+      get(`${BASE_URL}/api/drain_analysis/${dairy_id}`),
     ])
-      .then(([manures, wastewaters, freshwaters, harvests]) => {
+      .then(([manures, wastewaters, freshwaters, soils, harvests, drains]) => {
         // Fresh water grouped by src_desc
         freshwaters = groupByKeys(freshwaters, ['src_desc'])
 
+        // Format values 
         manures = manures.map(el => {
           el.n_con = formatFloat(displayPercentageAsPPM(el.n_con))
           el.p_con = formatFloat(displayPercentageAsPPM(el.p_con))
@@ -944,7 +1000,7 @@ const getNutrientAnalysisA = (dairy_id) => {
 
           return el
         })
-        console.log(wastewaters)
+        // Format values 
         wastewaters = wastewaters.map(el => {
           el.kn_con = formatFloat(el.kn_con)
           el.nh4_con = formatFloat(el.nh4_con)
@@ -980,7 +1036,7 @@ const getNutrientAnalysisA = (dairy_id) => {
 
           return el
         })
-
+        // Format values 
         harvests = harvests.map(el => {
           el.actual_n = formatFloat(displayPercentageAsPPM(el.actual_n))
           el.actual_p = formatFloat(displayPercentageAsPPM(el.actual_p))
@@ -996,11 +1052,44 @@ const getNutrientAnalysisA = (dairy_id) => {
         })
         harvests = groupByKeys(harvests, ['field_id', 'plant_date', 'croptitle'])
 
+        drains = drains.map(el => {
+          el.nh4_con = formatFloat(el.nh4_con)
+          el.no2_con = formatFloat(el.no2_con)
+          el.p_con = formatFloat(el.p_con)
+          el.ec = formatFloat(el.ec)
+          el.tds = formatFloat(el.tds)
+          el.nh4_dl = formatFloat(el.nh4_dl)
+          el.no2_dl = formatFloat(el.no2_dl)
+          el.p_dl = formatFloat(el.p_dl)
+          el.ec_dl = formatFloat(el.ec_dl)
+          el.tds_dl = formatFloat(el.tds_dl)
+          return el
+        })
 
+        drains = groupByKeys(drains, ['drain_source_id'])
+        
+        soils = soils.map(el => {
+          el.n_con = formatFloat(el.n_con)
+          el.total_p_con = formatFloat(el.total_p_con)
+          el.p_con = formatFloat(el.p_con)
+          el.k_con = formatFloat(el.k_con)
+          el.ec = formatFloat(el.ec)
+          el.org_matter = formatFloat(el.org_matter)
+          el.n_dl = formatFloat(el.n_dl)
+          el.total_p_dl = formatFloat(el.total_p_dl)
+          el.p_dl = formatFloat(el.p_dl)
+          el.k_dl = formatFloat(el.k_dl)
+          el.ec_dl = formatFloat(el.ec_dl)
+          el.org_matter_dl = formatFloat(el.org_matter_dl)         
+          return el
+        })
+        soils = groupByKeys(soils, ['field_id'])
+
+        console.log('soils:', soils)
 
         resolve({
           'nutrientAnalysis': {
-            manures, wastewaters, freshwaters, harvests
+            manures, wastewaters, freshwaters, soils, harvests, drains
           }
         })
       })
@@ -1036,7 +1125,26 @@ const getNaprbalABC = (dairy_id) => {
   })
 }
 
+const getExceptionReportingABC = (dairy_id) => {
+  return new Promise((resolve, rej) => {
+    get(`${BASE_URL}/api/discharge/${dairy_id}`)
+      .then((discharges) => {
+        discharges = discharges && discharges.test === undefined ? discharges : []
+        console.log('Discharges', discharges)
 
+        discharges = groupByKeys(discharges, ['discharge_type'])
+        
+
+        resolve({
+          'exceptionReportingABC': discharges
+        })
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
+  })
+}
 
 const getNmpeaStatementsAB = (dairy_id) => {
   return new Promise((resolve, rej) => {
@@ -1086,3 +1194,6 @@ const getCertificationA = (dairy_id) => {
       })
   })
 }
+
+
+
