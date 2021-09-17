@@ -77,7 +77,6 @@ Problems:
   - (Feature) Button to delete all entries in a table....
   - (Huge, Quality Check) Deletes work as expected, If a Field is deleted, everything related to it is also deleted....
    
-    
    
   - (BUG) No validation checks
     - All Spreadsheets need Numeric Data Validation. Could add to Spreadsheet but should also be in the code.

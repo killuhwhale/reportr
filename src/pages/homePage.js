@@ -144,7 +144,7 @@ class HomePage extends Component {
             style={{ width: "100%" }}
           >
             {
-              YEARS.map((yr, i) => <option value={i}>{yr}</option>)
+              YEARS.map((yr, i) => <option key={`yrs${i}`} value={i}>{yr}</option>)
             }
           </TextField>
 
