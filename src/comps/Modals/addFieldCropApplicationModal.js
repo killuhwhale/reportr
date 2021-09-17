@@ -5,6 +5,7 @@ import {
 	DatePicker
 } from '@material-ui/pickers';
 import { withTheme } from '@material-ui/core/styles';
+import { zeroTimeDate } from '../../utils/convertCalc';
 
 class AddFieldCropApplicationModal extends Component {
 
@@ -107,9 +108,9 @@ class AddFieldCropApplicationModal extends Component {
 
 								<Grid item xs={6}>
 									<DatePicker
-										value={this.state.createFieldCropAppObj.app_date}
+										value={new Date(this.state.createFieldCropAppObj.app_date)}
 										label="Date"
-										onChange={(d) => this.props.onChange({ target: { name: "app_date", value: d } })}
+										onChange={(d) => this.props.onChange({ target: { name: "app_date", value: zeroTimeDate(d) } })}
 										style={{ width: "100%", justifyContent: "flex-end" }}
 									/>
 								</Grid>

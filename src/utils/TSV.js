@@ -122,18 +122,34 @@ export const readTSV = (file, callback) => {
 
 export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
   console.log("Uploading TSV to DB", uploadedFilename, tsvText)
+  const tsvData = {
+    title: uploadedFilename,
+    data: tsvText,
+    tsvType: tsvType,
+    dairy_id: dairy_id
+  }
   return new Promise((res, rej) => {
-    post(`${BASE_URL}/api/tsv/create`, {
-      title: uploadedFilename,
-      data: tsvText,
-      tsvType: tsvType,
-      dairy_id: dairy_id
-    })
+    post(`${BASE_URL}/api/tsv/create`, tsvData)
       .then(result => {
         console.log("Uploaded to DB: ", result)
-        res(result)
+        if(result.existsErr){
+          console.log("TSV ALREADY EXISTS< LETS TRY AN UPDATE")
+          
+          post(`${BASE_URL}/api/tsv/update`, tsvData)
+          .then(result1 => {
+            console.log("Updated: ", result1)
+            res(result1)
+          })
+          .catch(err => {
+            console.log(err)
+            rej(err)
+          })
+        }else{
+          res(result)
+        }
       })
       .catch(err => {
+        
         console.log(err)
         rej(err)
       })

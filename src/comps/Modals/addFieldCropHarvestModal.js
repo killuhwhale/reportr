@@ -5,6 +5,7 @@ import {
   DatePicker
 } from '@material-ui/pickers';
 import { withTheme } from '@material-ui/core/styles';
+import { zeroTimeDate } from '../../utils/convertCalc';
 
 class AddFieldCropHarvestModal extends Component{
 
@@ -78,17 +79,17 @@ class AddFieldCropHarvestModal extends Component{
 							</Grid>
               <Grid item xs={3}>
               <DatePicker 
-                    value={this.state.createFieldCropHarvestObj.harvest_date}
+                    value={new Date(this.state.createFieldCropHarvestObj.harvest_date)}
                     label="Harvest Date"
-                    onChange={(date) => this.props.onChange({target: {name: 'harvest_date', value: date}})} 
+                    onChange={(date) => this.props.onChange({target: {name: 'harvest_date', value: zeroTimeDate(date)}})} 
                     style={{width: "100%", justifyContent: "flex-end"}}
                   />
 							</Grid>
               <Grid item xs={3}>
               <DatePicker 
-                    value={this.state.createFieldCropHarvestObj.sample_date}
+                    value={new Date(this.state.createFieldCropHarvestObj.sample_date)}
                     label="Sample Date"
-                    onChange={(date) => this.props.onChange({target: {name: 'sample_date', value: date}})} 
+                    onChange={(date) => this.props.onChange({target: {name: 'sample_date', value: zeroTimeDate(date)}})} 
                     style={{width: "100%", justifyContent: "flex-end"}}
                   />
 							</Grid>

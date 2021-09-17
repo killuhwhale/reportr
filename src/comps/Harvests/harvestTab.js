@@ -2,9 +2,7 @@ import React, { Component } from 'react'
 import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
-import {
-  DatePicker
-} from '@material-ui/pickers';
+
 import AddIcon from '@material-ui/icons/Add'
 import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent

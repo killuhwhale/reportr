@@ -14,26 +14,25 @@ import NutrientApplicationTab from "../comps/Applications/appNutrientTab"
 import ExportTab from "../comps/Exports/exportTab"
 
 import { get, post, uploadFiles } from "../utils/requests"
-import { getAnnualReportData } from "../comps/Dairy/pdfDB"
 import "../App.css"
 
 const BASE_URL = "http://localhost:3001"
 const COUNTIES = ["Merced", "San Joaquin"]
 const BASINS = ["River", "Rio"]
 const BREEDS = ["Heffy guy", "Milker Boi", "Steakz"]
-
+const YEARS = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025 ]
 
 class HomePage extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      reportingYr: 2021,
+      reportingYrIdx: 11,
       dairies: [],
       showAddDairyModal: false,
       createDairyTitle: "",
       dairy: 0, // current dairy being edited
       updateDairyObj: {},
-      arPDFData: {},
+      
       tabs: {
         0: "show",
         1: "hide",
@@ -50,27 +49,26 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    this.getDairiesForReportingYear(this.state.reportingYr)
+    this.getDairiesForReportingYear(this.state.reportingYrIdx)
   }
-  getDairiesForReportingYear(year) {
-    let url = `/api/dairies/${year}`
+  getDairiesForReportingYear(reportingYrIdx) {
+    let url = `/api/dairies/${YEARS[reportingYrIdx]}`
     // Get dairy data and then gather annualReportData after setting state.
     get(`${BASE_URL}${url}`)
       .then(res => {
-
-        this.setState({ dairies: res }, () => this.gatherAnnualReportData())
+        this.setState({ dairies: res, dairy: 0, reportingYrIdx })
       })
-
   }
+
   onChange(ev) {
     const { name, value } = ev.target
     // when select name changes query new data and update state
-    if (name === "reportingYr") {
+    if (name === "reportingYrIdx") {
       // query api for all dairies with this year
       this.getDairiesForReportingYear(value)
       return
     }else if(name === 'dairy' ){
-      this.setState({ [name]: value }, () => this.gatherAnnualReportData())
+      this.setState({ [name]: value })
       return
     }
     this.setState({ [name]: value })
@@ -89,46 +87,19 @@ class HomePage extends Component {
     this.setState({ dairies: _dairies })
   }
 
-  gatherAnnualReportData(){
-    // once user picks annual report data start fetching it and builds all data for reports and store in state.
-    // Done separating in background should be okay and in home page so it doesnt keep reloading.
-    /**
-     * the PDF document takes two args props and images, both are objects with the keys that represent the section of the report the data is for
-     * 
-     * props = {
-     *  'dairyInfoA' : {
-     *            .... info like address......
-     *   },
-     *  'dairyInfoB': {
-     *  },
-     *  ....,
-     *  
-     * }
-     * 
-     * 
-     * 
-     * images = {
-     *  'nutrientHoriBar#X': 
-     * }
-     * 
-     */
-    // Call getAnnualReport if dairies
-    if(this.state.dairies && this.state.dairies[this.state.dairy]){
-    getAnnualReportData(this.state.dairies[this.state.dairy].pk)
-      .then(props => {
-        this.setState({
-          arPDFData: props
-        })
-      })
-    }
-
-  }
-
+  
   updateDairy() {
     let url = `${BASE_URL}/api/dairies/update`
     let dairy = this.state.dairies[this.state.dairy]
+    let dairyInfo = {...dairy, dairy_id: dairy.pk}
+    
+    // IF not selected, choose default values 
+    dairyInfo.p_breed = dairyInfo.p_breed ? dairyInfo.p_breed: BREEDS[0]
+    dairyInfo.county = dairyInfo.county ? dairyInfo.county: COUNTIES[0]
+    dairyInfo.basin_plan = dairyInfo.basin_plan ? dairyInfo.basin_plan: BASINS[0]
+  
 
-    post(url, {...dairy, dairy_id: dairy.pk})
+    post(url, dairyInfo)
       .then(res => {
         console.log(res)
       })
@@ -136,14 +107,15 @@ class HomePage extends Component {
         console.log(err)
       })
   }
+
   toggleDairyModal(show) {
     this.setState({ showAddDairyModal: show })
   }
   createDairy() {
-    let data = { reportingYr: this.state.reportingYr, title: this.state.createDairyTitle }
+    let data = { reportingYr: YEARS[this.state.reportingYrIdx], title: this.state.createDairyTitle }
     post(`${BASE_URL}/api/dairies/create`, data)
       .then(res => {
-        this.getDairiesForReportingYear(this.state.reportingYr)
+        this.getDairiesForReportingYear(YEARS[this.state.reportingYrIdx])
         this.toggleDairyModal(false)
       })
       .catch(err => {
@@ -162,8 +134,8 @@ class HomePage extends Component {
         <Grid item xs={2} >
 
           <TextField select
-            name='reportingYr'
-            value={this.state.reportingYr}
+            name='reportingYrIdx'
+            value={this.state.reportingYrIdx}
             onChange={this.onChange.bind(this)}
             label="Reporting Year"
             SelectProps={{
@@ -171,8 +143,9 @@ class HomePage extends Component {
             }}
             style={{ width: "100%" }}
           >
-            <option value="2020">2020</option>
-            <option value="2021">2021</option>
+            {
+              YEARS.map((yr, i) => <option value={i}>{yr}</option>)
+            }
           </TextField>
 
           <TextField select
@@ -236,12 +209,12 @@ class HomePage extends Component {
                   this.state.tabs[0] === "show" ?
                     <Grid item xs={12} className={`${this.state.tabs[0]}`} key='DairyTab'>
                       <DairyTab
-                        reportingYr={this.state.reportingYr}
+                        reportingYr={YEARS[this.state.reportingYrIdx]}
                         dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairy] : {}}
                         BASINS={BASINS}
                         COUNTIES={COUNTIES}
                         BREEDS={BREEDS}
-                        arPDFData={this.state.arPDFData}
+                        
                         onChange={this.onDairyChange.bind(this)}
                         onUpdate={this.updateDairy.bind(this)}
                       />
@@ -295,7 +268,7 @@ class HomePage extends Component {
           open={this.state.showAddDairyModal}
           actionText="Add"
           cancelText="Cancel"
-          modalText={`Add Dairy to current Reporting Year ${this.state.reportingYr}`}
+          modalText={`Add Dairy to current Reporting Year ${YEARS[this.state.reportingYrIdx]}`}
           createDairyTitle={this.state.createDairyTitle}
           onChange={this.onChange.bind(this)}
           onAction={this.createDairy.bind(this)}

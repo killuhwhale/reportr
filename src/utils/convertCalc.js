@@ -7,6 +7,18 @@ export const toFloat = (num) => {
   return num && typeof(num) === typeof('') && num.length > 0 ? parseFloat(num.replaceAll(',', '')) : typeof(num) === typeof(0) || typeof(num) === typeof(0.0) ? num : 0
 }
 
+
+// DO conversion in UTC not local.
+export const zeroTimeDate = (dt) => {
+  return new Date(`${dt.getUTCMonth() + 1}/${dt.getUTCDate()}/${dt.getUTCFullYear()}`)
+}
+
+// Calculate using UTC.
+export const daysBetween = (d1, d2) => {
+  // console.log("Calculating days between", d1, d2)
+  return Math.round((zeroTimeDate(new Date(d2)) - zeroTimeDate(new Date(d1))) / 86400000)
+}
+
 export const  MG_KG = (num) => {
   let x = (parseFloat(num) * TO_MG_KG)
   return Math.round((x + Number.EPSILON) * 1e6) / 1e6

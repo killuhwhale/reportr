@@ -5,6 +5,7 @@ import {
   DatePicker
 } from '@material-ui/pickers';
 import { withTheme } from '@material-ui/core/styles';
+import { zeroTimeDate } from '../../utils/convertCalc';
 
 class AddFreshwaterAnalysisModal extends Component {
 
@@ -90,9 +91,9 @@ class AddFreshwaterAnalysisModal extends Component {
 
                 <Grid item xs={6}>
                   <DatePicker
-                    value={this.state.createFreshwaterAnalysisObj.sample_date}
+                    value={new Date(this.state.createFreshwaterAnalysisObj.sample_date)}
                     label="Sample Date"
-                    onChange={(_date) => this.props.onChange({target: {name: 'sample_date', value: _date}})}
+                    onChange={(_date) => this.props.onChange({target: {name: 'sample_date', value: zeroTimeDate(_date)}})}
                     style={{ width: "100%", justifyContent: "flex-end" }}
                   />
 

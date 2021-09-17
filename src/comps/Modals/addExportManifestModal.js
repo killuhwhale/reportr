@@ -6,6 +6,7 @@ import ParcelNumber from '../Parcel/parcelNumber'
 import {
   DatePicker
 } from '@material-ui/pickers'
+import { zeroTimeDate } from '../../utils/convertCalc'
 
 // Creates a new Field
 // Starting with empty Field object,
@@ -188,8 +189,8 @@ class AddExportManifestModal extends Component {
                 </Grid>
                 <Grid item xs={4}>
                   <DatePicker label="Date last hauled"
-                    value={this.state.createExportManifestObj.last_date_hauled}
-                    onChange={(date) => this.props.onChange({target: {name: 'last_date_hauled', value: date}})}
+                    value={new Date(this.state.createExportManifestObj.last_date_hauled)}
+                    onChange={(date) => this.props.onChange({target: {name: 'last_date_hauled', value: zeroTimeDate(date)}})}
                   />
                 </Grid>
 

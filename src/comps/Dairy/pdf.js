@@ -1426,64 +1426,61 @@ const availableNutrientsE = (props) => {
 }
 
 const availableNutrientsFTableDryManure = (props) => {
-  
   const row = (props) => {
-  return [
-    {// row 1
-      text: {
-        text: props.import_date && props.import_date.length > 0 ? props.import_date.split("T")[0] : '',
-        fontSize: 8,
-      }
-    },
-    {// row 
-      text: {
-        text: props.import_desc, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.amount_imported, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.method_of_reporting, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.moisture, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.n_con, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.p_con, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.k_con, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.salt_con, fontSize: 8,
-      }
-    },
-     {// row 1
-      text: {
-        text: props.salt_con, fontSize: 8, 
-      }
-    },
-  ]
-}
-  
-  
+    return [
+      {// row 1
+        text: {
+          text: props.import_date && props.import_date.length > 0 ? props.import_date.split("T")[0] : '',
+          fontSize: 8,
+        }
+      },
+      {// row 
+        text: {
+          text: props.import_desc, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.amount_imported, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.method_of_reporting, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.moisture, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.n_con, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.p_con, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.k_con, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: '', fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.salt_con, fontSize: 8,
+        }
+      },
+    ]
+  }
   let rows = props.map(n_import => {
     return row(n_import)
   })
@@ -1552,67 +1549,62 @@ const availableNutrientsFTableDryManure = (props) => {
     ],
     ...rows
   ]
-
-  const table =  {
-    margin: [10, 0, 0, 0],
+  const table = {
+    margin: [10, 0, 0, 5],
     table: {
-      widths: ['10%', '15%', '10%', '10%', '10%', '10%', '10%', '10%', '10%', "5%"],
+      widths: ['15%', '15%', '15%', '15%', '7%', '7%', '7%', '7%', '6%', "6%"],
       body: body
     }
   }
-
-  return rows && rows.length > 0? table: {text: {text: 'No dry manure nutrient imports entered.', fontSize: 7, italics: true}}
+  return rows && rows.length > 0 ? table : { text: { text: 'No dry manure nutrient imports entered.', fontSize: 7, italics: true } }
 }
 const availableNutrientsFTableWastewater = (props) => {
-  
   const row = (props) => {
-  return [
-    {// row 1
-      text: {
-        text: props.import_date && props.import_date.length > 0 ? props.import_date.split("T")[0] : '',
-        fontSize: 8,
-      }
-    },
-    {// row 
-      text: {
-        text: props.import_desc, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.amount_imported, fontSize: 8,
-      }
-    },
-    
-    {// row 1
-      text: {
-        text: props.n_con, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.p_con, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.k_con, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.salt_con, fontSize: 8,
-      }
-    },
-     {// row 1
-      text: {
-        text: props.salt_con, fontSize: 8, 
-      }
-    },
-  ]
-}
-  
-  
+    return [
+      {// row 1
+        text: {
+          text: props.import_date && props.import_date.length > 0 ? props.import_date.split("T")[0] : '',
+          fontSize: 8,
+        }
+      },
+      {// row 
+        text: {
+          text: props.import_desc, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.amount_imported, fontSize: 8,
+        }
+      },
+
+      {// row 1
+        text: {
+          text: props.n_con, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.p_con, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.k_con, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.salt_con, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.salt_con, fontSize: 8,
+        }
+      },
+    ]
+  }
   let rows = props.map(n_import => {
     return row(n_import)
   })
@@ -1669,75 +1661,70 @@ const availableNutrientsFTableWastewater = (props) => {
     ],
     ...rows
   ]
-
-  const table =  {
-    margin: [10, 0, 0, 0],
+  const table = {
+    margin: [10, 0, 0, 5],
     table: {
-      widths: ['10%', '15%', '10%', '10%', '10%', '10%', '10%', "10%"],
+      widths: ['15%', '15%', '15%', '15%', '10%', '10%', '10%', "10%"],
       body: body
     }
   }
-
-  return rows && rows.length > 0? table: {text: {text: 'No process wastewater nutrient imports entered.', fontSize: 7, italics: true}}
+  return rows && rows.length > 0 ? table : { text: { text: 'No process wastewater nutrient imports entered.', fontSize: 7, italics: true } }
 }
 const availableNutrientsFTableFertilizer = (props) => {
-  
   const row = (props) => {
     const unit = props && props.material_type && typeof props.material_type === typeof '' &&
-       props.material_type.toLowerCase().indexOf('solid') >= 0 ? 'tons': 'gals'
+      props.material_type.toLowerCase().indexOf('solid') >= 0 ? 'tons' : 'gals'
 
 
     return [
-    {// row 1
-      text: {
-        text: props.import_date && props.import_date.length > 0 ? props.import_date.split("T")[0] : '',
-        fontSize: 8,
-      }
-    },
-    {// row 
-      text: {
-        text: props.import_desc, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: `${props.amount_imported} ${unit}`, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: unit === 'tons'? props.method_of_reporting: '', fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: unit === 'tons'? props.moisture: '', fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.n_con, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.p_con, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.k_con, fontSize: 8,
-      }
-    },
-    {// row 1
-      text: {
-        text: props.salt_con, fontSize: 8,
-      }
-    },
-  ]
-}
-  
-  
+      {// row 1
+        text: {
+          text: props.import_date && props.import_date.length > 0 ? props.import_date.split("T")[0] : '',
+          fontSize: 8,
+        }
+      },
+      {// row 
+        text: {
+          text: props.import_desc, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: `${props.amount_imported} ${unit}`, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: unit === 'tons' ? props.method_of_reporting : '', fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: unit === 'tons' ? props.moisture : '', fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.n_con, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.p_con, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.k_con, fontSize: 8,
+        }
+      },
+      {// row 1
+        text: {
+          text: props.salt_con, fontSize: 8,
+        }
+      },
+    ]
+  }
   let rows = props.map(n_import => {
     return row(n_import)
   })
@@ -1800,23 +1787,22 @@ const availableNutrientsFTableFertilizer = (props) => {
     ],
     ...rows
   ]
-
-  const table =  {
-    margin: [10, 0, 0, 0],
+  const table = {
+    margin: [10, 0, 0, 5],
     table: {
-      widths: ['10%', '15%', '10%', '10%', '10%', '5%', '10%', '10%', '10%', "10%"],
+      widths: ['15%', '15%', '15%', '15%', '8%', '8%', '8%', '8%', '8%'],
       body: body
     }
   }
 
-  return rows && rows.length > 0? table: {text: {text: 'No commercial fertilizer nutrient imports entered.', fontSize: 7, italics: true}}
+  return rows && rows.length > 0 ? table : { text: { text: 'No commercial fertilizer nutrient imports entered.', fontSize: 7, italics: true } }
 }
 
 const availableNutrientsF = (props) => {
 
- let fertilizerTable = availableNutrientsFTableFertilizer(props.commercial)
- let dryManureTable = availableNutrientsFTableDryManure(props.dry)
- let wastewaterTable = availableNutrientsFTableWastewater(props.process)
+  let fertilizerTable = availableNutrientsFTableFertilizer(props.commercial)
+  let dryManureTable = availableNutrientsFTableDryManure(props.dry)
+  let wastewaterTable = availableNutrientsFTableWastewater(props.process)
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [
@@ -1839,7 +1825,7 @@ const availableNutrientsF = (props) => {
       wastewaterTable,
       fertilizerTable,
       {
-        margin: [10, 5, 0, 0],
+        margin: [10, 0, 0, 0],
         table: {
           widths: ['25%', '10%', '10%', '10%', '10%', '35%',],
           body: [
@@ -7687,8 +7673,20 @@ const attachmentsA = (props) => {
  *      #### DOCUMENT           ##############
  *  
  */
+
+const getDateTime = () => {
+  const curDate = new Date()
+  return `${curDate.getUTCMonth() + 1}/${curDate.getUTCDate()}/${curDate.getUTCFullYear()} ${curDate.getUTCHours()}:${curDate.getUTCMinutes()}:${curDate.getUTCSeconds() }`
+}
+
 export default function dd(props, images) {
-  console.log(images)
+  const curDateTime = getDateTime()
+  const dairyInfo = props && props.dairyInformationA ? props.dairyInformationA: {}
+  const footerTitle = `${dairyInfo.title} | ${dairyInfo.street} | ${dairyInfo.city}, ${dairyInfo.city_state} ${dairyInfo.city_zip} | ${dairyInfo.county} | ${dairyInfo.basin_plan}`
+  const periodStart = dairyInfo.period_start ? dairyInfo.period_start.split("T")[0]: ''
+  const periodEnd = dairyInfo.period_end ? dairyInfo.period_end.split("T")[0]: ''
+  const reportingPeriod = `Reporting peroid ${periodStart} to ${periodEnd}.`
+  
   const body = [
     dairyInformationA(props.dairyInformationA),
     dairyInformationB(props.dairyInformationB),
@@ -7746,7 +7744,7 @@ export default function dd(props, images) {
               [{
                 text: [
                   { text: 'Annual Report - General Order No. R5-2007-0035\n', alignment: "center", bold: true, fontSize: 10 },
-                  { text: 'Reporting period 01/01/2020 to 12/31/2020.', alignment: "center", italics: true, fontSize: 10 }
+                  { text: reportingPeriod, alignment: "center", italics: true, fontSize: 10 }
                 ]
               }]
             ]
@@ -7767,7 +7765,7 @@ export default function dd(props, images) {
               {
                 width: '*',
                 text: {
-                  text: "Nylund Dairy Farms | 20723 Geer RD | Hilmar, CA 95324 | Merced County | San Joaquin River Basin",
+                  text: footerTitle,
                   alignment: "center",
                   fontSize: 8
                 }
@@ -7781,7 +7779,7 @@ export default function dd(props, images) {
               {
                 width: '*',
                 text: {
-                  text: '05/18/2021 17:40:33', alignment: "left", fontSize: 10
+                  text: curDateTime, alignment: "left", fontSize: 10
                 },
 
               },

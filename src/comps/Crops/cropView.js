@@ -12,6 +12,7 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { VariableSizeList as List } from "react-window";
+import { zeroTimeDate } from "../../utils/convertCalc"
 
 import { get, post } from '../../utils/requests';
 import { PollTwoTone, SpeakerGroup } from '@material-ui/icons';
@@ -58,7 +59,7 @@ const CropViewTable = withTheme((props) => {
               <Grid item xs={6} align="right">
                 <DatePicker label="Plant Date" disabled
                   value={field_crop.plant_date}
-                  onChange={(date) => this.props.onChange(date, field_crop.field_id, i)}
+                  onChange={(date) => this.props.onChange(zeroTimeDate(date), field_crop.field_id, i)}
 
                 />
               </Grid>

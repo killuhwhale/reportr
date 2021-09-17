@@ -4,6 +4,7 @@ import { 	Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui
 import {
   DatePicker
 } from '@material-ui/pickers';
+import { zeroTimeDate } from "../../utils/convertCalc"
 import { withTheme } from '@material-ui/core/styles';
 
 class AddFieldCropModal extends Component{
@@ -103,9 +104,9 @@ class AddFieldCropModal extends Component{
 
               <Grid item xs={6}>
               <DatePicker 
-                    value={this.state.createFieldCropObj.plant_date}
+                    value={new Date(this.state.createFieldCropObj.plant_date)}
                     label="Date"
-                    onChange={this.props.onChange.bind(this)} 
+                    onChange={(_date) => this.props.onChange({target: {name: 'plant_date', value: zeroTimeDate(_date) }})} 
                     style={{width: "100%", justifyContent: "flex-end"}}
                   />
 							</Grid>

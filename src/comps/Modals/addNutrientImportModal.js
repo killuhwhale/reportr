@@ -5,6 +5,7 @@ import {
   DatePicker
 } from '@material-ui/pickers';
 import { withTheme } from '@material-ui/core/styles';
+import { zeroTimeDate } from '../../utils/convertCalc';
 
 class AddNutrientImportModal extends Component {
 
@@ -73,10 +74,10 @@ class AddNutrientImportModal extends Component {
                 </Grid>
                 <Grid item xs={2}>
                   <DatePicker
-                    value={this.state.createNutrientImportObj.import_date}
+                    value={new Date(this.state.createNutrientImportObj.import_date)}
                     name="import_date"
                     label="Import Date"
-                    onChange={(date) => this.props.onChange({target: {name: 'import_date', value: date}})}
+                    onChange={(date) => this.props.onChange({target: {name: 'import_date', value: zeroTimeDate(date)}})}
                     style={{ width: "100%", justifyContent: "flex-end" }}
                   />
                 </Grid>

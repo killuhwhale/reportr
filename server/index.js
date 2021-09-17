@@ -39,10 +39,9 @@ app.post("/api/tsv/create", (req, res) => {
       return;
     }
     console.log(err)
-    res.json({ "test": "Inserted TSV unsuccessful" });
+    res.json({ "test": "Inserted TSV unsuccessful", existsErr: err.code === '23505' });
   })
 });
-
 app.get("/api/tsv/:dairy_id/:tsvType", (req, res) => {
   db.getTSVs(req.params.dairy_id, req.params.tsvType,
     (err, result) => {
@@ -54,7 +53,6 @@ app.get("/api/tsv/:dairy_id/:tsvType", (req, res) => {
       res.json({ "test": "Get all TSVs unsuccessful" });
     })
 });
-
 app.post("/api/tsv/delete", (req, res) => {
   console.log("Deleting TSV w/ pk: ", req.body.pk)
   db.rmTSV(req.body.pk, (err, result) => {
@@ -64,6 +62,18 @@ app.post("/api/tsv/delete", (req, res) => {
     }
     console.log(err)
     res.json({ "test": "Deleted TSV unsuccessful" });
+  })
+});
+app.post("/api/tsv/update", (req, res) => {
+  console.log("Updating.... tsv", req.body)
+  const { title, data, pk } = req.body
+  db.updateTSV([title, data, pk], (err, result) => {
+    if (!err) {
+      res.json({ "test": "Updated tsv successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Updated tsv unsuccessful" });
   })
 });
 
@@ -101,7 +111,7 @@ app.post("/api/dairies/create", (req, res) => {
   })
 });
 app.post("/api/dairies/update", (req, res) => {
-  console.log("Updating....", req.body.data)
+  console.log("Updating....", req.body)
   // req.body.data is a list of values in order to match DB Table
   const {
     street, cross_street, county, city, city_state, title, city_zip, basin_plan, p_breed, began, period_start, period_end, dairy_id
@@ -112,7 +122,7 @@ app.post("/api/dairies/update", (req, res) => {
   ], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated dairy successfully" });
+      res.json(result);
       return;
     }
     console.log(err)

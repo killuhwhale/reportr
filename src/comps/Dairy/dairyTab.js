@@ -18,11 +18,11 @@ import AddFieldModal from "../Modals/addFieldModal"
 import pdfMake from "pdfmake/build/pdfmake"
 import pdfFonts from "pdfmake/build/vfs_fonts"
 import dd from "./pdf"
-
+import { getAnnualReportData } from "./pdfDB"
 
 
 import { formatFloat } from "../../utils/format"
-
+import { zeroTimeDate } from "../../utils/convertCalc"
 import { ImportExport } from '@material-ui/icons'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
@@ -487,7 +487,6 @@ class DairyTab extends Component {
   }
 
   generatePDF() {
-    // pdfMake.createPdf(dd(props)).download();
     pdfMake.fonts = {
       // download default Roboto font from cdnjs.com
       Roboto: {
@@ -502,10 +501,6 @@ class DairyTab extends Component {
         PADdingBottom: function (i, node) { return 0; },
       }
     }
-
-    // Gathered in HomePage.js given in props arPDFData
-    // If this is empty, give user an alert, else generate report. Charts will be generated here but data from DB will be present.
-    let props = this.props.arPDFData // data from db formatted nicely to plugin to pdf
 
     Chart.register({
       id: 'testyplugzzz',
@@ -534,16 +529,23 @@ class DairyTab extends Component {
           }
         });
       }
-    });
-    this.createCharts([props.nutrientBudgetB.allEvents, props.naprbalA])
+    })
+
+    getAnnualReportData(this.state.dairy.pk)
+    .then(arPDFData => {
+      const props = arPDFData
+      this.createCharts([props.nutrientBudgetB.allEvents, props.naprbalA])
       .then(images => {
-        console.log(images)
+        // pdfMake.createPdf(dd(props)).download();
         pdfMake.createPdf(dd(props, images)).open()
       })
       .catch(err => {
         console.log(err)
       })
+    })
   }
+
+  
   render() {
     return (
       <React.Fragment>
@@ -582,17 +584,22 @@ class DairyTab extends Component {
               </Grid>
               <Grid item xs={6}>
                 <DatePicker
-                  value={this.state.dairy.period_start}
+                  value={new Date(this.state.dairy.period_start)}
                   label="Start"
-                  onChange={(_date) => this.props.onChange({ target: { name: 'period_start', value: _date } })}
+                  onChange={(_date) => this.props.onChange({ target: { name: 'period_start', value: zeroTimeDate(_date) } })}
                   style={{ width: "100%", justifyContent: "flex-end" }}
                 />
               </Grid>
               <Grid item xs={6}>
                 <DatePicker
-                  value={this.state.dairy.period_end}
-                  label="Start"
-                  onChange={(_date) => this.props.onChange({ target: { name: 'period_end', value: _date } })}
+
+                  value={new Date(this.state.dairy.period_end)}
+                  label="End"
+                  onChange={(_date) => {
+                    console.log(zeroTimeDate(_date))
+                    this.props.onChange({ target: { name: 'period_end', value: zeroTimeDate(_date) } })
+                  }
+                }
                   style={{ width: "100%", justifyContent: "flex-end" }}
                 />
               </Grid>
@@ -636,8 +643,8 @@ class DairyTab extends Component {
                   <Typography variant="caption">First Started Operation</Typography>
                 </div>
                 <DatePicker
-                  value={this.state.dairy.began}
-                  onChange={(_date) => this.props.onChange({ target: { name: 'began', value: _date } })}
+                  value={new Date(this.state.dairy.began)}
+                  onChange={(_date) => this.props.onChange({ target: { name: 'began', value: zeroTimeDate(_date) } })}
                   style={{ width: "100%", justifyContent: "flex-end" }}
                 />
               </Grid>

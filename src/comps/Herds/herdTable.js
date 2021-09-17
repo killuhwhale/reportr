@@ -2,11 +2,9 @@ import React, { Component } from 'react'
 import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
-import {
-  DatePicker
-} from '@material-ui/pickers';
-import AddIcon from '@material-ui/icons/Add'
 
+import AddIcon from '@material-ui/icons/Add'
+import { getReportingPeriodDays } from "../../utils/herdCalculation"
 import calculateHerdManNKPNaCl from "../../utils/herdCalculation"
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
@@ -118,8 +116,6 @@ class HerdTable extends Component {
       })
   }
 
-
-
   calcHerd() {
     // Extracts the state obj
     // Uses the extracted state obj for data to do the calculations
@@ -129,8 +125,12 @@ class HerdTable extends Component {
     //    - This column has a key: milk_cows, dry_cows_bred_cows, etc...
     // The Calc function should just return the extracted & updated state obj
     // Then the calling function can use the returned object as they need.
-    let _herdCalc = calculateHerdManNKPNaCl(this.state.herds)
-    this.setState({ herdCalc: _herdCalc })
+    getReportingPeriodDays(this.state.dairy.pk)
+    .then(rpDays => {
+      console.log("Days in reporting period: ", rpDays)
+      let _herdCalc = calculateHerdManNKPNaCl(this.state.herds, rpDays)
+      this.setState({ herdCalc: _herdCalc })
+    })
   }
 
   render() {

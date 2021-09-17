@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 // Material UI
 import { Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui/core';
-import {
-  DatePicker
-} from '@material-ui/pickers';
+
 import { withTheme } from '@material-ui/core/styles';
 
 class AddFertilizerModal extends Component {

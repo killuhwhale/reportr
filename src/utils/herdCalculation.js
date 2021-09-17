@@ -1,3 +1,6 @@
+import { get } from "./requests"
+import { daysBetween } from "./convertCalc"
+
 
 const LBS_PER_KG = 2.20462262185
 const KG_PER_LB = 0.45359237
@@ -16,13 +19,23 @@ const POTASSIUM_EXCRETION_DRY_COW = 0.33;
 const INORGANIC_SALT_EXCRETION_MILK_COW = 1.29;
 const INORGANIC_SALT_EXCRETION_DRY_COW = 0.63;
 
+const BASE_URL = 'http://localhost:3001'
 
+export const getReportingPeriodDays = (dairy_id) => {
+  return new Promise((res, rej) => {
+    get(`${BASE_URL}/api/dairy/${dairy_id}`)
+    .then(([dairyInfo]) => {
+      dairyInfo = dairyInfo && dairyInfo.period_start && dairyInfo.period_end ? dairyInfo : {period_start: new Date(), period_end: new Date()}
+      res(daysBetween(dairyInfo.period_start, dairyInfo.period_end))
+    })
+    .catch(err => {
+      console.log(err)
+      rej(err)
+    })
+  })
+}
 
 export default function calculateHerdManNKPNaCl(herdsObj, reporting_period_days){
-  reporting_period_days = 365
-  
-  // herdsObj: an object that stores arrays of data from the input form, stored in DB
-  // {milk_cows: [], etc...}
   let _herdCalc = {}
   let amtAvgMilkProduction = herdsObj.milk_cows[5]
   let milk = amtAvgMilkProduction * KG_PER_LB;

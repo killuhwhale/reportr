@@ -2,11 +2,7 @@ import React, { Component } from 'react'
 import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
-import {
-  DatePicker
-} from '@material-ui/pickers';
-import AddIcon from '@material-ui/icons/Add'
-import { alpha } from '@material-ui/core/styles'
+
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import CropView from "./cropView"
@@ -46,15 +42,11 @@ class CropTab extends Component {
     this.setState({ showAddFieldCropModal: val })
   }
   onFieldCropChange(ev) {
-    let createObj = this.state.createFieldCropObj
-    if (ev.target) {
-      const { name, value } = ev.target
-      createObj[name] = value
-      this.setState({ createFieldCropObj: createObj })
-    } else {
-      createObj['plant_date'] = ev
-      this.setState({ createFieldCropObj: createObj })
-    }
+    let createFieldCropObj = this.state.createFieldCropObj
+    const { name, value } = ev.target
+    createFieldCropObj[name] = value
+    
+    this.setState({ createFieldCropObj })
   }
   getFields() {
     get(`${BASE_URL}/api/fields/${this.state.dairy.pk}`)

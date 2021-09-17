@@ -60,7 +60,7 @@ module.exports = {
       began = $10,
       period_start = $11,
       period_end = $12
-      WHERE pk=$13`,
+      WHERE pk=$13 RETURNING *`,
       values,
       callback
     )
@@ -511,6 +511,15 @@ module.exports = {
     return pool.query(
       format("DELETE FROM TSVs where pk = %L", id),
       [],
+      callback
+    )
+  },
+  updateTSV: (values, callback) => {
+    return pool.query(`UPDATE TSVs SET
+      title = $1, 
+      data = $2
+      WHERE pk=$3 RETURNING *`,
+      values,
       callback
     )
   },

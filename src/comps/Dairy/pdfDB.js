@@ -1,7 +1,7 @@
 import { get, post } from '../../utils/requests'
 import { toFloat } from '../../utils/convertCalc'
 import { formatFloat, groupBySortBy, groupByKeys } from '../../utils/format'
-import calculateHerdManNKPNaCl from "../../utils/herdCalculation"
+import calculateHerdManNKPNaCl, { getReportingPeriodDays } from "../../utils/herdCalculation"
 import { NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES, WASTEWATER_MATERIAL_TYPES, FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
 
 
@@ -20,26 +20,59 @@ const opArrayByPos = (a, b, op = "+") => {
   })
 }
 
-const percentToLBSFromTons = (con, moisture, amount, method_of_reporting) => {
+
+
+const _conLbsToTons = (con, moisture, amount, method_of_reporting) => {
   /* 
     
-     con: whole number, percentage
-     moisture: whole number percentage
-     amount: integer, unit is tons
+     con: float, percentage
+     moisture: float percentage
+     amount: float, unit is tons
      method_of_reporting: if dry_weight, must take into account the moisture and only calculate the dry portion.
   */
-  // convert percent to decimal, convert amount(tons) to lbs
+
   con = toFloat(con)
   moisture = toFloat(moisture)
   amount = toFloat(amount)
 
-  con *= 0.01 // convert percent to PPM
-  amount *= 2000 // lbs in ton
+  amount *= 2000 // tons to lbs
   moisture *= 0.01
   moisture = Math.max(Math.min(1, moisture), 0.001) // mositure must be between 0.1% and 100%
   moisture = method_of_reporting === "dry-weight" ? (1 - moisture) : 1 // if reported as dry-weight, account for moisture
   return con * moisture * amount
 }
+
+
+const percentToLBSFromTons = (con, moisture, amount, method_of_reporting) => {
+  /* 
+  
+  con: float, percentage
+  moisture: float percentage
+  amount: float, unit is tons
+  method_of_reporting: if dry_weight, must take into account the moisture and only calculate the dry portion.
+  */
+ 
+ con = toFloat(con)
+ con *= 0.01 // convert mg/ kg to decimal x/1,000,000 
+ return _conLbsToTons(con, moisture, amount, method_of_reporting)
+}
+
+const mgKgToLbsFromTons = (con, moisture, amount, method_of_reporting) => {
+  /* 
+    
+     con: float, percentage
+     moisture: float percentage
+     amount: float, unit is tons
+     method_of_reporting: if dry_weight, must take into account the moisture and only calculate the dry portion.
+  */
+
+  con = toFloat(con)
+  con *= 10e-7 // mg in a kg 1000 * 1000 = 1,000,000.0
+  return _conLbsToTons(con, moisture, amount, method_of_reporting)
+}
+
+
+
 
 
 const percentToDecimal = (num) => {
@@ -184,14 +217,23 @@ const getAvailableNutrientsAB = (dairy_id) => {
           return;
         }
         // Return herdInfo & calculations
-        let totals = calculateHerdManNKPNaCl(herdInfo[0]).totals.map(total => new Intl.NumberFormat().format(total.toFixed(2)))
+        getReportingPeriodDays(dairy_id)
+        .then(rpDays => {
+          let totals = calculateHerdManNKPNaCl(herdInfo[0], rpDays)
+                        .totals.map(total => new Intl.NumberFormat().format(total.toFixed(2)))
+  
+          resolve({
+            'availableNutrientsAB':
+            {
+              'herdInfo': herdInfo[0],
+              'herdCalc': totals,
+            }
+          })
 
-        resolve({
-          'availableNutrientsAB':
-          {
-            'herdInfo': herdInfo[0],
-            'herdCalc': totals,
-          }
+        })
+        .catch(err => {
+          console.log(err)
+          rej(err)
         })
       })
       .catch(err => {
@@ -229,7 +271,7 @@ const getAvailableNutrientsC = (dairy_id) => {
         applied = applied && applied.length > 0 ?
           applied.map((el) => {
             return [
-              el.amount_applied,
+              toFloat(el.amount_applied),
               PPMToLBS(el.kn_con, el.amount_applied),
               PPMToLBS(el.p_con, el.amount_applied),
               PPMToLBS(el.k_con, el.amount_applied),
@@ -242,7 +284,7 @@ const getAvailableNutrientsC = (dairy_id) => {
         exported = exported && exported.length > 0 ?
           exported.map((el) => {
             return [
-              el.amount_hauled,
+              toFloat(el.amount_hauled),
               PPMToLBS(el.kn_con_mg_l, el.amount_hauled),
               PPMToLBS(el.p_con_mg_l, el.amount_hauled),
               PPMToLBS(el.k_con_mg_l, el.amount_hauled),
@@ -254,9 +296,8 @@ const getAvailableNutrientsC = (dairy_id) => {
 
         imported = imported && imported.length > 0 ?
           imported.map((el) => {
-            console.log("Nutrient Import: ", el)
             return [
-              el.amount_imported,
+              toFloat(el.amount_imported),
               // Import process waste water is recorded in PPM not percent
               PPMToLBS(el.n_con, el.amount_imported),
               PPMToLBS(el.p_con, el.amount_imported),
@@ -268,7 +309,6 @@ const getAvailableNutrientsC = (dairy_id) => {
           : [0, 0, 0, 0, 0]
 
         let generated = opArrayByPos(opArrayByPos(applied, exported), imported, '-') // can be given true to do subtraction instead
-
         resolve({
           'availableNutrientsC': {
             applied: applied.map(el => formatFloat(el) ),
@@ -335,10 +375,11 @@ const getAvailableNutrientsF = (dairy_id) => {
           // Account for moisture on npk when reporting method is dry-weight, else moisture is 1
           // Account for moistture on salt always. **This doesnt apply to commercial imports
           dry.map(el => [
-            percentToLBSFromTons(el.n_con, el.moisture, el.amount_imported, el.method_of_reporting),
-            percentToLBSFromTons(el.p_con, el.moisture, el.amount_imported, el.method_of_reporting),
-            percentToLBSFromTons(el.k_con, el.moisture, el.amount_imported, el.method_of_reporting),
-            percentToLBSFromTons(el.salt_con, el.moisture, el.amount_imported, "dry-weight"), // Method of reporting doesnt affect, should always acount for moisture
+            // instead of percent
+            mgKgToLbsFromTons(el.n_con, el.moisture, el.amount_imported, el.method_of_reporting),
+            mgKgToLbsFromTons(el.p_con, el.moisture, el.amount_imported, el.method_of_reporting),
+            mgKgToLbsFromTons(el.k_con, el.moisture, el.amount_imported, el.method_of_reporting),
+            percentToLBSFromTons(el.salt_con, el.moisture, el.amount_imported, "dry-weight"), // Method of reporting doesnt affect, should always acount for moisture, also in percent
           ])
             .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]

@@ -2,9 +2,7 @@ import React, { Component } from 'react'
 import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, AppBar, Tabs, Tab
 } from '@material-ui/core'
-import {
-  DatePicker
-} from '@material-ui/pickers'
+
 import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
 import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
