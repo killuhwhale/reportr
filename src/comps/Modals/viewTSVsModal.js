@@ -68,12 +68,9 @@ class ViewTSVsModal extends Component {
   }
 
   printTSV() {
-
     let frame = document.getElementById('tsvPrintFrame')
-
     if(frame){
       frame.src = `/tsv/${this.state.dairy_id}/${this.state.tsvType}`;                   // Set source.
-      
     } else{
       frame = document.createElement('iframe')
       frame.id = "tsvPrintFrame"
@@ -81,9 +78,8 @@ class ViewTSVsModal extends Component {
       frame.src = `/tsv/${this.state.dairy_id}/${this.state.tsvType}`;                   // Set source.
       document.body.appendChild(frame);  // Add the frame to the web page.
     }
-
-    // frame.contentWindow.focus();       // Set focus.
-    // frame.contentWindow.print();       // Print it.
+    frame.contentWindow.focus();       // Set focus.
+    frame.contentWindow.print();       // Print it.
   }
 
   downloadTSV(tsv) {

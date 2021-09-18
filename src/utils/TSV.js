@@ -12,7 +12,7 @@ export const FERTILIZER = 'field_crop_app_fertilizer'
 export const MANURE = 'export_manifest_manure'
 export const WASTEWATER = 'export_manifest_wastewater'
 
-const HARVEST = 'field_crop_harvest'
+export const HARVEST = 'field_crop_harvest'
 
 export const SOIL = 'field_crop_app_soil'
 export const PLOWDOWN_CREDIT = 'field_crop_app_plowdown_credit'

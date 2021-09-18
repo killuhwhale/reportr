@@ -61,18 +61,29 @@ QUESTIONS::
 
 
 
-
-
-
-Missing:
-PDF Report
- - Logos in Header for Each Dairy.
-
-
-
-
-
 TODO
+Find login Solution....
+  - Firebase Logins?
+
+  - Protect Backend from unauthenticated requests.... ummmmm.......
+  - Firebase will log me in front end, if this user is logged in update session and use session?
+  - Look up exisiting solutions....
+
+
+
+Per Company Basis Issues:
+- Logos and Company Specific Assets Need to go into a DB Table
+  - Logo -- stored as text: base64 png
+    - Used in PDF Report(comps/dairy/pdf.js) && TSV Print pages (pages/tsvPrint.js)
+
+- Basin Plans
+  - Do these change dending on the company/ location of business?
+
+- Counties Dropdown list 
+  Change to TextiField? or place all counties in there for each State?
+
+
+
 Problems:
   - (Feature) Button to delete all entries in a table....
   - (Huge, Quality Check) Deletes work as expected, If a Field is deleted, everything related to it is also deleted....

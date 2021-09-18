@@ -1201,8 +1201,7 @@ module.exports = {
         `SELECT *
         FROM nutrient_import
         WHERE 
-        material_type = 'Process wastewater' or
-        material_type = 'Process wastewater sludge' and
+        material_type ILIKE 'Process%' and
         dairy_id = %L
         `, dairy_id),
       [],
@@ -2041,8 +2040,7 @@ module.exports = {
 
 
         WHERE 
-        em.material_type = 'Process wastewater' or
-        em.material_type = 'Process wastewater sludge' and
+        em.material_type ILIKE 'Process%' and
         em.dairy_id = %L
         `, dairy_id),
       [],

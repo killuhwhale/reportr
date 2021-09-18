@@ -68,49 +68,44 @@ export default class App extends React.Component {
       <BrowserRouter >
         <ThemeProvider theme={this.state.theme}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <BackgroundGrid container direction="column" alignItems="center">
-              <Grid item container xs={12}
-                style={{
-                  minHeight: "100%",
-                  paddingTop: "8px",
-                  paddingLeft: "8px",
-                  paddingRight: "8px"
-                }}
-              >
-                <Paper style={{ minWidth: "100%" }}>
-                  <Switch>
-                    <Route exact path="/">
+            <Switch>
+              <Route exact path="/">
+                <BackgroundGrid container direction="column" alignItems="center">
+                  <Grid item container xs={12}
+                    style={{
+                      minHeight: "100%",
+                      paddingTop: "8px",
+                      paddingLeft: "8px",
+                      paddingRight: "8px"
+                    }}
+                  >
+                    <Paper style={{ minWidth: "100%" }}>
                       <HomePage
                         onAlert={this.onAlert.bind(this)}
                       />
-                    </Route>
+                    </Paper>
+                  </Grid>
+                </BackgroundGrid>
+              </Route>
 
-
-                  </Switch>
-                </Paper>
-              </Grid>
-            </BackgroundGrid>
-
-            <switch>
-              <ThemeProvider theme={pdfTheme}>
-                <Route path="/tsv/:dairy_id/:tsvType"
-                  render={props => {
-                    console.log("WTF", TSV_INFO[props.match.params.tsvType], props.match.params.tsvType)
-
-                    return (
-                      
+              <Route path="/tsv/:dairy_id/:tsvType"
+                render={props => {
+                  return (
+                    <ThemeProvider theme={pdfTheme}>
                       <TSVPrint
                         dairy_id={props.match.params.dairy_id}
                         tsvType={props.match.params.tsvType}
                         numCols={TSV_INFO[props.match.params.tsvType].numCols}
                         onAlert={this.onAlert.bind(this)} />
-                    )
-                  
-                  }
+                    </ThemeProvider>
+                  )
                 }
-                />
-              </ThemeProvider>
-            </switch>
+                }
+              />
+            </Switch>
+
+
+
           </MuiPickersUtilsProvider>
         </ThemeProvider>
       </BrowserRouter>

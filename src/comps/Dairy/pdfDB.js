@@ -258,6 +258,13 @@ const getAvailableNutrientsC = (dairy_id) => {
    *  nutrient_import.amount_imported where material_type = process wastewater and sludge 
    */
   return new Promise((resolve, rej) => {
+    console.log("Getting  getAvailableNutrientsC", dairy_id)
+    let badurl1 = `${BASE_URL}/api/export_manifest/wastewater/${dairy_id}`
+    console.log('Bad URL:', badurl1)
+    let badurl2 = `${BASE_URL}/api/nutrient_import/wastewater/${dairy_id}`
+    console.log('Bad URL:', badurl2)
+
+
     Promise.all([
       get(`${BASE_URL}/api/field_crop_app_process_wastewater/${dairy_id}`), // applied
       get(`${BASE_URL}/api/export_manifest/wastewater/${dairy_id}`), // exported
@@ -266,7 +273,7 @@ const getAvailableNutrientsC = (dairy_id) => {
       .then((res) => {
         let [applied, exported, imported] = res // calculate n,p,k,salt applied + exported - imported
         // for each applied, exported and imported, sum the amount_* applied, hauled, imported for the totals.
-
+        console.log(res)
         // Format input, and calculate n,p,k, salt as a list of nums. Then sum the list of lists in .reduce(). 
         applied = applied && applied.length > 0 ?
           applied.map((el) => {

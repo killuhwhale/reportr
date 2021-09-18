@@ -22,7 +22,7 @@ import { getAnnualReportData } from "./pdfDB"
 
 
 import { formatFloat } from "../../utils/format"
-import { zeroTimeDate } from "../../utils/convertCalc"
+import { toFloat, zeroTimeDate } from "../../utils/convertCalc"
 import { ImportExport } from '@material-ui/icons'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
@@ -32,7 +32,7 @@ const HORIBAR_WIDTH = '600px'
 const HORIBAR_HEIGHT = '300px'
 const BAR_WIDTH = '500px'
 const BAR_HEIGHT = '333px'
-const CHART_BACKGROUND_COLOR = "#ececec"
+const CHART_BACKGROUND_COLOR = "#f7f7f7"
 const RADIUS = 40
 const PAD = 10
 
@@ -143,18 +143,7 @@ class DairyTab extends Component {
   // Annual Report Section 
   createCharts(props) {
     let nutrientLabels = ["N", "P", "K", "Salt"]
-    // let nutrientData = [
-    //   [// data set 1
-    //     [0, 51, 5067, 2000054],   // applied
-    //     [6, 11, 16, 2010],   // anticipated
-    //     [7, 12, 17, 2020],   // harvested
-    //   ],
-    //   [ // data set 2
-    //     [5, 10, 15, 2000],
-    //     [6, 11, 16, 2010],
-    //     [7, 12, 17, 2020],
-    //   ]
-    // ]
+ 
     let nutrientBudgetB = props[0]
     let summary = props[1]
 
@@ -165,7 +154,7 @@ class DairyTab extends Component {
     })
 
     let totalNutrientAppAntiHarvestData = [summary.total_app, summary.anti_harvests, summary.actual_harvests]
-    console.log("Creating Overall Summary Chart:", totalNutrientAppAntiHarvestData, summary)
+    // console.log("Creating Overall Summary Chart:", totalNutrientAppAntiHarvestData, summary)
 
 
 
@@ -179,19 +168,15 @@ class DairyTab extends Component {
       'Atmospheric deposition',
     ]
 
-    // let materialData = [
-    //   [31, 10, 52, 61, 73, 84, 20550540, "Nitrogen"]
-    // ]
-
-    //              n,p,k,salt
+    //              n,p,k,salt from each source plus the label
     let materialData = [0,0,0,0].map((_, i) => {
       return [
-        0, // Existing soil content
-        0, // Plowdown credit
-        summary.fertilizers [i],
-        summary.manures [i],
-        summary.wastewaters [i],
-        summary.freshwaters [i],
+        summary.soils[i], // Existing soil content
+        summary.plows[i], // Plowdown credit
+        summary.fertilizers[i],
+        summary.manures[i],
+        summary.wastewaters[i],
+        summary.freshwaters[i],
         i === 0 ? summary.atmospheric_depo: 0, // Atmoshperic depo is only for nitrogen.
         i === 0? 'Nitrogen': i === 1? 'Phosphorus': i === 2? 'Potassium': 'Salt'
       ]
@@ -214,7 +199,6 @@ class DairyTab extends Component {
 
       Promise.all([...nutrientPromises, totalNutrientAppAntiHarvestDataPromise, ...materialPromises])
         .then((res) => {
-          console.log(res)
           resolve(Object.fromEntries(res))
         })
         .catch(err => {
@@ -235,8 +219,6 @@ class DairyTab extends Component {
     canvas.style.height = HORIBAR_HEIGHT
     let area = document.getElementById('chartArea')
     area.appendChild(canvas)
-    console.log("Creating horibarChart")
-    console.log(key, labels, data, title)
     return new Promise((res, rej) => {
       if(key.length <= 0){
         rej('Error: invalid key for horizontal bar chart. Data:', data)
@@ -251,7 +233,7 @@ class DairyTab extends Component {
           datasets: [{
             label: title,
             minBarLength: 1,
-            backgroundColor: ['#f00', "#0f0", "#00f", "#af0", "#0fa", "#afa", "#f0f"],
+            backgroundColor: ['#f00', "#0f0", "#5656fb", "#af0", "#0fa", "#afa", "#f0f"],
             data: data
           }
           ]
@@ -520,11 +502,13 @@ class DairyTab extends Component {
             let numChars = dataset.data[i].toString().length
             let singleCharLen = 4
             var xOffset = (500 - bar.x) / 500 < 0.03 ? ((numChars * -singleCharLen) - 10) : 0;
+            let num = Math.round(toFloat(dataset.data[i]))
+            num = num && num >= 1e4 ? `${formatFloat(Math.round(num/1000))}K`: formatFloat(num)
             if (chartInstance.scales.x.type === "logarithmic") {
-              ctx.fillText(formatFloat(dataset.data[i]), bar.x + xOffset + 10, bar.y);
+              ctx.fillText(num, bar.x + xOffset + 10, bar.y);
             } else {
-              ctx.fillText(formatFloat(dataset.data[i]), bar.x, bar.y);
-
+              // Vertical bars, when the numbers are too big, they overlap,
+              ctx.fillText(num, bar.x, bar.y);
             }
           }
         });

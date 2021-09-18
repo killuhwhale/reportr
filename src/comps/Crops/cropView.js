@@ -53,7 +53,7 @@ const CropViewTable = withTheme((props) => {
             <Grid item container xs={12}>
               <Grid item xs={6}>
                 <Typography variant="h5" gutterBottom>
-                  Crop: {field_crop.croptitle} (concentrations in lb/ton)
+                  Crop: {field_crop.croptitle}
                 </Typography>
               </Grid>
               <Grid item xs={6} align="right">
