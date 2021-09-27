@@ -9,6 +9,7 @@ import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import { CloudUpload } from '@material-ui/icons' // uploadTSV
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
@@ -20,13 +21,14 @@ import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
 
+
 import AddSolidmanureAnalysisModal from "../Modals/addSolidmanureAnalysisModal"
 import AddSolidmanureModal from "../Modals/addSolidmanureModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
-
+import { groupBySortBy } from "../../utils/format"
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
@@ -132,29 +134,18 @@ const SolidmanureAnalysis = (props) => {
 
 }
 
-
-/** Component handles showing Process Wastewater Application events.
- *  - Process Waste Water List view
- *  - Upload TSV
- *  - Add Process Wastewater
- *  - Delete Process Wastewater
- * 
- *  NEEDS:
- *  - fieldCropAppEvents: applications events for the dairy
- *  - field_crop_app_process_wastewater: Process wastewater events
- * 
- */
 class Solidmanure extends Component {
   constructor(props) {
     super(props)
     this.state = {
       dairy_id: props.dairy_id,
-      fieldCropAppEvents: props.fieldCropAppEvents,
-      fieldCropAppSolidmanureAnalyses: props.fieldCropAppSolidmanureAnalyses,
-      fieldCropAppSolidmanures: props.fieldCropAppSolidmanures,
-      fieldCropAppSolidmanuresKeys: Object.keys(props.fieldCropAppSolidmanures).sort(),
+      fieldCropAppEvents: [],
+      fieldCropAppSolidmanureAnalyses: [],
+      fieldCropAppSolidmanures: {},
+      
       tsvType: props.tsvType,
       numCols: props.numCols,
+      toggleShowDeleteAllModal: false,
 
       showAddSolidmanureAnalysisModal: false,
       showAddSolidmanureModal: false,
@@ -210,6 +201,50 @@ class Solidmanure extends Component {
   }
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
+  }
+
+
+  componentDidMount() {
+    this.getFieldCropAppSolidmanureAnalysis()
+    this.getFieldCropAppSolidmanure()
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.dairy_id !== this.state.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated) {
+      this.getFieldCropAppSolidmanureAnalysis()
+      this.getFieldCropAppSolidmanure()
+    }
+  }
+  getFieldCropAppEvents() {
+    get(`${BASE_URL}/api/field_crop_app/${this.state.dairy_id}`)
+      .then(res => {
+        res.sort((a, b) => {
+          return `${a.fieldtitle} ${a.app_date} ${a.app_method}` > `${b.fieldtitle} ${b.app_date} ${b.app_method}` ? 1 : -1
+        })
+
+        this.setState({ fieldCropAppEvents: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  getFieldCropAppSolidmanureAnalysis() {
+    get(`${BASE_URL}/api/field_crop_app_solidmanure_analysis/${this.state.dairy_id}`)
+      .then(res => {
+        this.setState({ fieldCropAppSolidmanureAnalyses: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  getFieldCropAppSolidmanure() {
+    get(`${BASE_URL}/api/field_crop_app_solidmanure/${this.state.dairy_id}`)
+      .then(res => {
+        let fieldCropAppSolidmanures = groupBySortBy(res, 'fieldtitle', 'app_date')
+        this.setState({ fieldCropAppSolidmanures: fieldCropAppSolidmanures })
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   /** Manually add Process Wastewater */
@@ -369,8 +404,8 @@ class Solidmanure extends Component {
             console.log("Completed uploading Solidmanure TSV")
             uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
             this.toggleShowUploadFieldCropAppSolidmanureTSVModal(false)
-            this.props.getFieldCropAppSolidmanure()
-            this.props.getFieldCropAppSolidmanureAnalysis()
+            this.getFieldCropAppSolidmanure()
+            this.getFieldCropAppSolidmanureAnalysis()
           })
           .catch(err => {
             console.log("Error with all promises")
@@ -422,11 +457,29 @@ class Solidmanure extends Component {
     return headerSize + analysisSectionSize
   }
 
+  confirmDeleteAllFromTable(val) {
+    this.setState({ toggleShowDeleteAllModal: val })
+  }
+  deleteAllFromTable() {
+    Promise.all([
+      post(`${BASE_URL}/api/field_crop_app_solidmanure/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+    ])
+      .then(res => {
+        this.getFieldCropAppSolidmanureAnalysis()
+        this.getFieldCropAppSolidmanure()
+        this.confirmDeleteAllFromTable(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
   render() {
     return (
       <Grid item xs={12} container >
         <Grid item container xs={12}>
-          <Grid item xs={9} align="right">
+          <Grid item xs={10} align="right">
             <Tooltip title='Upload TSV'>
               <IconButton color="primary" variant="outlined"
                 onClick={() => this.toggleShowUploadFieldCropAppSolidmanureTSVModal(true)}
@@ -442,13 +495,18 @@ class Solidmanure extends Component {
               <IconButton color="secondary" variant="outlined"
                 onClick={() => this.toggleViewTSVsModal(true)}
               >
-                <WbCloudyIcon/>
+                <WbCloudyIcon />
               </IconButton>
-
             </Tooltip>
-
           </Grid>
           <Grid item xs={1} align="right">
+            <Tooltip title='Delete all Production Records'>
+              <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+                <DeleteSweepIcon color='error' />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          {/* <Grid item xs={1} align="right">
             <Tooltip title='Add solidmanure analysis'>
               <IconButton color="primary" variant="outlined"
                 onClick={() => this.toggleShowAddSolidmanureAnalysisModal(true)}
@@ -467,7 +525,7 @@ class Solidmanure extends Component {
               </IconButton>
 
             </Tooltip>
-          </Grid>
+          </Grid> */}
 
         </Grid>
 
@@ -479,6 +537,15 @@ class Solidmanure extends Component {
           tsvType={this.state.tsvType}
           onClose={() => this.toggleViewTSVsModal(false)}
         />
+
+        <ActionCancelModal
+          open={this.state.toggleShowDeleteAllModal}
+          actionText="Delete all"
+          cancelText="Cancel"
+          modalText={`Delete All Solid Manure Application Events?`}
+          onAction={this.deleteAllFromTable.bind(this)}
+          onClose={() => this.confirmDeleteAllFromTable(false)}
+        />    
         <UploadTSVModal
           open={this.state.showUploadFieldCropAppSolidmanureTSVModal}
           actionText="Add"

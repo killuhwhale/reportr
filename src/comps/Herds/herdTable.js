@@ -46,7 +46,7 @@ class HerdTable extends Component {
     super(props)
     this.state = {
       dairy: props.dairy,
-      herds: props.herds,
+      herds: {},
       herdCalc: {
         milk_cows: [0, 0, 0, 0, 0],
         dry_cows: [0, 0, 0, 0, 0],
@@ -59,11 +59,15 @@ class HerdTable extends Component {
     }
   }
   static getDerivedStateFromProps(props, state) {
-
-    return state
+    return props.dairy.pk === state.dairy.pk? state: props
   }
   componentDidMount() {
     this.getHerds()
+  }
+  componentDidUpdate(prevProps, prevState, snapshot){
+    if(prevState.dairy.pk !== this.state.dairy.pk){
+      this.getHerds()
+    }
   }
   getHerds() {
     get(`${BASE_URL}/api/herds/${this.state.dairy.pk}`)
@@ -128,8 +132,11 @@ class HerdTable extends Component {
     getReportingPeriodDays(this.state.dairy.pk)
     .then(rpDays => {
       console.log("Days in reporting period: ", rpDays)
-      let _herdCalc = calculateHerdManNKPNaCl(this.state.herds, rpDays)
-      this.setState({ herdCalc: _herdCalc })
+      console.log('Herds::', this.state.herds)
+      if(this.state.herds){
+        let _herdCalc = calculateHerdManNKPNaCl(this.state.herds, rpDays)
+        this.setState({ herdCalc: _herdCalc })
+      }
     })
   }
 
@@ -153,7 +160,7 @@ class HerdTable extends Component {
           </Grid>
         </Grid>
         {
-          Object.keys(this.state.herds).length > 0 ?
+          this.state.herds && Object.keys(this.state.herds).length > 0 ?
             <React.Fragment>
               <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid chartreuse" }} xs={6} spacing={1} justifyContent="space-between" key="Milk Cow Col/ data row" >
                 <Grid item xs={12}>

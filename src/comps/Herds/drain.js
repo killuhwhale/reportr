@@ -157,6 +157,13 @@ class Drain extends Component {
     this.getFieldCropAppDrainAnalyses()
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot){
+    if(this.state.dairy_id !== prevState.dairy_id){
+      this.getFieldCropAppDrains()
+      this.getFieldCropAppDrainAnalyses()
+    }
+  }
+
   getFieldCropAppDrains() {
     get(`${BASE_URL}/api/drain_source/${this.state.dairy_id}`)
       .then(field_crop_app_drain => {

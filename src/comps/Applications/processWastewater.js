@@ -8,13 +8,16 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { CloudUpload } from '@material-ui/icons'
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import formats from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
-
+import {
+  DatePicker
+} from '@material-ui/pickers';
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
@@ -23,6 +26,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
+import { groupBySortBy } from "../../utils/format"
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
@@ -36,10 +40,9 @@ const ProcessWastewaterAppEvent = (props) => {
   return (
     <Grid container item xs={12} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
       <Grid item xs={12}>
-        <Typography variant="h3">
+        <Typography variant="h4">
           {fieldtitle}
         </Typography>
-        <hr />
       </Grid>
 
       {
@@ -51,14 +54,15 @@ const ProcessWastewaterAppEvent = (props) => {
             <Grid item container xs={12} key={`pwwviews${i}`} component={Paper} elevation={6} style={{ marginBottom: "30px" }}>
               <Grid item container xs={12}>
                 <Grid item xs={6}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h6">
                     {croptitle}
                   </Typography>
                 </Grid>
                 <Grid item xs={6} align="right">
-                  <Typography variant="subtitle1">
-                    Planted: {plant_date.split('T')[0]}
-                  </Typography>
+                  <DatePicker label="Plant Date"
+                    value={plant_date}
+                    open={false}
+                  />
                 </Grid>
 
 
@@ -70,14 +74,17 @@ const ProcessWastewaterAppEvent = (props) => {
                   </Grid>
 
                   <Grid item xs={6} align="right">
-                    <Typography variant="subtitle2">
-                      Date Applied: {app_date.split('T')[0]}
-                    </Typography>
+                    <DatePicker label="Date Applied"
+                      value={app_date}
+                      open={false}
+                    />
+
                   </Grid>
                   <Grid item xs={12} align="right">
-                    <Typography variant="subtitle2">
-                      Amount Applied: {amount_applied} gals
-                    </Typography>
+                    <TextField
+                      label="Amount Applied"
+                      value={`${amount_applied} gals`}
+                    />
                   </Grid>
 
                 </Grid>
@@ -192,8 +199,8 @@ class ProcessWastewater extends Component {
     super(props)
     this.state = {
       dairy_id: props.dairy_id,
-      fieldCropAppEvents: props.fieldCropAppEvents,
-      field_crop_app_process_wastewater: props.field_crop_app_process_wastewater, // This should come from parent so it updates well, 
+      fieldCropAppEvents: [],
+      field_crop_app_process_wastewater: {}, // This should come from parent so it updates well, 
       tsvType: props.tsvType,
       numCols: props.numCols,
       showAddProcessWastewaterModal: false,
@@ -202,6 +209,7 @@ class ProcessWastewater extends Component {
       deleteProcessWastewaterObj: {},
       tsvText: "",
       uploadedFilename: "",
+      toggleShowDeleteAllModal: false,
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       showViewTSVsModal: false,
@@ -230,8 +238,41 @@ class ProcessWastewater extends Component {
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
-  componentDidMount(){
+  componentDidMount() {
     this.setWindowListener()
+    this.getFieldCropAppProcessWastewater()
+    this.getFieldCropAppEvents()
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.dairy_id !== this.state.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated) {
+      this.getFieldCropAppEvents()
+      this.getFieldCropAppProcessWastewater()
+    }
+  }
+
+  getFieldCropAppProcessWastewater() {
+    get(`${BASE_URL}/api/field_crop_app_process_wastewater/${this.state.dairy_id}`)
+      .then(res => {
+        let process_wastewater_by_fieldtitle = groupBySortBy(res, 'fieldtitle', 'app_date')
+        this.setState({ field_crop_app_process_wastewater: process_wastewater_by_fieldtitle })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  getFieldCropAppEvents() {
+    get(`${BASE_URL}/api/field_crop_app/${this.state.dairy_id}`)
+      .then(res => {
+        res.sort((a, b) => {
+          return `${a.fieldtitle} ${a.app_date} ${a.app_method}` > `${b.fieldtitle} ${b.app_date} ${b.app_method}` ? 1 : -1
+        })
+
+        this.setState({ fieldCropAppEvents: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   /** Manually add Process Wastewater */
@@ -273,7 +314,7 @@ class ProcessWastewater extends Component {
       .then(res => {
         console.log(res)
         this.toggleShowAddProcessWastewaterModal(false)
-        this.props.getFieldCropAppProcessWastewater()
+        this.getFieldCropAppProcessWastewater()
       })
       .catch(err => {
         console.log(err)
@@ -292,7 +333,7 @@ class ProcessWastewater extends Component {
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteProcessWastewaterModal(false)
-          this.props.getFieldCropAppProcessWastewater()
+          this.getFieldCropAppProcessWastewater()
         })
         .catch(err => {
           console.log(err)
@@ -332,8 +373,8 @@ class ProcessWastewater extends Component {
             console.log("Completed uploading Process Wastewater TSV")
             uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
             this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
-            this.props.getFieldCropAppEvents()
-            this.props.getFieldCropAppProcessWastewater()
+            this.getFieldCropAppEvents()
+            this.getFieldCropAppProcessWastewater()
           })
           .catch(err => {
             console.log("Error with all promises")
@@ -348,7 +389,7 @@ class ProcessWastewater extends Component {
     this.setState({ showViewTSVsModal: val })
   }
 
-  getSortedKeys(){
+  getSortedKeys() {
     return Object.keys(this.state.field_crop_app_process_wastewater).sort()
   }
 
@@ -367,7 +408,7 @@ class ProcessWastewater extends Component {
     let field_crop_app_id = this.getSortedKeys()[index]
     let numRows = this.state.field_crop_app_process_wastewater[field_crop_app_id].length
     let headerSize = 55
-    let itemSize = 245
+    let itemSize = 350
 
     return headerSize + (itemSize * numRows)
   }
@@ -377,28 +418,55 @@ class ProcessWastewater extends Component {
     })
   }
 
+  confirmDeleteAllFromTable(val) {
+    this.setState({ toggleShowDeleteAllModal: val })
+  }
+  deleteAllFromTable() {
+    Promise.all([
+      post(`${BASE_URL}/api/field_crop_app_process_wastewater/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+    ])
+      .then(res => {
+        this.getFieldCropAppProcessWastewater()
+        this.getFieldCropAppEvents()
+        this.confirmDeleteAllFromTable(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
   render() {
     return (
       <Grid item xs={12} container >
         <Grid item xs={10} align="right">
-         <Tooltip title='Upload TSV'>
+          <Tooltip title='Upload TSV'>
             <IconButton color="primary" variant="outlined"
               onClick={() => this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(true)}
             >
               <CloudUpload />
             </IconButton>
-         </Tooltip>
+          </Tooltip>
         </Grid>
         <Grid item xs={1} align="right">
-         <Tooltip title='View Uploaded TSVs'>
+          <Tooltip title='View Uploaded TSVs'>
             <IconButton color="secondary" variant="outlined"
               onClick={() => this.toggleViewTSVsModal(true)}
             >
               <WbCloudyIcon />
             </IconButton>
-         </Tooltip>
+          </Tooltip>
         </Grid>
+
         <Grid item xs={1} align='right'>
+          <Tooltip title='Delete all Production Records'>
+            <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+              <DeleteSweepIcon color='error' />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+
+        {/* <Grid item xs={1} align='right'>
           <Tooltip title='Add process wastewater to application event'>
             <IconButton color="primary" variant="outlined"
               onClick={() => this.toggleShowAddProcessWastewaterModal(true)}
@@ -406,7 +474,7 @@ class ProcessWastewater extends Component {
               <SpeakerNotesIcon />
             </IconButton>
           </Tooltip>
-        </Grid>
+        </Grid> */}
 
         {this.getSortedKeys().length > 0 ?
           <List
@@ -430,6 +498,15 @@ class ProcessWastewater extends Component {
           onAction={this.onProcessWastewaterDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteProcessWastewaterModal(false)}
         />
+
+        <ActionCancelModal
+          open={this.state.toggleShowDeleteAllModal}
+          actionText="Delete all"
+          cancelText="Cancel"
+          modalText={`Delete All Process Wastewater Application Events?`}
+          onAction={this.deleteAllFromTable.bind(this)}
+          onClose={() => this.confirmDeleteAllFromTable(false)}
+        />  
         <AddProcessWastewaterModal
           open={this.state.showAddProcessWastewaterModal}
           actionText="Add"
@@ -444,7 +521,7 @@ class ProcessWastewater extends Component {
           onChange={this.onCreateProcessWastewaterChange.bind(this)}
           onClose={() => this.toggleShowAddProcessWastewaterModal(false)}
         />
-      
+
         <ViewTSVsModal
           open={this.state.showViewTSVsModal}
           actionText={"" /* no action text*/}

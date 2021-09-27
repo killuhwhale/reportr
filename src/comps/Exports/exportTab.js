@@ -12,6 +12,7 @@ import ExploreIcon from '@material-ui/icons/Explore'
 import AssessmentIcon from '@material-ui/icons/Assessment'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import AirlineSeatLegroomReducedIcon from '@material-ui/icons/AirlineSeatLegroomReduced'
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import LocalDrinkIcon from '@material-ui/icons/LocalDrink'
 import { VariableSizeList as List } from "react-window"
@@ -219,6 +220,8 @@ class ExportTab extends Component {
       exportManifests: {},
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
+      toggleShowDeleteAllModal: false,
+
       createExportContactObj: {
         first_name: '',
         last_name: '',
@@ -324,6 +327,18 @@ class ExportTab extends Component {
     this.getExportDests()
     this.getExportManifests()
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.dairy.pk !== this.state.dairy.pk) {
+      this.getExportContact()
+      this.getOperators()
+      this.getExportHaulers()
+      this.getExportRecipients()
+      this.getExportDests()
+      this.getExportManifests()
+    }
+  }
+
   handleTabChange(ev, index) {
     let tabs = this.state.tabs
     tabs[this.state.tabIndex] = "hide"
@@ -388,7 +403,7 @@ class ExportTab extends Component {
       .then(res => {
         let groupedManifests = groupBySortBy(res, 'recipient_id', 'last_date_hauled')
         console.log(groupedManifests)
-        this.setState({ exportManifests: groupedManifests }, () => { console.log(this.state.exportManifests)})
+        this.setState({ exportManifests: groupedManifests }, () => { console.log(this.state.exportManifests) })
       })
       .catch(err => {
         console.log(err)
@@ -915,9 +930,9 @@ class ExportTab extends Component {
               n_con_mg_kg: checkEmpty(n_con_mg_kg),
               p_con_mg_kg: checkEmpty(p_con_mg_kg),
               k_con_mg_kg: checkEmpty(k_con_mg_kg),
-             
+
               tfs: checkEmpty(tfs),
-             
+
 
               n_lbs_rm: checkEmpty(n_lbs_rm),
               p_lbs_rm: checkEmpty(p_lbs_rm),
@@ -939,7 +954,7 @@ class ExportTab extends Component {
       .then(result => {
         console.log("Done uploading, close model refetch all")
         this.toggleShowUploadTSVModal(false)
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, MANURE)
+        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, TSV_INFO[MANURE].tsvType)
           .then(tsvUploadRes => {
             console.log("Uploaded TSV to DB")
           })
@@ -1028,7 +1043,7 @@ class ExportTab extends Component {
           p_con_mg_l,
           k_con_mg_l,
 
-          
+
           ec_umhos_cm,
           tds,
 
@@ -1078,7 +1093,7 @@ class ExportTab extends Component {
     Promise.all(promises)
       .then(result => {
         console.log("Done uploading, close model refetch all")
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, WASTEWATER)
+        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, TSV_INFO[WASTEWATER].tsvType)
           .then(tsvUploadRes => {
             console.log("Uploaded TSV to DB")
           })
@@ -1194,6 +1209,28 @@ class ExportTab extends Component {
     return headerSize + (itemSize * numRows)
   }
 
+  confirmDeleteAllFromTable(val) {
+    this.setState({ toggleShowDeleteAllModal: val })
+  }
+  deleteAllFromTable() {
+    Promise.all([
+      post(`${BASE_URL}/api/export_manifest/deleteAll`, { dairy_id: this.state.dairy.pk }),
+      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[MANURE].tsvType }),
+      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[WASTEWATER].tsvType }),
+    ])
+      .then(res => {
+        this.getExportContact()
+        this.getOperators()
+        this.getExportHaulers()
+        this.getExportRecipients()
+        this.getExportDests()
+        this.getExportManifests()
+        this.confirmDeleteAllFromTable(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
 
   render() {
     return (
@@ -1205,7 +1242,7 @@ class ExportTab extends Component {
             </Grid>
             <Grid item container xs={12}>
               <Grid item container xs={8}>
-                <Grid item xs={2}>
+                {/* <Grid item xs={2}>
                   <Tooltip title="Add Export Contact">
                     <IconButton color='primary'
                       onClick={() => this.toggleShowAddExportContactModal(true)}
@@ -1249,11 +1286,11 @@ class ExportTab extends Component {
                       <AssessmentIcon />
                     </IconButton>
                   </Tooltip>
-                </Grid>
+                </Grid> */}
 
               </Grid>
               <Grid item container xs={4}>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Tooltip title="Upload TSV">
                     <IconButton color='primary'
                       onClick={() => this.toggleShowUploadTSVModal(true)}
@@ -1262,7 +1299,7 @@ class ExportTab extends Component {
                     </IconButton>
                   </Tooltip>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Tooltip title="View Manure TSV">
                     <IconButton color='secondary'
                       onClick={() => this.toggleShowViewManureTSVModal(true)}
@@ -1271,12 +1308,19 @@ class ExportTab extends Component {
                     </IconButton>
                   </Tooltip>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Tooltip title="View Wastewater TSV">
                     <IconButton color='secondary'
                       onClick={() => this.toggleShowViewWastewaterTSVModal(true)}
                     >
                       <LocalDrinkIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+                <Grid item xs={3} align='right'>
+                  <Tooltip title='Delete all Production Records'>
+                    <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+                      <DeleteSweepIcon color='error' />
                     </IconButton>
                   </Tooltip>
                 </Grid>
@@ -1417,7 +1461,7 @@ class ExportTab extends Component {
           actionText={"" /* no action text*/}
           cancelText="Close"
           dairy_id={this.state.dairy.pk}
-          tsvType="export_manifest_manure"
+          tsvType={TSV_INFO[MANURE].tsvType}
           onClose={() => this.toggleShowViewManureTSVModal(false)}
         />
         <ViewTSVsModal
@@ -1425,8 +1469,16 @@ class ExportTab extends Component {
           actionText={"" /* no action text*/}
           cancelText="Close"
           dairy_id={this.state.dairy.pk}
-          tsvType="export_manifest_wastewater"
+          tsvType={TSV_INFO[WASTEWATER].tsvType}
           onClose={() => this.toggleShowViewWastewaterTSVModal(false)}
+        />
+        <ActionCancelModal
+          open={this.state.toggleShowDeleteAllModal}
+          actionText="Delete all"
+          cancelText="Cancel"
+          modalText={`Delete All Export Manifests (Contacts, Haulers, Recipients & Destinations)?`}
+          onAction={this.deleteAllFromTable.bind(this)}
+          onClose={() => this.confirmDeleteAllFromTable(false)}
         />
         <UploadExportTSVModal
           open={this.state.showUploadTSVModal}

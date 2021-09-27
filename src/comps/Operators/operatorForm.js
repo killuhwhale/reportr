@@ -21,12 +21,7 @@ class OperatorForm extends Component {
 
   render() {
     return (
-      <Grid item container xs={12}>
-        <Grid item xs={12}>
-          <Typography style={{ marginTop: "32px" }}>
-            {this.props.modalText}
-          </Typography>
-        </Grid>
+      <Grid item container xs={12} style={{marginBottom: '32px'}}>
         <Grid item xs={4}>
           <TextField
             name='title'

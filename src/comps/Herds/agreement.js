@@ -43,13 +43,20 @@ class Agreement extends Component {
     }
   }
   static getDerivedStateFromProps(props, state) {
-    return state // if default props change return props | compare props.dairy == state.dairy
+    return state.dairy_id !== props.dairy_id? props: state 
   }
-  
+
   componentDidMount() {
     this.getAgreements()
     this.getNotes()
     this.getCertification()
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.dairy_id !== this.state.dairy_id) {
+      this.getAgreements()
+      this.getNotes()
+      this.getCertification()
+    }
   }
 
   getNotes() {
@@ -75,7 +82,7 @@ class Agreement extends Component {
         console.log(err)
       })
   }
-  ﬁ
+
 
   getAgreements() {
     // Lazy get

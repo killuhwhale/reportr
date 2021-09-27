@@ -9,7 +9,9 @@ import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import { VariableSizeList as List } from "react-window";
-
+import {
+  DatePicker
+} from '@material-ui/pickers'
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { MG_KG, KG_MG } from '../../utils/convertCalc'
@@ -87,23 +89,28 @@ class HarvestView extends Component {
               return (
                 <Grid item container xs={12} style={{ marginBottom: "16px" }} key={`hv${plant_dateKey}`}>
                   <Grid item align="right" xs={12}>
-                    <Typography variant="h5">Planted: {plant_dateKey}</Typography>
+                    <DatePicker
+                      value={new Date(plant_dateKey)}
+                      label="Planted"
+                      open={false}
+                    />
                   </Grid>
                   {
                     plant_dates_obj[plant_dateKey].map((harvest, i) => {
                       return (
                         <React.Fragment key={`hvh${harvest.pk}`}>
                           <Grid item xs={12}>
-                            <Typography variant="subtitle1">
+                            <Typography variant="h6">
                               {harvest.croptitle}
                             </Typography>
                           </Grid>
                           <Grid item xs={11} container>
-                            <Grid item xs={4}>
-                              <TextField disabled
+                            <Grid item xs={2}>
+                              <DatePicker
+                                value={new Date(harvest.harvest_date)}
                                 label="Harvest Date"
-                                value={harvest.harvest_date && harvest.harvest_date.split('T')[0]}
-                                style={{ width: "100%" }}
+                                open={false}
+                                fullWidth
                               />
                             </Grid>
                             <Grid item xs={2}>
@@ -116,7 +123,7 @@ class HarvestView extends Component {
                               />
                             </Grid>
                             <Grid item xs={2}>
-                              <TextField disabled
+                              <TextField
                                 label="Reporting Basis"
                                 value={harvest.method_of_reporting}
                                 style={{ width: "100%" }}
@@ -127,7 +134,7 @@ class HarvestView extends Component {
                                 label="Moisture %"
                                 name="actual_moisture"
                                 value={harvest.actual_moisture}
-                                onChange={(ev) => this.props.onChange(i, harvest, ev)}
+                                // onChange={(ev) => this.props.onChange(i, harvest, ev)}
                                 style={{ width: "100%" }}
                               />
                             </Grid>
@@ -136,7 +143,7 @@ class HarvestView extends Component {
                                 label="Nitrogen (mg/ kg)"
                                 name="actual_n"
                                 value={MG_KG(harvest.actual_n)}
-                                onChange={(ev) => this.props.onChange(i, harvest, ev)}
+                                // onChange={(ev) => this.props.onChange(i, harvest, ev)}
                                 style={{ width: "100%" }}
                               />
                             </Grid>
@@ -145,7 +152,7 @@ class HarvestView extends Component {
                                 label="Phosphorus"
                                 name="actual_p"
                                 value={MG_KG(harvest.actual_p)}
-                                onChange={(ev) => this.props.onChange(i, harvest, ev)}
+                                // onChange={(ev) => this.props.onChange(i, harvest, ev)}
                                 style={{ width: "100%" }}
                               />
                             </Grid>
@@ -154,7 +161,7 @@ class HarvestView extends Component {
                                 label="Potassium"
                                 name="actual_k"
                                 value={MG_KG(harvest.actual_k)}
-                                onChange={(ev) => this.props.onChange(i, harvest, ev)}
+                                // onChange={(ev) => this.props.onChange(i, harvest, ev)}
                                 style={{ width: "100%" }}
                               />
                             </Grid>
@@ -164,7 +171,7 @@ class HarvestView extends Component {
                                 label="TFS (%)"
                                 name="tfs"
                                 value={parseFloat(harvest.tfs).toFixed(2)}
-                                onChange={(ev) => this.props.onChange(i, harvest, ev)}
+                                // onChange={(ev) => this.props.onChange(i, harvest, ev)}
                                 style={{ width: "100%" }}
                               />
                             </Grid>
@@ -194,7 +201,7 @@ class HarvestView extends Component {
   getItemSize(index) {
     let offset = 5
     let fixedHeaderSize = 55 + offset
-    let subHeaderSize = 35 + offset
+    let subHeaderSize = 80 + offset
     let subRowSize = 125 + offset
 
     let fieldKey = this.state.groupedFieldCropHarvestsKeys[index]

@@ -8,6 +8,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { CloudUpload } from '@material-ui/icons'
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
@@ -106,17 +107,24 @@ class PlowdownCredit extends Component {
       deletePlowdownCreditObj: {},
       tsvText: "",
       uploadedFilename: "",
+      toggleShowDeleteAllModal: false,
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       showViewTSVsModal: false,
     }
   }
   static getDerivedStateFromProps(props, state) {
-    return state // if default props change return props | compare props.dairy == state.dairy
+    return props // if default props change return props | compare props.dairy == state.dairy
   }
+  
   componentDidMount() {
     // this.setWindowListener()
     this.getFieldCropAppPlowdownCredits()
+  }
+  componentDidUpdate(prevProps, prevState){
+    if(prevProps.dairy_id !== this.state.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated){
+      this.getFieldCropAppPlowdownCredits()
+    }
   }
 
   getFieldCropAppPlowdownCredits() {
@@ -221,6 +229,22 @@ class PlowdownCredit extends Component {
       this.setState({ windowHeight: window.innerHeight, windowWidth: window.innerWidth })
     })
   }
+  confirmDeleteAllFromTable(val) {
+    this.setState({ toggleShowDeleteAllModal: val })
+  }
+  deleteAllFromTable() {
+    Promise.all([
+      post(`${BASE_URL}/api/field_crop_app_plowdown_credit/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+    ])
+      .then(res => {
+        this.getFieldCropAppPlowdownCredits()
+        this.confirmDeleteAllFromTable(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
 
   render() {
     return (
@@ -234,12 +258,19 @@ class PlowdownCredit extends Component {
             </IconButton>
           </Tooltip>
         </Grid>
-        <Grid item xs={2} align="right">
+        <Grid item xs={1} align="right">
           <Tooltip title='View Uploaded TSVs'>
             <IconButton color="secondary" variant="outlined"
               onClick={() => this.toggleViewTSVsModal(true)}
             >
               <WbCloudyIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+        <Grid item xs={1} align='right'>
+          <Tooltip title='Delete all Production Records'>
+            <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+              <DeleteSweepIcon color='error' />
             </IconButton>
           </Tooltip>
         </Grid>
@@ -269,6 +300,15 @@ class PlowdownCredit extends Component {
           onAction={this.onPlowdownCreditDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeletePlowdownCreditModal(false)}
         />
+
+        <ActionCancelModal
+          open={this.state.toggleShowDeleteAllModal}
+          actionText="Delete all"
+          cancelText="Cancel"
+          modalText={`Delete All Plowdown Credit Events?`}
+          onAction={this.deleteAllFromTable.bind(this)}
+          onClose={() => this.confirmDeleteAllFromTable(false)}
+        />  
 
         <ViewTSVsModal
           open={this.state.showViewTSVsModal}

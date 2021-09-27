@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 // Material UI
 import { Grid, Paper, Button, Typography, Modal, IconButton, Tooltip } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete'
-import AddIcon from '@material-ui/icons/Add'
+import RemoveRedEyeIcon from '@material-ui/icons/RemoveRedEye';
 import { withTheme } from '@material-ui/core/styles';
 import ActionCancelModal from './actionCancelModal';
 import { get, post } from '../../utils/requests';
@@ -20,20 +20,14 @@ class ViewTSVsModal extends Component {
       showDeleteTSV: false,
       curDeleteObj: {}
     }
-    /*
-    open
-    actionText
-    cancelText
-    modalText
-    onAction
-    onClose
-    */
   }
   static getDerivedStateFromProps(props, state) {
     return props
   }
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     if (this.state.open && this.state.tsvs.length == 0 && !this.state.checkedForTSVs) {
+      this.getAllTSVs()
+    }else if(prevState.open !== this.state.open){
       this.getAllTSVs()
     }
   }
@@ -78,8 +72,8 @@ class ViewTSVsModal extends Component {
       frame.src = `/tsv/${this.state.dairy_id}/${this.state.tsvType}`;                   // Set source.
       document.body.appendChild(frame);  // Add the frame to the web page.
     }
-    frame.contentWindow.focus();       // Set focus.
-    frame.contentWindow.print();       // Print it.
+    // frame.contentWindow.focus();       // Set focus.
+    // frame.contentWindow.print();       // Print it.
   }
 
   downloadTSV(tsv) {
@@ -148,7 +142,7 @@ class ViewTSVsModal extends Component {
                           <Grid item xs={1} align="right">
                             <Tooltip title="Print TSV file">
                               <IconButton onClick={ this.printTSV.bind(this) }>
-                                <AddIcon style={{ color: this.props.theme.palette.text.primary }} />
+                                <RemoveRedEyeIcon color='primary' />
                               </IconButton>
                             </Tooltip>
                           </Grid>

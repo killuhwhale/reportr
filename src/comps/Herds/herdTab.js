@@ -23,14 +23,7 @@ class HerdTab extends Component {
     this.state = {
       dairy: props.dairy,
       initHerdLoad: false,
-      herds: {
-        // milk_cows: [0, 0, 0, 0, 0],
-        // dry_cows: [],
-        // bred_cows: [],
-        // cows: [],
-        // calf_young: [],
-        // calf_old: []
-      },
+    
       tabs: {
         0: "show",
         1: "hide",
@@ -50,48 +43,23 @@ class HerdTab extends Component {
     tabs[index] = "show"
     this.setState({ tabIndex: index, tabs: tabs })
   }
-  componentDidMount() {
-    this.getHerds()
-  }
-
-  getHerds() {
-    // Get herds for Dairy
-    // If no Dairy create empty default by proving dairy_pk
-    // If no Dairy show button to create a herd
-    get(`${BASE_URL}/api/herds/${this.state.dairy.pk}`)
-      .then(res => {
-        console.log(res)
-        if (res.test || res.length === 0) {
-          return;
-        }
-        this.setState({ herds: res[0], initHerdLoad: true })
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
+  
 
   onChange(ev) {
 
   }
 
-  createHerds() {
-    console.log(this.state.dairy)
-    post(`${BASE_URL}/api/herds/create`, { dairy_id: this.state.dairy.pk })
-      .then(res => {
-        console.log(res)
-        this.getHerds()
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
+  
 
   render() {
     return (
       <React.Fragment>
-        {Object.keys(this.props.dairy).length > 0 ?
+        {Object.keys(this.state.dairy).length > 0 ?
+
           <Grid item xs={12}>
+            <Grid item xs={12}>
+              <Typography variant='h3'>Other info {this.state.dairy.reporting_yr}</Typography>
+            </Grid>
             <AppBar position="static" style={{ marginBottom: "32px", backgroundColor: "black" }} key='herdAppBar'>
               <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
                 onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='herdTabs'>
@@ -101,6 +69,7 @@ class HerdTab extends Component {
                 <Tab label="NMP and Export Agreements" style={{ color: "#ec00d9" }} key='herdTab3' />
               </Tabs>
             </AppBar>
+
             {
               this.state.tabs[0] === "show" ?
                 <Grid item xs={12}>

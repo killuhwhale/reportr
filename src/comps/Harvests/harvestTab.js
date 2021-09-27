@@ -20,6 +20,9 @@ import { get, post } from '../../utils/requests';
 import { MG_KG, KG_MG } from '../../utils/convertCalc'
 import { isEmpty } from "../../utils/valid"
 import { TSV_INFO } from "../../utils/TSV"
+import ActionCancelModal from "../Modals/actionCancelModal"
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromHarvestTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
@@ -49,6 +52,7 @@ class HarvestTab extends Component {
       updateFieldCropHarvestObj: {}, // PK: {all data for field_crop harvest that is updatable...}
       groupedFieldCropHarvests: {},
       showViewTSVsModal: false,
+      toggleShowDeleteAllModal: false,
       createFieldCropHarvestObj: {
         harvest_date: new Date(),
         sample_date: new Date(),
@@ -74,16 +78,25 @@ class HarvestTab extends Component {
 
 
 
-      } // TODO fill out required keys to create object....
+      }
     }
   }
   static getDerivedStateFromProps(props, state) {
-    return state
+    return props
   }
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevState.dairy.pk !== this.state.dairy.pk) {
+      // Call methods from didMount()
+      this.getAllFieldCrops()
+      this.getAllFieldCropHarvests()
+    }
+  }
+
   componentDidMount() {
     this.getAllFieldCrops()
     this.getAllFieldCropHarvests()
   }
+
   getAllFieldCrops() {
     console.log("Getting all field crops")
     get(`${BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
@@ -276,10 +289,32 @@ class HarvestTab extends Component {
     this.setState({ showViewTSVsModal: val })
   }
 
+  confirmDeleteAllFromTable(val) {
+    this.setState({ toggleShowDeleteAllModal: val })
+  }
+  deleteAllFromTable() {
+    Promise.all([
+      post(`${BASE_URL}/api/field_crop/deleteAll`, { dairy_id: this.state.dairy.pk }),
+      post(`${BASE_URL}/api/field_crop_harvest/deleteAll`, { dairy_id: this.state.dairy.pk }),
+      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[HARVEST].tsvType })
+    ])
+      .then(res => {
+        console.log(res)
+        this.getAllFieldCrops()
+        this.getAllFieldCropHarvests()
+        this.confirmDeleteAllFromTable(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+
+
   render() {
     return (
       <React.Fragment>
-        {Object.keys(this.props.dairy).length > 0 ?
+        {this.state.dairy.pk && Object.keys(this.state.dairy).length > 0 ?
           <Grid item container xs={12}>
             {/* <Button variant="outlined"  color="secondary"
                 onClick={this.updateFieldCropHarvest.bind(this)}>
@@ -303,7 +338,14 @@ class HarvestTab extends Component {
               </Tooltip>
             </Grid>
             <Grid item xs={1} align='right'>
-              {
+
+              <Tooltip title='Delete all Production Records'>
+                <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+                  <DeleteSweepIcon color='error' />
+                </IconButton>
+              </Tooltip>
+
+              {/* {
                 this.state.field_crops.length > 0 ?
                   <Grid item xs={12} align='right'>
                     <Tooltip title='Add new harvest'>
@@ -316,7 +358,7 @@ class HarvestTab extends Component {
                   </Grid>
                   :
                   <React.Fragment></React.Fragment>
-              }
+              } */}
             </Grid>
 
             {
@@ -344,6 +386,15 @@ class HarvestTab extends Component {
           dairy_id={this.state.dairy.pk}
           tsvType={TSV_INFO[HARVEST].tsvType}
           onClose={() => this.toggleShowTSVsModal(false)}
+        />
+
+        <ActionCancelModal
+          open={this.state.toggleShowDeleteAllModal}
+          actionText="Delete all"
+          cancelText="Cancel"
+          modalText={`Delete Production Records (Harvests) for ${this.state.dairy.title}?`}
+          onAction={this.deleteAllFromTable.bind(this)}
+          onClose={() => this.confirmDeleteAllFromTable(false)}
         />
 
         <UploadHarvestCSVModal

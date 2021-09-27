@@ -64,6 +64,17 @@ app.post("/api/tsv/delete", (req, res) => {
     res.json({ "test": "Deleted TSV unsuccessful" });
   })
 });
+app.post("/api/tsv/type/delete", (req, res) => {
+  console.log("Deleting TSV w/ dairy_id and tsvtype: ", req.body)
+  db.rmTSVByDairyIDTSVType([req.body.dairy_id, req.body.tsvType], (err, result) => {
+    if (!err) {
+      res.json({ "test": "Deleted TSV successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted TSV unsuccessful" });
+  })
+});
 app.post("/api/tsv/update", (req, res) => {
   console.log("Updating.... tsv", req.body)
   const { title, data, pk } = req.body
@@ -78,6 +89,79 @@ app.post("/api/tsv/update", (req, res) => {
 });
 
 // API
+
+
+app.get("/api/dairy_base", (req, res) => {
+  db.getDairyBase(null,
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      res.json({ "test": "Get dairy_base unsuccessful" });
+    })
+});
+
+
+app.post("/api/dairy_base/create", (req, res) => {
+  const {
+    title
+  } = req.body
+  db.insertDairyBase([title], (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Inserted dairy_base successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Inserted dairy_base unsuccessful" });
+  })
+});
+app.post("/api/dairy_base/update", (req, res) => {
+  console.log("Updating.... dairy_base", req.body)
+  // req.body.data is a list of values in order to match DB Table
+  const {
+    title, pk
+  } = req.body
+
+  db.updateDairy([
+    title, pk
+  ], (err, result) => {
+
+    if (!err) {
+      res.json(result);
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Updated dairy_base unsuccessful" });
+  })
+});
+
+app.post("/api/dairy_base/delete", (req, res) => {
+  console.log("Deleting.... dairy_base", req.body.pk)
+  db.rmDairyBase(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted dairy_base successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted dairy_base unsuccessful" });
+  })
+});
+
+
+app.get("/api/dairies/dairyBaseId/:dairyBaseId", (req, res) => {
+  db.getDairiesByDairyBaseID(req.params.dairyBaseId,
+    (err, result) => {
+      if (!err) {
+
+        res.json(result.rows)
+        return;
+      }
+      res.json({ "test": "Get all dairies by base id unsuccessful" });
+    })
+});
 app.get("/api/dairies/:reportingYear", (req, res) => {
   db.getDairies(req.params.reportingYear,
     (err, result) => {
@@ -89,6 +173,7 @@ app.get("/api/dairies/:reportingYear", (req, res) => {
       res.json({ "test": "Get all dairies unsuccessful" });
     })
 });
+
 app.get("/api/dairy/:dairy_id", (req, res) => {
   db.getDairy(req.params.dairy_id,
     (err, result) => {
@@ -100,7 +185,13 @@ app.get("/api/dairy/:dairy_id", (req, res) => {
     })
 });
 app.post("/api/dairies/create", (req, res) => {
-  db.insertDairy([req.body.title, req.body.reportingYr], (err, result) => {
+  db.insertDairy([
+    req.body.dairyBaseId,
+    req.body.title,
+    req.body.reportingYear,
+    req.body.period_start,
+    req.body.period_end,
+  ], (err, result) => {
 
     if (!err) {
       res.json({ "test": "Inserted dairy successfully" });
@@ -108,6 +199,26 @@ app.post("/api/dairies/create", (req, res) => {
     }
     console.log(err)
     res.json({ "test": "Inserted dairy unsuccessful" });
+  })
+});
+app.post("/api/dairies/full/create", (req, res) => {
+  const {
+    dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, title, city_zip,
+    basin_plan, p_breed, began, period_start, period_end,
+    
+  } = req.body
+  console.log("Inserting full dairy info:", req.body)
+  db.insertFullDairy([
+    dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, city_zip,
+    title, basin_plan, p_breed, began, period_start, period_end,
+  ], (err, result) => {
+
+    if (!err) {
+      res.json(result.rows);
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Inserted full dairy unsuccessful", failData:  req.body});
   })
 });
 app.post("/api/dairies/update", (req, res) => {
@@ -127,6 +238,18 @@ app.post("/api/dairies/update", (req, res) => {
     }
     console.log(err)
     res.json({ "test": "Updated dairy unsuccessful" });
+  })
+});
+app.post("/api/dairies/delete", (req, res) => {
+  console.log("Deleting.... dairy", req.body.pk)
+  db.rmDairy(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted dairy successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted dairy unsuccessful" });
   })
 });
 app.get("/api/fields/:dairy_id", (req, res) => {
@@ -192,11 +315,13 @@ app.get("/api/parcels/:dairy_id", (req, res) => {
     })
 });
 app.post("/api/parcels/create", (req, res) => {
-
-  db.insertParcel(req.body.data, (err, result) => {
+  db.insertParcel([
+    req.body.pnumber, 
+    req.body.dairy_id
+  ] , (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Inserted parcel successfully" });
+      res.json(result.rows)
       return;
     }
     console.log(err)
@@ -245,7 +370,7 @@ app.post("/api/field_parcel/create", (req, res) => {
   db.insertFieldParcel([dairy_id, field_id, parcel_id], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Inserted field_parcel successfully" });
+      res.json(result.rows)
       return;
     }
     console.log(err)
@@ -387,6 +512,36 @@ app.post("/api/herds/create", (req, res) => {
     }
   )
 });
+app.post("/api/herds/full/create", (req, res) => {
+  console.log("Creating.... full (copy) herds", req.body)
+  const { dairy_id,
+    milk_cows,
+    dry_cows,
+    bred_cows,
+    cows,
+    calf_young,
+    calf_old } = req.body
+  db.insertFullHerd(
+    [
+      dairy_id,
+      milk_cows,
+      dry_cows,
+      bred_cows,
+      cows,
+      calf_young,
+      calf_old
+    ],
+    (err, result) => {
+
+      if (!err) {
+        res.json({ "test": "Created full herds successfully" });
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Created full herds unsuccessful" });
+    }
+  )
+});
 app.get("/api/herds/:dairy_id", (req, res) => {
   db.getHerd(req.params.dairy_id,
     (err, result) => {
@@ -499,6 +654,19 @@ app.post("/api/field_crop/delete", (req, res) => {
   })
 });
 
+app.post("/api/field_crop/deleteAll", (req, res) => {
+  console.log("Deleting all field_crop....", req.body)
+  db.rmAllFieldCrop(req.body.dairy_id, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted all field_crop successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted all field_crop unsuccessful" });
+  })
+});
+
 
 app.post("/api/field_crop_harvest/create", (req, res) => {
   console.log("Creating....", req.body)
@@ -602,6 +770,18 @@ app.post("/api/field_crop_harvest/delete", (req, res) => {
     res.json({ "test": "Deleted field_crop_harvest unsuccessful" });
   })
 });
+app.post("/api/field_crop_harvest/deleteAll", (req, res) => {
+  console.log("Deleting all field_crop_harvest....", req.body)
+  db.rmAllFieldCropHarvest(req.body.dairy_id, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted all field_crop_harvest successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted all field_crop_harvest unsuccessful" });
+  })
+});
 
 app.post("/api/field_crop_app/create", (req, res) => {
   console.log("Creating....", req.body)
@@ -661,6 +841,18 @@ app.post("/api/field_crop_app/delete", (req, res) => {
     }
     console.log(err)
     res.json({ "test": "Deleted field_crop_app unsuccessful" });
+  })
+});
+app.post("/api/field_crop_app/deleteAll", (req, res) => {
+  console.log("Deleting all field_crop_app....", req.body)
+  db.rmAllFieldCropApp(req.body.dairy_id, (err, result) => {
+
+    if (!err) {
+      res.json({ "test": "Deleted all field_crop_app successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "test": "Deleted all field_crop_app unsuccessful" });
   })
 });
 
@@ -836,6 +1028,22 @@ app.post("/api/field_crop_app_process_wastewater/delete", (req, res) => {
     }
     console.log(err)
     res.json({ "test": "Deleted field_crop_app_process_wastewater unsuccessful" });
+  })
+});
+
+app.post("/api/field_crop_app_process_wastewater/deleteAll", (req, res) => {
+  console.log("Deleting all field_crop_app_process_wastewater....", req.body)
+
+  db.rmAllFieldCropAppProcessWastewaterAnalysis(req.body.dairy_id, (errA, resultA) => {
+    db.rmAllFieldCropAppProcessWastewater(req.body.dairy_id, (errB, resultB) => {
+
+      if (!errA && !errB) {
+        res.json({ "test": "Deleted all field_crop_app_process_wastewater successfully" });
+        return;
+      }
+      console.log(errA, errB)
+      res.json({ "test": "Deleted all field_crop_app_process_wastewater unsuccessful" });
+    })
   })
 });
 
@@ -1054,6 +1262,24 @@ app.post("/api/field_crop_app_freshwater/delete", (req, res) => {
   })
 });
 
+app.post("/api/field_crop_app_freshwater/deleteAll", (req, res) => {
+  console.log("Deleting all field_crop_app_freshwater....", req.body)
+  
+  db.rmAllFieldCropAppFreshwaterSource(req.body.dairy_id, (errA, resultA) => {
+    db.rmAllFieldCropAppFreshwaterAnalysis(req.body.dairy_id, (errB, resultB) => {
+      db.rmAllFieldCropAppFreshwater(req.body.dairy_id, (errC, resultC) => {
+
+        if (!errA && !errB && !errC) {
+          res.json({ "test": "Deleted all field_crop_app_freshwater successfully" });
+          return;
+        }
+        console.log(errA, errB, errC)
+        res.json({ "test": "Deleted all field_crop_app_freshwater unsuccessful" });
+      })
+    })
+  })
+});
+
 
 app.post("/api/field_crop_app_solidmanure_analysis/create", (req, res) => {
 
@@ -1214,6 +1440,21 @@ app.post("/api/field_crop_app_solidmanure/delete", (req, res) => {
   })
 });
 
+app.post("/api/field_crop_app_solidmanure/deleteAll", (req, res) => {
+  console.log("Deleting all field_crop_app_solidmanure....", req.body)
+
+  db.rmAllFieldCropAppSolidmanureAnalysis(req.body.dairy_id, (errA, resultA) => {
+    db.rmAllFieldCropAppSolidmanure(req.body.dairy_id, (errB, resultB) => {
+
+      if (!errA && !errB) {
+        res.json({ "test": "Deleted all field_crop_app_solidmanure successfully" });
+        return;
+      }
+      console.log(errA, errB)
+      res.json({ "test": "Deleted all field_crop_app_solidmanure unsuccessful" });
+    })
+  })
+});
 
 app.post("/api/nutrient_import/create", (req, res) => {
   console.log("Creating.... nutrient_import", req.body)
@@ -1255,8 +1496,6 @@ app.post("/api/nutrient_import/create", (req, res) => {
     }
   )
 });
-
-
 app.get("/api/nutrient_import/material_type/:material_type/:dairy_id", (req, res) => {
 
   db.getNutrientImportByMaterialType([req.params.material_type, req.params.dairy_id],
@@ -1305,7 +1544,7 @@ app.get("/api/nutrient_import/:dairy_id", (req, res) => {
       res.json({ "test": "Get all nutrient_import unsuccessful" });
     })
 });
-
+// Remember, a nutrient import is the analysis for a field crop fertilizer.... aka field crop nutrient import 
 app.post("/api/field_crop_app_fertilizer/create", (req, res) => {
   console.log("Creating.... fertilizer", req.body)
   const {
@@ -1363,6 +1602,22 @@ app.post("/api/field_crop_app_fertilizer/delete", (req, res) => {
     }
     console.log(err)
     res.json({ "test": "Deleted field_crop_app_fertilizer unsuccessful" });
+  })
+});
+
+app.post("/api/field_crop_app_fertilizer/deleteAll", (req, res) => {
+  console.log("Deleting all field_crop_app_fertilizer....", req.body)
+
+  db.rmAllNutrientImport(req.body.dairy_id, (errA, resultA) => {
+    db.rmAllFieldCropAppFertilizer(req.body.dairy_id, (errB, resultB) => {
+
+      if (!errA && !errB) {
+        res.json({ "test": "Deleted all field_crop_app_fertilizer successfully" });
+        return;
+      }
+      console.log(errA, errB)
+      res.json({ "test": "Deleted all field_crop_app_fertilizer unsuccessful" });
+    })
   })
 });
 
@@ -1500,6 +1755,22 @@ app.post("/api/field_crop_app_soil/delete", (req, res) => {
   })
 });
 
+app.post("/api/field_crop_app_soil/deleteAll", (req, res) => {
+  console.log("Deleting all field_crop_app_soil....", req.body)
+
+  db.rmAllFieldCropAppSoilAnalysis(req.body.dairy_id, (errA, resultA) => {
+    db.rmAllFieldCropAppSoil(req.body.dairy_id, (errB, resultB) => {
+
+      if (!errA && !errB) {
+        res.json({ "test": "Deleted all field_crop_app_soil successfully" });
+        return;
+      }
+      console.log(errA, errB)
+      res.json({ "test": "Deleted all field_crop_app_soil unsuccessful" });
+    })
+  })
+});
+
 app.post("/api/field_crop_app_plowdown_credit/create", (req, res) => {
   console.log("Creating.... plowdown credit", req.body)
   const {
@@ -1552,6 +1823,19 @@ app.post("/api/field_crop_app_plowdown_credit/delete", (req, res) => {
     }
     console.log(err)
     res.json({ "test": "Deleted field_crop_app_plowdown_credit unsuccessful" });
+  })
+});
+
+app.post("/api/field_crop_app_plowdown_credit/deleteAll", (req, res) => {
+  console.log("Deleting all field_crop_app_plowdown_credit....", req.body)
+
+  db.rmAllFieldCropAppPlowdownCredit(req.body.dairy_id, (errA, resultA) => {
+    if (!errA) {
+      res.json({ "test": "Deleted all field_crop_app_plowdown_credit successfully" });
+      return;
+    }
+    console.log(errA)
+    res.json({ "test": "Deleted all field_crop_app_plowdown_credit unsuccessful" });
   })
 });
 
@@ -1670,6 +1954,7 @@ app.post("/api/drain_analysis/delete", (req, res) => {
     res.json({ "test": "Deleted drain_analysis unsuccessful" });
   })
 });
+
 
 app.post("/api/export_hauler/create", (req, res) => {
   console.log("Creating.... export_hauler", req.body)
@@ -2047,6 +2332,29 @@ app.post("/api/export_manifest/delete", (req, res) => {
 });
 
 
+app.post("/api/export_manifest/deleteAll", (req, res) => {
+  console.log("Deleting all export_manifest....", req.body)
+
+  db.rmExportContact(req.body.dairy_id, (errA, resultA) => {
+    db.rmExportHauler(req.body.dairy_id, (errB, resultB) => {
+      db.rmExportRecipient(req.body.dairy_id, (errC, resultC) => {
+        db.rmExportDest(req.body.dairy_id, (errD, resultD) => {
+          db.rmExportManifest(req.body.dairy_id, (errE, resultE) => {
+
+            if (!errA && !errB && !errC && !errD && !errE) {
+              res.json({ "test": "Deleted all export_manifest successfully" });
+              return;
+            }
+            console.log(errA, errB, errC, errD, errE)
+            res.json({ "test": "Deleted all export_manifest unsuccessful" });
+          })
+        })
+      })
+    })
+  })
+});
+
+
 app.post("/api/discharge/create", (req, res) => {
   console.log("Creating.... discharge", req.body)
   const {
@@ -2327,7 +2635,18 @@ app.get("/api/search/fields/:title/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_harvest unsuccessful" });
+      res.json({ "test": "Get all fields by Title unsuccessful" });
+    })
+});
+app.get("/api/search/parcels/:pnumber/:dairy_id", (req, res) => {
+  db.searchParcelsByPnum([req.params.pnumber, req.params.dairy_id],
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      console.log(err)
+      res.json({ "test": "Get all parcels by pnumber unsuccessful" });
     })
 });
 app.get("/api/search/field_crop/:field_id/:crop_id/:plant_date/:dairy_id", (req, res) => {
@@ -2340,7 +2659,7 @@ app.get("/api/search/field_crop/:field_id/:crop_id/:plant_date/:dairy_id", (req,
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_harvest unsuccessful" });
+      res.json({ "test": "Get all searchFieldCropsByFieldCropPlantdate unsuccessful" });
     })
 });
 app.get("/api/search/field_crop_app/:field_crop_id/:app_date/:dairy_pk", (req, res) => {
@@ -2357,7 +2676,7 @@ app.get("/api/search/field_crop_app/:field_crop_id/:app_date/:dairy_pk", (req, r
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all field_crop_app unsuccessful" });
+      res.json({ "test": "Search all searchFieldCropApplicationsByFieldCropIDAppDate unsuccessful" });
     })
 });
 app.get("/api/search/field_crop_app_process_wastewater_analysis/:sample_date/:sample_desc/:dairy_pk", (req, res) => {
@@ -2374,7 +2693,7 @@ app.get("/api/search/field_crop_app_process_wastewater_analysis/:sample_date/:sa
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all field_crop_app_process_wastewater_analysis unsuccessful" });
+      res.json({ "test": "Search all searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc unsuccessful" });
     })
 });
 app.get("/api/search/field_crop_app_freshwater_source/:src_desc/:src_type/:dairy_pk", (req, res) => {
@@ -2391,7 +2710,7 @@ app.get("/api/search/field_crop_app_freshwater_source/:src_desc/:src_type/:dairy
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all field_crop_app_freshwater unsuccessful" });
+      res.json({ "test": "Search all searchFieldCropAppFreshwaterSource unsuccessful" });
     })
 });
 app.get("/api/search/field_crop_app_freshwater_analysis/:sample_date/:sample_desc/:src_of_analysis/:fresh_water_source_id/:dairy_pk", (req, res) => {
@@ -2410,7 +2729,7 @@ app.get("/api/search/field_crop_app_freshwater_analysis/:sample_date/:sample_des
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all field_crop_app_freshwater unsuccessful" });
+      res.json({ "test": "Search all searchFieldCropAppFreshwaterAnalysis unsuccessful" });
     })
 });
 app.get("/api/search/field_crop_app_solidmanure_analysis/:sample_date/:sample_desc/:src_of_analysis/:dairy_pk", (req, res) => {
@@ -2428,7 +2747,7 @@ app.get("/api/search/field_crop_app_solidmanure_analysis/:sample_date/:sample_de
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all field_crop_app_solidmanure_analysis unsuccessful" });
+      res.json({ "test": "Search all searchFieldCropAppSolidmanureAnalysis unsuccessful" });
     })
 });
 // import_date, material_type, import_desc
@@ -2505,7 +2824,7 @@ app.get("/api/search/export_contact/:first_name/:primary_phone/:dairy_pk", (req,
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all export_hauler unsuccessful" });
+      res.json({ "test": "Search all searchExportContact unsuccessful" });
     })
 });
 
@@ -2526,7 +2845,7 @@ app.get("/api/search/export_recipient/:title/:street/:city_zip/:primary_phone/:d
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all export_recipient unsuccessful" });
+      res.json({ "test": "Search all searchExportRecipient unsuccessful" });
     })
 });
 
@@ -2547,7 +2866,7 @@ app.get("/api/search/export_dest/:export_recipient_id/:pnumber/:street/:city_zip
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all export_recipient unsuccessful" });
+      res.json({ "test": "Search all searchExportDest unsuccessful" });
     })
 });
 ////////////////////////////////
@@ -2566,7 +2885,7 @@ app.get("/api/search/field_crop_app_soil_analysis/:field_id/:sample_date/:dairy_
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all field_crop_app_soil_analysis unsuccessful" });
+      res.json({ "test": "Search all searchFieldCropApplicationSoilAnalysis unsuccessful" });
     })
 });
 

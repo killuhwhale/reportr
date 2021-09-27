@@ -5,6 +5,12 @@ start server from /server npm start
 start react from root npm start
 
 
+
+
+PNG
+
+
+
 ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
 - FRESH WATER APP EVENT Field 6 11/01/2019 planted, 10/10/2019 applied, this was in the spreadsheet but not in merced app.
     - This was making me think I had a bug, but spreadsheet data and data in merced app don't match 100% :(
@@ -43,18 +49,6 @@ firebase deploy
 
 
 
-importing db/index.js gives you the connection to the DB server.
-
-QUESTIONS::
-
-  From Merced.APP Page: Annual Report:NMP and Export Agreements
-  
-  Do I need to worry about Nutirent Management Plan itselft?
-    - Or do I just need to get answers to questions regarding it? 
-      - Was it updated, developed by a certified person, approved by a certified person
-    Export agreement
-
-
 
 
 
@@ -62,6 +56,7 @@ QUESTIONS::
 
 
 TODO
+
 Find login Solution....
   - Firebase Logins?
 

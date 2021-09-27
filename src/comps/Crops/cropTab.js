@@ -7,8 +7,11 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import CropView from "./cropView"
 import AddFieldCropModal from "../Modals/addFieldCropModal"
-import { get, post } from '../../utils/requests';
+import { get, post } from '../../utils/requests'
+import { groupBySortBy } from "../../utils/format"
 
+import ActionCancelModal from "../Modals/actionCancelModal"
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 const BASE_URL = "http://localhost:3001"
 
@@ -21,6 +24,7 @@ class CropTab extends Component {
       crops: [],  // crops stored in DB with default data
       field_crops: [],
       convertedFieldCrops: {},
+      toggleShowDeleteAllModal: false,
       createFieldCropObj: {
         createFieldIdx: 0,
         createCropIdx: 0,
@@ -38,6 +42,14 @@ class CropTab extends Component {
     this.getCrops()
     this.getAllFieldCrops()
   }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.dairy.pk !== this.state.dairy.pk) {
+      this.getFields()
+      this.getCrops()
+      this.getAllFieldCrops()
+    }
+  }
+
   toggleShowAddFieldCropModal(val) {
     this.setState({ showAddFieldCropModal: val })
   }
@@ -45,7 +57,7 @@ class CropTab extends Component {
     let createFieldCropObj = this.state.createFieldCropObj
     const { name, value } = ev.target
     createFieldCropObj[name] = value
-    
+
     this.setState({ createFieldCropObj })
   }
   getFields() {
@@ -104,21 +116,10 @@ class CropTab extends Component {
         if (res.test) {
           console.log("Field Crops not found.")
         } else {
-          this.setState({ field_crops: res, convertedFieldCrops: this.convertFieldCrops(res) })
+          let convertedFieldCrops = groupBySortBy(res, ['fieldtitle'])
+          this.setState({ field_crops: res, convertedFieldCrops })
         }
       })
-  }
-
-
-  // converts to  GROUPY by Field view of crops
-  convertFieldCrops(field_crops) {
-    let obj = {}
-    field_crops.forEach(field_crop => {
-      let l = obj[field_crop.field_id] ? obj[field_crop.field_id] : []
-      l.push(field_crop)
-      obj[field_crop.field_id] = l
-    })
-    return obj
   }
 
   deleteFieldCrop(delFieldCropObj) {
@@ -130,37 +131,79 @@ class CropTab extends Component {
       })
   }
 
+  confirmDeleteAllFromTable(val){
+      this.setState({toggleShowDeleteAllModal: val})
+  }
+  deleteAllFromTable(){
+    post(`${BASE_URL}/api/field_crop/deleteAll`,{dairy_id: this.state.dairy.pk})
+    .then(res => {
+      this.getAllFieldCrops()
+      this.confirmDeleteAllFromTable(false)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
   render() {
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
           <Grid item container xs={12}>
             {this.state.field_crops.length > 0 ?
-              <CropView
-                dairy={this.state.dairy}
-                field_crops={this.state.field_crops}
-                convertedFieldCrops={this.state.convertedFieldCrops}
-                onDeleteFieldCrop={this.deleteFieldCrop.bind(this)}
-                addNewCrop={this.toggleShowAddFieldCropModal.bind(this)}
-              />
+              <Grid item xs={12}>
+                <Grid item xs={12} align='right'>
+                  <Tooltip title='Delete'>
+                    <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+                      <DeleteSweepIcon color='error' />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+                <Grid item xs={12}>
+                  <CropView
+                    dairy={this.state.dairy}
+                    field_crops={this.state.field_crops}
+                    convertedFieldCrops={this.state.convertedFieldCrops}
+                    onDeleteFieldCrop={this.deleteFieldCrop.bind(this)}
+                    addNewCrop={this.toggleShowAddFieldCropModal.bind(this)}
+                  />
+
+                </Grid>
+              </Grid>
               :
               <Grid item container xs={12}>
                 <Grid item container xs={12}>
-                  <Typography variant='h3'>
-                    No crops planted
-                  </Typography>
+                  <Grid item xs={12}>
+                    <Typography variant='h3'>
+                      No crops planted
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant='subtitle1'>
+                      Add via Production Records Sheet under CROPS HARVESTED tab
+                    </Typography>
+                  </Grid>
                 </Grid>
-                <Grid item container xs={12}>
+                {/* <Grid item container xs={12}>
                   <Button onClick={() => this.toggleShowAddFieldCropModal(true)} variant='outlined' color='primary'>
                     Add new planted crop
                   </Button>
-                </Grid>
+                </Grid> */}
               </Grid>
             }
           </Grid>
           :
           <React.Fragment>Loading....</React.Fragment>
         }
+
+        <ActionCancelModal
+          open={this.state.toggleShowDeleteAllModal}
+          actionText="Delete all "
+          cancelText="Cancel"
+          modalText={`Delete Field Crops for ${this.state.dairy.title}?`}
+          onAction={this.deleteAllFromTable.bind(this)}
+          onClose={() => this.confirmDeleteAllFromTable(false)}
+        />
         <AddFieldCropModal
           open={this.state.showAddFieldCropModal}
           actionText="Add"

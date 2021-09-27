@@ -49,6 +49,11 @@ class OperatorView extends Component {
   componentDidMount() {
     this.getAllOperators()
   }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.dairy.pk !== this.state.dairy.pk) {
+      this.getAllOperators()
+    }
+  }
   
   toggleOperatorModal(val) {
     this.setState({ showOperatorModal: val })
@@ -104,7 +109,6 @@ class OperatorView extends Component {
     })
     Promise.all(promises)
       .then(res => {
-        console.log(res)
         this.updatedOperators = new Set()
       })
       .catch(err => {
@@ -135,35 +139,37 @@ class OperatorView extends Component {
   render() {
     return (
       <Grid item xs={12}>
-        <Typography variant="h4">Owner Operators</Typography>
-        <Grid item container xs={12}>
-          <Grid item xs={11} align='right'>
-            <Tooltip title="Add Owner / Operator">
-              <IconButton variant="outlined" color="primary"
-                onClick={() => this.toggleOperatorModal(true)}
-              >
-                <InsertEmoticon />
-              </IconButton>
-            </Tooltip>
-
+        <Grid item container xs={12} style={{marginBottom: '8px'}}>
+          <Grid item xs={8}>
+            <Typography variant="h4">Owner Operators</Typography>
           </Grid>
-          <Grid item xs={1}  align='right'>
-            <Tooltip title="Update owner / operators">
-              <IconButton color="secondary" variant="outlined"
-                onClick={this.updateOperators.bind(this)}
-              >
-                <ImportExport />
-              </IconButton>
-            </Tooltip>
+          <Grid item container xs={4}>
+            <Grid item xs={10} align='right'>
+              <Tooltip title="Add Owner / Operator">
+                <IconButton variant="outlined" color="primary"
+                  onClick={() => this.toggleOperatorModal(true)}
+                >
+                  <InsertEmoticon />
+                </IconButton>
+              </Tooltip>
+
+            </Grid>
+            <Grid item xs={2}  align='right'>
+              <Tooltip title="Update owner / operators">
+                <IconButton color="secondary" variant="outlined"
+                  onClick={this.updateOperators.bind(this)}
+                >
+                  <ImportExport />
+                </IconButton>
+              </Tooltip>
+            </Grid>
           </Grid>
         </Grid>
-
-
 
         {this.state.operators.length > 0 ?
           this.state.operators.map((operator, i) => {
             return (
-              <Grid item container xs={12} key={`operatorOV${i}`} justifyContent="center" alignItems="center" align="center">
+              <Grid item container xs={12} key={`operatorOV${i}`} justifyContent="center" alignItems="center" align="center" >
                 <Grid item xs={10}>
                   <OperatorForm key={`operatorOV${i}`}
                     operator={operator}

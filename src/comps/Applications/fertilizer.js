@@ -9,6 +9,7 @@ import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import { CloudUpload } from '@material-ui/icons' // uploadTSV
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
@@ -26,6 +27,7 @@ import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-type
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
 import { VariableSizeList as List } from "react-window";
+import { groupBySortBy } from "../../utils/format"
 
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
@@ -204,10 +206,10 @@ class Fertilizer extends Component {
 
     this.state = {
       dairy_id: props.dairy_id,
-      fieldCropAppEvents: props.fieldCropAppEvents,
-      nutrientImports: props.nutrientImports,
-      fieldCropAppFertilizers: props.fieldCropAppFertilizers,
-      fieldCropAppFertilizersKeys: Object.keys(props.fieldCropAppFertilizers).sort((a, b) => a < b ? -1 : 1),
+      fieldCropAppEvents: [],
+      nutrientImports: [],
+      fieldCropAppFertilizers: {},
+      // fieldCropAppFertilizersKeys: Object.keys(props.fieldCropAppFertilizers).sort((a, b) => a < b ? -1 : 1),
       tsvType: props.tsvType,
       numCols: props.numCols,
 
@@ -223,7 +225,7 @@ class Fertilizer extends Component {
       showViewTSVsModal: false,
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
-
+      toggleShowDeleteAllModal: false,
       createNutrientImportObj: {
         dairy_id: '',
         import_desc: '',
@@ -257,6 +259,56 @@ class Fertilizer extends Component {
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
+
+  componentDidMount(){
+    this.getFieldCropAppEvents()
+    this.getFieldCropAppFertilizer()
+    this.getNutrientImport()
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    if(this.state.dairy_id !== prevState.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated){
+      this.getFieldCropAppEvents()
+      this.getFieldCropAppFertilizer()
+      this.getNutrientImport()
+    }
+  }
+
+  getFieldCropAppEvents() {
+    get(`${BASE_URL}/api/field_crop_app/${this.state.dairy_id}`)
+      .then(res => {
+        res.sort((a, b) => {
+          return `${a.fieldtitle} ${a.app_date} ${a.app_method}` > `${b.fieldtitle} ${b.app_date} ${b.app_method}` ? 1 : -1
+        })
+
+        this.setState({ fieldCropAppEvents: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  getFieldCropAppFertilizer() {
+    get(`${BASE_URL}/api/field_crop_app_fertilizer/${this.state.dairy_id}`)
+      .then(res => {
+        let fieldCropAppSolidmanures = groupBySortBy(res, 'fieldtitle', 'app_date')
+        this.setState({ fieldCropAppFertilizers: fieldCropAppSolidmanures })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  getNutrientImport() {
+    get(`${BASE_URL}/api/nutrient_import/${this.state.dairy_id}`)
+      .then(res => {
+
+        this.setState({ nutrientImports: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
   /** Manually add Process Wastewater */
   toggleShowAddNutrientImportModal(val) {
     this.setState({ showAddNutrientImportModal: val })
@@ -394,8 +446,8 @@ class Fertilizer extends Component {
             console.log("Completed uploading Fertilizer TSV")
             uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
             this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)
-            this.props.getFieldCropAppFertilizer()
-            this.props.getNutrientImport()
+            this.getFieldCropAppFertilizer()
+            this.getNutrientImport()
           })
           .catch(err => {
             console.log("Error with all promises")
@@ -446,6 +498,24 @@ class Fertilizer extends Component {
   getSortedKeys() {
     return Object.keys(this.state.fieldCropAppFertilizers).sort()
   }
+  confirmDeleteAllFromTable(val) {
+    this.setState({ toggleShowDeleteAllModal: val })
+  }
+  deleteAllFromTable() {
+    Promise.all([
+      post(`${BASE_URL}/api/field_crop_app_fertilizer/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+    ])
+      .then(res => {
+        this.getFieldCropAppEvents()
+        this.getFieldCropAppFertilizer()
+        this.getNutrientImport()
+        this.confirmDeleteAllFromTable(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
 
   render() {
 
@@ -453,7 +523,7 @@ class Fertilizer extends Component {
       <Grid item xs={12} container >
         <Grid item xs={12} container >
 
-          <Grid item xs={9} align="right">
+          <Grid item xs={10} align="right">
             <Tooltip title='Upload TSV'>
               <IconButton color="primary" variant="outlined"
                 onClick={() => this.toggleShowUploadFieldCropAppFertilizerTSVModal(true)}
@@ -472,8 +542,15 @@ class Fertilizer extends Component {
               </IconButton>
             </Tooltip>
           </Grid>
+          <Grid item xs={1} align='right'>
+            <Tooltip title='Delete all Production Records'>
+              <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+                <DeleteSweepIcon color='error' />
+              </IconButton>
+            </Tooltip>
+          </Grid>
 
-          <Grid item xs={1} align="right">
+          {/* <Grid item xs={1} align="right">
             <Tooltip title='Add nutrient import'>
               <IconButton color="secondary" variant="outlined"
                 onClick={() => this.toggleShowAddNutrientImportModal(true)}
@@ -491,7 +568,7 @@ class Fertilizer extends Component {
                 <SpeakerNotesIcon />
               </IconButton>
             </Tooltip>
-          </Grid>
+          </Grid> */}
         </Grid>
 
         <ViewTSVsModal
@@ -561,6 +638,14 @@ class Fertilizer extends Component {
           onAction={this.onNutrientImportDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteNutrientImportModal(false)}
         />
+        <ActionCancelModal
+          open={this.state.toggleShowDeleteAllModal}
+          actionText="Delete all"
+          cancelText="Cancel"
+          modalText={`Delete All Fertilizer Application Events?`}
+          onAction={this.deleteAllFromTable.bind(this)}
+          onClose={() => this.confirmDeleteAllFromTable(false)}
+        />  
 
         <ActionCancelModal
           open={this.state.showConfirmDeleteFertilizerModal}

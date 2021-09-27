@@ -107,7 +107,11 @@ class Discharge extends Component {
     // this.setWindowListener()
     this.getFieldCropAppDischarges()
   }
-
+  componentDidUpdate(prevProps, prevState){
+    if(prevState.dairy_id !== this.state.dairy_id){
+      this.getFieldCropAppDischarges()
+    }
+  }
   getFieldCropAppDischarges() {
     get(`${BASE_URL}/api/discharge/${this.state.dairy_id}`)
       .then(discharge => {

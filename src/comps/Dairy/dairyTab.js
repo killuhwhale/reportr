@@ -5,12 +5,13 @@ import {
 import {
   DatePicker
 } from '@material-ui/pickers'
-import AddIcon from '@material-ui/icons/Add'
-import { alpha } from '@material-ui/core/styles'
+import AssessmentIcon from '@material-ui/icons/Assessment';
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import Chart from 'chart.js/auto';
-import { get, getPDF, post } from '../../utils/requests'
+import { get, post } from '../../utils/requests'
 import ParcelAndFieldView from "../Parcel/parcelAndFieldView"
 import OperatorView from "../Operators/operatorView"
 import AddParcelModal from "../Modals/addParcelModal"
@@ -19,6 +20,7 @@ import pdfMake from "pdfmake/build/pdfmake"
 import pdfFonts from "pdfmake/build/vfs_fonts"
 import dd from "./pdf"
 import { getAnnualReportData } from "./pdfDB"
+import ActionCancelModal from "../Modals/actionCancelModal"
 
 
 import { formatFloat } from "../../utils/format"
@@ -58,10 +60,11 @@ class DairyTab extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      reportingYr: props.reportingYr,
       dairy: props.dairy,
       showAddParcelModal: false,
       showAddFieldModal: false,
+      toggleShowDeleteAllModal: false,
+
       fields: [],
       parcels: [],
     }
@@ -77,6 +80,13 @@ class DairyTab extends Component {
     this.getAllParcels()
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.dairy.pk !== this.state.dairy.pk) {
+      this.getAllFields()
+      this.getAllParcels()
+    }
+  }
+
   handleDateChange(date) {
     this.props.onChange("began", date)
   }
@@ -87,9 +97,10 @@ class DairyTab extends Component {
   createParcel(pnumber) {
     console.log("Creating Parcel for")
     console.log(this.state.dairy.title, this.state.dairy.pk, pnumber)
-    let data = { data: [pnumber, this.state.dairy.pk] }
 
-    post(`${BASE_URL}/api/parcels/create`, data)
+    post(`${BASE_URL}/api/parcels/create`, {
+      pnumber, dairy_id: this.state.dairy.pk
+    })
       .then(res => {
         console.log(res)
         this.toggleParcelModal(false)
@@ -143,14 +154,14 @@ class DairyTab extends Component {
   // Annual Report Section 
   createCharts(props) {
     let nutrientLabels = ["N", "P", "K", "Salt"]
- 
+
     let nutrientBudgetB = props[0]
     let summary = props[1]
 
 
     let nutrientData = Object.keys(nutrientBudgetB).map(key => {
-      const ev = nutrientBudgetB[key]  
-      return {key: key, data: [ev.total_app, ev.anti_harvests, ev.actual_harvests]}
+      const ev = nutrientBudgetB[key]
+      return { key: key, data: [ev.total_app, ev.anti_harvests, ev.actual_harvests] }
     })
 
     let totalNutrientAppAntiHarvestData = [summary.total_app, summary.anti_harvests, summary.actual_harvests]
@@ -169,7 +180,7 @@ class DairyTab extends Component {
     ]
 
     //              n,p,k,salt from each source plus the label
-    let materialData = [0,0,0,0].map((_, i) => {
+    let materialData = [0, 0, 0, 0].map((_, i) => {
       return [
         summary.soils[i], // Existing soil content
         summary.plows[i], // Plowdown credit
@@ -177,8 +188,8 @@ class DairyTab extends Component {
         summary.manures[i],
         summary.wastewaters[i],
         summary.freshwaters[i],
-        i === 0 ? summary.atmospheric_depo: 0, // Atmoshperic depo is only for nitrogen.
-        i === 0? 'Nitrogen': i === 1? 'Phosphorus': i === 2? 'Potassium': 'Salt'
+        i === 0 ? summary.atmospheric_depo : 0, // Atmoshperic depo is only for nitrogen.
+        i === 0 ? 'Nitrogen' : i === 1 ? 'Phosphorus' : i === 2 ? 'Potassium' : 'Salt'
       ]
     })
 
@@ -188,12 +199,12 @@ class DairyTab extends Component {
       let nutrientPromises = nutrientData.map((row, i) => {
         return this._createBarChart(row.key, nutrientLabels, row.data)
       })
-      let totalNutrientAppAntiHarvestDataPromise = this._createBarChart('totalNutrientAppAntiHarvestData', nutrientLabels, totalNutrientAppAntiHarvestData) 
-      
+      let totalNutrientAppAntiHarvestDataPromise = this._createBarChart('totalNutrientAppAntiHarvestData', nutrientLabels, totalNutrientAppAntiHarvestData)
+
 
       // Summarys in report
       let materialPromises = materialData.map((row, i) => {
-        let key = row && row.length === 8? row[row.length - 1]: ''
+        let key = row && row.length === 8 ? row[row.length - 1] : ''
         return this._createHoriBarChart(key, materialLabels, row.slice(0, -1), row.slice(-1))
       })
 
@@ -213,16 +224,16 @@ class DairyTab extends Component {
   }
 
   _createHoriBarChart(key, labels, data, title) {
-   
+
     let canvas = document.createElement('canvas')
     canvas.style.width = HORIBAR_WIDTH
     canvas.style.height = HORIBAR_HEIGHT
     let area = document.getElementById('chartArea')
     area.appendChild(canvas)
     return new Promise((res, rej) => {
-      if(key.length <= 0){
+      if (key.length <= 0) {
         rej('Error: invalid key for horizontal bar chart. Data:', data)
-        return 
+        return
       }
       let chart = null
       chart = new Chart(canvas, {
@@ -503,7 +514,7 @@ class DairyTab extends Component {
             let singleCharLen = 4
             var xOffset = (500 - bar.x) / 500 < 0.03 ? ((numChars * -singleCharLen) - 10) : 0;
             let num = Math.round(toFloat(dataset.data[i]))
-            num = num && num >= 1e4 ? `${formatFloat(Math.round(num/1000))}K`: formatFloat(num)
+            num = num && num >= 1e4 ? `${formatFloat(Math.round(num / 1000))}K` : formatFloat(num)
             if (chartInstance.scales.x.type === "logarithmic") {
               ctx.fillText(num, bar.x + xOffset + 10, bar.y);
             } else {
@@ -516,55 +527,78 @@ class DairyTab extends Component {
     })
 
     getAnnualReportData(this.state.dairy.pk)
-    .then(arPDFData => {
-      const props = arPDFData
-      this.createCharts([props.nutrientBudgetB.allEvents, props.naprbalA])
-      .then(images => {
-        // pdfMake.createPdf(dd(props)).download();
-        pdfMake.createPdf(dd(props, images)).open()
+      .then(arPDFData => {
+        const props = arPDFData
+        this.createCharts([props.nutrientBudgetB.allEvents, props.naprbalA])
+          .then(images => {
+            // pdfMake.createPdf(dd(props)).download();
+            pdfMake.createPdf(dd(props, images)).open()
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      })
+  }
+  confirmDeleteAllFromTable(val) {
+    this.setState({ toggleShowDeleteAllModal: val })
+  }
+  deleteAllFromTable() {
+
+    post(`${BASE_URL}/api/dairies/delete`, { pk: this.state.dairy.pk })
+      .then(res => {
+        this.getAllFields()
+        this.getAllParcels()
+        this.confirmDeleteAllFromTable(false)
+        this.props.onDairyDeleted()
+
       })
       .catch(err => {
         console.log(err)
       })
-    })
   }
 
-  
   render() {
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
           <Grid item container xs={12}>
-            <Grid item xs={6} >
+            <Grid item xs={8} >
               <Typography variant="h2">
-                Dairy Information
+                Dairy Information {this.state.dairy.reporting_yr}
               </Typography>
-
             </Grid>
-            <Grid item xs={6} >
+
+            <Grid item xs={2} align='right'>
               <Tooltip title="Generate Annual Report">
-                <IconButton
+                <IconButton size='small'
                   onClick={this.generatePDF.bind(this)} >
-                  <AddIcon style={{ color: this.props.theme.palette.text.primary }} />
+                  <AssessmentIcon color='primary' />
                 </IconButton>
               </Tooltip>
-
             </Grid>
 
-            <Grid container item xs={12} style={{marginBottom: '16px'}}>
-            <Grid container item alignItems='center' xs={12}>
+            <Grid item xs={2} align='right'>
+              <Tooltip title='Delete all Production Records'>
+                <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+                  <DeleteSweepIcon color='error' />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+
+            <Grid container item xs={12} style={{ marginBottom: '32px' }}>
+              <Grid container item alignItems='center' xs={12}>
                 <Grid item xs={3}>
                   <Typography variant='h4'>Reporting Period</Typography>
                 </Grid>
-                <Grid item xs={9} align="left">
-                    <Tooltip title='Update Reporting Period'>
-                      <IconButton variant="outlined" color="secondary"
-                        onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
-                      >
-                        <ImportExport />
-                      </IconButton>
-                    </Tooltip>
-                  </Grid>
+                <Grid item xs={9} align="right">
+                  <Tooltip title='Update Reporting Period'>
+                    <IconButton variant="outlined" color="secondary"
+                      onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
+                    >
+                      <ImportExport />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
               </Grid>
               <Grid item xs={6}>
                 <DatePicker
@@ -580,10 +614,8 @@ class DairyTab extends Component {
                   value={new Date(this.state.dairy.period_end)}
                   label="End"
                   onChange={(_date) => {
-                    console.log(zeroTimeDate(_date))
                     this.props.onChange({ target: { name: 'period_end', value: zeroTimeDate(_date) } })
-                  }
-                }
+                  }}
                   style={{ width: "100%", justifyContent: "flex-end" }}
                 />
               </Grid>
@@ -603,7 +635,7 @@ class DairyTab extends Component {
                     Address
                   </Typography>
                 </Grid>
-                <Grid item xs={9} align="left">
+                <Grid item xs={9} align="right">
                   <Tooltip title='Update Address'>
                     <IconButton variant="outlined" color="secondary"
                       onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
@@ -757,7 +789,7 @@ class DairyTab extends Component {
                 <Tooltip title="Add parcel to dairy">
                   <Button
                     onClick={() => this.toggleParcelModal(true)}
-                   variant="outlined" color="primary"
+                    variant="outlined" color="primary"
                     style={{ marginTop: "16px" }}
                   >
                     <Typography variant="subtitle2">
@@ -773,7 +805,7 @@ class DairyTab extends Component {
                 <Tooltip title="Add field to dairy">
                   <Button
                     onClick={() => this.toggleFieldModal(true)}
-                     variant="outlined" color="primary"
+                    variant="outlined" color="primary"
                     style={{ marginTop: "16px" }}
                   >
                     <Typography variant="subtitle2">
@@ -785,7 +817,7 @@ class DairyTab extends Component {
             </Grid>
             <Grid item container align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
               <ParcelAndFieldView
-                reportingYr={this.state.reportingYr}
+                reportingYr={this.state.dairy.reporting_yr}
                 dairy={this.state.dairy}
                 fields={this.state.fields}
                 parcels={this.state.parcels}
@@ -814,6 +846,14 @@ class DairyTab extends Component {
               modalText={`Add Field to Dairy ${this.state.dairy.title}`}
               onAction={this.createField.bind(this)}
               onClose={() => this.toggleFieldModal(false)}
+            />
+            <ActionCancelModal
+              open={this.state.toggleShowDeleteAllModal}
+              actionText="Delete Dairy"
+              cancelText="Cancel"
+              modalText={`Delete ${this.state.dairy.title} for year ${this.state.dairy.reporting_yr}?`}
+              onAction={this.deleteAllFromTable.bind(this)}
+              onClose={() => this.confirmDeleteAllFromTable(false)}
             />
           </Grid>
           :

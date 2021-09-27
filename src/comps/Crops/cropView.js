@@ -25,51 +25,50 @@ const BASE_URL = "http://localhost:3001"
 
 
 const CropViewTable = withTheme((props) => {
-
-
+  const fc = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0? props.field_crops[0]: {}
+  const fcs = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0? props.field_crops: []
+ 
   return (
     <Grid item xs={12} style={{ marginBottom: "32px", ...props.style}}>
-      <Grid item container align="center" justifyContent="center" alignItems="center" xs={12}>
+      <Grid item container xs={12}>
         <Grid item xs={4}>
-          <Typography variant="h3" gutterBottom>
-            Field: {props.field_crops[0].fieldtitle}
+          <Typography variant="h4" >
+            {fc.fieldtitle}
           </Typography>
-
         </Grid>
         <Grid item xs={4} >
-          <Typography variant="h5">
-            Acres: {props.field_crops[0].acres}
+          <Typography variant="h6" gutterBottom>
+            {fc.acres} Acres
           </Typography>
         </Grid>
         <Grid item xs={4}>
-          <Typography variant="h5" >
-            Cropable: {props.field_crops[0].cropable}
+          <Typography variant="h6"  gutterBottom>
+            {fc.cropable} cropable acres
           </Typography>
         </Grid>
       </Grid>
-      {props.field_crops.map((field_crop, i) => {
+      {fcs.map((field_crop, i) => {
         return (
           <Grid item container spacing={2} xs={12} key={`cwtfc${i}`} style={{ marginBottom: "16px" }}>
             <Grid item container xs={12}>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <Typography variant="h5" gutterBottom>
-                  Crop: {field_crop.croptitle}
+                  {field_crop.croptitle}
                 </Typography>
               </Grid>
-              <Grid item xs={6} align="right">
-                <DatePicker label="Plant Date" disabled
+            </Grid>
+            <Grid item xs={2} align="right">
+                <DatePicker label="Plant Date" 
                   value={field_crop.plant_date}
-                  onChange={(date) => this.props.onChange(zeroTimeDate(date), field_crop.field_id, i)}
-
+                  open={false}
                 />
               </Grid>
-            </Grid>
             <Grid item xs={2}>
               <TextField
                 label="Acres Planted"
                 name="acres_planted"
                 value={field_crop.acres_planted}
-                onChange={(ev) => this.props.onChange(ev, field_crop.field_id, i)}
+                
                 style={{ width: "100%" }}
               />
             </Grid>
@@ -78,7 +77,6 @@ const CropViewTable = withTheme((props) => {
                 label="Typical Yield"
                 name="typical_yield"
                 value={field_crop.typical_yield}
-                onChange={(ev) => this.props.onChange(ev, field_crop.field_id, i)}
                 style={{ width: "100%" }}
               />
             </Grid>
@@ -87,7 +85,6 @@ const CropViewTable = withTheme((props) => {
                 label="Moisture"
                 name="moisture"
                 value={field_crop.moisture}
-                onChange={(ev) => this.props.onChange(ev, field_crop.field_id, i)}
                 style={{ width: "100%" }}
               />
             </Grid>
@@ -96,7 +93,6 @@ const CropViewTable = withTheme((props) => {
                 label="N"
                 name="n"
                 value={parseFloat(field_crop.n).toFixed(3)}
-                onChange={(ev) => this.props.onChange(ev, field_crop.field_id, i)}
                 style={{ width: "100%" }}
               />
             </Grid>
@@ -105,7 +101,6 @@ const CropViewTable = withTheme((props) => {
                 label="P"
                 name="p"
                 value={parseFloat(field_crop.p).toFixed(3)}
-                onChange={(ev) => this.props.onChange(ev, field_crop.field_id, i)}
                 style={{ width: "100%" }}
               />
             </Grid>
@@ -114,7 +109,6 @@ const CropViewTable = withTheme((props) => {
                 label="K"
                 name="k"
                 value={parseFloat(field_crop.k).toFixed(3)}
-                onChange={(ev) => this.props.onChange(ev, field_crop.field_id, i)}
                 style={{ width: "100%" }}
               />
             </Grid>
@@ -123,7 +117,6 @@ const CropViewTable = withTheme((props) => {
                 label="Salt"
                 name="salt"
                 value={parseFloat(field_crop.salt).toFixed(3)}
-                onChange={(ev) => this.props.onChange(ev, field_crop.field_id, i)}
                 style={{ width: "100%" }}
               />
             </Grid>
@@ -149,8 +142,6 @@ class CropView extends Component {
       dairy: props.dairy,
       field_crops: props.field_crops,
       convertedFieldCrops: props.convertedFieldCrops,
-      convertedFieldCropsKeys: Object.keys(props.convertedFieldCrops)
-        .sort(new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare),
       delFieldCropObj: {},
       showDeleteFieldCropModal: false,
       windowWidth: window.innerWidth,
@@ -163,12 +154,17 @@ class CropView extends Component {
   componentDidMount() {
     this.setWindowListener()
   }
+  getConvertedFieldCropKeys(fc){
+    return Object.keys(fc)
+    .sort(new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare)
+  }
+  componentDidUpdate(prevProps, prevState){
+  }
   onFieldCropChange(ev, key, index) {
     let updates = this.state.convertedFieldCrops
     let updateField = updates[key]  // key is the field which is a list of field_crops
 
     if (!ev.target) {
-      console.log("Updating date field")
       updateField[index]["plant_date"] = ev      // ev is the date,
     } else {
       const { name, value } = ev.target
@@ -230,16 +226,17 @@ class CropView extends Component {
   getItemSize(index) {
     let headerSize = 75
     let itemSize = 135
-    let field_id = this.state.convertedFieldCropsKeys[index]
+    let keys = this.getConvertedFieldCropKeys(this.state.convertedFieldCrops)
+    let field_id = keys[index]
     let field_crops = this.state.convertedFieldCrops[field_id]
-    let numRows = field_crops.length
+    let numRows = field_crops && field_crops.length ? field_crops.length: 45
     
     return headerSize + (numRows * itemSize)
   }
   renderItem({ index, style }) {
-    let field_id = this.state.convertedFieldCropsKeys[index]
+    let keys = this.getConvertedFieldCropKeys(this.state.convertedFieldCrops)
+    let field_id = keys[index]
     let field_crops = this.state.convertedFieldCrops[field_id]
-
     return (
       <CropViewTable key={`cwtz${index}`} style={style}
         field_crops={field_crops}
@@ -250,30 +247,32 @@ class CropView extends Component {
   }
 
   render() {
-
-    // Changes to the inner data of the object doesnt trigger a render state change
     return (
       <Grid item xs={12}>
-        {Object.keys(this.props.dairy).length > 0 ?
+        {Object.keys(this.state.dairy).length > 0 ?
           <Grid item container xs={12}>
             <Grid item xs={12} align='right'>
-              <Tooltip title="Add new Crop">
+              {/* <Tooltip title="Add new Crop">
                 <IconButton variant="outlined" color="primary"
                   onClick={() => this.props.addNewCrop(true)}>
                   <SpeakerGroup />
                 </IconButton>
-              </Tooltip>
+              </Tooltip> */}
             </Grid>
 
             <Grid item xs={12}>
-              <List
-                height={Math.max(this.state.windowHeight - 265, 100)}
-                itemCount={this.state.convertedFieldCropsKeys.length}
-                itemSize={this.getItemSize.bind(this)}
-                width={this.state.windowWidth * (.82)}
-              >
-                {this.renderItem.bind(this)}
-              </List>
+              {this.getConvertedFieldCropKeys(this.state.convertedFieldCrops).length > 0 ?
+                <List
+                  height={Math.max(this.state.windowHeight - 265, 100)}
+                  itemCount={this.getConvertedFieldCropKeys(this.state.convertedFieldCrops).length}
+                  itemSize={this.getItemSize.bind(this)}
+                  width={this.state.windowWidth * (.82)}
+                >
+                  {this.renderItem.bind(this)}
+                </List>
+              :
+                <React.Fragment></React.Fragment>
+              }
 
             </Grid>
           </Grid>

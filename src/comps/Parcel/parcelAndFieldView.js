@@ -45,6 +45,11 @@ class ParcelView extends Component {
   componentDidMount() {
     this.getAllFieldParcels()
   }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.dairy.pk !== this.state.dairy.pk) {
+      this.getAllFieldParcels()
+    }
+  }
  
   onParcelNumberUpdate(parcel_pk, num) {
     let parcels = this.state.curUpdateParcels
@@ -199,7 +204,7 @@ class ParcelView extends Component {
                         onUpdate={this.onParcelNumberUpdate.bind(this)}
                       />
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={2} container justifyContent='center' alignContent='center'>
                       <Tooltip title="Delete Parcel">
                         <IconButton size="small" onClick={() => {this.confirmDeleteParcel(parcel)}}>
                           <DeleteIcon  color="error"/>
@@ -236,7 +241,7 @@ class ParcelView extends Component {
                       onUpdate={this.onFieldUpdate.bind(this)}
                     />
                   </Grid>
-                  <Grid item xs={1}>
+                  <Grid item xs={1} container  justifyContent='center' alignItems='center'>
                   <Tooltip title="Delete Field">
                         <IconButton onClick={() => {this.confirmDeleteField(field)}}>
                           <DeleteIcon color="error"/>

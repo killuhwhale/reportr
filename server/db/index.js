@@ -23,6 +23,44 @@ module.exports = {
   insert: (stmt, values, callback) => {
     return pool.query(format(stmt, values), [], callback)
   },
+
+  getDairyBase: (dairy_id, callback) => {
+    return pool.query(
+      format("SELECT * FROM dairy_base", dairy_id),
+      [],
+      callback
+    )
+  },
+  insertDairyBase: (values, callback) => {
+    return pool.query(
+      format("INSERT INTO dairy_base(title) VALUES (%L)", values),
+      [],
+      callback
+    )
+  },
+  updateDairy: (values, callback) => {
+    return pool.query(`UPDATE dairy_base SET
+    title = $1
+    WHERE pk=$2 RETURNING *`,
+      values,
+      callback
+    )
+  },
+  rmDairyBase: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM dairy_base where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+  getDairiesByDairyBaseID: (dairyBaseID, callback) => {
+    return pool.query(
+      format("SELECT * FROM dairies where dairy_base_id = %L", dairyBaseID),
+      [],
+      callback
+    )
+  },
   getDairies: (reportingYr, callback) => {
     return pool.query(
       format("SELECT * FROM dairies where reporting_yr = %L", reportingYr),
@@ -41,7 +79,14 @@ module.exports = {
 
 
     return pool.query(
-      format("INSERT INTO dairies(title, reporting_yr) VALUES (%L)", values),
+      format("INSERT INTO dairies(dairy_base_id, title, reporting_yr, period_start, period_end) VALUES (%L)", values),
+      [],
+      callback
+    )
+  },
+  insertFullDairy: (values, callback) => {
+    return pool.query(
+      format("INSERT INTO dairies(dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, city_zip, title, basin_plan, p_breed, began, period_start, period_end) VALUES (%L) RETURNING *", values),
       [],
       callback
     )
@@ -62,6 +107,13 @@ module.exports = {
       period_end = $12
       WHERE pk=$13 RETURNING *`,
       values,
+      callback
+    )
+  },
+  rmDairy: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM dairies where pk = %L", id),
+      [],
       callback
     )
   },
@@ -104,7 +156,7 @@ module.exports = {
 
 
     return pool.query(
-      format("INSERT INTO parcels(pnumber, dairy_id) VALUES (%L)", values),
+      format("INSERT INTO parcels(pnumber, dairy_id) VALUES (%L)  RETURNING *", values),
       [],
       callback
     )
@@ -136,7 +188,7 @@ module.exports = {
 
 
     return pool.query(
-      format("INSERT INTO field_parcel(dairy_id, field_id, parcel_id) VALUES (%L)", values),
+      format("INSERT INTO field_parcel(dairy_id, field_id, parcel_id) VALUES (%L)  RETURNING *", values),
       [],
       callback
     )
@@ -175,6 +227,15 @@ module.exports = {
     return pool.query(
       format("DELETE FROM field_parcel where pk = %L ", id),
       [],
+      callback
+    )
+  },
+  searchParcelsByPnum: (values, callback) => {
+
+    return pool.query(
+      `SELECT * FROM parcels
+      where pnumber = $1 and dairy_id = $2`,
+      values,
       callback
     )
   },
@@ -263,6 +324,22 @@ module.exports = {
       format(`INSERT INTO herds(
         dairy_id) VALUES (%L)`, values),
       [],
+      callback
+    )
+  },
+  insertFullHerd: (values, callback) => {
+
+
+    return pool.query(
+      `INSERT INTO herds(
+        dairy_id,
+        milk_cows,
+        dry_cows,
+        bred_cows,
+        cows,
+        calf_young,
+        calf_old) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+      values,
       callback
     )
   },
@@ -364,6 +441,7 @@ module.exports = {
       callback
     )
   },
+
 
   insertFieldCropHarvest: (values, callback) => {
 
@@ -511,6 +589,13 @@ module.exports = {
     return pool.query(
       format("DELETE FROM TSVs where pk = %L", id),
       [],
+      callback
+    )
+  },
+  rmTSVByDairyIDTSVType: (values, callback) => {
+    return pool.query(
+      "DELETE FROM TSVs where dairy_id = $1 and tsvType = $2",
+      values,
       callback
     )
   },
@@ -2360,5 +2445,150 @@ module.exports = {
       callback
     )
   },
+
+  
+  rmAllFieldCrop: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropHarvest: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_harvest where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropApp: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppProcessWastewaterAnalysis: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_process_wastewater_analysis where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppProcessWastewater: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_process_wastewater where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppFreshwaterSource: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_freshwater_source where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppFreshwaterAnalysis: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_freshwater_analysis where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppFreshwater: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_freshwater where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppSolidmanureAnalysis: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_solidmanure_analysis where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppSolidmanure: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_solidmanure where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllNutrientImport: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM nutrient_import where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppFertilizer: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_fertilizer where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppSoilAnalysis: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_soil_analysis where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppSoil: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_soil where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmAllFieldCropAppPlowdownCredit: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM field_crop_app_plowdown_credit where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmExportContact: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM export_contact where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmExportHauler: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM export_hauler where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmExportRecipient: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM export_recipient where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmExportDest: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM export_dest where dairy_id = %L", id),
+      [],
+      callback
+    )
+  },
+  rmExportManifest: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM export_manifest where dairy_id = %L", id),
+      [],
+      callback
+    )
+  }
+
+
+  
 }
 

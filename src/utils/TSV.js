@@ -4,21 +4,21 @@ export default function mTea() { }
 const BASE_URL = "http://localhost:3001"
 
 
+export const HARVEST = 'field_crop_harvest'
+
+
 export const PROCESS_WASTEWATER = 'process_wastewater'
 export const FRESHWATER = 'field_crop_app_freshwater'
 export const SOLIDMANURE = 'field_crop_app_solidmanure'
 export const FERTILIZER = 'field_crop_app_fertilizer'
-
-export const MANURE = 'export_manifest_manure'
-export const WASTEWATER = 'export_manifest_wastewater'
-
-export const HARVEST = 'field_crop_harvest'
 
 export const SOIL = 'field_crop_app_soil'
 export const PLOWDOWN_CREDIT = 'field_crop_app_plowdown_credit'
 export const DRAIN = 'DRAIN'
 export const DISCHARGE = 'Discharge'
 
+export const MANURE = 'export_manifest_manure'
+export const WASTEWATER = 'export_manifest_wastewater'
 
 export const TSV_INFO = {
   [DISCHARGE]: {

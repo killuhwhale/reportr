@@ -8,6 +8,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { CloudUpload } from '@material-ui/icons'
 import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
@@ -173,6 +174,8 @@ class Soil extends Component {
       deleteSoilAnalysisObj: {},
       tsvText: "",
       uploadedFilename: "",
+      toggleShowDeleteAllModal: false,
+
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       showViewTSVsModal: false,
@@ -185,6 +188,13 @@ class Soil extends Component {
     // this.setWindowListener()
     this.getFieldCropAppSoils()
     this.getFieldCropAppSoilAnalyses()
+  }
+
+  componentDidUpdate(prevProps, prevState){
+    if(prevProps.dairy_id !== this.state.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated){
+      this.getFieldCropAppSoils()
+      this.getFieldCropAppSoilAnalyses()
+    }
   }
 
   getFieldCropAppSoils() {
@@ -339,6 +349,23 @@ class Soil extends Component {
       this.setState({ windowHeight: window.innerHeight, windowWidth: window.innerWidth })
     })
   }
+  confirmDeleteAllFromTable(val) {
+    this.setState({ toggleShowDeleteAllModal: val })
+  }
+  deleteAllFromTable() {
+    Promise.all([
+      post(`${BASE_URL}/api/field_crop_app_soil/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+    ])
+      .then(res => {
+        this.getFieldCropAppSoils()
+        this.getFieldCropAppSoilAnalyses()
+        this.confirmDeleteAllFromTable(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
 
   render() {
     return (
@@ -352,12 +379,19 @@ class Soil extends Component {
             </IconButton>
           </Tooltip>
         </Grid>
-        <Grid item xs={2} align="right">
+        <Grid item xs={1} align="right">
           <Tooltip title='View Uploaded TSVs'>
             <IconButton color="secondary" variant="outlined"
               onClick={() => this.toggleViewTSVsModal(true)}
             >
               <WbCloudyIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+        <Grid item xs={1} align='right'>
+          <Tooltip title='Delete all Production Records'>
+            <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+              <DeleteSweepIcon color='error' />
             </IconButton>
           </Tooltip>
         </Grid>
@@ -403,6 +437,15 @@ class Soil extends Component {
           onAction={this.onSoilDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteSoilModal(false)}
         />
+
+        <ActionCancelModal
+          open={this.state.toggleShowDeleteAllModal}
+          actionText="Delete all"
+          cancelText="Cancel"
+          modalText={`Delete All Soil Sample Events?`}
+          onAction={this.deleteAllFromTable.bind(this)}
+          onClose={() => this.confirmDeleteAllFromTable(false)}
+        />  
 
         <ActionCancelModal
           open={this.state.showConfirmDeleteSoilAnalysisModal}

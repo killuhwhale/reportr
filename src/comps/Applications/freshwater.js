@@ -20,6 +20,7 @@ import { VariableSizeList as List } from "react-window";
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import AddFreshwaterSourceModal from "../Modals/addFreshwaterSourceModal"
 import AddFreshwaterAnalysisModal from "../Modals/addFreshwaterAnalysisModal"
 import AddFreshwaterModal from "../Modals/addFreshwaterModal"
@@ -28,6 +29,7 @@ import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-type
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
 import { FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
+import { groupBySortBy } from "../../utils/format"
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
@@ -37,6 +39,9 @@ const SOURCE_OF_ANALYSES = [
   'Lab Analysis',
   'Other/ Estimated',
 ]
+
+
+
 
 
 
@@ -160,10 +165,10 @@ class Freshwater extends Component {
     super(props)
     this.state = {
       dairy_id: props.dairy_id,
-      fieldCropAppEvents: props.fieldCropAppEvents,
-      fieldCropAppFreshwaterSources: props.fieldCropAppFreshwaterSources,
-      fieldCropAppFreshwaterAnalyses: props.fieldCropAppFreshwaterAnalyses,
-      fieldCropAppFreshwaters: props.fieldCropAppFreshwaters,
+      fieldCropAppEvents: [],
+      fieldCropAppFreshwaterSources: [],
+      fieldCropAppFreshwaterAnalyses: [],
+      fieldCropAppFreshwaters: {},
       tsvType: props.tsvType,
       numCols: props.numCols,
       showAddFreshwaterSourceModal: false,
@@ -181,6 +186,7 @@ class Freshwater extends Component {
       showViewTSVsModal: false,
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
+      toggleShowDeleteAllModal: false,
       createFreshwaterSourceObj: {
         dairy_id: props.dairy_id,
         src_desc: "",
@@ -225,6 +231,64 @@ class Freshwater extends Component {
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
+
+  componentDidMount() {
+    this.getFieldCropAppEvents()
+    this.getFieldCropAppFreshwaterSource()
+    this.getFieldCropAppFreshwaterAnalysis()
+    this.getFieldCropAppFreshwater()
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.dairy_id !== this.state.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated) {
+      this.getFieldCropAppEvents()
+      this.getFieldCropAppFreshwaterSource()
+      this.getFieldCropAppFreshwaterAnalysis()
+      this.getFieldCropAppFreshwater()
+    }
+  }
+
+  getFieldCropAppEvents() {
+    get(`${BASE_URL}/api/field_crop_app/${this.state.dairy_id}`)
+      .then(res => {
+        res.sort((a, b) => {
+          return `${a.fieldtitle} ${a.app_date} ${a.app_method}` > `${b.fieldtitle} ${b.app_date} ${b.app_method}` ? 1 : -1
+        })
+
+        this.setState({ fieldCropAppEvents: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  getFieldCropAppFreshwaterSource() {
+    get(`${BASE_URL}/api/field_crop_app_freshwater_source/${this.state.dairy_id}`)
+      .then(res => {
+        this.setState({ fieldCropAppFreshwaterSources: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  getFieldCropAppFreshwaterAnalysis() {
+    get(`${BASE_URL}/api/field_crop_app_freshwater_analysis/${this.state.dairy_id}`)
+      .then(res => {
+        this.setState({ fieldCropAppFreshwaterAnalyses: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  getFieldCropAppFreshwater() {
+    get(`${BASE_URL}/api/field_crop_app_freshwater/${this.state.dairy_id}`)
+      .then(res => {
+        let fieldCropAppFreshwaters = groupBySortBy(res, 'fieldtitle', 'app_date')
+        this.setState({ fieldCropAppFreshwaters: fieldCropAppFreshwaters })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
 
   /** Manually add Process Wastewater */
   toggleShowAddFreshwaterSourceModal(val) {
@@ -284,7 +348,7 @@ class Freshwater extends Component {
     let createObj = this.state.createFreshwaterSourceObj
     createObj.dairy_id = this.state.dairy_id
     createObj.src_type = FRESHWATER_SOURCE_TYPES[parseInt(createObj.src_type_idx)]
-    
+
     post(`${BASE_URL}/api/field_crop_app_freshwater_source/create`, createObj)
       .then(res => {
         console.log(res)
@@ -424,7 +488,7 @@ class Freshwater extends Component {
             // uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
             this.toggleShowUploadFieldCropAppFreshwateTSVModal(false)
             uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-            this.props.getFieldCropAppFreshwater()
+            this.getFieldCropAppFreshwater()
           })
           .catch(err => {
             console.log("Error with all promises")
@@ -485,12 +549,33 @@ class Freshwater extends Component {
     })
   }
 
+  confirmDeleteAllFromTable(val) {
+    this.setState({ toggleShowDeleteAllModal: val })
+  }
+  deleteAllFromTable() {
+    Promise.all([
+      post(`${BASE_URL}/api/field_crop_app_freshwater/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+    ])
+      .then(res => {
+        this.confirmDeleteAllFromTable(false)
+        this.getFieldCropAppEvents()
+        this.getFieldCropAppFreshwaterSource()
+        this.getFieldCropAppFreshwaterAnalysis()
+        this.getFieldCropAppFreshwater()
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+
   render() {
 
     return (
       <Grid item xs={12} container >
         <Grid item container xs={12}>
-          <Grid item xs={8} align="right">
+          <Grid item xs={10} align="right">
             <Tooltip title='Upload TSV'>
               <IconButton color="primary" variant="outlined"
                 onClick={() => this.toggleShowUploadFieldCropAppFreshwateTSVModal(true)}
@@ -511,8 +596,16 @@ class Freshwater extends Component {
 
             </Tooltip>
           </Grid>
-
           <Grid item xs={1} align="right">
+            <Tooltip title='Delete all Production Records'>
+              <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+                <DeleteSweepIcon color='error' />
+              </IconButton>
+            </Tooltip>
+
+          </Grid>
+
+          {/* <Grid item xs={1} align="right">
             <Tooltip title='Add freshwater source'>
               <IconButton color="primary" variant="outlined"
                 onClick={() => this.toggleShowAddFreshwaterSourceModal(true)}
@@ -543,7 +636,7 @@ class Freshwater extends Component {
               </IconButton>
 
             </Tooltip>
-          </Grid>
+          </Grid> */}
         </Grid>
 
         <ViewTSVsModal
@@ -565,7 +658,14 @@ class Freshwater extends Component {
           onClose={() => this.toggleShowUploadFieldCropAppFreshwateTSVModal(false)}
         />
 
-
+        <ActionCancelModal
+          open={this.state.toggleShowDeleteAllModal}
+          actionText="Delete all"
+          cancelText="Cancel"
+          modalText={`Delete All Freshwater Application Events?`}
+          onAction={this.deleteAllFromTable.bind(this)}
+          onClose={() => this.confirmDeleteAllFromTable(false)}
+        />  
 
 
 

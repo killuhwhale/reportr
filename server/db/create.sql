@@ -1,6 +1,7 @@
 --- db: reportrr, user: admin, pass 
 
 -- Clear DB COMMAND :) 
+
 -- DO $$ DECLARE
 --     r RECORD;
 -- BEGIN
@@ -8,13 +9,19 @@
 --         EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
 --     END LOOP;
 -- END $$;
--- NEED TO UPDATE
---     OPERATORS UNIQUE,
---      Export_manifest, total npk removed
 
---
+
+
+-- Query 
+CREATE TABLE IF NOT EXISTS dairy_base(
+  pk SERIAL PRIMARY KEY,  
+  title VARCHAR(100) NOT NULL,
+  UNIQUE(title)
+);
+
 CREATE TABLE IF NOT EXISTS dairies(
   pk SERIAL PRIMARY KEY,
+  dairy_base_id INT NOT NULL,
   reporting_yr SMALLINT DEFAULT 2021,
   period_start TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   period_end TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -24,11 +31,15 @@ CREATE TABLE IF NOT EXISTS dairies(
   city VARCHAR(30) DEFAULT '',
   city_state VARCHAR(3) DEFAULT 'CA',
   city_zip VARCHAR(20) DEFAULT '',
-  title VARCHAR(30) NOT NULL,
+  title VARCHAR(100) NOT NULL,
   basin_plan VARCHAR(50),
   p_breed VARCHAR(50),
   began timestamp DEFAULT NOW(),
-  UNIQUE(title, reporting_yr)
+  UNIQUE(dairy_base_id, reporting_yr),
+  CONSTRAINT fk_dairy_base
+    FOREIGN KEY(dairy_base_id) 
+	  REFERENCES dairy_base(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS fields(
@@ -94,6 +105,7 @@ CREATE TABLE IF NOT EXISTS operators(
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
 	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS herds(
   pk SERIAL PRIMARY KEY,
@@ -108,6 +120,7 @@ CREATE TABLE IF NOT EXISTS herds(
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
 	  REFERENCES dairies(pk)
+     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- n p k salt values are from dude's table which are converted from merced.app reference link 
