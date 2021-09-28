@@ -254,9 +254,9 @@ class NutrientApplicationTab extends Component {
               <Typography variant="h2">Nutrient Applications</Typography>
             </Grid>
 
-            <Grid item xs={5} align="center" >
+            <Grid item xs={5} align="right" >
 
-              <Tooltip title='Delete all Production Records'>
+              <Tooltip title='Delete all Nutrient Applications'>
                 <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
                   <DeleteSweepIcon color='error' />
                 </IconButton>

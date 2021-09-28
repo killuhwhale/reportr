@@ -66,6 +66,11 @@ Find login Solution....
 
 
 
+Firebase Login
+Launch AWS
+Create Docker Maybe?
+
+
 Per Company Basis Issues:
 - Logos and Company Specific Assets Need to go into a DB Table
   - Logo -- stored as text: base64 png

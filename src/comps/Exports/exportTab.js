@@ -1318,7 +1318,7 @@ class ExportTab extends Component {
                   </Tooltip>
                 </Grid>
                 <Grid item xs={3} align='right'>
-                  <Tooltip title='Delete all Production Records'>
+                  <Tooltip title='Delete all Export Manifests'>
                     <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
                       <DeleteSweepIcon color='error' />
                     </IconButton>

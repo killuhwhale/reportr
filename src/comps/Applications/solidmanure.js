@@ -500,7 +500,7 @@ class Solidmanure extends Component {
             </Tooltip>
           </Grid>
           <Grid item xs={1} align="right">
-            <Tooltip title='Delete all Production Records'>
+            <Tooltip title='Delete all Solid Manure'>
               <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
                 <DeleteSweepIcon color='error' />
               </IconButton>

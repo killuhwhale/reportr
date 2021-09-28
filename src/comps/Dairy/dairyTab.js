@@ -578,7 +578,7 @@ class DairyTab extends Component {
             </Grid>
 
             <Grid item xs={2} align='right'>
-              <Tooltip title='Delete all Production Records'>
+              <Tooltip title='Delete Dairy'>
                 <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
                   <DeleteSweepIcon color='error' />
                 </IconButton>

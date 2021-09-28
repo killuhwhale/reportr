@@ -459,7 +459,7 @@ class ProcessWastewater extends Component {
         </Grid>
 
         <Grid item xs={1} align='right'>
-          <Tooltip title='Delete all Production Records'>
+          <Tooltip title='Delete all Process Wastewater'>
             <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
               <DeleteSweepIcon color='error' />
             </IconButton>

@@ -1,10 +1,14 @@
+import { getAuth, sendPasswordResetEmail } from "firebase/auth"
+
 import React, { Component } from 'react'
 import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField, AppBar, Tabs, Tab
 } from '@material-ui/core'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import AddIcon from '@material-ui/icons/Add'
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+
 import DairyTab from "../comps/Dairy/dairyTab"
 import HerdTab from "../comps/Herds/herdTab"
 import CropTab from "../comps/Crops/cropTab"
@@ -13,6 +17,7 @@ import AddDairyModal from "../comps/Modals/addDairyModal"
 import AddDairyBaseModal from "../comps/Modals/addDairyBaseModal"
 import NutrientApplicationTab from "../comps/Applications/appNutrientTab"
 import ExportTab from "../comps/Exports/exportTab"
+import ActionCancelModal from "../comps/Modals/actionCancelModal"
 
 import { get, post, uploadFiles } from "../utils/requests"
 import "../App.css"
@@ -21,12 +26,14 @@ const BASE_URL = "http://localhost:3001"
 const COUNTIES = ["Merced", "San Joaquin"]
 const BASINS = ["River", "Rio"]
 const BREEDS = ["Heffy guy", "Milker Boi", "Steakz"]
-const YEARS = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025]
+
+
 
 class HomePage extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      user: props.user,
       baseDairies: [],
       baseDairiesIdx: 0,
       dairies: [],
@@ -37,6 +44,7 @@ class HomePage extends Component {
       showAddDairyBaseModal: false,
       createDairyTitle: "",
       updateDairyObj: {},
+      toggleShowLogoutModal: false,
       tabs: {
         0: "show",
         1: "hide",
@@ -61,7 +69,7 @@ class HomePage extends Component {
       .then(res => {
         const dairyBase = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
         if (Object.keys(dairyBase).length > 0) {
-          let baseDairiesIdx = this.state.baseDairiesIdx < res.length ? this.state.baseDairiesIdx: 0
+          let baseDairiesIdx = this.state.baseDairiesIdx < res.length ? this.state.baseDairiesIdx : 0
           this.setState({ baseDairies: res, baseDairiesIdx: baseDairiesIdx, dairyBase }, () => {
             this.getDairies()
           })
@@ -132,7 +140,7 @@ class HomePage extends Component {
       get(`${BASE_URL}/api/dairies/dairyBaseId/${baseDairiesId}`)
         .then(res => {
           const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
-          let dairyIdx = this.state.dairyIdx < res.length ?  this.state.dairyIdx: 0
+          let dairyIdx = this.state.dairyIdx < res.length ? this.state.dairyIdx : 0
           this.setState({ dairies: res, dairyIdx: dairyIdx, dairy })
         })
         .catch(err => {
@@ -167,13 +175,71 @@ class HomePage extends Component {
     this.setState({ dairy, dairyIdx })
   }
 
+  
+  confirmLogout(val){
+    this.setState({toggleShowLogoutModal: val})
+  }
 
+  logout() {
+    console.log("Loggin user out!")
+    const auth = getAuth()
+    auth.signOut()
+      .then(() => {
+        console.log("After user logout")
+        this.confirmLogout(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  confirmResetPassword(val){
+    this.setState({showResetPasswordModal: val})
+  }
+
+  resetPassword(){
+    const auth = getAuth()
+
+    sendPasswordResetEmail(auth, auth.currentUser.email)
+    .then(() => {
+      console.log("Email sent")
+      this.confirmResetPassword(false)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
 
   render() {
     return (
       <Grid container direction="row" item xs={12} spacing={2}>
         <Grid item container alignItems='flex-start' xs={2} >
           <Grid item container xs={12}>
+            <Grid item container justifyContent='center' xs={12}>
+              <Grid item align xs={6} style={{marginBottom: '16px'}}>
+                <Typography variant='subtitle1'>
+                  <TextField 
+                    label='Email'
+                    value={this.state.user.email}
+                  />
+                </Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Tooltip title='resetPassword'>
+                  <IconButton onClick={this.confirmResetPassword.bind(this)}>
+                    <RotateLeftIcon color='secondary' />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid item xs={3}>
+                <Tooltip title='logout'>
+                  <IconButton onClick={this.confirmLogout.bind(this)}>
+                    <PowerSettingsNewIcon color='error' />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
+
             <Grid item xs={12}>
               <TextField select
                 name='baseDairiesIdx'
@@ -344,6 +410,23 @@ class HomePage extends Component {
           modalText={`Add Dairy Base`}
           onDone={() => { this.getBaseDairies() }}
           onClose={() => this.toggleAddDairyBaseModal(false)}
+        />
+
+        <ActionCancelModal
+          open={this.state.toggleShowLogoutModal}
+          actionText="Logout"
+          cancelText="Cancel"
+          modalText={`Are you sure you want to logout and leave?`}
+          onAction={this.logout.bind(this)}
+          onClose={() => this.confirmLogout(false)}
+        />
+         <ActionCancelModal
+          open={this.state.showResetPasswordModal}
+          actionText="Reset Password"
+          cancelText="Cancel"
+          modalText={`Are you sure you want to reset password via email?`}
+          onAction={this.resetPassword.bind(this)}
+          onClose={() => this.confirmResetPassword(false)}
         />
       </Grid>
     )
