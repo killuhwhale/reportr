@@ -5,14 +5,16 @@ import {
   Switch, Route, Link, BrowserRouter
 } from 'react-router-dom';
 import {
-  createTheme, withStyles, ThemeProvider, responsiveFontSizes
+  createTheme, withStyles, withTheme, ThemeProvider, responsiveFontSizes
 } from '@material-ui/core/styles';
 import {
-  Grid, Paper
+  Grid, IconButton, Paper, Typography, ClickAwayListener
 } from '@material-ui/core';
+
+
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-
+import CloseIcon from '@material-ui/icons/Close';
 import apptheme from "./css/apptheme"
 import pdftheme from "./css/lightTheme"
 
@@ -23,7 +25,79 @@ import TSVPrint from "./pages/tsvPrint"
 import { TSV_INFO } from "./utils/TSV"
 
 
+const AlertGrid = withStyles(theme => ({
+  root: {
+    position: "absolute",
+    top: 0,
+    display: 'flex', // make us of Flexbox
+    alignItems: 'center', // does vertically center the desired content
+    justifyContent: 'center', // horizontally centers single line items
+    textAlign: 'center',
+    width: '98vw',
 
+  }
+}))(Grid)
+
+const GreenGrid = withStyles(theme => ({
+  root: {
+    backgroundColor: '#313131',
+    border: '3px solid #057d19',
+    borderRadius: '8px',
+    marginTop: '32px',
+  }
+}))(Grid)
+
+const RedGrid = withStyles(theme => ({
+  root: {
+    backgroundColor: '#313131',
+    border: '3px solid #a51e00',
+    borderRadius: '8px',
+    marginTop: '32px'
+  }
+}))(Grid)
+
+
+const SuccessAlert = withTheme((props) => {
+  const Inner = () => {
+    return (
+      <React.Fragment>
+        <Grid item xs={10}>
+          <Typography variant='h6'>
+            {props.msg}
+          </Typography>
+        </Grid>
+        <Grid item xs={2}>
+          <IconButton onClick={props.onClose} size="small">
+            <CloseIcon />
+          </IconButton>
+        </Grid>
+      </React.Fragment>
+    )
+  }
+
+
+  return (
+    <ClickAwayListener onClickAway={props.onClose}>
+      <AlertGrid item xs={12}>
+        <Grid item xs={3}></Grid>
+        <Grid item xs={6}>
+          {
+            props.severity === 'success' ?
+              <GreenGrid item container xs={12}>
+                <Inner props={props} />
+              </GreenGrid>
+
+              :
+              <RedGrid item container xs={12}>
+                <Inner props={props} />
+              </RedGrid>
+          }
+        </Grid>
+        <Grid item xs={3}></Grid>
+      </AlertGrid>
+    </ClickAwayListener>
+  )
+})
 
 const BackgroundGrid = withStyles(theme => ({
   root: {
@@ -48,8 +122,9 @@ export default class App extends React.Component {
     this.state = {
       user: {},
       theme: darkTheme,
-      alertInfo: {},
-      alertOpen: false,
+      showAlert: true,
+      alertSeverity: 'err',
+      alertMsg: 'state.message',
     }
   }
 
@@ -57,89 +132,108 @@ export default class App extends React.Component {
     return state
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.listenUser()
   }
 
-  listenUser(){
+
+  listenUser() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log(user)
-        this.setState({user})
+        this.setState({ user })
       } else {
-       console.log("Logged out!")
-       this.setState({user: {}})
+        console.log("Logged out!")
+        this.setState({ user: {} })
       }
     });
   }
 
-  onAlert(alert) {
-    console.log(alert)
-    // this.setState({alertInfo: alert, alertOpen: true})
+  onAlert(alertMsg, alertSeverity) {
+    this.setState({ alertMsg, alertSeverity, showAlert: true })
+    this.delayedClose()
   }
 
-  onCloseAlert() {
-    // this.setState({alertOpen: false, alertInfo: false})
+
+  delayedClose(){
+    new Promise(resolve => setTimeout(resolve, 3000))
+    .then(() => {
+      this.onCloseAlert()
+    })
   }
-  onLogin(user){
+  onCloseAlert() {
+    this.setState({ showAlert: false })
+  }
+
+  onLogin(user) {
     console.log("App.js onLogin:", user)
-    this.setState({user})
+    this.setState({ user })
   }
 
 
   render() {
     return (
-        this.state.user && this.state.user.uid?
-          <FirebaseAuthContext.Provider value={app}>
-            <BrowserRouter >
-              <ThemeProvider theme={this.state.theme}>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <Switch>
-                    <Route exact path="/">
-                      <BackgroundGrid container direction="column" alignItems="center">
-                        <Grid item container xs={12}
-                          style={{
-                            minHeight: "100%",
-                            paddingTop: "8px",
-                            paddingLeft: "8px",
-                            paddingRight: "8px"
-                          }}
-                        >
-                          <Paper style={{ minWidth: "100%" }}>
-                            <HomePage
-                              user={this.state.user}
-                              onAlert={this.onAlert.bind(this)}
-                            />
-                          </Paper>
-                        </Grid>
-                      </BackgroundGrid>
-                    </Route>
-      
-                    <Route path="/tsv/:dairy_id/:tsvType"
-                      render={props => {
-                        return (
-                          <ThemeProvider theme={pdfTheme}>
-                            <TSVPrint
-                              dairy_id={props.match.params.dairy_id}
-                              tsvType={props.match.params.tsvType}
-                              numCols={TSV_INFO[props.match.params.tsvType].numCols}
-                              onAlert={this.onAlert.bind(this)} />
-                          </ThemeProvider>
-                        )
-                      }
-                      }
-                    />
-                  </Switch>
-      
-      
-      
-                </MuiPickersUtilsProvider>
-              </ThemeProvider>
-            </BrowserRouter>
-          </FirebaseAuthContext.Provider>
+      this.state.user && this.state.user.uid ?
+        <FirebaseAuthContext.Provider value={app}>
+          <BrowserRouter >
+            <ThemeProvider theme={this.state.theme}>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <Switch>
+                  <Route exact path="/">
+                    <BackgroundGrid container direction="column" alignItems="center">
+                      <Grid item container xs={12}
+                        style={{
+                          minHeight: "100%",
+                          paddingTop: "8px",
+                          paddingLeft: "8px",
+                          paddingRight: "8px"
+                        }}
+                      >
+                        <Paper style={{ minWidth: "100%" }}>
+                          <HomePage
+                            user={this.state.user}
+                            onAlert={this.onAlert.bind(this)}
+                          />
+                          {
+                            this.state.showAlert ?
+                              <SuccessAlert
+                                onClose={this.onCloseAlert.bind(this)}
+                                severity={this.state.alertSeverity} 
+                                msg={this.state.alertMsg} />
+                              :
+                                <React.Fragment></React.Fragment>
+
+                          }
+                        </Paper>
+                      </Grid>
+                    </BackgroundGrid>
+                  </Route>
+
+                  <Route path="/tsv/:dairy_id/:tsvType"
+                    render={props => {
+                      return (
+                        <ThemeProvider theme={pdfTheme}>
+                          <TSVPrint
+                            dairy_id={props.match.params.dairy_id}
+                            tsvType={props.match.params.tsvType}
+                            numCols={TSV_INFO[props.match.params.tsvType].numCols}
+                            onAlert={this.onAlert.bind(this)} />
+                        </ThemeProvider>
+                      )
+                    }
+                    }
+                  />
+                </Switch>
+
+
+
+              </MuiPickersUtilsProvider>
+            </ThemeProvider>
+          </BrowserRouter>
+        </FirebaseAuthContext.Provider>
         :
         <ThemeProvider theme={this.state.theme}>
-          <Login 
+          <Login
             onLogin={this.onLogin.bind(this)}
           />
         </ThemeProvider>

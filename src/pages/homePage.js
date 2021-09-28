@@ -19,6 +19,8 @@ import NutrientApplicationTab from "../comps/Applications/appNutrientTab"
 import ExportTab from "../comps/Exports/exportTab"
 import ActionCancelModal from "../comps/Modals/actionCancelModal"
 
+
+
 import { get, post, uploadFiles } from "../utils/requests"
 import "../App.css"
 
@@ -72,6 +74,7 @@ class HomePage extends Component {
           let baseDairiesIdx = this.state.baseDairiesIdx < res.length ? this.state.baseDairiesIdx : 0
           this.setState({ baseDairies: res, baseDairiesIdx: baseDairiesIdx, dairyBase }, () => {
             this.getDairies()
+            this.props.onAlert('Test!', "success")
           })
         } else {
           this.setState({ baseDairies: res, baseDairiesIdx: 0, dairyBase })
