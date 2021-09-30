@@ -1,74 +1,33 @@
-Running psql macos 
-- /Library/PostgreSQL/13/scripts/runpsql.sh
-- added to .zshrc ==> $ runpsql
-start server from /server npm start
-start react from root npm start
+React
+  reportrr % npm start
 
+Express
+reportrr/server % npm start 
 
+PSQL
+  Running psql macos 
+  - /Library/PostgreSQL/13/scripts/runpsql.sh
+  - added to .zshrc ==> $ runpsql
+  start server from /server npm start
+  start react from root npm start
 
-
-PNG
+  PSQL on Google Cloud Cloud(Not neeeded after all, able to use antoher method with name)
+    - psql "sslmode=verify-ca sslrootcert=server-ca.pem sslcert=client-cert.pem sslkey=client-key.pem hostaddr=34.102.61.45 port=5432 user=postgres dbname=postgres"
 
 
 
 ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
-- FRESH WATER APP EVENT Field 6 11/01/2019 planted, 10/10/2019 applied, this was in the spreadsheet but not in merced app.
+  - FRESH WATER APP EVENT Field 6 11/01/2019 planted, 10/10/2019 applied, this was in the spreadsheet but not in merced   
+      app.
     - This was making me think I had a bug, but spreadsheet data and data in merced app don't match 100% :(
-
-
-
---------------------------------------------------------------------------------------------------------------
-Firebase & Google Cloud
-
-Firebase:
-  -- 
-
-Google Cloud
-https://cloud.google.com/storage/docs/reference/libraries?authuser=3#client-libraries-install-nodejs
-
-To host your site with Firebase Hosting, you need the Firebase CLI (a command line tool).
-
-Run the following npm command to install the CLI or update to the latest CLI version.
-
-npm install -g firebase-tools
-
-You can deploy now or later. To deploy now, open a terminal window, then navigate to or create a root directory for your web app.
-
-Sign in to Google
-firebase login
-Initiate your project
-Run this command from your app’s root directory:
-
-firebase init
-When you’re ready, deploy your web app
-Put your static files (e.g., HTML, CSS, JS) in your app’s deploy directory (the default is “public”). Then, run this command from your app’s root directory:
-
-firebase deploy
-
---------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
 
 
 
 TODO
 
-Find login Solution....
-  - Firebase Logins?
 
-  - Protect Backend from unauthenticated requests.... ummmmm.......
-  - Firebase will log me in front end, if this user is logged in update session and use session?
-  - Look up exisiting solutions....
-
-
-
-Firebase Login
-Launch AWS
-Create Docker Maybe?
+- add baseURL to process env vars 
+  - Update anywhere that still has const BASE_URL = 'http://localhost:3001'
 
 
 Per Company Basis Issues:
@@ -88,7 +47,8 @@ Problems:
   - (Feature) Button to delete all entries in a table....
   - (Huge, Quality Check) Deletes work as expected, If a Field is deleted, everything related to it is also deleted....
    
-   
+   - (BUG) Certification if there are no owners or operators, onupdate will crash
+
   - (BUG) No validation checks
     - All Spreadsheets need Numeric Data Validation. Could add to Spreadsheet but should also be in the code.
       - Check website by entering wrong info and implement it.

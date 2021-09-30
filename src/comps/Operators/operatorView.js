@@ -15,7 +15,6 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests';
 import { ImportExport, InsertEmoticon } from '@material-ui/icons';
 
-const BASE_URL = "http://localhost:3001"
 
 
 class OperatorView extends Component {
@@ -60,15 +59,18 @@ class OperatorView extends Component {
   }
   createOperator() {
     console.log("Creating operator", this.state.createOperatorObj, this.state.dairy)
-    post(`${BASE_URL}/api/operators/create`, {
+    post(`${this.props.BASE_URL}/api/operators/create`, {
       ...this.state.createOperatorObj, dairy_id: this.state.dairy.pk
     })
       .then(res => {
         // console.log(res)
         this.getAllOperators()
+        this.props.onAlert('Success!', 'success')
+        this.toggleOperatorModal(false)
       })
       .catch(err => {
         console.log(err)
+        this.props.onAlert('Failed to create operator!', 'error')
       })
   }
   onOperatorModalUpdate(ev) {
@@ -79,7 +81,7 @@ class OperatorView extends Component {
   }
 
   getAllOperators() {
-    get(`${BASE_URL}/api/operators/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/operators/${this.state.dairy.pk}`)
       .then(res => {
         // console.log(res)
         this.setState({ operators: res })
@@ -104,15 +106,17 @@ class OperatorView extends Component {
     let operators = this.state.operators.filter((op, i) => this.updatedOperators.has(i))
     let promises = operators.map((operator, i) => {
       return (
-        post(`${BASE_URL}/api/operators/update`, operator)
+        post(`${this.props.BASE_URL}/api/operators/update`, operator)
       )
     })
     Promise.all(promises)
       .then(res => {
         this.updatedOperators = new Set()
+        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.props.onAlert('Failed to update operators', 'error')
       })
   }
 
@@ -125,7 +129,7 @@ class OperatorView extends Component {
   }
   deleteOperator() {
     console.log("deleteing operator", this.state.curDeleteOperatorObj)
-    post(`${BASE_URL}/api/operators/delete`, { pk: this.state.curDeleteOperatorObj.pk })
+    post(`${this.props.BASE_URL}/api/operators/delete`, { pk: this.state.curDeleteOperatorObj.pk })
       .then(res => {
         console.log(res)
         this.getAllOperators()

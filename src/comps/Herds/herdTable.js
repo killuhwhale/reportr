@@ -36,7 +36,7 @@ import { ImportExport } from '@material-ui/icons';
  * When
  */
 
-const BASE_URL = "http://localhost:3001"
+
 
 const REPORTING_PERIOD = 365
 
@@ -70,7 +70,7 @@ class HerdTable extends Component {
     }
   }
   getHerds() {
-    get(`${BASE_URL}/api/herds/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/herds/${this.state.dairy.pk}`)
       .then(res => {
         // console.log(res)
         if (res.test || res.length === 0) {
@@ -97,7 +97,7 @@ class HerdTable extends Component {
   }
   createHerds() {
     // console.log(this.state.dairy)
-    post(`${BASE_URL}/api/herds/create`, { dairy_id: this.state.dairy.pk })
+    post(`${this.props.BASE_URL}/api/herds/create`, { dairy_id: this.state.dairy.pk })
       .then(res => {
         // console.log(res)
         this.getHerds()
@@ -109,14 +109,16 @@ class HerdTable extends Component {
 
   updateHerds() {
     // console.log("Updating Herds", this.state.herds)
-    post(`${BASE_URL}/api/herds/update`, this.state.herds)
+    post(`${this.props.BASE_URL}/api/herds/update`, this.state.herds)
       .then(res => {
         // console.log(res)
         this.calcHerd()
         // this.getHerds()
+        this.props.onAlert('Updated!', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.props.onAlert('Failed to update herds!', 'error')
       })
   }
 
@@ -129,10 +131,8 @@ class HerdTable extends Component {
     //    - This column has a key: milk_cows, dry_cows_bred_cows, etc...
     // The Calc function should just return the extracted & updated state obj
     // Then the calling function can use the returned object as they need.
-    getReportingPeriodDays(this.state.dairy.pk)
+    getReportingPeriodDays(this.props.BASE_URL, this.state.dairy.pk)
     .then(rpDays => {
-      console.log("Days in reporting period: ", rpDays)
-      console.log('Herds::', this.state.herds)
       if(this.state.herds){
         let _herdCalc = calculateHerdManNKPNaCl(this.state.herds, rpDays)
         this.setState({ herdCalc: _herdCalc })

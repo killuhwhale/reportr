@@ -6,7 +6,7 @@ import RemoveRedEyeIcon from '@material-ui/icons/RemoveRedEye';
 import { withTheme } from '@material-ui/core/styles';
 import ActionCancelModal from './actionCancelModal';
 import { get, post } from '../../utils/requests';
-const BASE_URL = "http://localhost:3001"
+
 
 class ViewTSVsModal extends Component {
   constructor(props) {
@@ -32,7 +32,7 @@ class ViewTSVsModal extends Component {
     }
   }
   getAllTSVs() {
-    get(`${BASE_URL}/api/tsv/${this.state.dairy_id}/${this.state.tsvType}`)
+    get(`${this.props.BASE_URL}/api/tsv/${this.state.dairy_id}/${this.state.tsvType}`)
       .then(res => {
         this.setState({
           hasTSVs: res.length > 0,
@@ -49,7 +49,7 @@ class ViewTSVsModal extends Component {
   }
   deleteTSV() {
     console.log("Deleteing tsv", this.state.curDeleteObj)
-    post(`${BASE_URL}/api/tsv/delete`, { pk: this.state.curDeleteObj.pk })
+    post(`${this.props.BASE_URL}/api/tsv/delete`, { pk: this.state.curDeleteObj.pk })
       .then(res => {
         console.log(res)
         this.toggleShowDeleteTSV(false)

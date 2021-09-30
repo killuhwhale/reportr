@@ -15,8 +15,6 @@ import Drain from './drain'
 import { get, post } from '../../utils/requests'
 
 
-const BASE_URL = "http://localhost:3001"
-
 class HerdTab extends Component {
   constructor(props) {
     super(props)
@@ -76,24 +74,32 @@ class HerdTab extends Component {
                   <HerdTable
                     dairy={this.state.dairy}
                     herds={this.state.herds}
+                    onAlert={this.props.onAlert}
+                    BASE_URL={this.props.BASE_URL}
                   />
                 </Grid>
                 : this.state.tabs[1] === 'show' ?
                   <Grid item xs={12}>
                     <Drain
                       dairy_id={this.state.dairy.pk}
+                      onAlert={this.props.onAlert}
+                      BASE_URL={this.props.BASE_URL}
                     />
                   </Grid>
                   : this.state.tabs[2] === 'show' ?
                     <Grid item xs={12}>
                       <Discharge
                         dairy_id={this.state.dairy.pk}
+                        onAlert={this.props.onAlert}
+                        BASE_URL={this.props.BASE_URL}
                       />
                     </Grid>
                     : this.state.tabs[3] === 'show' ?
                       <Grid item xs={12}>
                         <Agreement
                           dairy_id={this.state.dairy.pk}
+                          onAlert={this.props.onAlert}
+                          BASE_URL={this.props.BASE_URL}
                         />
                       </Grid>
                       :

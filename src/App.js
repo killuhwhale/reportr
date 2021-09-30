@@ -25,9 +25,14 @@ import TSVPrint from "./pages/tsvPrint"
 import { TSV_INFO } from "./utils/TSV"
 
 
+const isProd = window.location.hostname !== 'localhost'
+const BASE_URL = isProd? 'https://reportrpsql.wl.r.appspot.com': 'http://localhost:3001'
+
+
+
 const AlertGrid = withStyles(theme => ({
   root: {
-    position: "absolute",
+    position: "fixed",
     top: 0,
     display: 'flex', // make us of Flexbox
     alignItems: 'center', // does vertically center the desired content
@@ -77,8 +82,8 @@ const SuccessAlert = withTheme((props) => {
 
 
   return (
-    <ClickAwayListener onClickAway={props.onClose}>
-      <AlertGrid item xs={12}>
+      <ClickAwayListener onClickAway={props.onClose}>
+    <AlertGrid item xs={12}>
         <Grid item xs={3}></Grid>
         <Grid item xs={6}>
           {
@@ -94,8 +99,8 @@ const SuccessAlert = withTheme((props) => {
           }
         </Grid>
         <Grid item xs={3}></Grid>
-      </AlertGrid>
-    </ClickAwayListener>
+    </AlertGrid>
+      </ClickAwayListener>
   )
 })
 
@@ -123,8 +128,8 @@ export default class App extends React.Component {
       user: {},
       theme: darkTheme,
       showAlert: true,
-      alertSeverity: 'err',
-      alertMsg: 'state.message',
+      alertSeverity: 'success',
+      alertMsg: 'Test',
     }
   }
 
@@ -140,7 +145,6 @@ export default class App extends React.Component {
   listenUser() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(user)
         this.setState({ user })
       } else {
         console.log("Logged out!")
@@ -154,12 +158,11 @@ export default class App extends React.Component {
     this.delayedClose()
   }
 
-
-  delayedClose(){
+  delayedClose() {
     new Promise(resolve => setTimeout(resolve, 3000))
-    .then(() => {
-      this.onCloseAlert()
-    })
+      .then(() => {
+        this.onCloseAlert()
+      })
   }
   onCloseAlert() {
     this.setState({ showAlert: false })
@@ -192,16 +195,17 @@ export default class App extends React.Component {
                         <Paper style={{ minWidth: "100%" }}>
                           <HomePage
                             user={this.state.user}
+                            BASE_URL={BASE_URL}
                             onAlert={this.onAlert.bind(this)}
                           />
                           {
                             this.state.showAlert ?
                               <SuccessAlert
                                 onClose={this.onCloseAlert.bind(this)}
-                                severity={this.state.alertSeverity} 
+                                severity={this.state.alertSeverity}
                                 msg={this.state.alertMsg} />
                               :
-                                <React.Fragment></React.Fragment>
+                              <React.Fragment></React.Fragment>
 
                           }
                         </Paper>
@@ -217,6 +221,7 @@ export default class App extends React.Component {
                             dairy_id={props.match.params.dairy_id}
                             tsvType={props.match.params.tsvType}
                             numCols={TSV_INFO[props.match.params.tsvType].numCols}
+                            BASE_URL={BASE_URL}
                             onAlert={this.onAlert.bind(this)} />
                         </ThemeProvider>
                       )

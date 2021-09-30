@@ -19,11 +19,10 @@ const POTASSIUM_EXCRETION_DRY_COW = 0.33;
 const INORGANIC_SALT_EXCRETION_MILK_COW = 1.29;
 const INORGANIC_SALT_EXCRETION_DRY_COW = 0.63;
 
-const BASE_URL = 'http://localhost:3001'
 
-export const getReportingPeriodDays = (dairy_id) => {
+export const getReportingPeriodDays = (baseUrl, dairy_id) => {
   return new Promise((res, rej) => {
-    get(`${BASE_URL}/api/dairy/${dairy_id}`)
+    get(`${baseUrl}/api/dairy/${dairy_id}`)
     .then(([dairyInfo]) => {
       dairyInfo = dairyInfo && dairyInfo.period_start && dairyInfo.period_end ? dairyInfo : {period_start: new Date(), period_end: new Date()}
       res(daysBetween(dairyInfo.period_start, dairyInfo.period_end))

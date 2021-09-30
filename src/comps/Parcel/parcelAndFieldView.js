@@ -13,7 +13,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { get, post } from "../../utils/requests"
 
-const BASE_URL = "http://localhost:3001"
+
 const COUNTIES = ["Merced", "San Joaquin"]
 const BASINS = ["River", "Rio"]
 const BREEDS = ["Heffy guy", "Milker Boi", "Steakz"]
@@ -68,7 +68,7 @@ class ParcelView extends Component {
     let updates = []
     Object.keys(this.state.curUpdateParcels).map((parcel_pk, i) => {
       updates.push(post(
-        `${BASE_URL}/api/parcels/update`,
+        `${this.props.BASE_URL}/api/parcels/update`,
         {
           data: this.state.curUpdateParcels[parcel_pk]
         }
@@ -78,9 +78,11 @@ class ParcelView extends Component {
     Promise.all(updates)
       .then(res => {
         console.log(res)
+        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.props.onAlert('Failed to update.', 'error')
       })
   }
   onFieldUpdate(field_pk, field) {
@@ -97,7 +99,7 @@ class ParcelView extends Component {
     let updates = []
     Object.keys(this.state.curUpdateFields).map((field_pk, i) => {
       updates.push(post(
-        `${BASE_URL}/api/fields/update`,
+        `${this.props.BASE_URL}/api/fields/update`,
         {
           data: this.state.curUpdateFields[field_pk]
         }
@@ -107,14 +109,16 @@ class ParcelView extends Component {
     Promise.all(updates)
       .then(res => {
         console.log(res)
+        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.props.onAlert('Failed to update', 'error')
       })
   }
 
   getAllFieldParcels() {
-    get(`${BASE_URL}/api/field_parcel/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/field_parcel/${this.state.dairy.pk}`)
       .then(res => {
         // console.log(res)
         this.setState({ field_parcels: res })
@@ -135,7 +139,7 @@ class ParcelView extends Component {
     let field_id = this.state.fields[this.state.curJoinFieldIdx].pk
     let parcel_id = this.state.parcels[this.state.curJoinParcelIdx].pk
 
-    post(`${BASE_URL}/api/field_parcel/create`, {
+    post(`${this.props.BASE_URL}/api/field_parcel/create`, {
       dairy_id: this.state.dairy.pk,
       field_id: field_id,
       parcel_id: parcel_id
@@ -144,9 +148,11 @@ class ParcelView extends Component {
         console.log(res)
         this.toggleShowJoinFieldParcelModal(false)
         this.getAllFieldParcels()
+        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.props.onAlert('Failed to create!', 'error')
       })
   }
 
@@ -166,7 +172,7 @@ class ParcelView extends Component {
 
   deleteParcel(){
     console.log("Deleting parcel", this.state.curDelParcel)
-    post(`${BASE_URL}/api/parcels/delete`, {pk : this.state.curDelParcel.pk})
+    post(`${this.props.BASE_URL}/api/parcels/delete`, {pk : this.state.curDelParcel.pk})
     .then(res => {
       console.log(res)
       this.props.onParcelDelete()
@@ -175,7 +181,7 @@ class ParcelView extends Component {
   }
   deleteField(){
     console.log("Deleting field", this.state.curDelField)
-    post(`${BASE_URL}/api/fields/delete`, {pk : this.state.curDelField.pk})
+    post(`${this.props.BASE_URL}/api/fields/delete`, {pk : this.state.curDelField.pk})
     .then(res => {
       console.log(res)
       this.props.onFieldDelete()

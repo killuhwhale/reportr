@@ -1,21 +1,31 @@
 const format = require('pg-format');
-const { Pool, Client } = require('pg')
-const pool = new Pool({
+const { Pool, Client } = require('pg');
+const process = require('process');
+
+const PORT = process.env.PORT || 3001;
+
+
+const dev = {
   host: 'localhost',
   database: 'reportrr',
   user: 'admin',
   password: 'mostdope',
   port: 5432,
-})
+}
+const dbSocketPath = process.env.DB_SOCKET_PATH || '/cloudsql';
+
+const prod = {
+  host: `${dbSocketPath}/reportrpsql:us-west2:reportr`,
+  database: 'reportr',
+  user: 'postgres',
+  password: 'CIJw5ijLs1f0fm8y',
+  port: 5432,
+}
+
+const isProd = PORT !== 3001
+const pool = new Pool(isProd? prod: dev)
 
 
-/** Tables
- *  
- *  Dairies
- *  ownoperators
- *  parcels
- *  
- */
 module.exports = {
   query: (text, params, callback) => {
     return pool.query(text, params, callback)

@@ -29,7 +29,7 @@ import { ImportExport } from '@material-ui/icons'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
-const BASE_URL = "http://localhost:3001"
+
 const HORIBAR_WIDTH = '600px'
 const HORIBAR_HEIGHT = '300px'
 const BAR_WIDTH = '500px'
@@ -98,17 +98,19 @@ class DairyTab extends Component {
     console.log("Creating Parcel for")
     console.log(this.state.dairy.title, this.state.dairy.pk, pnumber)
 
-    post(`${BASE_URL}/api/parcels/create`, {
+    post(`${this.props.BASE_URL}/api/parcels/create`, {
       pnumber, dairy_id: this.state.dairy.pk
     })
       .then(res => {
         console.log(res)
         this.toggleParcelModal(false)
         this.getAllParcels()
+        this.props.onAlert('Created parcel!', 'success')
       })
       .catch(err => {
         console.log(err)
         this.toggleParcelModal(false)
+        this.props.onAlert('Failed creating parcel!', 'error')
       })
   }
   toggleParcelModal(val) {
@@ -118,22 +120,24 @@ class DairyTab extends Component {
     console.log("Creating Field for")
     console.log(this.state.dairy.title, this.state.dairy.pk)
     console.log(field)
-    post(`${BASE_URL}/api/fields/create`, { data: { ...field, dairy_id: this.state.dairy.pk } })
+    post(`${this.props.BASE_URL}/api/fields/create`, { data: { ...field, dairy_id: this.state.dairy.pk } })
       .then(res => {
         console.log(res)
         this.toggleFieldModal(false)
         this.getAllFields()
+        this.props.onAlert('Created field!', 'success')
       })
       .catch(err => {
         console.log(err)
         this.toggleFieldModal(false)
+        this.props.onAlert('Failed to create field!', 'error')
       })
   }
   toggleFieldModal(val) {
     this.setState({ showAddFieldModal: val })
   }
   getAllParcels() {
-    get(`${BASE_URL}/api/parcels/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/parcels/${this.state.dairy.pk}`)
       .then(res => {
         // console.log(res)
         this.setState({ parcels: res })
@@ -141,7 +145,7 @@ class DairyTab extends Component {
       .catch(err => { console.log(err) })
   }
   getAllFields() {
-    get(`${BASE_URL}/api/fields/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/fields/${this.state.dairy.pk}`)
       .then(res => {
         // console.log(res)
         this.setState({ fields: res })
@@ -544,7 +548,7 @@ class DairyTab extends Component {
   }
   deleteAllFromTable() {
 
-    post(`${BASE_URL}/api/dairies/delete`, { pk: this.state.dairy.pk })
+    post(`${this.props.BASE_URL}/api/dairies/delete`, { pk: this.state.dairy.pk })
       .then(res => {
         this.getAllFields()
         this.getAllParcels()
@@ -624,6 +628,8 @@ class DairyTab extends Component {
             <Grid item xs={12}>
               <OperatorView
                 dairy={this.state.dairy}
+                onAlert={this.props.onAlert}
+                BASE_URL={this.props.BASE_URL}
               />
             </Grid>
 
@@ -823,6 +829,8 @@ class DairyTab extends Component {
                 parcels={this.state.parcels}
                 onFieldDelete={this.getAllFields.bind(this)}
                 onParcelDelete={this.getAllParcels.bind(this)}
+                onAlert={this.props.onAlert}
+                BASE_URL={this.props.BASE_URL}
               />
             </Grid>
 
@@ -838,6 +846,7 @@ class DairyTab extends Component {
               onUpdate={this.onParcelChange.bind(this)}
               onAction={this.createParcel.bind(this)}
               onClose={() => this.toggleParcelModal(false)}
+              BASE_URL={this.props.BASE_URL}
             />
             <AddFieldModal
               open={this.state.showAddFieldModal}
@@ -846,6 +855,7 @@ class DairyTab extends Component {
               modalText={`Add Field to Dairy ${this.state.dairy.title}`}
               onAction={this.createField.bind(this)}
               onClose={() => this.toggleFieldModal(false)}
+              BASE_URL={this.props.BASE_URL}
             />
             <ActionCancelModal
               open={this.state.toggleShowDeleteAllModal}

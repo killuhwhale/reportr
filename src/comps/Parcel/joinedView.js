@@ -8,9 +8,6 @@ import Delete from '@material-ui/icons/Delete'
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from "../../utils/requests"
 
-const BASE_URL = "http://localhost:3001"
-
-
 
 class JoinedView extends Component {
   constructor(props){
@@ -43,7 +40,7 @@ class JoinedView extends Component {
     if(Object.keys(this.state.curDeleteFieldParcel).length > 0){
       let pk = this.state.curDeleteFieldParcel.pk
       console.log("Deleteing", pk)
-      post(`${BASE_URL}/api/field_parcel/delete`, {data: pk})
+      post(`${this.props.BASE_URL}/api/field_parcel/delete`, {data: pk})
       .then(res => {
         console.log(res)
         this.toggleDeletejJoinFieldParcel(false)

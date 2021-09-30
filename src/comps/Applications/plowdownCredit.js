@@ -27,7 +27,7 @@ import {
   PLOWDOWN_CREDIT, TSV_INFO, readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
 
-const BASE_URL = "http://localhost:3001"
+
 
 /** View for Process Wastewater Entry in DB */
 const PlowdownCreditView = (props) => {
@@ -128,9 +128,8 @@ class PlowdownCredit extends Component {
   }
 
   getFieldCropAppPlowdownCredits() {
-    get(`${BASE_URL}/api/field_crop_app_plowdown_credit/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app_plowdown_credit/${this.state.dairy_id}`)
       .then(field_crop_app_plowdown_credit => {
-        console.log(field_crop_app_plowdown_credit)
         this.setState({ field_crop_app_plowdown_credit: groupByKeys(field_crop_app_plowdown_credit, ['field_id']) })
       })
   }
@@ -144,7 +143,7 @@ class PlowdownCredit extends Component {
   }
   onPlowdownCreditDelete() {
     if (Object.keys(this.state.deletePlowdownCreditObj).length > 0) {
-      post(`${BASE_URL}/api/field_crop_app_plowdown_credit/delete`, { pk: this.state.deletePlowdownCreditObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_plowdown_credit/delete`, { pk: this.state.deletePlowdownCreditObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeletePlowdownCreditModal(false)
@@ -190,10 +189,12 @@ class PlowdownCredit extends Component {
             uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
             this.toggleShowUploadFieldCropAppPlowdownCreditTSVModal(false)
             this.getFieldCropAppPlowdownCredits()
+            this.props.onAlert('Success!', 'success')
           })
           .catch(err => {
             console.log("Error with all promises")
             console.log(err)
+            this.props.onAlert('Failed uploading', 'error')
           })
       })
       .catch(createFieldErr => {
@@ -234,8 +235,8 @@ class PlowdownCredit extends Component {
   }
   deleteAllFromTable() {
     Promise.all([
-      post(`${BASE_URL}/api/field_crop_app_plowdown_credit/deleteAll`, { dairy_id: this.state.dairy_id }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+      post(`${this.props.BASE_URL}/api/field_crop_app_plowdown_credit/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
     ])
       .then(res => {
         this.getFieldCropAppPlowdownCredits()

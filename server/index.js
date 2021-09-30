@@ -3,11 +3,15 @@ const express = require("express");
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const app = express(); // create express app
-// const {Storage} = require('@google-cloud/storage');
-require('dotenv').config();
+const process = require('process');
+
 var http = require('http').createServer(app);
 const db = require('./db/index')
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+const allowedOrigins = [
+  'http://localhost:3000', 
+  'http://localhost:3001',
+  'https://reportrr-918ff.web.app' 
+];
 // const storage = new Storage();
 
 
@@ -98,7 +102,7 @@ app.get("/api/dairy_base", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get dairy_base unsuccessful" });
+      res.json({ "test": "Get dairy_base unsuccessful", err: err });
     })
 });
 
@@ -2939,7 +2943,14 @@ app.post("/api/postImage", (req, res) => {
   // res.json({"test": `Sent test data: ${req.body.data}`})
 })
 
-http.listen(3001, () => {
-  console.log('listening on *:3001');
+app.get('/', (req, res) => {
+  res.send('GCP App Engine!');
+});
+
+
+const PORT = process.env.PORT || 3001;
+
+http.listen(PORT, () => {
+  console.log(`listening on *:${PORT}`);
 });
 

@@ -32,7 +32,7 @@ import {
 
 const REPORTING_METHODS = ['dry-weight', 'as-is']
 const SOURCE_OF_ANALYSES = ['Lab Analysis', 'Other/ estimated']
-const BASE_URL = "http://localhost:3001"
+
 const BASIS = ['As-is', "Dry wt"]
 
 const HARVEST = 'field_crop_harvest'
@@ -98,8 +98,7 @@ class HarvestTab extends Component {
   }
 
   getAllFieldCrops() {
-    console.log("Getting all field crops")
-    get(`${BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
       .then(res => {
         this.setState({ field_crops: res })
       })
@@ -174,7 +173,7 @@ class HarvestTab extends Component {
       src_of_analysis,
       field_crop_id
     }
-    post(`${BASE_URL}/api/field_crop_harvest/create`, data)
+    post(`${this.props.BASE_URL}/api/field_crop_harvest/create`, data)
       .then(res => {
         console.log(res)
         this.toggleShowAddFieldCropHarvestModal(false)
@@ -185,7 +184,7 @@ class HarvestTab extends Component {
       })
   }
   getAllFieldCropHarvests() {
-    get(`${BASE_URL}/api/field_crop_harvest/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/field_crop_harvest/${this.state.dairy.pk}`)
       .then(res => {
         this.groupFieldCropHarvestByField(res)
         this.setState({ fieldCropHarvests: res, groupedFieldCropHarvests: this.groupFieldCropHarvestByField(res) })
@@ -228,7 +227,7 @@ class HarvestTab extends Component {
       } = obj
       let data = { harvest_date, actual_yield, method_of_reporting, density, moisture, n, p, k, tfs, pk }
       return (
-        post(`${BASE_URL}/api/field_crop_harvest/update`, data)
+        post(`${this.props.BASE_URL}/api/field_crop_harvest/update`, data)
       )
     })
 
@@ -274,10 +273,12 @@ class HarvestTab extends Component {
             uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, HARVEST) // remove this when done testing, do this after the data was successfully create in DB
             this.toggleShowUploadTSV(false)
             this.getAllFieldCropHarvests()
+            this.props.onAlert('Uploaded!', 'success')
           })
           .catch(err => {
             console.log("Error with all promises")
             console.log(err)
+            this.props.onAlert('Failed uploading!', 'error')
           })
       })
       .catch(createFieldErr => {
@@ -294,9 +295,9 @@ class HarvestTab extends Component {
   }
   deleteAllFromTable() {
     Promise.all([
-      post(`${BASE_URL}/api/field_crop/deleteAll`, { dairy_id: this.state.dairy.pk }),
-      post(`${BASE_URL}/api/field_crop_harvest/deleteAll`, { dairy_id: this.state.dairy.pk }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[HARVEST].tsvType })
+      post(`${this.props.BASE_URL}/api/field_crop/deleteAll`, { dairy_id: this.state.dairy.pk }),
+      post(`${this.props.BASE_URL}/api/field_crop_harvest/deleteAll`, { dairy_id: this.state.dairy.pk }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[HARVEST].tsvType })
     ])
       .then(res => {
         console.log(res)

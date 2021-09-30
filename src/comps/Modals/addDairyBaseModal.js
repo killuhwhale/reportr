@@ -5,7 +5,7 @@ import { withTheme } from '@material-ui/core/styles';
 
 import { get, post } from "../../utils/requests"
 
-const BASE_URL = "http://localhost:3001"
+
 
 
 
@@ -34,15 +34,17 @@ class AddBaseDairyModal extends Component{
   createBaseDairy() {
     const title = this.state.createDairyTitle
     if(title && title.length > 0){
-      post(`${BASE_URL}/api/dairy_base/create`, { 
+      post(`${this.props.BASE_URL}/api/dairy_base/create`, { 
         title
       })
         .then(res => {
-          console.log("Call this.props.getAllDairyBases()", res)
+					console.log(res)
+					this.props.onAlert("Created New Dairy!", 'success')
 					this.props.onDone()
           this.props.onClose()
         })
         .catch(err => {
+					this.props.onAlert("Failed Creating New Dairy!", 'error')
           console.log(err)
         })
     }

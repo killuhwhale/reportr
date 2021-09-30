@@ -29,7 +29,6 @@ import {
 } from "../../utils/TSV"
 import { toFloat } from '../../utils/convertCalc'
 
-const BASE_URL = "http://localhost:3001"
 
 /** View for Process Wastewater Entry in DB */
 const DischargeView = (props) => {
@@ -113,10 +112,9 @@ class Discharge extends Component {
     }
   }
   getFieldCropAppDischarges() {
-    get(`${BASE_URL}/api/discharge/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/discharge/${this.state.dairy_id}`)
       .then(discharge => {
         let _discharge = groupByKeys(discharge, ['discharge_type'])
-        console.log(_discharge)
         this.setState({ discharge:  _discharge})
       })
   }
@@ -129,7 +127,7 @@ class Discharge extends Component {
   }
   onDischargeDelete() {
     if (Object.keys(this.state.deleteDischargeObj).length > 0) {
-      post(`${BASE_URL}/api/discharge/delete`, { pk: this.state.deleteDischargeObj.pk })
+      post(`${this.props.BASE_URL}/api/discharge/delete`, { pk: this.state.deleteDischargeObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteDischargeModal(false)
@@ -188,7 +186,7 @@ class Discharge extends Component {
         ref_number
       }
 
-      return post(`${BASE_URL}/api/discharge/create`, dischargeData)
+      return post(`${this.props.BASE_URL}/api/discharge/create`, dischargeData)
     })
 
 
@@ -198,11 +196,12 @@ class Discharge extends Component {
         uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
         this.toggleShowUploadFieldCropAppDischargeTSVModal(false)
         this.getFieldCropAppDischarges()
-      
+        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log("Error with all promises")
         console.log(err)
+        this.props.onAlert('Failed uploading!', 'error')
       })
   }
   toggleViewTSVsModal(val) {

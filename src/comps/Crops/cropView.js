@@ -18,12 +18,6 @@ import { get, post } from '../../utils/requests';
 import { PollTwoTone, SpeakerGroup } from '@material-ui/icons';
 
 
-const BASE_URL = "http://localhost:3001"
-
-
-
-
-
 const CropViewTable = withTheme((props) => {
   const fc = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0? props.field_crops[0]: {}
   const fcs = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0? props.field_crops: []
@@ -197,7 +191,7 @@ class CropView extends Component {
         const { pk, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt } = field_crop
         const data = { pk, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt }
         console.log("Updating field_crop", data)
-        promises.push(post(`${BASE_URL}/api/field_crop/update`, data))
+        promises.push(post(`${this.props.BASE_URL}/api/field_crop/update`, data))
       })
 
     })

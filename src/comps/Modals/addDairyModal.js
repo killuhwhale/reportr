@@ -5,7 +5,7 @@ import { withTheme } from '@material-ui/core/styles';
 import { get, post } from '../../utils/requests';
 import { zeroTimeDate } from "../../utils/convertCalc"
 
-const BASE_URL = "http://localhost:3001"
+
 const YEARS = [2020, 2021, 2022, 2023, 2024, 2025, 2026]
 
 const latestEntry = (entries) => {
@@ -37,8 +37,8 @@ const _createFieldParcel = (fieldParcel, dairy_id) => {
 	// Looks up field and parcel from previous field_parcel and creates a new one.
 	return new Promise((resolve, reject) => {
 		Promise.all([
-			get(`${BASE_URL}/api/search/fields/${fieldParcel.title}/${dairy_id}`),
-			get(`${BASE_URL}/api/search/parcels/${fieldParcel.pnumber}/${dairy_id}`)
+			get(`${this.props.BASE_URL}/api/search/fields/${fieldParcel.title}/${dairy_id}`),
+			get(`${this.props.BASE_URL}/api/search/parcels/${fieldParcel.pnumber}/${dairy_id}`)
 		])
 			.then(([[field], [parcel]]) => {
 				let fieldParcelData = {
@@ -46,7 +46,7 @@ const _createFieldParcel = (fieldParcel, dairy_id) => {
 					field_id: field.pk,
 					parcel_id: parcel.pk
 				}
-				post(`${BASE_URL}/api/field_parcel/create`, fieldParcelData)
+				post(`${this.props.BASE_URL}/api/field_parcel/create`, fieldParcelData)
 					.then(res => {
 						resolve(res)
 					})
@@ -110,12 +110,13 @@ class AddDairyModal extends Component {
 			// console.log("Creating a dairy for reporting year", reportingYear, dairyBaseId)
 			// console.log("Query for last reporting year.....")
 
-			get(`${BASE_URL}/api/dairies/dairyBaseId/${dairyBaseId}`)
+			get(`${this.props.BASE_URL}/api/dairies/dairyBaseId/${dairyBaseId}`)
 				.then(dairies => {
 					if (isDuplicateYear(dairies, reportingYear)) {
-
-						console.log(`Error: information has already been recorded for the selected year [${dairyBaseId}] (${reportingYear})`)
-						console.log(dairies)
+						this.props.onDone()
+						this.props.onClose()
+						this.props.onAlert(`Error: Dairy already created for year: ${reportingYear}`, 'error')
+						
 					}
 					else if (dairies && typeof dairies === typeof [] && dairies.length > 0) {
 						// This dairy will be the dairy_id that will be used to query and duplicate each table.
@@ -131,36 +132,25 @@ class AddDairyModal extends Component {
 						}
 						// console.log("New dairy data:", newDairy)
 						// Create dairy with all prev information
-						post(`${BASE_URL}/api/dairies/full/create`, newDairy)
+						post(`${this.props.BASE_URL}/api/dairies/full/create`, newDairy)
 							.then(([dairy]) => {
 								console.log("Newly created Dairy", dairy)
 								// Newly created dairy, use this dairy.pk to create new fields
 								// Fetch other prev data using latestDairy
 								if (dairy && typeof dairy === typeof {} && Object.keys(dairy).length > 0) {
 									Promise.all([
-										get(`${BASE_URL}/api/fields/${latestDairy.pk}`),
-										get(`${BASE_URL}/api/parcels/${latestDairy.pk}`),
-										get(`${BASE_URL}/api/field_parcel/${latestDairy.pk}`),
-										get(`${BASE_URL}/api/operators/${latestDairy.pk}`),
-										get(`${BASE_URL}/api/herds/${latestDairy.pk}`),
+										get(`${this.props.BASE_URL}/api/fields/${latestDairy.pk}`),
+										get(`${this.props.BASE_URL}/api/parcels/${latestDairy.pk}`),
+										get(`${this.props.BASE_URL}/api/field_parcel/${latestDairy.pk}`),
+										get(`${this.props.BASE_URL}/api/operators/${latestDairy.pk}`),
+										get(`${this.props.BASE_URL}/api/herds/${latestDairy.pk}`),
 									])
 										.then(([fields, parcels, field_parcel, operators, herds]) => {
-											// Query fields parcels field_parcel operators herds w/ latestDairy.pk
-											// Create a new entry in dairies using dairy_base_id and info from latestDairy
-											// Create a new entry for fields parcels field_parcel operators herds using the queried data via the latestDairy.pk 
-										
-										
-										// TODO Coordinate all rpomises so I can call getAlldairies again to update the view.
-										// And catch errors properly.....
-										
-										
-										
 											let promises = []
-											// if any list is empty, just skip it I suppose... 
 											if (fields.length > 0) {
 												console.log("Creating fields")
 												promises = fields.map(field => {
-													return post(`${BASE_URL}/api/fields/create`, {
+													return post(`${this.props.BASE_URL}/api/fields/create`, {
 														data: {
 															...field,
 															dairy_id: dairy.pk
@@ -169,60 +159,73 @@ class AddDairyModal extends Component {
 												})
 
 											}
-
 											if (parcels.length > 0) {
 												console.log("Creating parcels")
 												let createParcelPromises = parcels.map(parcel => {
-													return post(`${BASE_URL}/api/parcels/create`, {
+													return post(`${this.props.BASE_URL}/api/parcels/create`, {
 														...parcel,
 														dairy_id: dairy.pk
 													})
 												})
 												promises.push(...createParcelPromises)
 											}
-
-											if (fields.length > 0 && parcels.length > 0 && field_parcel.length > 0) {
-												console.log("Lazy get fields and parcels to create field_parcels")
-												// api/field_parcel/create => dairy_id, field_id, parcel_id
-												Promise.all(promises)
-													.then(res => {
-														createFieldParcel(field_parcel, dairy.pk)
-													})
-											}
-
 											if (operators.length > 0) {
 												let operatorPromises = operators.map(op => {
-													post(`${BASE_URL}/api/operators/create`, {
+													post(`${this.props.BASE_URL}/api/operators/create`, {
 														...op,
 														dairy_id: dairy.pk
 													})
 												})
+												promises.push(...operatorPromises)
 											}
-
 											if (herds.length > 0) {
 												let herdPromises = herds.map(herd => {
-													post(`${BASE_URL}/api/herds/full/create`, {
+													post(`${this.props.BASE_URL}/api/herds/full/create`, {
 														...herd,
 														dairy_id: dairy.pk
 													})
 												})
+												promises.push(...herdPromises)
 												// Just gets new dairies shouldn't matter if fields aprcels are created yet
 											}
-											this.props.onDone()
-											this.props.onClose()
+											Promise.all(promises)
+												.then(res => {
+													if (fields.length > 0 && parcels.length > 0 && field_parcel.length > 0) {
+														createFieldParcel(field_parcel, dairy.pk)
+															.then(fieldCropResult => {
+																// Finish after creating field crops
+																this.props.onDone()
+																this.props.onClose()
+																this.props.onAlert('Created new Dairy!', 'success')
+															})
+															.catch(err => {
+																console.log(err)
+																this.props.onAlert(`Faied to duplicate previous dairy's field parcels!`, 'error')
+															})
+													} else {
+														// Finish now
+														this.props.onDone()
+														this.props.onClose()
+														this.props.onAlert('Created new Dairy!', 'success')
+													}
+												})
+												.catch(err => {
+													console.log(err)
+													this.props.onAlert(`Faied to duplicate previous dairy's info!`, 'error')
+												})
 										})
 										.catch(err => {
 											console.log(err)
+											this.props.onAlert(`Faied to duplicate previous dairy's info while looking up info!`, 'error')
 										})
 								}
 							})
 							.catch(err => {
 								console.log("Failed to create new dairy", err)
+								this.props.onAlert('Faied to create new reporting year!', 'error')
 							})
 					} else {
-						console.log("Create dairy wth just title")
-
-						post(`${BASE_URL}/api/dairies/create`, {
+						post(`${this.props.BASE_URL}/api/dairies/create`, {
 							dairyBaseId,
 							title: dairyBase.title,
 							reportingYear,
@@ -230,12 +233,15 @@ class AddDairyModal extends Component {
 							period_end: `12/31/${reportingYear}`
 						})
 							.then(res => {
-								console.log("Call this.props.getAllDairyBases()", res)
 								this.props.onDone()
 								this.props.onClose()
+								this.props.onAlert('Created new Dairy!', 'success')
 							})
 							.catch(err => {
 								console.log(err)
+								this.props.onDone()
+								this.props.onClose()
+								this.props.onAlert('Failed creating new Dairy for reporting year!', 'error')
 							})
 					}
 				})

@@ -24,7 +24,8 @@ import ActionCancelModal from "../comps/Modals/actionCancelModal"
 import { get, post, uploadFiles } from "../utils/requests"
 import "../App.css"
 
-const BASE_URL = "http://localhost:3001"
+// const this.props.BASE_URL = "http://localhost:3001"
+
 const COUNTIES = ["Merced", "San Joaquin"]
 const BASINS = ["River", "Rio"]
 const BREEDS = ["Heffy guy", "Milker Boi", "Steakz"]
@@ -47,6 +48,7 @@ class HomePage extends Component {
       createDairyTitle: "",
       updateDairyObj: {},
       toggleShowLogoutModal: false,
+      showResetPasswordModal: false,
       tabs: {
         0: "show",
         1: "hide",
@@ -67,14 +69,14 @@ class HomePage extends Component {
   }
 
   getBaseDairies() {
-    get(`${BASE_URL}/api/dairy_base`)
+    console.log(this.props.BASE_URL)
+    get(`${this.props.BASE_URL}/api/dairy_base`)
       .then(res => {
         const dairyBase = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
         if (Object.keys(dairyBase).length > 0) {
           let baseDairiesIdx = this.state.baseDairiesIdx < res.length ? this.state.baseDairiesIdx : 0
           this.setState({ baseDairies: res, baseDairiesIdx: baseDairiesIdx, dairyBase }, () => {
             this.getDairies()
-            this.props.onAlert('Test!', "success")
           })
         } else {
           this.setState({ baseDairies: res, baseDairiesIdx: 0, dairyBase })
@@ -82,9 +84,25 @@ class HomePage extends Component {
       })
       .catch(err => {
         console.log(err)
+        this.props.onAlert('Failed getting base dairies.', 'error')
       })
   }
-
+  getDairies() {
+    const dairyBase = this.state.baseDairies[this.state.baseDairiesIdx]
+    const baseDairiesId = dairyBase && dairyBase.pk ? dairyBase.pk : null
+    if (baseDairiesId) {
+      get(`${this.props.BASE_URL}/api/dairies/dairyBaseId/${baseDairiesId}`)
+        .then(res => {
+          const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
+          let dairyIdx = this.state.dairyIdx < res.length ? this.state.dairyIdx : 0
+          this.setState({ dairies: res, dairyIdx: dairyIdx, dairy })
+        })
+        .catch(err => {
+          console.log(err)
+          this.props.onAlert(`Failed getting dairies for BaseDairyID: ${baseDairiesId}`, 'error')
+        })
+    }
+  }
   onDairyChange(ev) {
     // Dairy info address info change
     const { name, value } = ev.target
@@ -97,10 +115,8 @@ class HomePage extends Component {
     _dairies[_dairy] = updateDairy      // store updated object
     this.setState({ dairies: _dairies })
   }
-
-
   updateDairy() {
-    let url = `${BASE_URL}/api/dairies/update`
+    let url = `${this.props.BASE_URL}/api/dairies/update`
     let dairy = this.state.dairies[this.state.dairyIdx]
     let dairyInfo = { ...dairy, dairy_id: dairy.pk }
 
@@ -113,9 +129,11 @@ class HomePage extends Component {
     post(url, dairyInfo)
       .then(res => {
         console.log(res)
+        this.props.onAlert('Updated!', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.props.onAlert('Failed to update.', 'error')
       })
   }
 
@@ -136,21 +154,7 @@ class HomePage extends Component {
     this.setState({ tabIndex: index, tabs: tabs })
   }
 
-  getDairies() {
-    const dairyBase = this.state.baseDairies[this.state.baseDairiesIdx]
-    const baseDairiesId = dairyBase && dairyBase.pk ? dairyBase.pk : null
-    if (baseDairiesId) {
-      get(`${BASE_URL}/api/dairies/dairyBaseId/${baseDairiesId}`)
-        .then(res => {
-          const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
-          let dairyIdx = this.state.dairyIdx < res.length ? this.state.dairyIdx : 0
-          this.setState({ dairies: res, dairyIdx: dairyIdx, dairy })
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    }
-  }
+  
 
   onBaseDairyChange(ev) {
     const { name, value: baseDairiesIdx } = ev.target
@@ -159,7 +163,7 @@ class HomePage extends Component {
     if (baseDairiesId) {
       // Query dairies by dairy_base_id
       // Display all dairies by reporting year,
-      get(`${BASE_URL}/api/dairies/dairyBaseId/${baseDairiesId}`)
+      get(`${this.props.BASE_URL}/api/dairies/dairyBaseId/${baseDairiesId}`)
         .then(res => {
           const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
           this.setState({ dairies: res, dairyIdx: 0, dairy, baseDairiesIdx, dairyBase })
@@ -206,9 +210,11 @@ class HomePage extends Component {
     sendPasswordResetEmail(auth, auth.currentUser.email)
     .then(() => {
       console.log("Email sent")
+      this.props.onAlert('Email sent!', 'success')
       this.confirmResetPassword(false)
     })
     .catch(err => {
+      this.props.onAlert('Failed sending email.', 'error')
       console.log(err)
     })
   }
@@ -219,7 +225,7 @@ class HomePage extends Component {
         <Grid item container alignItems='flex-start' xs={2} >
           <Grid item container xs={12}>
             <Grid item container justifyContent='center' xs={12}>
-              <Grid item align xs={6} style={{marginBottom: '16px'}}>
+              <Grid item xs={6} style={{marginBottom: '16px'}}>
                 <Typography variant='subtitle1'>
                   <TextField 
                     label='Email'
@@ -345,6 +351,8 @@ class HomePage extends Component {
                         onDairyDeleted={this.getBaseDairies.bind(this)}
                         onChange={this.onDairyChange.bind(this)}
                         onUpdate={this.updateDairy.bind(this)}
+                        BASE_URL={this.props.BASE_URL}
+                        onAlert={this.props.onAlert}
                       />
                     </Grid>
 
@@ -352,30 +360,40 @@ class HomePage extends Component {
                       <Grid item xs={12} key='HerdTab'>
                         <HerdTab
                           dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx] : {}}
+                          BASE_URL={this.props.BASE_URL}
+                          onAlert={this.props.onAlert}
                         />
                       </Grid>
                       : this.state.tabs[2] === "show" ?
                         <Grid item xs={12} key='CropTab'>
                           <CropTab
                             dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx] : {}}
+                            BASE_URL={this.props.BASE_URL}
+                            onAlert={this.props.onAlert}
                           />
                         </Grid>
                         : this.state.tabs[3] === "show" ?
                           <Grid item xs={12} key='HarvestTab'>
                             <HarvestTab
                               dairy={this.state.dairy}
+                              BASE_URL={this.props.BASE_URL}
+                              onAlert={this.props.onAlert}
                             />
                           </Grid>
                           : this.state.tabs[4] === "show" ?
                             <Grid item xs={12} key='NutrientTab'>
                               <NutrientApplicationTab
                                 dairy={this.state.dairies[this.state.dairyIdx]}
+                                BASE_URL={this.props.BASE_URL}
+                                onAlert={this.props.onAlert}
                               />
                             </Grid>
                             : this.state.tabs[5] === "show" ?
                               <Grid item xs={12} key='NutrientTab'>
                                 <ExportTab
                                   dairy={this.state.dairies[this.state.dairyIdx]}
+                                  BASE_URL={this.props.BASE_URL}
+                                  onAlert={this.props.onAlert}
                                 />
                               </Grid>
                               :
@@ -404,6 +422,8 @@ class HomePage extends Component {
           onDone={() => { this.getDairies() }}
           dairyBase={Object.keys(this.state.dairyBase).length > 0 ? this.state.dairyBase : {}}
           onClose={() => this.toggleAddDairyModal(false)}
+          onAlert={this.props.onAlert}
+          BASE_URL={this.props.BASE_URL}
         />
 
         <AddDairyBaseModal
@@ -413,6 +433,8 @@ class HomePage extends Component {
           modalText={`Add Dairy Base`}
           onDone={() => { this.getBaseDairies() }}
           onClose={() => this.toggleAddDairyBaseModal(false)}
+          onAlert={this.props.onAlert}
+          BASE_URL={this.props.BASE_URL}
         />
 
         <ActionCancelModal

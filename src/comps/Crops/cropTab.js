@@ -13,7 +13,6 @@ import { groupBySortBy } from "../../utils/format"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
-const BASE_URL = "http://localhost:3001"
 
 class CropTab extends Component {
   constructor(props) {
@@ -61,7 +60,7 @@ class CropTab extends Component {
     this.setState({ createFieldCropObj })
   }
   getFields() {
-    get(`${BASE_URL}/api/fields/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/fields/${this.state.dairy.pk}`)
       .then(res => {
         this.setState({ fields: res })
       })
@@ -70,7 +69,7 @@ class CropTab extends Component {
       ])
   }
   getCrops() {
-    get(`${BASE_URL}/api/crops`)
+    get(`${this.props.BASE_URL}/api/crops`)
       .then(res => {
         this.setState({ crops: res })
       })
@@ -99,7 +98,7 @@ class CropTab extends Component {
     }
     console.log(field_crop)
 
-    post(`${BASE_URL}/api/field_crop/create`, field_crop)
+    post(`${this.props.BASE_URL}/api/field_crop/create`, field_crop)
       .then(res => {
         console.log(res)
         this.toggleShowAddFieldCropModal(false)
@@ -111,7 +110,7 @@ class CropTab extends Component {
   }
 
   getAllFieldCrops() {
-    get(`${BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
       .then(res => {
         if (res.test) {
           console.log("Field Crops not found.")
@@ -124,7 +123,7 @@ class CropTab extends Component {
 
   deleteFieldCrop(delFieldCropObj) {
     console.log("Deleting field crop ", delFieldCropObj)
-    post(`${BASE_URL}/api/field_crop/delete`, { pk: delFieldCropObj.pk })
+    post(`${this.props.BASE_URL}/api/field_crop/delete`, { pk: delFieldCropObj.pk })
       .then(res => {
         console.log(res)
         this.getAllFieldCrops()
@@ -135,7 +134,7 @@ class CropTab extends Component {
       this.setState({toggleShowDeleteAllModal: val})
   }
   deleteAllFromTable(){
-    post(`${BASE_URL}/api/field_crop/deleteAll`,{dairy_id: this.state.dairy.pk})
+    post(`${this.props.BASE_URL}/api/field_crop/deleteAll`,{dairy_id: this.state.dairy.pk})
     .then(res => {
       this.getAllFieldCrops()
       this.confirmDeleteAllFromTable(false)

@@ -13,7 +13,7 @@ import {
 
 import "../App.css"
 
-const BASE_URL = "http://localhost:3001"
+
 const PARCELS = ["0045-0200-0012-0000", "0045-0200-0020-0000", "0045-0200-0023-0000", "0045-0200-0029-0000", "0045-0200-0033-0000",
   "0045-0200-0034-0000", "0045-0200-0035-0000", "0045-0200-0037-0000", "0045-0200-0060-0000", "0045-0200-0061-0000", "0045-0200-0074-0000", "0045-0230-0025-0000",
   "0045-0230-0066-0000", "0045-0240-0037-0000"]
@@ -101,7 +101,7 @@ class TSVPrint extends Component {
   }
 
   getTSV() {
-    get(`${BASE_URL}/api/tsv/${this.state.dairy_id}/${this.state.tsvType}`)
+    get(`${this.props.BASE_URL}/api/tsv/${this.state.dairy_id}/${this.state.tsvType}`)
       .then(res => {
         console.log(res)
         if (res[0] && res[0].data) {

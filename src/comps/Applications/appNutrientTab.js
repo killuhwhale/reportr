@@ -23,7 +23,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES } from '../../utils/constants'
 
-const BASE_URL = "http://localhost:3001"
+
 const PRECIPITATIONS = [
   "No Precipitation",
   "Standing water",
@@ -113,7 +113,7 @@ class NutrientApplicationTab extends Component {
 
   /** Get data */
   getFieldCropAppEvents() {
-    get(`${BASE_URL}/api/field_crop_app/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app/${this.state.dairy.pk}`)
       .then(res => {
         res.sort((a, b) => {
           return `${a.fieldtitle} ${a.app_date} ${a.app_method}` > `${b.fieldtitle} ${b.app_date} ${b.app_method}` ? 1 : -1
@@ -126,7 +126,7 @@ class NutrientApplicationTab extends Component {
       })
   }
   getFields() {
-    get(`${BASE_URL}/api/fields/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/fields/${this.state.dairy.pk}`)
       .then(fields => {
         this.setState({ fields: fields })
       })
@@ -135,7 +135,7 @@ class NutrientApplicationTab extends Component {
       })
   }
   getFieldCrops() {
-    get(`${BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
       .then(field_crops => {
 
         let field_crop_lists = {}
@@ -149,7 +149,6 @@ class NutrientApplicationTab extends Component {
         this.setState({ field_crops: field_crop_lists })
       })
   }
-
 
   /** Field Application Event
    * Field Application Event - General event w/ a application date
@@ -185,7 +184,7 @@ class NutrientApplicationTab extends Component {
           createObj['app_method'] = APP_METHODS[createObj.app_method_idx]
 
 
-          post(`${BASE_URL}/api/field_crop_app/create`, createObj)
+          post(`${this.props.BASE_URL}/api/field_crop_app/create`, createObj)
             .then(res => {
               this.getFieldCropAppEvents()
               this.toggleShowAddFieldCropAppModal(false)
@@ -207,19 +206,18 @@ class NutrientApplicationTab extends Component {
   toggleShowAddFieldCropAppModal(val) {
     this.setState({ showAddFieldCropAppModal: val })
   }
-
   confirmDeleteAllFromTable(val) {
     this.setState({ toggleShowDeleteAllModal: val })
   }
   deleteAllFromTable() {
     Promise.all([
-      post(`${BASE_URL}/api/field_crop_app/deleteAll`, { dairy_id: this.state.dairy.pk }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[FRESHWATER].tsvType }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[PROCESS_WASTEWATER].tsvType }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[SOLIDMANURE].tsvType }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[FERTILIZER].tsvType }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[SOIL].tsvType }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[PLOWDOWN_CREDIT].tsvType }),
+      post(`${this.props.BASE_URL}/api/field_crop_app/deleteAll`, { dairy_id: this.state.dairy.pk }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[FRESHWATER].tsvType }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[PROCESS_WASTEWATER].tsvType }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[SOLIDMANURE].tsvType }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[FERTILIZER].tsvType }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[SOIL].tsvType }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[PLOWDOWN_CREDIT].tsvType }),
     ])
       .then(res => {
         this.confirmDeleteAllFromTable(false)
@@ -290,6 +288,8 @@ class NutrientApplicationTab extends Component {
                     parentUpdated={this.state.parentUpdated}
                     tsvType={TSV_INFO[PROCESS_WASTEWATER].tsvType}
                     numCols={TSV_INFO[PROCESS_WASTEWATER].numCols}
+                    BASE_URL={this.props.BASE_URL}
+                    onAlert={this.props.onAlert}
                   />
                 </Grid>
 
@@ -300,6 +300,8 @@ class NutrientApplicationTab extends Component {
                       parentUpdated={this.state.parentUpdated}
                       tsvType={TSV_INFO[FRESHWATER].tsvType}
                       numCols={TSV_INFO[FRESHWATER].numCols}
+                      onAlert={this.props.onAlert}
+                      BASE_URL={this.props.BASE_URL}
                     />
 
                   </Grid>
@@ -315,6 +317,8 @@ class NutrientApplicationTab extends Component {
                         MATERIAL_TYPES={MATERIAL_TYPES}
                         SOURCE_OF_ANALYSES={SOURCE_OF_ANALYSES}
                         REPORTING_METHODS={REPORTING_METHODS}
+                        onAlert={this.props.onAlert}
+                        BASE_URL={this.props.BASE_URL}
                       />
 
                     </Grid>
@@ -328,6 +332,8 @@ class NutrientApplicationTab extends Component {
                           numCols={TSV_INFO[FERTILIZER].numCols}
                           NUTRIENT_IMPORT_MATERIAL_TYPES={NUTRIENT_IMPORT_MATERIAL_TYPES}
                           REPORTING_METHODS={REPORTING_METHODS}
+                          onAlert={this.props.onAlert}
+                          BASE_URL={this.props.BASE_URL}
                         />
                       </Grid>
 
@@ -338,6 +344,8 @@ class NutrientApplicationTab extends Component {
                             parentUpdated={this.state.parentUpdated}
                             tsvType={TSV_INFO[SOIL].tsvType}
                             numCols={TSV_INFO[SOIL].numCols}
+                            onAlert={this.props.onAlert}
+                            BASE_URL={this.props.BASE_URL}
                           />
                         </Grid>
                         : this.state.tabs[5] === 'show' ?
@@ -347,6 +355,8 @@ class NutrientApplicationTab extends Component {
                               parentUpdated={this.state.parentUpdated}
                               tsvType={TSV_INFO[PLOWDOWN_CREDIT].tsvType}
                               numCols={TSV_INFO[PLOWDOWN_CREDIT].numCols}
+                              onAlert={this.props.onAlert}
+                              BASE_URL={this.props.BASE_URL}
                             />
                           </Grid>
                           : <React.Fragment></React.Fragment>
@@ -365,6 +375,7 @@ class NutrientApplicationTab extends Component {
               onAction={this.createFieldCropApp.bind(this)}
               onChange={this.onCreateFieldCropAppChange.bind(this)}
               onClose={() => this.toggleShowAddFieldCropAppModal(false)}
+              BASE_URL={this.props.BASE_URL}
             />
 
             <ActionCancelModal

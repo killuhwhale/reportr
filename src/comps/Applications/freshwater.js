@@ -34,16 +34,10 @@ import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
 
-const BASE_URL = "http://localhost:3001"
 const SOURCE_OF_ANALYSES = [
   'Lab Analysis',
   'Other/ Estimated',
 ]
-
-
-
-
-
 
 /** View for Process Wastewater Entry in DB */
 const FreshwaterAppEvent = (props) => {
@@ -248,7 +242,7 @@ class Freshwater extends Component {
   }
 
   getFieldCropAppEvents() {
-    get(`${BASE_URL}/api/field_crop_app/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app/${this.state.dairy_id}`)
       .then(res => {
         res.sort((a, b) => {
           return `${a.fieldtitle} ${a.app_date} ${a.app_method}` > `${b.fieldtitle} ${b.app_date} ${b.app_method}` ? 1 : -1
@@ -261,7 +255,7 @@ class Freshwater extends Component {
       })
   }
   getFieldCropAppFreshwaterSource() {
-    get(`${BASE_URL}/api/field_crop_app_freshwater_source/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app_freshwater_source/${this.state.dairy_id}`)
       .then(res => {
         this.setState({ fieldCropAppFreshwaterSources: res })
       })
@@ -270,7 +264,7 @@ class Freshwater extends Component {
       })
   }
   getFieldCropAppFreshwaterAnalysis() {
-    get(`${BASE_URL}/api/field_crop_app_freshwater_analysis/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app_freshwater_analysis/${this.state.dairy_id}`)
       .then(res => {
         this.setState({ fieldCropAppFreshwaterAnalyses: res })
       })
@@ -279,7 +273,7 @@ class Freshwater extends Component {
       })
   }
   getFieldCropAppFreshwater() {
-    get(`${BASE_URL}/api/field_crop_app_freshwater/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app_freshwater/${this.state.dairy_id}`)
       .then(res => {
         let fieldCropAppFreshwaters = groupBySortBy(res, 'fieldtitle', 'app_date')
         this.setState({ fieldCropAppFreshwaters: fieldCropAppFreshwaters })
@@ -334,7 +328,7 @@ class Freshwater extends Component {
     createObj.totalN = checkEmpty(createObj.totalN)
 
     console.log("creating freshwater event: ", createObj, this.state.fieldCropAppFreshwaterAnalyses[createObj.field_crop_app_freshwater_analysis_idx])
-    post(`${BASE_URL}/api/field_crop_app_freshwater/create`, createObj)
+    post(`${this.props.BASE_URL}/api/field_crop_app_freshwater/create`, createObj)
       .then(res => {
         console.log(res)
         this.toggleShowAddFreshwaterModal(false)
@@ -349,7 +343,7 @@ class Freshwater extends Component {
     createObj.dairy_id = this.state.dairy_id
     createObj.src_type = FRESHWATER_SOURCE_TYPES[parseInt(createObj.src_type_idx)]
 
-    post(`${BASE_URL}/api/field_crop_app_freshwater_source/create`, createObj)
+    post(`${this.props.BASE_URL}/api/field_crop_app_freshwater_source/create`, createObj)
       .then(res => {
         console.log(res)
         this.toggleShowAddFreshwaterSourceModal(false)
@@ -382,7 +376,7 @@ class Freshwater extends Component {
 
     console.log("creating freshwater event: ", createObj)
 
-    post(`${BASE_URL}/api/field_crop_app_freshwater_analysis/create`, createObj)
+    post(`${this.props.BASE_URL}/api/field_crop_app_freshwater_analysis/create`, createObj)
       .then(res => {
         console.log(res)
         this.toggleShowAddFreshwaterAnalysisModal(false)
@@ -417,7 +411,7 @@ class Freshwater extends Component {
 
   onFreshwaterDelete() {
     if (Object.keys(this.state.deleteFreshwaterObj).length > 0) {
-      post(`${BASE_URL}/api/field_crop_app_freshwater/delete`, { pk: this.state.deleteFreshwaterObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_freshwater/delete`, { pk: this.state.deleteFreshwaterObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFreshwaterModal(false)
@@ -430,7 +424,7 @@ class Freshwater extends Component {
   }
   onFreshwaterSourceDelete() {
     if (Object.keys(this.state.deleteFreshwaterSourceObj).length > 0) {
-      post(`${BASE_URL}/api/field_crop_app_freshwater_source/delete`, { pk: this.state.deleteFreshwaterSourceObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_freshwater_source/delete`, { pk: this.state.deleteFreshwaterSourceObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFreshwaterSourceModal(false)
@@ -443,7 +437,7 @@ class Freshwater extends Component {
   }
   onFreshwaterAnalysisDelete() {
     if (Object.keys(this.state.deleteFreshwaterAnalysisObj).length > 0) {
-      post(`${BASE_URL}/api/field_crop_app_freshwater_analysis/delete`, { pk: this.state.deleteFreshwaterAnalysisObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_freshwater_analysis/delete`, { pk: this.state.deleteFreshwaterAnalysisObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFreshwaterAnalysisModal(false)
@@ -489,10 +483,12 @@ class Freshwater extends Component {
             this.toggleShowUploadFieldCropAppFreshwateTSVModal(false)
             uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
             this.getFieldCropAppFreshwater()
+            this.props.onAlert('Success!', 'success')
           })
           .catch(err => {
             console.log("Error with all promises")
             console.log(err)
+            this.props.onAlert('Failed uploading.', 'error')
           })
       })
       .catch(createFieldErr => {
@@ -554,8 +550,8 @@ class Freshwater extends Component {
   }
   deleteAllFromTable() {
     Promise.all([
-      post(`${BASE_URL}/api/field_crop_app_freshwater/deleteAll`, { dairy_id: this.state.dairy_id }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+      post(`${this.props.BASE_URL}/api/field_crop_app_freshwater/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
     ])
       .then(res => {
         this.confirmDeleteAllFromTable(false)

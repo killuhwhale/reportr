@@ -1,18 +1,11 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
-
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Button, Typography, TextField
 } from '@material-ui/core'
-import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import Delete from '@material-ui/icons/Delete'
-import ActionCancelModal from "../comps/Modals/actionCancelModal"
-import { get, post } from "../utils/requests"
-import firebaseConfig from "../firebaseConfig";
 
-const BASE_URL = "http://localhost:3001"
 
 
 class Login extends Component {
@@ -20,6 +13,13 @@ class Login extends Component {
     super(props)
     this.state = {
       loggingIn: true,
+      //username
+      usernameHelperTxt: '',
+      usernameError: false,
+      //password
+      passwordHelperTxt: '',
+      passwordError: false,
+
       registerInfo: {
         username: '',
         email: '',
@@ -34,6 +34,7 @@ class Login extends Component {
   toggleLoggingIn(val) {
     this.setState({ loggingIn: val })
   }
+
   handleLoginSubmit(ev) {
     let email = document.getElementById('email')
     let pass1 = document.getElementById('password')
@@ -45,7 +46,29 @@ class Login extends Component {
 
       })
       .catch((error) => {
-        console.log("Error signing in", error)
+        if(error.code === 'auth/wrong-password'){
+          console.log("Wrong password")
+          this.setState({
+            passwordError: true, passwordHelperTxt: 'Wrong password',
+            usernameError: false, usernameHelperTxt: ''
+          })
+        }else if(error.code === 'auth/user-not-found'){
+          this.setState({
+            usernameError: true, usernameHelperTxt: 'Email not found.',
+            passwordError: false, passwordHelperTxt: ''
+          })
+        }else if(error.code === 'auth/invalid-email'){
+          this.setState({
+            usernameError: true, usernameHelperTxt: 'Invalid email.',
+            passwordError: false, passwordHelperTxt: ''
+          })
+        }else if(error.code === ''){
+          console.log(error)
+          this.setState({
+            passwordError: true, passwordHelperTxt: 'Error signing in.',
+            usernameError: false, usernameHelperTxt: ''
+          })
+        }
       });
   }
 
@@ -56,6 +79,7 @@ class Login extends Component {
     this.setState({ registerInfo })
   }
 
+  /* Register */
   handleSubmit(ev) {
     
     let email = this.state.registerInfo.email
@@ -90,7 +114,7 @@ class Login extends Component {
 
   render() {
     return (
-      <Grid item container xs={12} id="login" align="center" justify="center">
+      <Grid item container xs={12} id="login" align="center" justifyContent="center">
 
         {
           this.state.loggingIn ?
@@ -99,45 +123,52 @@ class Login extends Component {
             <Grid item xs={12} >
               <Paper style={{ height: '100vh', width: '100vw' }}>
 
-                <Grid item container xs={12} align="center">
+                <Grid item container xs={12} align="center" style={{paddingTop: '25vh'}}>
                   <Grid item xs={12}>
-                    <Typography variant="h4">
+                    <Typography variant="h2">
                       Login
                     </Typography>
                   </Grid>
-
-                  <Grid item xs={12}>
+                  <Grid item xs={4}></Grid>
+                  <Grid item xs={4}>
                     <TextField
                       id="email"
+                      fullWidth
+                      error={this.state.usernameError}
+                      helperText={this.state.usernameHelperTxt}
                       style={{ margin: 8 }}
                       label="Email"
                       margin="normal"
                     />
-                  </Grid>
-                  <Grid item xs={12}>
+                  </Grid><Grid item xs={4}></Grid>
+                  <Grid item xs={4}></Grid>
+                  <Grid item xs={4}>
                     <TextField
                       id="password"
                       type="password"
+                      fullWidth
+                      error={this.state.passwordError}
+                      helperText={this.state.passwordHelperTxt}
                       style={{ margin: 8 }}
                       label="Password"
                       margin="normal"
                     />
-                  </Grid>
+                  </Grid><Grid item xs={4}></Grid>
 
                 </Grid>
 
 
 
                 <Grid item container xs={12} align="center"  spacing={4} style={{marginTop: '32px'}}>
-                  <Grid item align='right' xs={6}>
+                  {/* <Grid item align='right' xs={6}>
                     <Button
                       variant="outlined"
                       color="secondary"
                       onClick={() => this.toggleLoggingIn(false)}>
                       Register
                     </Button>
-                  </Grid>
-                  <Grid item align='left' xs={6}>
+                  </Grid> */}
+                  <Grid item align='center' xs={12}>
                     <Button style={{marginLeft: '4px'}}
                       variant="outlined"
                       color="primary"

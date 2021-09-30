@@ -27,7 +27,7 @@ import {
   SOIL, TSV_INFO, readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
 
-const BASE_URL = "http://localhost:3001"
+
 
 /** View for Process Wastewater Entry in DB */
 const SoilView = (props) => {
@@ -198,17 +198,15 @@ class Soil extends Component {
   }
 
   getFieldCropAppSoils() {
-    get(`${BASE_URL}/api/field_crop_app_soil/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app_soil/${this.state.dairy_id}`)
       .then(field_crop_app_soil => {
-        console.log(field_crop_app_soil)
         this.setState({ field_crop_app_soil: groupByKeys(field_crop_app_soil, ['field_id']) })
       })
   }
 
   getFieldCropAppSoilAnalyses() {
-    get(`${BASE_URL}/api/field_crop_app_soil_analysis/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app_soil_analysis/${this.state.dairy_id}`)
       .then(field_crop_app_soil_analysis => {
-        console.log(field_crop_app_soil_analysis)
         this.setState({ field_crop_app_soil_analysis: groupByKeys(field_crop_app_soil_analysis, ['field_id']) })
       })
   }
@@ -222,7 +220,7 @@ class Soil extends Component {
   }
   onSoilDelete() {
     if (Object.keys(this.state.deleteSoilObj).length > 0) {
-      post(`${BASE_URL}/api/field_crop_app_soil/delete`, { pk: this.state.deleteSoilObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_soil/delete`, { pk: this.state.deleteSoilObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteSoilModal(false)
@@ -244,7 +242,7 @@ class Soil extends Component {
   }
   onSoilAnalysisDelete() {
     if (Object.keys(this.state.deleteSoilAnalysisObj).length > 0) {
-      post(`${BASE_URL}/api/field_crop_app_soil_analysis/delete`, { pk: this.state.deleteSoilAnalysisObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_soil_analysis/delete`, { pk: this.state.deleteSoilAnalysisObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteSoilAnalysisModal(false)
@@ -291,10 +289,12 @@ class Soil extends Component {
             this.toggleShowUploadFieldCropAppSoilTSVModal(false)
             this.getFieldCropAppSoils()
             this.getFieldCropAppSoilAnalyses()
+            this.props.onAlert('Success!', 'success')
           })
           .catch(err => {
             console.log("Error with all promises")
             console.log(err)
+            this.props.onAlert('Failed uploading', 'error')
           })
       })
       .catch(createFieldErr => {
@@ -315,7 +315,6 @@ class Soil extends Component {
   renderSoilAnalysis({ index, style }) {
     let key = this.getSoilAnalysisSortedKeys()[index]
     let analyses = this.state.field_crop_app_soil_analysis[key]
-    console.log(analyses)
     return (
       <SoilAnalysisView key={`fcsaview${index}`} style={style}
         analyses={analyses}
@@ -354,8 +353,8 @@ class Soil extends Component {
   }
   deleteAllFromTable() {
     Promise.all([
-      post(`${BASE_URL}/api/field_crop_app_soil/deleteAll`, { dairy_id: this.state.dairy_id }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+      post(`${this.props.BASE_URL}/api/field_crop_app_soil/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
     ])
       .then(res => {
         this.getFieldCropAppSoils()

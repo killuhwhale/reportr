@@ -31,7 +31,7 @@ import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
 
-const BASE_URL = "http://localhost:3001"
+
 
 /** View for Process Wastewater Entry in DB */
 const ProcessWastewaterAppEvent = (props) => {
@@ -251,7 +251,7 @@ class ProcessWastewater extends Component {
   }
 
   getFieldCropAppProcessWastewater() {
-    get(`${BASE_URL}/api/field_crop_app_process_wastewater/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater/${this.state.dairy_id}`)
       .then(res => {
         let process_wastewater_by_fieldtitle = groupBySortBy(res, 'fieldtitle', 'app_date')
         this.setState({ field_crop_app_process_wastewater: process_wastewater_by_fieldtitle })
@@ -262,7 +262,7 @@ class ProcessWastewater extends Component {
   }
 
   getFieldCropAppEvents() {
-    get(`${BASE_URL}/api/field_crop_app/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app/${this.state.dairy_id}`)
       .then(res => {
         res.sort((a, b) => {
           return `${a.fieldtitle} ${a.app_date} ${a.app_method}` > `${b.fieldtitle} ${b.app_date} ${b.app_method}` ? 1 : -1
@@ -310,7 +310,7 @@ class ProcessWastewater extends Component {
 
     console.log("creating process wasterwater event: ", createObj)
     // NEEd to Data a DB table for this now and the wires in the two index.js files....
-    post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, createObj)
+    post(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater/create`, createObj)
       .then(res => {
         console.log(res)
         this.toggleShowAddProcessWastewaterModal(false)
@@ -329,7 +329,7 @@ class ProcessWastewater extends Component {
   }
   onProcessWastewaterDelete() {
     if (Object.keys(this.state.deleteProcessWastewaterObj).length > 0) {
-      post(`${BASE_URL}/api/field_crop_app_process_wastewater/delete`, { pk: this.state.deleteProcessWastewaterObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater/delete`, { pk: this.state.deleteProcessWastewaterObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteProcessWastewaterModal(false)
@@ -375,10 +375,12 @@ class ProcessWastewater extends Component {
             this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
             this.getFieldCropAppEvents()
             this.getFieldCropAppProcessWastewater()
+            this.props.onAlert('Success!', 'success')
           })
           .catch(err => {
             console.log("Error with all promises")
             console.log(err)
+            this.props.onAlert('Failed uploading', 'error')
           })
       })
       .catch(createFieldErr => {
@@ -423,8 +425,8 @@ class ProcessWastewater extends Component {
   }
   deleteAllFromTable() {
     Promise.all([
-      post(`${BASE_URL}/api/field_crop_app_process_wastewater/deleteAll`, { dairy_id: this.state.dairy_id }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+      post(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
     ])
       .then(res => {
         this.getFieldCropAppProcessWastewater()

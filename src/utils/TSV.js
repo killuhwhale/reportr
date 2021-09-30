@@ -1,7 +1,10 @@
 import { get, post } from './requests'
 import { toFloat } from './convertCalc'
 export default function mTea() { }
-const BASE_URL = "http://localhost:3001"
+
+
+const isProd = window.location.hostname !== 'localhost'
+const BASE_URL = isProd? 'https://reportrpsql.wl.r.appspot.com': 'http://localhost:3001'
 
 
 export const HARVEST = 'field_crop_harvest'
@@ -71,7 +74,6 @@ export const lazyGet = (endpoint, value, data, dairy_pk) => {
   return new Promise((resolve, rej) => {
     get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
       .then(res => {
-        console.log("Get1", res)
         // If not found, Attempt to create
         if (Object.keys(res).length == 0) {
           post(`${BASE_URL}/api/${endpoint}/create`, data)
@@ -84,10 +86,9 @@ export const lazyGet = (endpoint, value, data, dairy_pk) => {
                 // console.log("Create failed, race conditon happened. Attempting to re-fetch")
                 get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
                   .then(secondResult => {
-                    console.log("Get2", secondResult)
                     // console.log("Found entry after failing to create entry", secondResult)
                     if (secondResult.length == 0) {
-                      console.log(endpoint, value, data)
+                      // console.log(endpoint, value, data)
                     }
                     // Found entry, on second attempt.
                     resolve(secondResult)

@@ -11,7 +11,7 @@ import { get, post } from '../../utils/requests'
 
 import { lazyGet } from '../../utils/TSV'
 
-const BASE_URL = "http://localhost:3001"
+
 const Q1 = "Was the facility's NMP updated in the reporting period?"
 const Q2 = "Was the facility's NMP developed by a certified nutrient management planner (specialist) as specified in Attachment C of the General Order?"
 const Q3 = "Was the facility's NMP approved by a certified nutrient management planner (specialist) as specified in Attachment C of the General Order?"
@@ -60,12 +60,12 @@ class Agreement extends Component {
   }
 
   getNotes() {
-    get(`${BASE_URL}/api/note/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/note/${this.state.dairy_id}`)
       .then((note) => {
         if (note && typeof note === typeof [] && note.length > 0) {
           this.setState({ note: note[0] })
         } else {
-          post(`${BASE_URL}/api/note/create`, {
+          post(`${this.props.BASE_URL}/api/note/create`, {
             dairy_id: this.state.dairy_id,
             note: 'No notes.',
           })
@@ -86,15 +86,14 @@ class Agreement extends Component {
 
   getAgreements() {
     // Lazy get
-    get(`${BASE_URL}/api/agreement/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/agreement/${this.state.dairy_id}`)
       .then((agreement) => {
-        console.log(agreement)
         // Should only have 1 agreement per dairy
         if (agreement && typeof agreement == typeof [] && agreement.length > 0) {
           this.setState({ agreement: agreement[0] })
         } else {
           // Agreement doesnt exist for dairy, create it here.
-          post(`${BASE_URL}/api/agreement/create`, {
+          post(`${this.props.BASE_URL}/api/agreement/create`, {
             dairy_id: this.state.dairy_id,
             nmp_developed: false,
             nmp_approved: false,
@@ -131,7 +130,7 @@ class Agreement extends Component {
     }
 
     console.log("Updating: ", this.state.agreement)
-    post(`${BASE_URL}/api/agreement/update`, this.state.agreement)
+    post(`${this.props.BASE_URL}/api/agreement/update`, this.state.agreement)
       .then(res => {
         console.log(res)
       })
@@ -155,7 +154,7 @@ class Agreement extends Component {
     }
 
 
-    post(`${BASE_URL}/api/note/update`, this.state.note)
+    post(`${this.props.BASE_URL}/api/note/update`, this.state.note)
       .then(res => {
         console.log(res)
       })
@@ -190,9 +189,11 @@ class Agreement extends Component {
     }
     lazyGet('certification', `noSearchValueNeeded`, newCertification, this.state.dairy_id)
       .then(([certification]) => {
-        console.log('certification', certification)
+        if(!certification){
+          console.log("Certficiation not found", certification)
+        }        
         // Get Owner Oeprators
-        get(`${BASE_URL}/api/operators/${this.state.dairy_id}`)
+        get(`${this.props.BASE_URL}/api/operators/${this.state.dairy_id}`)
           .then(ownerOperators => {
             let owners = ownerOperators.filter(el => el.is_owner)
             let operators = ownerOperators.filter(el => el.is_operator)
@@ -233,7 +234,7 @@ class Agreement extends Component {
     if (certification.owner_id !== certification.operator_id) {
       // If certiciation is created already, its pk will be stored and not -1
       if (this.state.certification_id !== -1) {
-        post(`${BASE_URL}/api/certification/update`, certification)
+        post(`${this.props.BASE_URL}/api/certification/update`, certification)
           .then((res => {
             console.log("Updated", res)
           }))
@@ -241,7 +242,7 @@ class Agreement extends Component {
             console.log(err)
           })
       } else {
-        post(`${BASE_URL}/api/certification/create`, certification)
+        post(`${this.props.BASE_URL}/api/certification/create`, certification)
           .then((res => {
             console.log("Updated", res)
           }))

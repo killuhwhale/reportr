@@ -4,10 +4,12 @@ import { formatFloat, groupBySortBy, groupByKeys } from '../../utils/format'
 import calculateHerdManNKPNaCl, { getReportingPeriodDays } from "../../utils/herdCalculation"
 import { NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES, WASTEWATER_MATERIAL_TYPES, FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
 
-
-const BASE_URL = `http://localhost:3001`
-const PPM_TO_DEC = .000001
 export default function mTEA() { }
+
+// TODO()
+const BASE_URL = `http://localhost:3001`
+
+const PPM_TO_DEC = .000001
 const GALS_PER_ACREINCH = 27154.2856
 const AND_RATE = 14 // Atmopheric deopsition rate
 const PPM_TO_LBS_PER_GAL = 8.345e-6
@@ -19,8 +21,6 @@ const opArrayByPos = (a, b, op = "+") => {
     return op === '+' ? el + b[i] : op === '-' ? el - b[i] : op === '*' ? el * b[i] : op === '/' ? el / (b[i] != 0 ? b[i] : 1) : null
   })
 }
-
-
 
 const _conLbsToTons = (con, moisture, amount, method_of_reporting) => {
   /* 
@@ -41,7 +41,6 @@ const _conLbsToTons = (con, moisture, amount, method_of_reporting) => {
   moisture = method_of_reporting === "dry-weight" ? (1 - moisture) : 1 // if reported as dry-weight, account for moisture
   return con * moisture * amount
 }
-
 
 const percentToLBSFromTons = (con, moisture, amount, method_of_reporting) => {
   /* 
@@ -71,10 +70,6 @@ const mgKgToLbsFromTons = (con, moisture, amount, method_of_reporting) => {
   return _conLbsToTons(con, moisture, amount, method_of_reporting)
 }
 
-
-
-
-
 const percentToDecimal = (num) => {
   return toFloat(num) * 1e-2
 }
@@ -94,13 +89,11 @@ const PPMToLBS = (ppm, amt) => {
   return ppm * PPM_TO_LBS_PER_GAL * amt 
 }
 
-
 const percentToLBSForGals = (con, amt) => {
   // Nutrient imports for fertilizer 
   amt = toFloat(amt)
   return percentToDecimal(con) * amt * LBS_PER_GAL
 }
-
 
 const percentToLBS = (con, amt) => {
   // Nutrient imports for fertilizer 
@@ -217,7 +210,7 @@ const getAvailableNutrientsAB = (dairy_id) => {
           return;
         }
         // Return herdInfo & calculations
-        getReportingPeriodDays(dairy_id)
+        getReportingPeriodDays(BASE_URL, dairy_id)
         .then(rpDays => {
           let totals = calculateHerdManNKPNaCl(herdInfo[0], rpDays)
                         .totals.map(total => new Intl.NumberFormat().format(total.toFixed(2)))

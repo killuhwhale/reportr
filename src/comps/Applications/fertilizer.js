@@ -33,7 +33,7 @@ import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
 
-const BASE_URL = "http://localhost:3001"
+
 
 //Move to appnutrient and pass as prop
 const SOURCE_OF_ANALYSES = [
@@ -275,7 +275,7 @@ class Fertilizer extends Component {
   }
 
   getFieldCropAppEvents() {
-    get(`${BASE_URL}/api/field_crop_app/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app/${this.state.dairy_id}`)
       .then(res => {
         res.sort((a, b) => {
           return `${a.fieldtitle} ${a.app_date} ${a.app_method}` > `${b.fieldtitle} ${b.app_date} ${b.app_method}` ? 1 : -1
@@ -289,7 +289,7 @@ class Fertilizer extends Component {
   }
 
   getFieldCropAppFertilizer() {
-    get(`${BASE_URL}/api/field_crop_app_fertilizer/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/field_crop_app_fertilizer/${this.state.dairy_id}`)
       .then(res => {
         let fieldCropAppSolidmanures = groupBySortBy(res, 'fieldtitle', 'app_date')
         this.setState({ fieldCropAppFertilizers: fieldCropAppSolidmanures })
@@ -299,7 +299,7 @@ class Fertilizer extends Component {
       })
   }
   getNutrientImport() {
-    get(`${BASE_URL}/api/nutrient_import/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/nutrient_import/${this.state.dairy_id}`)
       .then(res => {
 
         this.setState({ nutrientImports: res })
@@ -342,7 +342,7 @@ class Fertilizer extends Component {
     createObj.salt_lbs_acre = checkEmpty(createObj.salt_lbs_acre)
 
     console.log("creating fertilizer event: ", createObj)
-    post(`${BASE_URL}/api/field_crop_app_fertilizer/create`, createObj)
+    post(`${this.props.BASE_URL}/api/field_crop_app_fertilizer/create`, createObj)
       .then(res => {
         console.log(res)
         this.toggleShowAddFertilizerModal(false)
@@ -366,7 +366,7 @@ class Fertilizer extends Component {
 
     console.log("creating nutirent import event: ", createObj)
 
-    post(`${BASE_URL}/api/nutrient_import/create`, createObj)
+    post(`${this.props.BASE_URL}/api/nutrient_import/create`, createObj)
       .then(res => {
         console.log(res)
         this.toggleShowAddNutrientImportModal(false)
@@ -391,7 +391,7 @@ class Fertilizer extends Component {
   }
   onFertilizerDelete() {
     if (Object.keys(this.state.deleteFertilizerObj).length > 0) {
-      post(`${BASE_URL}/api/field_crop_app_fertilizer/delete`, { pk: this.state.deleteFertilizerObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_fertilizer/delete`, { pk: this.state.deleteFertilizerObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFertilizerModal(false)
@@ -404,7 +404,7 @@ class Fertilizer extends Component {
   }
   onNutrientImportDelete() {
     if (Object.keys(this.state.deleteNutrientImportObj).length > 0) {
-      post(`${BASE_URL}/api/nutrient_import/delete`, { pk: this.state.deleteNutrientImportObj.pk })
+      post(`${this.props.BASE_URL}/api/nutrient_import/delete`, { pk: this.state.deleteNutrientImportObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteNutrientImportModal(false)
@@ -448,10 +448,12 @@ class Fertilizer extends Component {
             this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)
             this.getFieldCropAppFertilizer()
             this.getNutrientImport()
+            this.props.onAlert('Success!', 'success')
           })
           .catch(err => {
             console.log("Error with all promises")
             console.log(err)
+            this.props.onAlert('Failed uploading.', 'error')
           })
       })
       .catch(createFieldErr => {
@@ -503,8 +505,8 @@ class Fertilizer extends Component {
   }
   deleteAllFromTable() {
     Promise.all([
-      post(`${BASE_URL}/api/field_crop_app_fertilizer/deleteAll`, { dairy_id: this.state.dairy_id }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
+      post(`${this.props.BASE_URL}/api/field_crop_app_fertilizer/deleteAll`, { dairy_id: this.state.dairy_id }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy_id, tsvType: this.props.tsvType }),
     ])
       .then(res => {
         this.getFieldCropAppEvents()

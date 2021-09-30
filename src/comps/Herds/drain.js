@@ -26,7 +26,7 @@ import {
   DRAIN, TSV_INFO, readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB, lazyGet
 } from "../../utils/TSV"
 
-const BASE_URL = "http://localhost:3001"
+
 
 /** View for Process Wastewater Entry in DB */
 const DrainView = (props) => {
@@ -165,17 +165,15 @@ class Drain extends Component {
   }
 
   getFieldCropAppDrains() {
-    get(`${BASE_URL}/api/drain_source/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/drain_source/${this.state.dairy_id}`)
       .then(field_crop_app_drain => {
-        console.log(field_crop_app_drain)
         this.setState({ field_crop_app_drain: groupByKeys(field_crop_app_drain, ['pk']) })
       })
   }
 
   getFieldCropAppDrainAnalyses() {
-    get(`${BASE_URL}/api/drain_analysis/${this.state.dairy_id}`)
+    get(`${this.props.BASE_URL}/api/drain_analysis/${this.state.dairy_id}`)
       .then(field_crop_app_drain_analysis => {
-        console.log(field_crop_app_drain_analysis)
         this.setState({ field_crop_app_drain_analysis: groupByKeys(field_crop_app_drain_analysis, ['src_desc']) })
       })
   }
@@ -189,7 +187,7 @@ class Drain extends Component {
   }
   onDrainDelete() {
     if (Object.keys(this.state.deleteDrainObj).length > 0) {
-      post(`${BASE_URL}/api/drain_source/delete`, { pk: this.state.deleteDrainObj.pk })
+      post(`${this.props.BASE_URL}/api/drain_source/delete`, { pk: this.state.deleteDrainObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteDrainModal(false)
@@ -211,7 +209,7 @@ class Drain extends Component {
   }
   onDrainAnalysisDelete() {
     if (Object.keys(this.state.deleteDrainAnalysisObj).length > 0) {
-      post(`${BASE_URL}/api/drain_analysis/delete`, { pk: this.state.deleteDrainAnalysisObj.pk })
+      post(`${this.props.BASE_URL}/api/drain_analysis/delete`, { pk: this.state.deleteDrainAnalysisObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteDrainAnalysisModal(false)
@@ -287,7 +285,7 @@ class Drain extends Component {
               ec_dl,
               tds_dl
             }
-            resolve(post(`${BASE_URL}/api/drain_analysis/create`, drainAnalysisData))
+            resolve(post(`${this.props.BASE_URL}/api/drain_analysis/create`, drainAnalysisData))
           })
           .catch(err => {
             console.log(err)
@@ -304,9 +302,11 @@ class Drain extends Component {
         this.toggleShowUploadFieldCropAppDrainTSVModal(false)
         this.getFieldCropAppDrains()
         this.getFieldCropAppDrainAnalyses()
+        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log("Error with all promises")
+        this.props.onAlert('Failed to upload!', 'error')
         console.log(err)
       })
   }
@@ -324,7 +324,6 @@ class Drain extends Component {
   renderDrainAnalysis({ index, style }) {
     let key = this.getDrainAnalysisSortedKeys()[index]
     let analyses = this.state.field_crop_app_drain_analysis[key]
-    console.log(analyses)
     return (
       <DrainAnalysisView key={`fcsaview${index}`} style={style}
         analyses={analyses}

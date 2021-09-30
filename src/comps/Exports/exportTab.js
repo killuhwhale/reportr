@@ -33,7 +33,7 @@ import { get, post } from '../../utils/requests';
 import { TSV_INFO, checkEmpty, readTSV, processTSVText, lazyGet, uploadTSVToDB, MANURE, WASTEWATER } from '../../utils/TSV'
 import { groupBySortBy } from '../../utils/format'
 
-const BASE_URL = "http://localhost:3001"
+
 
 
 
@@ -346,9 +346,8 @@ class ExportTab extends Component {
     this.setState({ tabIndex: index, tabs: tabs })
   }
   getExportContact() {
-    get(`${BASE_URL}/api/export_contact/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/export_contact/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
         this.setState({ exportContacts: res })
       })
       .catch(err => {
@@ -356,9 +355,8 @@ class ExportTab extends Component {
       })
   }
   getOperators() {
-    get(`${BASE_URL}/api/operators/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/operators/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
         this.setState({ operators: res })
       })
       .catch(err => {
@@ -367,9 +365,8 @@ class ExportTab extends Component {
   }
 
   getExportRecipients() {
-    get(`${BASE_URL}/api/export_recipient/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/export_recipient/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
         this.setState({ exportRecipients: res })
       })
       .catch(err => {
@@ -377,9 +374,8 @@ class ExportTab extends Component {
       })
   }
   getExportHaulers() {
-    get(`${BASE_URL}/api/export_hauler/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/export_hauler/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
         this.setState({ exportHaulers: res })
       })
       .catch(err => {
@@ -388,9 +384,8 @@ class ExportTab extends Component {
   }
 
   getExportDests() {
-    get(`${BASE_URL}/api/export_dest/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/export_dest/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
         this.setState({ exportDests: res })
       })
       .catch(err => {
@@ -399,11 +394,10 @@ class ExportTab extends Component {
   }
 
   getExportManifests() {
-    get(`${BASE_URL}/api/export_manifest/${this.state.dairy.pk}`)
+    get(`${this.props.BASE_URL}/api/export_manifest/${this.state.dairy.pk}`)
       .then(res => {
         let groupedManifests = groupBySortBy(res, 'recipient_id', 'last_date_hauled')
-        console.log(groupedManifests)
-        this.setState({ exportManifests: groupedManifests }, () => { console.log(this.state.exportManifests) })
+        this.setState({ exportManifests: groupedManifests })
       })
       .catch(err => {
         console.log(err)
@@ -418,7 +412,7 @@ class ExportTab extends Component {
     let createObj = this.state.createExportContactObj
     createObj.dairy_id = this.state.dairy.pk
 
-    post(`${BASE_URL}/api/export_contact/create`, createObj)
+    post(`${this.props.BASE_URL}/api/export_contact/create`, createObj)
       .then(res => {
         console.log(res)
         this.getExportContact()
@@ -439,7 +433,7 @@ class ExportTab extends Component {
     let createObj = this.state.createExportHaulerObj
     createObj.dairy_id = this.state.dairy.pk
 
-    post(`${BASE_URL}/api/export_hauler/create`, createObj)
+    post(`${this.props.BASE_URL}/api/export_hauler/create`, createObj)
       .then(res => {
         console.log(res)
         this.toggleShowAddExportHaulerModal(false)
@@ -462,7 +456,7 @@ class ExportTab extends Component {
     let createObj = this.state.createExportRecipientObj
     createObj.dairy_id = this.state.dairy.pk
     createObj.dest_type = DEST_TYPES[this.state.createExportRecipientObj.dest_type_idx]
-    post(`${BASE_URL}/api/export_recipient/create`, createObj)
+    post(`${this.props.BASE_URL}/api/export_recipient/create`, createObj)
       .then(res => {
         console.log(res)
         this.getExportRecipients()
@@ -489,7 +483,7 @@ class ExportTab extends Component {
     if (this.state.exportRecipients.length > 0) {
       createObj.export_recipient_id = this.state.exportRecipients[createObj.export_recipient_idx].pk
       console.log("Creating export dest", createObj)
-      post(`${BASE_URL}/api/export_dest/create`, createObj)
+      post(`${this.props.BASE_URL}/api/export_dest/create`, createObj)
         .then(res => {
           console.log(res)
           this.toggleShowAddExportDestModal(false)
@@ -544,7 +538,7 @@ class ExportTab extends Component {
 
 
       console.log("Creating export manifest", createObj)
-      post(`${BASE_URL}/api/export_manifest/create`, createObj)
+      post(`${this.props.BASE_URL}/api/export_manifest/create`, createObj)
         .then(res => {
           console.log(res)
           this.toggleShowAddExportManifestModal(false)
@@ -575,7 +569,7 @@ class ExportTab extends Component {
   }
   onExportContactDelete() {
     if (Object.keys(this.state.deleteExportContactObj).length > 0) {
-      post(`${BASE_URL}/api/export_contact/delete`, { pk: this.state.deleteExportContactObj.pk })
+      post(`${this.props.BASE_URL}/api/export_contact/delete`, { pk: this.state.deleteExportContactObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportContactModal(false)
@@ -592,7 +586,7 @@ class ExportTab extends Component {
   }
   onExportHaulerDelete() {
     if (Object.keys(this.state.deleteExportHaulerObj).length > 0) {
-      post(`${BASE_URL}/api/export_hauler/delete`, { pk: this.state.deleteExportHaulerObj.pk })
+      post(`${this.props.BASE_URL}/api/export_hauler/delete`, { pk: this.state.deleteExportHaulerObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportHaulerModal(false)
@@ -609,7 +603,7 @@ class ExportTab extends Component {
   }
   onExportRecipientDelete() {
     if (Object.keys(this.state.deleteExportRecipientObj).length > 0) {
-      post(`${BASE_URL}/api/export_recipient/delete`, { pk: this.state.deleteExportRecipientObj.pk })
+      post(`${this.props.BASE_URL}/api/export_recipient/delete`, { pk: this.state.deleteExportRecipientObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportRecipientModal(false)
@@ -626,7 +620,7 @@ class ExportTab extends Component {
   }
   onExportDestDelete() {
     if (Object.keys(this.state.deleteExportDestObj).length > 0) {
-      post(`${BASE_URL}/api/export_dest/delete`, { pk: this.state.deleteExportDestObj.pk })
+      post(`${this.props.BASE_URL}/api/export_dest/delete`, { pk: this.state.deleteExportDestObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportDestModal(false)
@@ -644,7 +638,7 @@ class ExportTab extends Component {
 
   onExportManifestDelete() {
     if (Object.keys(this.state.deleteExportManifestObj).length > 0) {
-      post(`${BASE_URL}/api/export_manifest/delete`, { pk: this.state.deleteExportManifestObj.pk })
+      post(`${this.props.BASE_URL}/api/export_manifest/delete`, { pk: this.state.deleteExportManifestObj.pk })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportManifestModal(false)
@@ -940,7 +934,7 @@ class ExportTab extends Component {
               salt_lbs_rm: checkEmpty(salt_lbs_rm),
 
             }
-            resolve(post(`${BASE_URL}/api/export_manifest/create`, createManifestObj))
+            resolve(post(`${this.props.BASE_URL}/api/export_manifest/create`, createManifestObj))
           })
           .catch(err => {
             console.log(err)
@@ -967,9 +961,11 @@ class ExportTab extends Component {
         this.getExportRecipients()
         this.getExportDests()
         this.getExportManifests()
+        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.props.onAlert('Failed uploading.', 'error')
       })
   }
 
@@ -1081,7 +1077,7 @@ class ExportTab extends Component {
               k_lbs_rm: checkEmpty(k_lbs_rm),
 
             }
-            resolve(post(`${BASE_URL}/api/export_manifest/create`, createManifestObj))
+            resolve(post(`${this.props.BASE_URL}/api/export_manifest/create`, createManifestObj))
           })
           .catch(err => {
             console.log(err)
@@ -1107,9 +1103,11 @@ class ExportTab extends Component {
         this.getExportRecipients()
         this.getExportDests()
         this.getExportManifests()
+        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.props.onAlert('Failed uploading', 'error')
       })
 
 
@@ -1214,9 +1212,9 @@ class ExportTab extends Component {
   }
   deleteAllFromTable() {
     Promise.all([
-      post(`${BASE_URL}/api/export_manifest/deleteAll`, { dairy_id: this.state.dairy.pk }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[MANURE].tsvType }),
-      post(`${BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[WASTEWATER].tsvType }),
+      post(`${this.props.BASE_URL}/api/export_manifest/deleteAll`, { dairy_id: this.state.dairy.pk }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[MANURE].tsvType }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[WASTEWATER].tsvType }),
     ])
       .then(res => {
         this.getExportContact()
