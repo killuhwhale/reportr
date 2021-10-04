@@ -3,7 +3,7 @@ const { Pool, Client } = require('pg');
 const process = require('process');
 
 const PORT = process.env.PORT || 3001;
-
+console.log("PORT", PORT)
 
 const dev = {
   host: 'localhost',
