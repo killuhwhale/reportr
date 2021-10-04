@@ -25,12 +25,12 @@ const prodGoogleCloud = {
 }
 
 const prodDigitalOcean = {
-  host: `app-6bdba4b6-1366-4538-928c-5e57afca2e7a-do-user-9954352-0.b.db.ondigitalocean.com`,
+  host: `private-app-6bdba4b6-1366-4538-928c-5e57afca2e7a-do-user-995435.b.db.ondigitalocean.com`,
   database: 'reportr',
   user: 'reportr',
   password: 'ON8QxBRYz0eujuwD',
   port: 25060,
-  sslmode: require  
+  
 }
 
 const isProd = PORT !== 3001
