@@ -642,6 +642,7 @@ class Freshwater extends Component {
           dairy_id={this.state.dairy_id}
           tsvType={this.state.tsvType}
           onClose={() => this.toggleViewTSVsModal(false)}
+          BASE_URL={this.props.BASE_URL}
         />
         <UploadTSVModal
           open={this.state.showUploadFieldCropAppFreshwateTSVModal}

@@ -387,6 +387,7 @@ class HarvestTab extends Component {
           dairy_id={this.state.dairy.pk}
           tsvType={TSV_INFO[HARVEST].tsvType}
           onClose={() => this.toggleShowTSVsModal(false)}
+          BASE_URL={this.props.BASE_URL}
         />
 
         <ActionCancelModal

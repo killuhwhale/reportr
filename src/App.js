@@ -26,7 +26,7 @@ import { TSV_INFO } from "./utils/TSV"
 
 
 const isProd = window.location.hostname !== 'localhost'
-const BASE_URL = isProd? 'https://reportrpsql.wl.r.appspot.com': 'http://localhost:3001'
+const BASE_URL = isProd? 'https://reportr-6wlmu.ondigitalocean.app': 'http://localhost:3001'
 
 
 
@@ -127,9 +127,9 @@ export default class App extends React.Component {
     this.state = {
       user: {},
       theme: darkTheme,
-      showAlert: true,
-      alertSeverity: 'success',
-      alertMsg: 'Test',
+      showAlert: false,
+      alertSeverity: '',
+      alertMsg: '',
     }
   }
 

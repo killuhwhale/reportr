@@ -12,9 +12,11 @@ const dev = {
   password: 'mostdope',
   port: 5432,
 }
+
+
 const dbSocketPath = process.env.DB_SOCKET_PATH || '/cloudsql';
 
-const prod = {
+const prodGoogleCloud = {
   host: `${dbSocketPath}/reportrpsql:us-west2:reportr`,
   database: 'reportr',
   user: 'postgres',
@@ -22,8 +24,17 @@ const prod = {
   port: 5432,
 }
 
+const prodDigitalOcean = {
+  host: `app-6bdba4b6-1366-4538-928c-5e57afca2e7a-do-user-9954352-0.b.db.ondigitalocean.com`,
+  database: 'reportr',
+  user: 'reportr',
+  password: 'ON8QxBRYz0eujuwD',
+  port: 25060,
+  sslmode: require  
+}
+
 const isProd = PORT !== 3001
-const pool = new Pool(isProd? prod: dev)
+const pool = new Pool(isProd? prodDigitalOcean: dev)
 
 
 module.exports = {

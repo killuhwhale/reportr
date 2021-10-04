@@ -1461,6 +1461,7 @@ class ExportTab extends Component {
           dairy_id={this.state.dairy.pk}
           tsvType={TSV_INFO[MANURE].tsvType}
           onClose={() => this.toggleShowViewManureTSVModal(false)}
+          BASE_URL={this.props.BASE_URL}
         />
         <ViewTSVsModal
           open={this.state.showViewWastewaterTSVsModal}
@@ -1469,6 +1470,7 @@ class ExportTab extends Component {
           dairy_id={this.state.dairy.pk}
           tsvType={TSV_INFO[WASTEWATER].tsvType}
           onClose={() => this.toggleShowViewWastewaterTSVModal(false)}
+          BASE_URL={this.props.BASE_URL}
         />
         <ActionCancelModal
           open={this.state.toggleShowDeleteAllModal}
