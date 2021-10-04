@@ -10,7 +10,7 @@ const db = require('./db/index')
 const allowedOrigins = [
   'http://localhost:3000', 
   'http://localhost:3001',
-  'https://reportrr-918ff.web.app' 
+  'https://reportrr-918ff.web.app'
 ];
 // const storage = new Storage();
 
@@ -96,6 +96,7 @@ app.post("/api/tsv/update", (req, res) => {
 
 
 app.get("/api/dairy_base", (req, res) => {
+  console.log("Getting db")
   db.getDairyBase(null,
     (err, result) => {
       if (!err) {
