@@ -31,9 +31,7 @@ const prodDigitalOcean = {
   password: 'ON8QxBRYz0eujuwD',
   port: 25060,
   // ssl: true 
-  ssl: {
-    cert : fs.readFileSync("ca-certificate.crt").toString(),
-}
+  
 }
 
 const isProd = PORT !== 3001
