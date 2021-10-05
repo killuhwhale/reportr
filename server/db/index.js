@@ -30,7 +30,7 @@ const prodDigitalOcean = {
   user: 'reportr',
   password: 'ON8QxBRYz0eujuwD',
   port: 25060,
-  sslmode: require  ,
+  sslmode: true 
 //   ssl: {
 //     ca   : fs.readFileSync("server-ca.pem").toString(),
 //     key  : fs.readFileSync("client-key.pem").toString(),
