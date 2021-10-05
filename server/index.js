@@ -17,8 +17,9 @@ const allowedOrigins = [
 
 // Setup
 app.use(express.json())
-app.use(express.static(path.join(__dirname, "..", "build")));
-app.use(express.static(path.join(__dirname, "../public")));
+// Below will serve the app on :3001 as well....
+// app.use(express.static(path.join(__dirname, "..", "build")));
+// app.use(express.static(path.join(__dirname, "../public")));
 app.use(fileUpload());
 app.use(cors({
   origin: function (origin, callback) {
@@ -2945,9 +2946,14 @@ app.post("/api/postImage", (req, res) => {
 })
 
 app.get('/', (req, res) => {
-  res.send('GCP App Engine!');
+  db.query("SELECT 5 as five;", [], (err, result) => {
+    if (!err) {
+      res.json(result.rows)
+      return;
+    }
+    res.send(err);
+  })
 });
-
 
 const PORT = process.env.PORT || 3001;
 

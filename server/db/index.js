@@ -41,7 +41,7 @@ const prodDigitalOcean = {
 const isProd = PORT !== 3001
 const pool = new Pool(isProd? prodDigitalOcean: dev)
 
-console.log(isProd, pool)
+console.log("isProd, pool",isProd, pool)
 
 module.exports = {
   query: (text, params, callback) => {
