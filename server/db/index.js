@@ -30,7 +30,9 @@ const prodDigitalOcean = {
   user: 'reportr',
   password: 'ON8QxBRYz0eujuwD',
   port: 25060,
-  sslmode: true 
+  ssl: {
+    rejectUnauthorized: false
+  }
   
 }
 
