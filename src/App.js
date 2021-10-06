@@ -29,7 +29,6 @@ const isProd = window.location.hostname !== 'localhost'
 const BASE_URL = isProd? 'https://reportr-6wlmu.ondigitalocean.app': 'http://localhost:3001'
 
 
-
 const AlertGrid = withStyles(theme => ({
   root: {
     position: "fixed",
