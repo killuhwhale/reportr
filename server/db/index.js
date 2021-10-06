@@ -25,10 +25,10 @@ const prodGoogleCloud = {
 }
 
 const prodDigitalOcean = {
-  host: `app-6bdba4b6-1366-4538-928c-5e57afca2e7a-do-user-9954352-0.b.db.ondigitalocean.com`,
+  host: `app-554312c8-2b1e-4143-99c3-989b7463a890-do-user-9954352-0.b.db.ondigitalocean.com`,
   database: 'reportr',
   user: 'reportr',
-  password: 'ON8QxBRYz0eujuwD',
+  password: 'JIQHJLmDiEhjGCoj',
   port: 25060,
   ssl: {
     rejectUnauthorized: false

@@ -26,7 +26,7 @@ import { TSV_INFO } from "./utils/TSV"
 
 
 const isProd = window.location.hostname !== 'localhost'
-const BASE_URL = isProd? 'https://reportr-6wlmu.ondigitalocean.app': 'http://localhost:3001'
+const BASE_URL = isProd? 'https://reportr-paai9.ondigitalocean.app': 'http://localhost:3001'
 
 
 const AlertGrid = withStyles(theme => ({

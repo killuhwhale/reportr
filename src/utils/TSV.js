@@ -4,7 +4,7 @@ export default function mTea() { }
 
 
 const isProd = window.location.hostname !== 'localhost'
-const BASE_URL = isProd? 'https://reportrpsql.wl.r.appspot.com': 'http://localhost:3001'
+const BASE_URL = isProd? 'https://reportr-paai9.ondigitalocean.app': 'http://localhost:3001'
 
 
 export const HARVEST = 'field_crop_harvest'
