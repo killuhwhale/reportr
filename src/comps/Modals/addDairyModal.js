@@ -291,7 +291,7 @@ class AddDairyModal extends Component {
 										value={this.state.reportingYearIdx}
 										onChange={this.onChange.bind(this)}
 										label="Reporting year"
-										style={{ width: "100%" }}
+										style={{ width: "75%" }}
 										SelectProps={{
 											native: true,
 										}}

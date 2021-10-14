@@ -25,7 +25,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { formatFloat } from "../../utils/format"
 import { toFloat, zeroTimeDate } from "../../utils/convertCalc"
-import { ImportExport } from '@material-ui/icons'
+import { AddCircleOutline, ImportExport } from '@material-ui/icons'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
@@ -53,7 +53,49 @@ const PAD = 10
  */
 
 
+const ReportingPeriod = (props) => {
+  // onUpdate
+  // onChange
+  //   period_start
+  // period_end
 
+  return (
+    <Grid container item xs={12} style={{ marginBottom: '32px', marginTop: '32px' }}>
+
+      <Grid item xs={3}>
+        <DatePicker
+          value={new Date(props.period_start)}
+          label="Start"
+          onChange={(_date) => props.onChange({ target: { name: 'period_start', value: zeroTimeDate(_date) } })}
+          style={{ width: "100%", justifyContent: "flex-end" }}
+        />
+      </Grid>
+      <Grid item xs={3}>
+        <DatePicker
+          value={new Date(props.period_end)}
+          label="End"
+          onChange={(_date) => {
+            props.onChange({ target: { name: 'period_end', value: zeroTimeDate(_date) } })
+          }}
+          style={{ width: "100%", justifyContent: "flex-end" }}
+        />
+      </Grid>
+      <Grid item xs={3} align="right">
+        <Tooltip title='Update Reporting Period'>
+          <IconButton variant="outlined" color="secondary"
+            onClick={props.onUpdate} style={{ marginTop: "16px" }}>
+            <ImportExport />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography variant='subtitle2'>Reporting Period</Typography>
+      </Grid>
+
+    </Grid>
+  )
+}
 
 
 class DairyTab extends Component {
@@ -565,23 +607,31 @@ class DairyTab extends Component {
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
-          <Grid item container xs={12}>
-            <Grid item xs={8} >
-              <Typography variant="h2">
-                Dairy Information {this.state.dairy.reporting_yr}
+          <Grid item container xs={12} alignItems='center'>
+            <Grid item xs={5} >
+              <Typography variant="h1">
+                {this.state.dairy.title} {this.state.dairy.reporting_yr}
               </Typography>
             </Grid>
 
-            <Grid item xs={2} align='right'>
+            <Grid item xs={5}>
+              <ReportingPeriod
+                onUpdate={this.props.onUpdate}
+                onChange={this.props.onChange}
+                period_start={this.state.dairy.period_start}
+                period_end={this.state.dairy.period_end}
+              />
+            </Grid>
+
+            <Grid item xs={1} align='center'>
               <Tooltip title="Generate Annual Report">
-                <IconButton size='small'
-                  onClick={this.generatePDF.bind(this)} >
+                <IconButton onClick={this.generatePDF.bind(this)} >
                   <AssessmentIcon color='primary' />
                 </IconButton>
               </Tooltip>
             </Grid>
 
-            <Grid item xs={2} align='right'>
+            <Grid item xs={1} align='right'>
               <Tooltip title='Delete Dairy'>
                 <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
                   <DeleteSweepIcon color='error' />
@@ -589,43 +639,8 @@ class DairyTab extends Component {
               </Tooltip>
             </Grid>
 
-            <Grid container item xs={12} style={{ marginBottom: '32px' }}>
-              <Grid container item alignItems='center' xs={12}>
-                <Grid item xs={3}>
-                  <Typography variant='h4'>Reporting Period</Typography>
-                </Grid>
-                <Grid item xs={9} align="right">
-                  <Tooltip title='Update Reporting Period'>
-                    <IconButton variant="outlined" color="secondary"
-                      onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
-                    >
-                      <ImportExport />
-                    </IconButton>
-                  </Tooltip>
-                </Grid>
-              </Grid>
-              <Grid item xs={6}>
-                <DatePicker
-                  value={new Date(this.state.dairy.period_start)}
-                  label="Start"
-                  onChange={(_date) => this.props.onChange({ target: { name: 'period_start', value: zeroTimeDate(_date) } })}
-                  style={{ width: "100%", justifyContent: "flex-end" }}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <DatePicker
 
-                  value={new Date(this.state.dairy.period_end)}
-                  label="End"
-                  onChange={(_date) => {
-                    this.props.onChange({ target: { name: 'period_end', value: zeroTimeDate(_date) } })
-                  }}
-                  style={{ width: "100%", justifyContent: "flex-end" }}
-                />
-              </Grid>
-            </Grid>
-
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{ marginTop: '64px' }}>
               <OperatorView
                 dairy={this.state.dairy}
                 onAlert={this.props.onAlert}
@@ -633,194 +648,200 @@ class DairyTab extends Component {
               />
             </Grid>
 
-
-            <Grid item container xs={12} style={{ marginTop: "64px" }}>
-              <Grid container item xs={12}>
-                <Grid item xs={3}>
-                  <Typography variant="h4">
-                    Address
-                  </Typography>
-                </Grid>
-                <Grid item xs={9} align="right">
-                  <Tooltip title='Update Address'>
-                    <IconButton variant="outlined" color="secondary"
-                      onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
+            <Grid item xs={12} style={{ marginTop: "64px" }}>
+              <Paper elevation={4}>
+                <Grid item container xs={12}>
+                  <Grid container item xs={12}>
+                    <Grid item xs={3}>
+                      <Typography variant="h4">
+                        Address
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={9} align="right">
+                      <Tooltip title='Update Address'>
+                        <IconButton variant="outlined" color="secondary"
+                          onClick={this.props.onUpdate} style={{ marginTop: "16px" }}
+                        >
+                          <ImportExport />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField
+                      name='title'
+                      value={this.state.dairy.title}
+                      onChange={this.props.onChange}
+                      label="Dairy Name"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item container xs={4} style={{ position: "relative" }}>
+                    <div style={{ position: 'absolute', top: 0, left: 0 }}>
+                      <Typography variant="caption">First Started Operation</Typography>
+                    </div>
+                    <DatePicker
+                      value={new Date(this.state.dairy.began)}
+                      onChange={(_date) => this.props.onChange({ target: { name: 'began', value: zeroTimeDate(_date) } })}
+                      style={{ width: "100%", justifyContent: "flex-end" }}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField select
+                      label="Primary Breed"
+                      value={
+                        Math.max(0, this.props.BREEDS.indexOf(this.state.dairy.p_breed))
+                      }
+                      onChange={(ev) => {
+                        this.props.onChange({ target: { name: 'p_breed', value: this.props.BREEDS[ev.target.value] } })
+                      }}
+                      style={{ width: "100%" }}
+                      SelectProps={{
+                        native: true,
+                      }}
                     >
-                      <ImportExport />
-                    </IconButton>
-                  </Tooltip>
+                      {this.props.BREEDS.map((el, i) => {
+                        return (
+                          <option key={`breeds${i}`} value={i}>{el}</option>
+                        )
+                      })}
+                    </TextField>
+                  </Grid>
                 </Grid>
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  name='title'
-                  value={this.state.dairy.title}
-                  onChange={this.props.onChange}
-                  label="Dairy Name"
-                  style={{ width: "100%" }}
-                />
-              </Grid>
-              <Grid item container xs={4} style={{ position: "relative" }}>
-                <div style={{ position: 'absolute', top: 0, left: 0 }}>
-                  <Typography variant="caption">First Started Operation</Typography>
-                </div>
-                <DatePicker
-                  value={new Date(this.state.dairy.began)}
-                  onChange={(_date) => this.props.onChange({ target: { name: 'began', value: zeroTimeDate(_date) } })}
-                  style={{ width: "100%", justifyContent: "flex-end" }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField select
-                  label="Primary Breed"
-                  value={
-                    Math.max(0, this.props.BREEDS.indexOf(this.state.dairy.p_breed))
-                  }
-                  onChange={(ev) => {
-                    this.props.onChange({ target: { name: 'p_breed', value: this.props.BREEDS[ev.target.value] } })
-                  }}
-                  style={{ width: "100%" }}
-                  SelectProps={{
-                    native: true,
-                  }}
-                >
-                  {this.props.BREEDS.map((el, i) => {
-                    return (
-                      <option key={`breeds${i}`} value={i}>{el}</option>
-                    )
-                  })}
-                </TextField>
-              </Grid>
-            </Grid>
-            <Grid item container xs={12} style={{ marginTop: "16px" }}>
-              <Grid item xs={4}>
-                <TextField
-                  name='street'
-                  value={this.state.dairy.street}
-                  onChange={this.props.onChange}
-                  label="Street"
-                  style={{ width: "100%" }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  name='cross_street'
-                  value={this.state.dairy.cross_street}
-                  onChange={this.props.onChange}
-                  label="Cross Street"
-                  style={{ width: "100%" }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField select
-                  label="County"
-                  value={
-                    Math.max(0, this.props.COUNTIES.indexOf(this.state.dairy.county))
-                  }
-                  onChange={(ev) => {
-                    this.props.onChange({ target: { name: 'county', value: this.props.COUNTIES[ev.target.value] } })
-                  }}
-                  style={{ width: "100%" }}
-                  SelectProps={{
-                    native: true,
-                  }}
-                >
-                  {this.props.COUNTIES.map((el, i) => {
-                    return (
-                      <option name="county" key={`county${i}`} value={i}>{el}</option>
-                    )
-                  })}
-                </TextField>
-              </Grid>
+                <Grid item container xs={12} style={{ marginTop: "16px" }}>
+                  <Grid item xs={4}>
+                    <TextField
+                      name='street'
+                      value={this.state.dairy.street}
+                      onChange={this.props.onChange}
+                      label="Street"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField
+                      name='cross_street'
+                      value={this.state.dairy.cross_street}
+                      onChange={this.props.onChange}
+                      label="Cross Street"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField select
+                      label="County"
+                      value={
+                        Math.max(0, this.props.COUNTIES.indexOf(this.state.dairy.county))
+                      }
+                      onChange={(ev) => {
+                        this.props.onChange({ target: { name: 'county', value: this.props.COUNTIES[ev.target.value] } })
+                      }}
+                      style={{ width: "100%" }}
+                      SelectProps={{
+                        native: true,
+                      }}
+                    >
+                      {this.props.COUNTIES.map((el, i) => {
+                        return (
+                          <option name="county" key={`county${i}`} value={i}>{el}</option>
+                        )
+                      })}
+                    </TextField>
+                  </Grid>
 
-            </Grid>
-            <Grid item container xs={12} style={{ marginTop: "16px" }}>
-              <Grid item xs={3}>
-                <TextField
-                  name='city'
-                  value={this.state.dairy.city}
-                  onChange={this.props.onChange}
-                  label="City"
-                  style={{ width: "100%" }}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  name='city_state'
-                  value={this.state.dairy.city_state}
-                  onChange={this.props.onChange}
-                  label="State"
-                  style={{ width: "100%" }}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <TextField
-                  name='city_zip'
-                  value={this.state.dairy.city_zip}
-                  onChange={this.props.onChange}
-                  label="Zip"
-                  style={{ width: "100%" }}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <TextField select
-                  label="Basin Plan"
-                  value={
-                    Math.max(0, this.props.BASINS.indexOf(this.state.dairy.basin_plan))
-                  }
-                  onChange={(ev) => {
-                    this.props.onChange({ target: { name: 'basin_plan', value: this.props.BASINS[ev.target.value] } })
-                  }}
-                  style={{ width: "100%" }}
-                  SelectProps={{
-                    native: true,
-                  }}
-                >
-                  {this.props.BASINS.map((el, i) => {
-                    return (
-                      <option key={`basin${i}`} value={i}>{el}</option>
-                    )
-                  })}
-                </TextField>
-              </Grid>
-
+                </Grid>
+                <Grid item container xs={12} style={{ marginTop: "16px" }}>
+                  <Grid item xs={3}>
+                    <TextField
+                      name='city'
+                      value={this.state.dairy.city}
+                      onChange={this.props.onChange}
+                      label="City"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField
+                      name='city_state'
+                      value={this.state.dairy.city_state}
+                      onChange={this.props.onChange}
+                      label="State"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField
+                      name='city_zip'
+                      value={this.state.dairy.city_zip}
+                      onChange={this.props.onChange}
+                      label="Zip"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField select
+                      label="Basin Plan"
+                      value={
+                        Math.max(0, this.props.BASINS.indexOf(this.state.dairy.basin_plan))
+                      }
+                      onChange={(ev) => {
+                        this.props.onChange({ target: { name: 'basin_plan', value: this.props.BASINS[ev.target.value] } })
+                      }}
+                      style={{ width: "100%" }}
+                      SelectProps={{
+                        native: true,
+                      }}
+                    >
+                      {this.props.BASINS.map((el, i) => {
+                        return (
+                          <option key={`basin${i}`} value={i}>{el}</option>
+                        )
+                      })}
+                    </TextField>
+                  </Grid>
+                </Grid>
+              </Paper>
             </Grid>
             <Grid item container key="parcel_FieldList" align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
-              <Grid item xs={6}>
-                <Grid item xs={12}>
+              <Grid item container xs={6} alignItems='center' justifyContent='center'>
+                <Grid item xs={6}>
                   <Typography variant="h4">
                     Parcels
                   </Typography>
                 </Grid>
-                <Tooltip title="Add parcel to dairy">
-                  <Button
-                    onClick={() => this.toggleParcelModal(true)}
-                    variant="outlined" color="primary"
-                    style={{ marginTop: "16px" }}
-                  >
-                    <Typography variant="subtitle2">
-                      Add Parcel
-                    </Typography>
-                  </Button>
-                </Tooltip>
+                <Grid item xs={6} align='left'>
+                  <Tooltip title="Add parcel to dairy">
+                    <IconButton
+                      onClick={() => this.toggleParcelModal(true)}
+                      color="primary"
+                      style={{ marginTop: "16px" }}
+                    >
+                      <AddCircleOutline />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Typography variant="h4">
-                  Fields
-                </Typography>
-                <Tooltip title="Add field to dairy">
-                  <Button
-                    onClick={() => this.toggleFieldModal(true)}
-                    variant="outlined" color="primary"
-                    style={{ marginTop: "16px" }}
-                  >
-                    <Typography variant="subtitle2">
-                      Add Field
-                    </Typography>
-                  </Button>
-                </Tooltip>
+
+              <Grid item container xs={6} alignItems='center' justifyContent='center'>
+                <Grid item xs={6}>
+                  <Typography variant="h4">
+                    Fields
+                  </Typography>
+                </Grid>
+                <Grid item xs={6} align='left'>
+                  <Tooltip title="Add field to dairy">
+                    <IconButton
+                      onClick={() => this.toggleFieldModal(true)}
+                      color="primary"
+                      style={{ marginTop: "16px" }}
+                    >
+                      <AddCircleOutline />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
               </Grid>
-            </Grid>
+
+             </Grid>
             <Grid item container align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
               <ParcelAndFieldView
                 reportingYr={this.state.dairy.reporting_yr}
@@ -834,9 +855,7 @@ class DairyTab extends Component {
               />
             </Grid>
 
-            <div id="chartArea" style={{ maxHeight: '1px', overflow: 'none' }}>
-
-            </div>
+            <div id="chartArea" style={{ maxHeight: '1px', overflow: 'none' }}></div>
             <AddParcelModal
               open={this.state.showAddParcelModal}
               actionText="Add"

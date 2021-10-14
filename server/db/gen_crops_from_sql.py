@@ -344,17 +344,20 @@ crops = """Alfalfa Haylage
 
 _split = crops.split("\n")
 
+crop_titles = dict()
+
 for i, crop in enumerate(_split[::7]):
   row = i * 7
-  title = _split[row].strip()
+  title = _split[row].strip().replace(',', '')
   typical_yield = _split[row + 1].strip()
   moisture = _split[row + 2].strip()
   n = _split[row + 3].strip()
   p = _split[row + 4].strip()
   k = _split[row + 5].strip()
   salt = _split[row + 6].strip() if _split[row + 6].strip() else 0 
+  crop_titles[title] = title
+  # stmt = f"INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('{title.replace(''',''', '''''')}',{typical_yield},{moisture},{round(float(n)*20, 2)},{round(float(p)*20, 2)},{round(float(k)*20, 2)},{round(float(salt)*20, 2)});"
+  # print(stmt)
 
-  stmt = f"INSERT INTO crops(title, typical_yield, moisture, n, p, k, salt)VALUES('{title.replace(''',''', '''''')}',{typical_yield},{moisture},{round(float(n)*20, 2)},{round(float(p)*20, 2)},{round(float(k)*20, 2)},{round(float(salt)*20, 2)});"
-  print(stmt)
-
+print(crop_titles)
 

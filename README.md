@@ -25,9 +25,9 @@ ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
 
 TODO
 
-
-- add baseURL to process env vars 
-  - Update anywhere that still has const BASE_URL = 'http://localhost:3001'
+Github is private, the only passwords visible in code is for the DB and that is in a .yaml file uploaded directly to Digital Ocean
+  - Might not need env vars.
+  - add baseURL to process env vars 
 
 
 Per Company Basis Issues:
@@ -40,14 +40,32 @@ Per Company Basis Issues:
 
 - Counties Dropdown list 
   Change to TextiField? or place all counties in there for each State?
+  - Probably only work in 1 state so a drop down of counties is probably fine.
+
+
+Need to get info from Tammy:
+   - Counties to serve.
+   - Breeds (might be in Merced app)
+   - Basin Plans (might be in Merced app)
+
 
 
 
 Problems:
-  - (Feature) Button to delete all entries in a table....
+  - (Big, looks bad) When deleting a Field on Dairy Tab, 
+    - it deletes the correct field, but the update isnt correct.....
+
+  - Remove amount_applied & Lbs/acre salt on Commercial fertilizer TSV
+    - Remove from upload process and DB schema
+
+  - Add progress indicators when uploading TSV, maybe just make the button disabled and spin..... 
+    - Animated border would be cool.
+
   - (Huge, Quality Check) Deletes work as expected, If a Field is deleted, everything related to it is also deleted....
-   
-   - (BUG) Certification if there are no owners or operators, onupdate will crash
+    - **This seems to be working fine...
+
+    
+  - (BUG) Certification if there are no owners or operators, onupdate will crash
 
   - (BUG) No validation checks
     - All Spreadsheets need Numeric Data Validation. Could add to Spreadsheet but should also be in the code.
@@ -58,40 +76,19 @@ Problems:
       - EC 0 - 99,9999.99 (something like this)
       - Percentages are 0-100
 
-
-
-
-
-
-
   - (Quality Check) Unsure if total number are correct in naprb summary table.
-
       - Freshwaters might have an error due to the query used to get them? Producing less results maybe?
       - Most fields match in Total Summary Table except:
         - Dry Manure: P
         - Freshwater: N, Salt
         - Actual removal, Production Records: P, Salt
         - ** I think there is human error inputting data from spreadsheet to Merced App.
+
   - (Quality Check) Check herd calculations: 
     - Put same numbers in and see fi they match reports from Merced...
 
  
- 
 
-
-
-  - Feature decisons
-   - unsure to have them manually add them or only have TSV entries
-   - Spreadsheet shouldnt calculate antything to reduce size. 
-          - (No longer using pre calculated numbers from spreadsheet :) but need to double check)
-          -  But when manually creating entries, it seems weird to have users calculate stuff by hand or assume they have the          spreadsheet with them.
-    - But i dont want to alter it too much before talking to them
-
------ I dont think I want to enable manual entries. ---------- 
-  - (BUG) DLs created manually with null are null and do not get the default value of zero. 
-  - (Performance) Typing into Modals is slow, presumably the models should handle state separtely from the view state since it may be slowing it down. (Probably wont need to type)
----------------------------------------------------------------
- 
 
 
 ##### Rosies website notes.

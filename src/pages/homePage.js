@@ -224,8 +224,8 @@ class HomePage extends Component {
       <Grid container direction="row" item xs={12} spacing={2}>
         <Grid item container alignItems='flex-start' xs={2} >
           <Grid item container xs={12}>
-            <Grid item container justifyContent='center' xs={12}>
-              <Grid item xs={6} style={{marginBottom: '16px'}}>
+            <Grid item container justifyContent='center' alignItems='center' xs={12}>
+              <Grid item xs={8} style={{marginBottom: '16px'}}>
                 <Typography variant='subtitle1'>
                   <TextField 
                     label='Email'
@@ -233,16 +233,16 @@ class HomePage extends Component {
                   />
                 </Typography>
               </Grid>
-              <Grid item xs={3}>
-                <Tooltip title='resetPassword'>
-                  <IconButton onClick={this.confirmResetPassword.bind(this)}>
+              <Grid item xs={2}>
+                <Tooltip title='Reset Password'>
+                  <IconButton onClick={this.confirmResetPassword.bind(this)} size='small'>
                     <RotateLeftIcon color='secondary' />
                   </IconButton>
                 </Tooltip>
               </Grid>
-              <Grid item xs={3}>
-                <Tooltip title='logout'>
-                  <IconButton onClick={this.confirmLogout.bind(this)}>
+              <Grid item xs={2}>
+                <Tooltip title='Logout'>
+                  <IconButton onClick={this.confirmLogout.bind(this)} size='small'>
                     <PowerSettingsNewIcon color='error' />
                   </IconButton>
                 </Tooltip>
@@ -299,7 +299,7 @@ class HomePage extends Component {
             <Grid item xs={12}>
 
               <Tooltip title="Add Dairy">
-                <Button color="primary" variant="outlined" style={{ marginTop: "16px" }}
+                <Button fullWidth color="primary" variant="outlined" style={{ marginTop: "16px" }}
                   onClick={() => this.toggleAddDairyBaseModal(true)} >
                   Add Dairy
                 </Button>
@@ -307,7 +307,7 @@ class HomePage extends Component {
             </Grid>
             <Grid item xs={12}>
               <Tooltip title="Add Reporting Year">
-                <Button color="primary" variant="outlined" style={{ marginTop: "16px" }}
+                <Button fullWidth color="primary" variant="outlined" style={{ marginTop: "0px" }}
                   onClick={() => this.toggleAddDairyModal(true)} >
                   Add Reporting Year
                 </Button>

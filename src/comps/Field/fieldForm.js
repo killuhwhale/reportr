@@ -54,8 +54,8 @@ class FieldForm extends Component {
   
   render(){
     return(
-      <Grid item container xs={12}>
-        <Grid item xs={4} style={{marginTop: "16px"}}>
+      <Grid item container xs={12} style={{marginBottom: '8px'}}>
+        <Grid item xs={7} >
           <TextField disabled={!this.props.titleEditable}
             name='title'  
             value={this.state.field.title}
@@ -64,7 +64,7 @@ class FieldForm extends Component {
             style={{width: "100%"}}        
           />
         </Grid>
-        <Grid item xs={4} style={{marginTop: "16px"}}>
+        <Grid item xs={2} >
           <TextField
             name='acres'  
             value={this.state.field.acres}
@@ -73,7 +73,7 @@ class FieldForm extends Component {
             style={{width: "100%"}}        
           />
         </Grid>
-        <Grid item xs={4} style={{marginTop: "16px"}}>
+        <Grid item xs={3} >
           <TextField
             name='cropable'  
             value={this.state.field.cropable}

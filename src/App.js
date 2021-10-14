@@ -26,7 +26,7 @@ import { TSV_INFO } from "./utils/TSV"
 
 
 const isProd = window.location.hostname !== 'localhost'
-const BASE_URL = isProd? 'https://reportr-paai9.ondigitalocean.app': 'http://localhost:3001'
+const BASE_URL = isProd ? 'https://reportr-paai9.ondigitalocean.app' : 'http://localhost:3001'
 
 
 const AlertGrid = withStyles(theme => ({
@@ -44,27 +44,31 @@ const AlertGrid = withStyles(theme => ({
 
 const GreenGrid = withStyles(theme => ({
   root: {
-    backgroundColor: '#313131',
-    border: '3px solid #057d19',
+    backgroundColor: '#f4f9f6',
+    border: '3px solid #0aa653',
     borderRadius: '8px',
-    marginTop: '32px',
+    marginTop: '64px',
+    color: '#0aa653',
+    minHeight: '75px',
   }
 }))(Grid)
 
 const RedGrid = withStyles(theme => ({
   root: {
-    backgroundColor: '#313131',
-    border: '3px solid #a51e00',
+    backgroundColor: '#f9f4f4',
+    border: '3px solid #a60a0a',
     borderRadius: '8px',
-    marginTop: '32px'
+    marginTop: '64px',
+    color: '#a60a0a',
+    minHeight: '75px',
   }
 }))(Grid)
 
 
-const SuccessAlert = withTheme((props) => {
+const SeverityAlert = withTheme((props) => {
   const Inner = () => {
     return (
-      <React.Fragment>
+      <Grid item container justifyContent='center' alignItems='center' xs={12}>
         <Grid item xs={10}>
           <Typography variant='h6'>
             {props.msg}
@@ -75,14 +79,14 @@ const SuccessAlert = withTheme((props) => {
             <CloseIcon />
           </IconButton>
         </Grid>
-      </React.Fragment>
+      </Grid>
     )
   }
 
 
   return (
-      <ClickAwayListener onClickAway={props.onClose}>
-    <AlertGrid item xs={12}>
+    <ClickAwayListener onClickAway={props.onClose}>
+      <AlertGrid item xs={12}>
         <Grid item xs={3}></Grid>
         <Grid item xs={6}>
           {
@@ -98,8 +102,8 @@ const SuccessAlert = withTheme((props) => {
           }
         </Grid>
         <Grid item xs={3}></Grid>
-    </AlertGrid>
-      </ClickAwayListener>
+      </AlertGrid>
+    </ClickAwayListener>
   )
 })
 
@@ -126,9 +130,9 @@ export default class App extends React.Component {
     this.state = {
       user: {},
       theme: darkTheme,
-      showAlert: false,
-      alertSeverity: '',
-      alertMsg: '',
+      showAlert: true,
+      alertSeverity: 'success',
+      alertMsg: 'Test error, something bad happened.',
     }
   }
 
@@ -138,6 +142,7 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.listenUser()
+    this.delayedClose()
   }
 
 
@@ -153,14 +158,14 @@ export default class App extends React.Component {
   }
 
   onAlert(alertMsg, alertSeverity) {
-    this.setState({ alertMsg, alertSeverity, showAlert: true })
-    this.delayedClose()
+    this.setState({ alertMsg: alertMsg, alertSeverity: alertSeverity, showAlert: true })
+    // this.delayedClose()
   }
 
   delayedClose() {
     new Promise(resolve => setTimeout(resolve, 3000))
       .then(() => {
-        this.onCloseAlert()
+        // this.onCloseAlert()
       })
   }
   onCloseAlert() {
@@ -199,7 +204,7 @@ export default class App extends React.Component {
                           />
                           {
                             this.state.showAlert ?
-                              <SuccessAlert
+                              <SeverityAlert
                                 onClose={this.onCloseAlert.bind(this)}
                                 severity={this.state.alertSeverity}
                                 msg={this.state.alertMsg} />

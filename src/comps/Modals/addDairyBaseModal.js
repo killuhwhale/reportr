@@ -87,7 +87,7 @@ class AddBaseDairyModal extends Component{
 									value={this.state.createDairyTitle}
 									onChange={this.onChange.bind(this)}
 									label="Name of Dairy"
-									style={{width: "100%"}}
+									style={{width: "80%"}}
 								/>
 							</Grid>
 							<Grid item xs={6}>

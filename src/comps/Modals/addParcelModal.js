@@ -4,7 +4,7 @@ import { 	Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui
 import { withTheme } from '@material-ui/core/styles';
 import ParcelNumber from "../Parcel/parcelNumber"
 
-
+const HELP_TEXT = 'Max length is 16.'
 
 class AddParcelModal extends Component{
 
@@ -13,7 +13,8 @@ class AddParcelModal extends Component{
 		this.state = {
 			open: props.open,
 			parcel: props.parcel,
-      curNumber: ""
+      curNumber: "",
+			helperText: ''
 		}
 		/*
 		open
@@ -29,8 +30,9 @@ class AddParcelModal extends Component{
 		return props
 	}
 
-  onUpdate(pk, val){
-    this.setState({curNumber: val})
+  onUpdate(ev){
+		const { value } = ev.target
+		this.setState({curNumber: value, helperText: value.length === 16? HELP_TEXT: ''})
   }
 
 	render(){
@@ -60,10 +62,14 @@ class AddParcelModal extends Component{
 								</Typography>
 							</Grid>
 							<Grid item xs={12}>
-                <ParcelNumber 
-                  parcel={this.props.parcel}
-                  onUpdate={this.onUpdate.bind(this)}
-                />
+								<TextField 
+									onChange={this.onUpdate.bind(this)}
+									label="Parcel Number"
+									value={this.state.curNumber}
+									helperText={this.state.helperText}
+									inputProps={{ maxLength: 16 }}
+									style={{width: '80%'}}
+								/>
 							</Grid>
 							<Grid item xs={6}>
 								<Button
