@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 // Material UI
-import { Grid, Paper, Button, Typography, Modal, TextField, Switch, FormControlLabel, FormGroup } from '@material-ui/core'
+import { Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui/core'
 import { withTheme } from '@material-ui/core/styles'
-import ParcelNumber from '../Parcel/parcelNumber'
 import {
   DatePicker
 } from '@material-ui/pickers'

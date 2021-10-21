@@ -52,8 +52,10 @@ Need to get info from Tammy:
 
 
 Problems:
-  - (Big, looks bad) When deleting a Field on Dairy Tab, 
-    - it deletes the correct field, but the update isnt correct.....
+  
+  - Upload TSV process
+    - Ensure there are rows of data bfore uploading.
+    - Need to avoid updating TSV file in DB with an empty doc....
 
   - Remove amount_applied & Lbs/acre salt on Commercial fertilizer TSV
     - Remove from upload process and DB schema
@@ -61,10 +63,6 @@ Problems:
   - Add progress indicators when uploading TSV, maybe just make the button disabled and spin..... 
     - Animated border would be cool.
 
-  - (Huge, Quality Check) Deletes work as expected, If a Field is deleted, everything related to it is also deleted....
-    - **This seems to be working fine...
-
-    
   - (BUG) Certification if there are no owners or operators, onupdate will crash
 
   - (BUG) No validation checks

@@ -157,8 +157,8 @@ class Drain extends Component {
     this.getFieldCropAppDrainAnalyses()
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot){
-    if(this.state.dairy_id !== prevState.dairy_id){
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.state.dairy_id !== prevState.dairy_id) {
       this.getFieldCropAppDrains()
       this.getFieldCropAppDrainAnalyses()
     }
@@ -224,7 +224,11 @@ class Drain extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppDrainTSVModal(val) {
-    this.setState({ showUploadFieldCropAppDrainTSVModal: val })
+    this.setState({
+      showUploadFieldCropAppDrainTSVModal: val,
+      tsvText: "",
+      uploadedFilename: ""
+    })
   }
   onUploadFieldCropAppDrainTSVModalChange(ev) {
     const { files } = ev.target

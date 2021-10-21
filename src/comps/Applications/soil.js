@@ -257,7 +257,11 @@ class Soil extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppSoilTSVModal(val) {
-    this.setState({ showUploadFieldCropAppSoilTSVModal: val })
+    this.setState({ 
+      showUploadFieldCropAppSoilTSVModal: val,
+      tsvText: "",
+      uploadedFilename: ""
+    })
   }
   onUploadFieldCropAppSoilTSVModalChange(ev) {
     const { files } = ev.target

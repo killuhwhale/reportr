@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 // Material UI
-import { Grid, Paper, Button, Typography, Modal, TextField, Switch, FormGroup, FormControlLabel } from '@material-ui/core';
+import { Grid, Paper, Button, Typography, Modal, Switch, FormGroup, FormControlLabel, CircularProgress } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
 class UploadTSVModal extends Component {
@@ -10,6 +10,8 @@ class UploadTSVModal extends Component {
       open: props.open,
       uploadedFilename: props.uploadedFilename,
       isWastewater: false,
+      loading: false
+
     }
     /*
     open
@@ -25,8 +27,15 @@ class UploadTSVModal extends Component {
     return props
   }
 
+  componentDidUpdate(prevProps, prevState){
+    if(prevState.open != this.state.open){
+      this.setState({loading: false})
+    }
+  }
+
   onExportTypeChange(isWastewater){
     this.setState({isWastewater: isWastewater})
+
   }
 
   render() {
@@ -102,14 +111,19 @@ class UploadTSVModal extends Component {
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
-                  <Button
-                    color="secondary"
-                    variant="outlined"
-                    onClick={() => { 
-                      this.state.isWastewater? this.props.uploadWastewaterTSV() : this.props.uploadManureTSV() 
-                    }}>
-                    {this.props.actionText}
-                  </Button>
+                {this.state.loading? <CircularProgress /> :
+                 
+                   <Button disabled={this.state.uploadedFilename.length < 1}
+                   color="secondary"
+                   variant="outlined"
+                   onClick={() => {
+                    this.setState({loading: true})   
+                     this.state.isWastewater? this.props.uploadWastewaterTSV() : this.props.uploadManureTSV() 
+                   }}>
+                   {this.props.actionText}
+                 </Button>
+                }
+                 
                 </Grid>
               </Grid>
             </Paper>

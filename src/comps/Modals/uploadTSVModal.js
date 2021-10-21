@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 // Material UI
-import { Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui/core';
+import { Grid, Paper, Button, Typography, Modal, TextField, CircularProgress } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
 class UploadTSVModal extends Component {
@@ -8,7 +8,8 @@ class UploadTSVModal extends Component {
     super(props)
     this.state = {
       open: props.open,
-      uploadedFilename: props.uploadedFilename
+      uploadedFilename: props.uploadedFilename,
+      loading: false
     }
     /*
     open
@@ -24,7 +25,14 @@ class UploadTSVModal extends Component {
     return props
   }
 
+  componentDidUpdate(prevProps, prevState){
+    if(prevState.open != this.state.open){
+      this.setState({loading: false})
+    }
+  }
+
   render() {
+    let disabled = !this.state.uploadedFilename.length > 0
     return (
       <Modal
         open={this.state.open}
@@ -76,12 +84,17 @@ class UploadTSVModal extends Component {
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
-                  <Button
+                {this.state.loading? <CircularProgress /> :
+                  <Button disabled={disabled}
                     color="secondary"
                     variant="outlined"
-                    onClick={() => { this.props.onAction() }}>
+                    onClick={() => { 
+                      this.setState({loading: true})  
+                      this.props.onAction() 
+                    }}>
                     {this.props.actionText}
                   </Button>
+                }
                 </Grid>
               </Grid>
             </Paper>

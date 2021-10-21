@@ -1115,7 +1115,11 @@ class ExportTab extends Component {
   }
 
   toggleShowUploadTSVModal(val) {
-    this.setState({ showUploadTSVModal: val })
+    this.setState({
+      showUploadTSVModal: val,
+      tsvText: "",
+      uploadedFilename: ""
+    })
   }
   toggleShowViewManureTSVModal(val) {
     this.setState({ showViewManureTSVsModal: val })

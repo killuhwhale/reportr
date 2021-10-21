@@ -14,8 +14,7 @@ import Chart from 'chart.js/auto';
 import { get, post } from '../../utils/requests'
 import ParcelAndFieldView from "../Parcel/parcelAndFieldView"
 import OperatorView from "../Operators/operatorView"
-import AddParcelModal from "../Modals/addParcelModal"
-import AddFieldModal from "../Modals/addFieldModal"
+
 import pdfMake from "pdfmake/build/pdfmake"
 import pdfFonts from "pdfmake/build/vfs_fonts"
 import dd from "./pdf"
@@ -62,7 +61,7 @@ const ReportingPeriod = (props) => {
   return (
     <Grid container item xs={12} style={{ marginBottom: '32px', marginTop: '32px' }}>
 
-      <Grid item xs={3}>
+      <Grid item xs={5}>
         <DatePicker
           value={new Date(props.period_start)}
           label="Start"
@@ -70,7 +69,7 @@ const ReportingPeriod = (props) => {
           style={{ width: "100%", justifyContent: "flex-end" }}
         />
       </Grid>
-      <Grid item xs={3}>
+      <Grid item xs={5}>
         <DatePicker
           value={new Date(props.period_end)}
           label="End"
@@ -80,7 +79,7 @@ const ReportingPeriod = (props) => {
           style={{ width: "100%", justifyContent: "flex-end" }}
         />
       </Grid>
-      <Grid item xs={3} align="right">
+      <Grid item xs={2} align="right">
         <Tooltip title='Update Reporting Period'>
           <IconButton variant="outlined" color="secondary"
             onClick={props.onUpdate} style={{ marginTop: "16px" }}>
@@ -129,55 +128,9 @@ class DairyTab extends Component {
     }
   }
 
-  handleDateChange(date) {
-    this.props.onChange("began", date)
-  }
-  onParcelChange(pk, pnumber) {
-    console.log("onParcelChange")
-    console.log(pk, pnumber)
-  }
-  createParcel(pnumber) {
-    console.log("Creating Parcel for")
-    console.log(this.state.dairy.title, this.state.dairy.pk, pnumber)
-
-    post(`${this.props.BASE_URL}/api/parcels/create`, {
-      pnumber, dairy_id: this.state.dairy.pk
-    })
-      .then(res => {
-        console.log(res)
-        this.toggleParcelModal(false)
-        this.getAllParcels()
-        this.props.onAlert('Created parcel!', 'success')
-      })
-      .catch(err => {
-        console.log(err)
-        this.toggleParcelModal(false)
-        this.props.onAlert('Failed creating parcel!', 'error')
-      })
-  }
-  toggleParcelModal(val) {
-    this.setState({ showAddParcelModal: val })
-  }
-  createField(field) {
-    console.log("Creating Field for")
-    console.log(this.state.dairy.title, this.state.dairy.pk)
-    console.log(field)
-    post(`${this.props.BASE_URL}/api/fields/create`, { data: { ...field, dairy_id: this.state.dairy.pk } })
-      .then(res => {
-        console.log(res)
-        this.toggleFieldModal(false)
-        this.getAllFields()
-        this.props.onAlert('Created field!', 'success')
-      })
-      .catch(err => {
-        console.log(err)
-        this.toggleFieldModal(false)
-        this.props.onAlert('Failed to create field!', 'error')
-      })
-  }
-  toggleFieldModal(val) {
-    this.setState({ showAddFieldModal: val })
-  }
+ 
+ 
+  
   getAllParcels() {
     get(`${this.props.BASE_URL}/api/parcels/${this.state.dairy.pk}`)
       .then(res => {
@@ -578,11 +531,16 @@ class DairyTab extends Component {
         this.createCharts([props.nutrientBudgetB.allEvents, props.naprbalA])
           .then(images => {
             // pdfMake.createPdf(dd(props)).download();
+            this.props.onAlert('Generating PDF!', 'success')
             pdfMake.createPdf(dd(props, images)).open()
           })
           .catch(err => {
             console.log(err)
           })
+      })
+      .catch(err => {
+        console.log(err)
+        this.props.onAlert('Information not found.', 'error')
       })
   }
   confirmDeleteAllFromTable(val) {
@@ -608,47 +566,53 @@ class DairyTab extends Component {
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
           <Grid item container xs={12} alignItems='center'>
-            <Grid item xs={5} >
-              <Typography variant="h1">
-                {this.state.dairy.title} {this.state.dairy.reporting_yr}
-              </Typography>
+            <Grid item container xs={12}>
+              <Grid item container xs={7} alignItems='center'>
+                <Grid item xs={12} align='right'>
+                  <Typography variant="h4">
+                    {this.state.dairy.reporting_yr}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="h1">
+                    {this.state.dairy.title}
+                  </Typography>
+                </Grid>
+
+              </Grid>
+              <Grid item container xs={5}>
+                <Grid item container xs={12}>
+                  <Grid item xs={6} align='left'>
+                    <Tooltip title="Generate Annual Report">
+                      <IconButton onClick={this.generatePDF.bind(this)} >
+                        <AssessmentIcon color='primary' />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+
+                  <Grid item xs={6} align='right'>
+                    <Tooltip title='Delete Dairy'>
+                      <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
+                        <DeleteSweepIcon color='error' />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+
+                </Grid>
+
+                <Grid item xs={12}>
+                  <ReportingPeriod
+                    onUpdate={this.props.onUpdate}
+                    onChange={this.props.onChange}
+                    period_start={this.state.dairy.period_start}
+                    period_end={this.state.dairy.period_end}
+                  />
+                </Grid>
+              </Grid>
             </Grid>
 
-            <Grid item xs={5}>
-              <ReportingPeriod
-                onUpdate={this.props.onUpdate}
-                onChange={this.props.onChange}
-                period_start={this.state.dairy.period_start}
-                period_end={this.state.dairy.period_end}
-              />
-            </Grid>
 
-            <Grid item xs={1} align='center'>
-              <Tooltip title="Generate Annual Report">
-                <IconButton onClick={this.generatePDF.bind(this)} >
-                  <AssessmentIcon color='primary' />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-
-            <Grid item xs={1} align='right'>
-              <Tooltip title='Delete Dairy'>
-                <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
-                  <DeleteSweepIcon color='error' />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-
-
-            <Grid item xs={12} style={{ marginTop: '64px' }}>
-              <OperatorView
-                dairy={this.state.dairy}
-                onAlert={this.props.onAlert}
-                BASE_URL={this.props.BASE_URL}
-              />
-            </Grid>
-
-            <Grid item xs={12} style={{ marginTop: "64px" }}>
+            <Grid item xs={12} style={{ marginTop: "64px", marginBottom: '32px' }}>
               <Paper elevation={4}>
                 <Grid item container xs={12}>
                   <Grid container item xs={12}>
@@ -802,52 +766,25 @@ class DairyTab extends Component {
                 </Grid>
               </Paper>
             </Grid>
-            <Grid item container key="parcel_FieldList" align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
-              <Grid item container xs={6} alignItems='center' justifyContent='center'>
-                <Grid item xs={6}>
-                  <Typography variant="h4">
-                    Parcels
-                  </Typography>
-                </Grid>
-                <Grid item xs={6} align='left'>
-                  <Tooltip title="Add parcel to dairy">
-                    <IconButton
-                      onClick={() => this.toggleParcelModal(true)}
-                      color="primary"
-                      style={{ marginTop: "16px" }}
-                    >
-                      <AddCircleOutline />
-                    </IconButton>
-                  </Tooltip>
-                </Grid>
-              </Grid>
 
-              <Grid item container xs={6} alignItems='center' justifyContent='center'>
-                <Grid item xs={6}>
-                  <Typography variant="h4">
-                    Fields
-                  </Typography>
-                </Grid>
-                <Grid item xs={6} align='left'>
-                  <Tooltip title="Add field to dairy">
-                    <IconButton
-                      onClick={() => this.toggleFieldModal(true)}
-                      color="primary"
-                      style={{ marginTop: "16px" }}
-                    >
-                      <AddCircleOutline />
-                    </IconButton>
-                  </Tooltip>
-                </Grid>
-              </Grid>
+            <Grid item xs={12} style={{ marginTop: '64px' }}>
+              <OperatorView
+                dairy={this.state.dairy}
+                onAlert={this.props.onAlert}
+                BASE_URL={this.props.BASE_URL}
+              />
+            </Grid>
 
-             </Grid>
+           
+           
             <Grid item container align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
               <ParcelAndFieldView
                 reportingYr={this.state.dairy.reporting_yr}
                 dairy={this.state.dairy}
                 fields={this.state.fields}
                 parcels={this.state.parcels}
+                getAllParcels={this.getAllParcels.bind(this)}
+                getAllFields={this.getAllFields.bind(this)}
                 onFieldDelete={this.getAllFields.bind(this)}
                 onParcelDelete={this.getAllParcels.bind(this)}
                 onAlert={this.props.onAlert}
@@ -856,26 +793,7 @@ class DairyTab extends Component {
             </Grid>
 
             <div id="chartArea" style={{ maxHeight: '1px', overflow: 'none' }}></div>
-            <AddParcelModal
-              open={this.state.showAddParcelModal}
-              actionText="Add"
-              cancelText="Cancel"
-              modalText={`Add Parcel to Dairy ${this.state.dairy.title}`}
-              parcel={{ pnumber: "" }}
-              onUpdate={this.onParcelChange.bind(this)}
-              onAction={this.createParcel.bind(this)}
-              onClose={() => this.toggleParcelModal(false)}
-              BASE_URL={this.props.BASE_URL}
-            />
-            <AddFieldModal
-              open={this.state.showAddFieldModal}
-              actionText="Add"
-              cancelText="Cancel"
-              modalText={`Add Field to Dairy ${this.state.dairy.title}`}
-              onAction={this.createField.bind(this)}
-              onClose={() => this.toggleFieldModal(false)}
-              BASE_URL={this.props.BASE_URL}
-            />
+          
             <ActionCancelModal
               open={this.state.toggleShowDeleteAllModal}
               actionText="Delete Dairy"

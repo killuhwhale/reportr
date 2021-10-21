@@ -374,7 +374,11 @@ class Solidmanure extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppSolidmanureTSVModal(val) {
-    this.setState({ showUploadFieldCropAppSolidmanureTSVModal: val })
+    this.setState({ 
+      showUploadFieldCropAppSolidmanureTSVModal: val,
+      tsvText: "",
+      uploadedFilename: ""
+     })
   }
   onUploadFieldCropAppFreshwateTSVModalChange(ev) {
     const { files } = ev.target

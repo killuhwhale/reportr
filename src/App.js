@@ -130,9 +130,9 @@ export default class App extends React.Component {
     this.state = {
       user: {},
       theme: darkTheme,
-      showAlert: true,
-      alertSeverity: 'success',
-      alertMsg: 'Test error, something bad happened.',
+      showAlert: false,
+      alertSeverity: '',
+      alertMsg: '',
     }
   }
 
@@ -159,13 +159,13 @@ export default class App extends React.Component {
 
   onAlert(alertMsg, alertSeverity) {
     this.setState({ alertMsg: alertMsg, alertSeverity: alertSeverity, showAlert: true })
-    // this.delayedClose()
+    this.delayedClose()
   }
 
   delayedClose() {
-    new Promise(resolve => setTimeout(resolve, 3000))
+    new Promise(resolve => setTimeout(resolve, 2100))
       .then(() => {
-        // this.onCloseAlert()
+        this.onCloseAlert()
       })
   }
   onCloseAlert() {

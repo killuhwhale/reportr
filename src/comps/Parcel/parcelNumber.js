@@ -91,6 +91,7 @@ class ParcelNumber extends Component {
   render() {
     // console.log(this.state.parcel)
     return (
+
       <TextField
         name='pnumber'
         value={this.state.formattedNumber}
@@ -99,6 +100,7 @@ class ParcelNumber extends Component {
         style={{ width: "100%" }}
         placeholder="    -    -    "
       />
+
     )
   }
 }

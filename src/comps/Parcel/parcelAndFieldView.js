@@ -9,6 +9,8 @@ import ParcelNumber from "./parcelNumber"
 import FieldForm from "../Field/fieldForm"
 import FieldParcelJoinModal from "../Modals/fieldParcelJoinModal"
 import JoinedView from "./joinedView"
+import AddParcelModal from "../Modals/addParcelModal"
+import AddFieldModal from "../Modals/addFieldModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { get, post } from "../../utils/requests"
@@ -37,7 +39,9 @@ class ParcelView extends Component {
       curDelParcel: {}, // Parcel to be deleted, placed here by ActionCacelDialog
       curDelField: {},
       showDeleteFieldModal: false,
-      showDeleteParcelModal: false
+      showDeleteParcelModal: false,
+      showAddParcelModal: false,
+      showAddFieldModal: false
     }
   }
   static getDerivedStateFromProps(props, state) {
@@ -146,8 +150,11 @@ class ParcelView extends Component {
       parcel_id: parcel_id
     })
       .then(res => {
-        console.log(res)
         this.toggleShowJoinFieldParcelModal(false)
+        if(res['test']){
+          this.props.onAlert('Error, duplicate entry.', 'error')  
+          return
+        }
         this.getAllFieldParcels()
         this.props.onAlert('Success!', 'success')
       })
@@ -181,12 +188,50 @@ class ParcelView extends Component {
       })
   }
   deleteField() {
-    console.log("Deleting field", this.state.curDelField)
     post(`${this.props.BASE_URL}/api/fields/delete`, { pk: this.state.curDelField.pk })
       .then(res => {
         console.log(res)
         this.props.onFieldDelete()
         this.toggleDeleteFieldModal(false)
+      })
+  }
+
+
+  toggleParcelModal(val) {
+    this.setState({ showAddParcelModal: val })
+  }
+  toggleFieldModal(val) {
+    this.setState({ showAddFieldModal: val })
+  }
+
+
+  createParcel(pnumber) {
+    post(`${this.props.BASE_URL}/api/parcels/create`, {
+      pnumber, dairy_id: this.state.dairy.pk
+    })
+      .then(res => {
+        this.toggleParcelModal(false)
+        this.props.getAllParcels()
+        this.props.onAlert('Created parcel!', 'success')
+      })
+      .catch(err => {
+        console.log(err)
+        this.toggleParcelModal(false)
+        this.props.onAlert('Failed creating parcel!', 'error')
+      })
+  }
+
+  createField(field) {
+    post(`${this.props.BASE_URL}/api/fields/create`, { data: { ...field, dairy_id: this.state.dairy.pk } })
+      .then(res => {
+        this.toggleFieldModal(false)
+        this.props.getAllFields()
+        this.props.onAlert('Created field!', 'success')
+      })
+      .catch(err => {
+        console.log(err)
+        this.toggleFieldModal(false)
+        this.props.onAlert('Failed to create field!', 'error')
       })
   }
 
@@ -198,6 +243,46 @@ class ParcelView extends Component {
   render() {
     return (
       <Grid container item xs={12} spacing={2}>
+        <Grid item container key="parcel_FieldList" align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
+          <Grid item container xs={6} alignContent='center' alignItems='center' justifyContent='center'>
+            <Grid item xs={12}>
+              <div style={{ display: 'flex' }}>
+                <Typography variant="h4" style={{ display: 'flex', alignItems: 'center' }}>
+                  Parcels
+                </Typography>
+                <Tooltip title="Add parcel to dairy">
+                  <IconButton
+                    onClick={() => this.toggleParcelModal(true)}
+                    color="primary">
+                    <AddCircleOutline />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </Grid>
+          </Grid>
+
+          <Grid item container xs={6} alignItems='center' justifyContent='center'>
+            <Grid item xs={12}>
+              <div style={{ display: 'flex' }}>
+                <Typography variant="h4" style={{ display: 'flex', alignItems: 'center' }}>
+                  Fields
+                </Typography>
+                <Tooltip title="Add field to dairy">
+                  <IconButton
+                    onClick={() => this.toggleFieldModal(true)}
+                    color="primary">
+                    <AddCircleOutline />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </Grid>
+          </Grid>
+
+        </Grid>
+
+
+
+
         <Grid item key="PVparcelNumbermn" xs={6}>
           <Grid item container key="dumbKey1" xs={12}>
             {this.state.parcels.length > 0 ?
@@ -206,9 +291,10 @@ class ParcelView extends Component {
                   <Grid item container xs={6} key={`parcelViewPV${i}`} justifyContent="center" alignItems="center"
                     style={{ marginBottom: '8px' }}>
                     <Grid item xs={10}>
-                      <ParcelNumber
-                        parcel={parcel}
-                        onUpdate={this.onParcelNumberUpdate.bind(this)}
+                      <TextField
+                        value={parcel.pnumber}
+                        label="APN"
+                        style={{ width: '100%' }}
                       />
                     </Grid>
                     <Grid item xs={2} container justifyContent='center' alignContent='center'>
@@ -273,19 +359,19 @@ class ParcelView extends Component {
           </Grid>
         </Grid>
         <Grid item container key="PVlistfieldsandparcels" xs={12}>
-          <Grid item xs={3} align="left">
-            <Typography variant="h4">
-              Field & Parcel View
-            </Typography>
-          </Grid>
-          <Grid item xs={9} align="left">
-            <Tooltip title="Join Field & Parcel">
-              <IconButton color="primary"
-                onClick={() => this.toggleShowJoinFieldParcelModal(true)}
-              >
-                <AddCircleOutline />
-              </IconButton>
-            </Tooltip>
+          <Grid item xs={12} align="left">
+            <div style={{display: 'flex'}}>
+              <Typography variant="h4" style={{display: 'flex', alignItems: 'center'}}>
+                Field & Parcel View
+              </Typography>
+              <Tooltip title="Join Field & Parcel">
+                <IconButton color="primary"
+                  onClick={() => this.toggleShowJoinFieldParcelModal(true)}
+                >
+                  <AddCircleOutline />
+                </IconButton>
+              </Tooltip>
+            </div>
           </Grid>
         </Grid>
 
@@ -295,9 +381,11 @@ class ParcelView extends Component {
             dairy={this.state.dairy}
             field_parcels={this.state.field_parcels}
             onDelete={this.getAllFieldParcels.bind(this)}
+            BASE_URL={this.props.BASE_URL}
           />
-         
+
         </Grid>
+
         <FieldParcelJoinModal key="PVparcelJoinModal"
           open={this.state.showJoinFieldParcelModal}
           actionText="Join"
@@ -328,6 +416,24 @@ class ParcelView extends Component {
           onAction={this.deleteField.bind(this)}
           onClose={() => this.toggleDeleteFieldModal(false)}
 
+        />
+        <AddParcelModal
+          open={this.state.showAddParcelModal}
+          actionText="Add"
+          cancelText="Cancel"
+          modalText={`Add Parcel to Dairy ${this.state.dairy.title}`}
+          onAction={this.createParcel.bind(this)}
+          onClose={() => this.toggleParcelModal(false)}
+          BASE_URL={this.props.BASE_URL}
+        />
+        <AddFieldModal
+          open={this.state.showAddFieldModal}
+          actionText="Add"
+          cancelText="Cancel"
+          modalText={`Add Field to Dairy ${this.state.dairy.title}`}
+          onAction={this.createField.bind(this)}
+          onClose={() => this.toggleFieldModal(false)}
+          BASE_URL={this.props.BASE_URL}
         />
       </Grid>
     )

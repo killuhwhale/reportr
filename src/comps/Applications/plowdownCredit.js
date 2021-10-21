@@ -32,7 +32,7 @@ import {
 /** View for Process Wastewater Entry in DB */
 const PlowdownCreditView = (props) => {
   const plowdownCredits = props && props.plowdownCredits ? props.plowdownCredits : []
-  const headerInfo = plowdownCredits && plowdownCredits.length > 0 ? plowdownCredits[0]: {}
+  const headerInfo = plowdownCredits && plowdownCredits.length > 0 ? plowdownCredits[0] : {}
 
   return (
     <Grid container item xs={12} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
@@ -116,13 +116,13 @@ class PlowdownCredit extends Component {
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
-  
+
   componentDidMount() {
     // this.setWindowListener()
     this.getFieldCropAppPlowdownCredits()
   }
-  componentDidUpdate(prevProps, prevState){
-    if(prevProps.dairy_id !== this.state.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated){
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.dairy_id !== this.state.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated) {
       this.getFieldCropAppPlowdownCredits()
     }
   }
@@ -158,7 +158,11 @@ class PlowdownCredit extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppPlowdownCreditTSVModal(val) {
-    this.setState({ showUploadFieldCropAppPlowdownCreditTSVModal: val })
+    this.setState({
+      showUploadFieldCropAppPlowdownCreditTSVModal: val,
+      tsvText: "",
+      uploadedFilename: ""
+    })
   }
   onUploadFieldCropAppPlowdownCreditTSVModalChange(ev) {
     const { files } = ev.target
@@ -208,7 +212,7 @@ class PlowdownCredit extends Component {
   getPlowdownCreditSortedKeys() {
     return Object.keys(this.state.field_crop_app_plowdown_credit).sort()
   }
-  
+
 
   renderPlowdownCredit({ index, style }) {
     let key = this.getPlowdownCreditSortedKeys()[index]
@@ -275,7 +279,7 @@ class PlowdownCredit extends Component {
             </IconButton>
           </Tooltip>
         </Grid>
-        
+
         <Grid item xs={12}>
           <Typography variant='h3'>Plowdown Credit Applications</Typography>
           {this.getPlowdownCreditSortedKeys().length > 0 ?
@@ -289,7 +293,7 @@ class PlowdownCredit extends Component {
             </List>
             :
             <React.Fragment></React.Fragment>
-          }        
+          }
         </Grid>
 
 
@@ -309,7 +313,7 @@ class PlowdownCredit extends Component {
           modalText={`Delete All Plowdown Credit Events?`}
           onAction={this.deleteAllFromTable.bind(this)}
           onClose={() => this.confirmDeleteAllFromTable(false)}
-        />  
+        />
 
         <ViewTSVsModal
           open={this.state.showViewTSVsModal}

@@ -288,7 +288,6 @@ class ProcessWastewater extends Component {
   createProcessWastewater() {
     let createObj = this.state.createProcessWastewaterObj
 
-
     createObj.dairy_id = this.state.dairy_id
 
     createObj.field_crop_app_id = this.state.fieldCropAppEvents[createObj.app_event_idx].pk
@@ -343,7 +342,11 @@ class ProcessWastewater extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppProcessWastewaterTSVModal(val) {
-    this.setState({ showUploadFieldCropAppProcessWastewateTSVModal: val })
+    this.setState({ 
+      showUploadFieldCropAppProcessWastewateTSVModal: val,
+      tsvText: "",
+      uploadedFilename: ""
+    })
   }
   onUploadFieldCropAppProcessWastewaterTSVModalChange(ev) {
     const { files } = ev.target
@@ -358,7 +361,12 @@ class ProcessWastewater extends Component {
     // 24 columns from TSV
     let dairy_pk = this.state.dairy_id
     let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
-
+    console.log(rows)
+    if(rows.length < 1){
+      this.props.onAlert("No data found.", 'error')
+      this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
+      return
+    }
     // Create a set of fields to ensure duplicates are not attempted.
     let fields = createFieldSet(rows)
 

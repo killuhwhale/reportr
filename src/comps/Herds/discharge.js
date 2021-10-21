@@ -141,7 +141,11 @@ class Discharge extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppDischargeTSVModal(val) {
-    this.setState({ showUploadFieldCropAppDischargeTSVModal: val })
+    this.setState({ 
+      showUploadFieldCropAppDischargeTSVModal: val,
+      tsvText: "",
+      uploadedFilename: ""
+     })
   }
   onUploadFieldCropAppDischargeTSVModalChange(ev) {
     const { files } = ev.target

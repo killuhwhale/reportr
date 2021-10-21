@@ -38,8 +38,6 @@ class AddFieldModal extends Component{
 	}
 
   onUpdate(pk, field){
-    console.log("onUpdateForm Fields")
-    console.log(pk, field)
     this.setState({field: field})
   }
 

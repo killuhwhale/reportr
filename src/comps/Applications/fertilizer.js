@@ -417,7 +417,11 @@ class Fertilizer extends Component {
   }
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppFertilizerTSVModal(val) {
-    this.setState({ showUploadFieldCropAppFertilizerTSVModal: val })
+    this.setState({
+      showUploadFieldCropAppFertilizerTSVModal: val,
+      tsvText: "",
+      uploadedFilename: ""
+     })
   }
   onUploadFieldCropAppFreshwateTSVModalChange(ev) {
     const { files } = ev.target

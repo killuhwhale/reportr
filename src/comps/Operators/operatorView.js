@@ -174,10 +174,10 @@ class OperatorView extends Component {
           {this.state.operators.length > 0 ?
             this.state.operators.map((operator, i) => {
               return (
-                <Paper elevation={2}>
-                  <Grid item container xs={12} key={`operatorOV${i}`} justifyContent="center" alignItems="center" align="center" >
+                <Paper elevation={2} key={`operatorOV${i}`}>
+                  <Grid item container xs={12}  justifyContent="center" alignItems="center" align="center" >
                     <Grid item xs={10}>
-                      <OperatorForm key={`operatorOV${i}`}
+                      <OperatorForm 
                         operator={operator}
                         index={i}
                         onChange={this.onOperatorChange.bind(this)}

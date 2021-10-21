@@ -451,7 +451,11 @@ class Freshwater extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppFreshwateTSVModal(val) {
-    this.setState({ showUploadFieldCropAppFreshwateTSVModal: val })
+    this.setState({ 
+      showUploadFieldCropAppFreshwateTSVModal: val,
+      tsvText: "",
+      uploadedFilename: "" 
+    })
   }
   onUploadFieldCropAppFreshwateTSVModalChange(ev) {
     const { files } = ev.target

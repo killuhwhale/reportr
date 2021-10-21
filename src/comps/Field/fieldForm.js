@@ -4,6 +4,7 @@ import {
 }from '@material-ui/core'
 
 import { withTheme } from '@material-ui/core/styles';
+import { isThisSecond } from 'date-fns';
 
 
 /**
@@ -28,11 +29,15 @@ class FieldForm extends Component {
     }
   }
   
-  static getDerivedStateFromProps(props, state){
-    return state
+  static getDerivedStateFromProps(props, state){    
+    return props
   }
 
-  
+  componentDidUpdate(prevProps, prevState){
+    if(prevState.field.pk !== this.state.field.pk){
+      this.setState({...this.state})
+    }
+  }
 
   onChange(ev){
     const {name, value} = ev.target

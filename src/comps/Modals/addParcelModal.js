@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 // Material UI
 import { 	Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
-import ParcelNumber from "../Parcel/parcelNumber"
+
 
 const HELP_TEXT = 'Max length is 16.'
 
@@ -12,7 +12,6 @@ class AddParcelModal extends Component{
 		super(props)
 		this.state = {
 			open: props.open,
-			parcel: props.parcel,
       curNumber: "",
 			helperText: ''
 		}

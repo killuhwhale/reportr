@@ -222,11 +222,20 @@ class Agreement extends Component {
   }
 
   onUpdateCertification() {
+    let owner = this.state.owners[this.state.owner_idx]
+    let operator = this.state.operators[this.state.operator_idx]
+    let responsible = this.state.ownerOperators[this.state.responsible_idx]
+    if(!owner || !operator || !responsible){
+      let msg = `${!owner? 'Owner': !operator? 'Operator': !responsible? 'Responsible party': 'Error:'} not found.`
+      this.props.onAlert(msg, 'error')
+      return
+    }
+    
     let certification = {
       dairy_id: this.state.dairy_id,
-      owner_id: this.state.owners[this.state.owner_idx].pk,
-      operator_id: this.state.operators[this.state.operator_idx].pk,
-      responsible_id: this.state.ownerOperators[this.state.responsible_idx].pk,
+      owner_id: owner.pk,
+      operator_id: operator.pk,
+      responsible_id: responsible.pk,
       pk: this.state.certification_id
     }
 
