@@ -151,8 +151,8 @@ class ParcelView extends Component {
     })
       .then(res => {
         this.toggleShowJoinFieldParcelModal(false)
-        if(res['test']){
-          this.props.onAlert('Error, duplicate entry.', 'error')  
+        if (res['test']) {
+          this.props.onAlert('Error, duplicate entry.', 'error')
           return
         }
         this.getAllFieldParcels()
@@ -325,43 +325,48 @@ class ParcelView extends Component {
         <Grid item key="PVfield" xs={6}>
 
           {this.state.fields.length > 0 ?
-            this.state.fields.map((field, i) => {
-              return (
-                <Grid container item xs={12} key={`parcelViewFieldsPV${i}`}>
-                  <Grid item xs={11}>
-                    <FieldForm
-                      field={field}
-                      titleEditable={false}
-                      onUpdate={this.onFieldUpdate.bind(this)}
-                    />
+            <React.Fragment>
+              {this.state.fields.map((field, i) => {
+                return (
+                  <Grid container item xs={12} key={`parcelViewFieldsPV${i}`}>
+                    <Grid item xs={11}>
+                      <FieldForm
+                        field={field}
+                        titleEditable={false}
+                        onUpdate={this.onFieldUpdate.bind(this)}
+                      />
+                    </Grid>
+                    <Grid item xs={1} container justifyContent='center' alignItems='center'>
+                      <Tooltip title="Delete Field">
+                        <IconButton onClick={() => { this.confirmDeleteField(field) }}>
+                          <DeleteIcon color="error" />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={1} container justifyContent='center' alignItems='center'>
-                    <Tooltip title="Delete Field">
-                      <IconButton onClick={() => { this.confirmDeleteField(field) }}>
-                        <DeleteIcon color="error" />
-                      </IconButton>
-                    </Tooltip>
-                  </Grid>
-                </Grid>
-              )
-            })
+                )
+              })
+              }
+              <Grid item xs={12} style={{ marginTop: "16px" }}>
+                <Tooltip title="Update Fields">
+                  <Button onClick={this.updateFields.bind(this)} variant="outlined" color="secondary">
+                    <Typography variant="caption">Update Fields</Typography>
+                  </Button>
+                </Tooltip>
+              </Grid>
+
+            </React.Fragment>
             :
             <React.Fragment key="emptyPVF">
               No Fields
             </React.Fragment>
           }
-          <Grid item xs={12} style={{ marginTop: "16px" }}>
-            <Tooltip title="Update Fields">
-              <Button onClick={this.updateFields.bind(this)} variant="outlined" color="secondary">
-                <Typography variant="caption">Update Fields</Typography>
-              </Button>
-            </Tooltip>
-          </Grid>
+
         </Grid>
         <Grid item container key="PVlistfieldsandparcels" xs={12}>
           <Grid item xs={12} align="left">
-            <div style={{display: 'flex'}}>
-              <Typography variant="h4" style={{display: 'flex', alignItems: 'center'}}>
+            <div style={{ display: 'flex' }}>
+              <Typography variant="h4" style={{ display: 'flex', alignItems: 'center' }}>
                 Field & Parcel View
               </Typography>
               <Tooltip title="Join Field & Parcel">
