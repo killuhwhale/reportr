@@ -13,7 +13,7 @@ const allowedOrigins = [
   'http://localhost:8080',
   "https://reportrr-918ff.web.app",
   "reportrr-918ff.firebaseapp.com",
-  "https://fragservices.app/"
+  "https://fragservices.app"
 ];
 // const storage = new Storage();
 
