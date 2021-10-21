@@ -24,7 +24,9 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { formatFloat } from "../../utils/format"
 import { toFloat, zeroTimeDate } from "../../utils/convertCalc"
-import { AddCircleOutline, ImportExport } from '@material-ui/icons'
+import { ImportExport } from '@material-ui/icons'
+
+import { getReportingPeriodDays } from "../../utils/herdCalculation"
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
@@ -89,7 +91,7 @@ const ReportingPeriod = (props) => {
       </Grid>
 
       <Grid item xs={12}>
-        <Typography variant='subtitle2'>Reporting Period</Typography>
+        <Typography variant='subtitle2'>Reporting Period ({props.daysInPeriod} days)</Typography>
       </Grid>
 
     </Grid>
@@ -105,7 +107,7 @@ class DairyTab extends Component {
       showAddParcelModal: false,
       showAddFieldModal: false,
       toggleShowDeleteAllModal: false,
-
+      daysInPeriod: 0,
       fields: [],
       parcels: [],
     }
@@ -119,16 +121,23 @@ class DairyTab extends Component {
   componentDidMount() {
     this.getAllFields()
     this.getAllParcels()
+    this.getDaysInPeriod()
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.dairy.pk !== this.state.dairy.pk) {
+    if(prevState.dairy.pk !== this.state.dairy.pk) {
       this.getAllFields()
       this.getAllParcels()
     }
+    this.getDaysInPeriod()
   }
 
- 
+  
+  getDaysInPeriod(){
+    getReportingPeriodDays(this.props.BASE_URL, this.state.dairy.pk)
+    .then(days => this.setState({daysInPeriod: days}))
+    .catch(err => console.log(err))
+  }
  
   
   getAllParcels() {
@@ -604,6 +613,7 @@ class DairyTab extends Component {
                   <ReportingPeriod
                     onUpdate={this.props.onUpdate}
                     onChange={this.props.onChange}
+                    daysInPeriod={this.state.daysInPeriod}
                     period_start={this.state.dairy.period_start}
                     period_end={this.state.dairy.period_end}
                   />

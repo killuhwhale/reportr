@@ -57,8 +57,9 @@ class JoinedView extends Component {
           this.state.field_parcels.map((fieldParcel, i) => {
             return (
               <Grid key={`fieldParcel1337${i}`} item container xs={6} justifyContent="center" alignItems="center">
-                <Grid item xs={10} >
-                  <Typography>{`${fieldParcel.title} - ${fieldParcel.pnumber}`}</Typography>
+                <Grid item xs={10} style={{display: 'flex'}}>
+                  <Typography variant="subtitle1" style={{marginRight: '12px'}}> {`${fieldParcel.title}`} </Typography>
+                  <Typography variant="subtitle1" color='secondary'>{`${this.props.fmtPNumber(fieldParcel.pnumber)}`}</Typography>
                 </Grid>
                 <Grid item xs={2}>
                   <Tooltip title="Delete join">

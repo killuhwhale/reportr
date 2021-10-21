@@ -14,7 +14,7 @@ import AddFieldModal from "../Modals/addFieldModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { get, post } from "../../utils/requests"
-import { AddCircleOutline } from '@material-ui/icons'
+import { AddCircleOutline, ImportExport } from '@material-ui/icons'
 
 
 const COUNTIES = ["Merced", "San Joaquin"]
@@ -235,6 +235,18 @@ class ParcelView extends Component {
       })
   }
 
+  fmtPNumber(num){
+    let L = num.length
+    let ans = []
+    for(let i=0; i<L; i++){
+      if(i % 4 === 0 && i !== 0){
+        ans.push("-")
+      }
+      ans.push(num[i])
+    }
+    return ans.join('')
+  }
+
   /** Display Parcel List and Field List
    *  and below Field & Parcel View with list of combined entities.
    * 
@@ -262,7 +274,7 @@ class ParcelView extends Component {
           </Grid>
 
           <Grid item container xs={6} alignItems='center' justifyContent='center'>
-            <Grid item xs={12}>
+            <Grid item xs={10}>
               <div style={{ display: 'flex' }}>
                 <Typography variant="h4" style={{ display: 'flex', alignItems: 'center' }}>
                   Fields
@@ -276,15 +288,23 @@ class ParcelView extends Component {
                 </Tooltip>
               </div>
             </Grid>
+            <Grid item xs={2} align='right'>
+              {this.state.fields && this.state.fields.length > 0 ?
+                <Tooltip title="Update Fields">
+                  <IconButton onClick={this.updateFields.bind(this)} variant="outlined" color="secondary">
+                    <ImportExport />
+                  </IconButton>
+                </Tooltip>
+                :
+                <React.Fragment></React.Fragment>
+              }
+            </Grid>
           </Grid>
 
         </Grid>
 
-
-
-
         <Grid item key="PVparcelNumbermn" xs={6}>
-          <Grid item container key="dumbKey1" xs={12}>
+          <Grid item container xs={12}>
             {this.state.parcels.length > 0 ?
               this.state.parcels.map((parcel, i) => {
                 return (
@@ -292,7 +312,7 @@ class ParcelView extends Component {
                     style={{ marginBottom: '8px' }}>
                     <Grid item xs={10}>
                       <TextField
-                        value={parcel.pnumber}
+                        value={this.fmtPNumber(parcel.pnumber)}
                         label="APN"
                         style={{ width: '100%' }}
                       />
@@ -322,52 +342,41 @@ class ParcelView extends Component {
             </Tooltip>
           </Grid>*/}
         </Grid>
+        
         <Grid item key="PVfield" xs={6}>
-
           {this.state.fields.length > 0 ?
-            <React.Fragment>
-              {this.state.fields.map((field, i) => {
-                return (
-                  <Grid container item xs={12} key={`parcelViewFieldsPV${i}`}>
-                    <Grid item xs={11}>
-                      <FieldForm
-                        field={field}
-                        titleEditable={false}
-                        onUpdate={this.onFieldUpdate.bind(this)}
-                      />
-                    </Grid>
-                    <Grid item xs={1} container justifyContent='center' alignItems='center'>
-                      <Tooltip title="Delete Field">
-                        <IconButton onClick={() => { this.confirmDeleteField(field) }}>
-                          <DeleteIcon color="error" />
-                        </IconButton>
-                      </Tooltip>
-                    </Grid>
+            this.state.fields.map((field, i) => {
+              return (
+                <Grid container item xs={12} key={`parcelViewFieldsPV${i}`}>
+                  <Grid item xs={11}>
+                    <FieldForm
+                      field={field}
+                      titleEditable={false}
+                      onUpdate={this.onFieldUpdate.bind(this)}
+                    />
                   </Grid>
-                )
-              })
-              }
-              <Grid item xs={12} style={{ marginTop: "16px" }}>
-                <Tooltip title="Update Fields">
-                  <Button onClick={this.updateFields.bind(this)} variant="outlined" color="secondary">
-                    <Typography variant="caption">Update Fields</Typography>
-                  </Button>
-                </Tooltip>
-              </Grid>
-
-            </React.Fragment>
+                  <Grid item xs={1} container justifyContent='center' alignItems='center'>
+                    <Tooltip title="Delete Field">
+                      <IconButton onClick={() => { this.confirmDeleteField(field) }}>
+                        <DeleteIcon color="error" />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+                </Grid>
+              )
+            })
             :
             <React.Fragment key="emptyPVF">
               No Fields
             </React.Fragment>
           }
-
         </Grid>
+
         <Grid item container key="PVlistfieldsandparcels" xs={12}>
           <Grid item xs={12} align="left">
             <div style={{ display: 'flex' }}>
               <Typography variant="h4" style={{ display: 'flex', alignItems: 'center' }}>
-                Field & Parcel View
+                Joined Fields & Parcels
               </Typography>
               <Tooltip title="Join Field & Parcel">
                 <IconButton color="primary"
@@ -380,12 +389,12 @@ class ParcelView extends Component {
           </Grid>
         </Grid>
 
-
         <Grid item key="PVjoinView" xs={12}>
           <JoinedView
             dairy={this.state.dairy}
             field_parcels={this.state.field_parcels}
             onDelete={this.getAllFieldParcels.bind(this)}
+            fmtPNumber={this.fmtPNumber.bind(this)}
             BASE_URL={this.props.BASE_URL}
           />
 
