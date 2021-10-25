@@ -53,11 +53,7 @@ class HerdTab extends Component {
     return (
       <React.Fragment>
         {Object.keys(this.state.dairy).length > 0 ?
-
           <Grid item xs={12}>
-            <Grid item xs={12}>
-              <Typography variant='h3'>Other info {this.state.dairy.reporting_yr}</Typography>
-            </Grid>
             <AppBar position="static" style={{ marginBottom: "32px", backgroundColor: "black" }} key='herdAppBar'>
               <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
                 onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='herdTabs'>

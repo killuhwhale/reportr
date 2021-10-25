@@ -578,12 +578,12 @@ class DairyTab extends Component {
             <Grid item container xs={12}>
               <Grid item container xs={7} alignItems='center'>
                 <Grid item xs={12} align='right'>
-                  <Typography variant="h4">
+                  <Typography variant="h5">
                     {this.state.dairy.reporting_yr}
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography variant="h1">
+                  <Typography variant="h3">
                     {this.state.dairy.title}
                   </Typography>
                 </Grid>

@@ -51,7 +51,7 @@ class UploadTSVModal extends Component {
             align="center"
             xs={12}
           >
-            <Paper style={{ height: "45vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <Paper style={{ height: "235px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <Grid item container xs={12}>
                 <Grid item xs={12}>
                   <Typography variant="h6" style={{ marginTop: "32px" }}>

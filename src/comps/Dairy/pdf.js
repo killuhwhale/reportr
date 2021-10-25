@@ -7442,7 +7442,7 @@ const certificationA = (props) => {
             {
               width: "50%",
               text: {
-                text: 'PRINT OR TYPE NAMEY ', fontSize: 7,
+                text: 'PRINT OR TYPE NAME ', fontSize: 7,
               }
             },
             {

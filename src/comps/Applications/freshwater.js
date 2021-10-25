@@ -544,7 +544,6 @@ class Freshwater extends Component {
 
   setWindowListener() {
     window.addEventListener('resize', (ev) => {
-      console.log(window.innerWidth, window.innerHeight)
       this.setState({ windowHeight: window.innerHeight, windowWidth: window.innerWidth })
     })
   }

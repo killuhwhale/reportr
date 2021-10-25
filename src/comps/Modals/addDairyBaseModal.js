@@ -74,10 +74,10 @@ class AddBaseDairyModal extends Component{
 						align="center"
 						xs={12}
 					>
-					<Paper style={{height:"25vh", display: "flex", flexDirection: "column", justifyContent: "center"}}>
+					<Paper style={{height:"200px", display: "flex", flexDirection: "column", justifyContent: "center"}}>
 						<Grid item container xs={12}>
 							<Grid item xs={12}>
-								<Typography style={{marginTop: "32px"}}>
+								<Typography variant="h6" style={{marginTop: "32px"}}>
 									{this.props.modalText}
 								</Typography>
 							</Grid>

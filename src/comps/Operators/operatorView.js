@@ -83,7 +83,7 @@ class OperatorView extends Component {
   getAllOperators() {
     get(`${this.props.BASE_URL}/api/operators/${this.state.dairy.pk}`)
       .then(res => {
-        // console.log(res)
+        console.log(res)
         this.setState({ operators: res })
       })
       .catch(err => {

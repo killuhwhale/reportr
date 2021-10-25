@@ -28,6 +28,8 @@ import AddExportDestModal from "../Modals/addExportDestModal"
 import AddExportManifestModal from "../Modals/addExportManifestModal"
 import ViewTSVsModal from '../Modals/viewTSVsModal'
 import UploadExportTSVModal from '../Modals/uploadExportTSVModal'
+import UploadTSVModal from "../Modals/uploadTSVModal"
+
 import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
 import { TSV_INFO, checkEmpty, readTSV, processTSVText, lazyGet, uploadTSVToDB, MANURE, WASTEWATER } from '../../utils/TSV'
@@ -205,11 +207,14 @@ class ExportTab extends Component {
       showAddExportRecipientModal: false,
       showAddExportDestModal: false,
       showAddExportManifestModal: false,
-      showUploadTSVModal: false,
+      showUploadManureTSVModal: false,
+      showUploadWastewaterTSVModal: false,
       showViewManureTSVsModal: false,
       showViewWastewaterTSVsModal: false,
-      tsvText: '',
-      uploadedFilename: '',
+      manureTsvText: '',
+      manureUploadedFilename: '',
+      wastewaterTsvText: '',
+      wastewaterUploadedFilename: '',
       tsvType: MANURE,
       numCols: '',
       operators: [],
@@ -650,15 +655,15 @@ class ExportTab extends Component {
     }
   }
 
-  onUploadExportTSVModalChange(ev) {
-    const { files } = ev.target
-    if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
-    }
-  }
+  // onUploadExportTSVModalChange(ev) {
+  //   const { files } = ev.target
+  //   if (files.length > 0) {
+  //     readTSV(files[0], (_ev) => {
+  //       const { result } = _ev.target
+  //       this.setState({ tsvText: result, uploadedFilename: files[0].name })
+  //     })
+  //   }
+  // }
 
   checkAny(val) {
     // If the value is empty replace with asterisk.
@@ -827,11 +832,9 @@ class ExportTab extends Component {
   }
 
   onUploadExportManureTSV() {
-    // 24 columns from TSV
     let dairy_id = this.state.dairy.pk
     let numCols = TSV_INFO[MANURE].numCols
-    let rows = processTSVText(this.state.tsvText, numCols) // extract rows from Text of tsv file TODO()
-    console.log("Rows SM", rows)
+    let rows = processTSVText(this.state.manureTsvText, numCols)
 
     let promises = rows.map((row, i) => {
       return new Promise((resolve, reject) => {
@@ -943,38 +946,36 @@ class ExportTab extends Component {
       })
     })
 
-
     Promise.all(promises)
       .then(result => {
-        console.log("Done uploading, close model refetch all")
-        this.toggleShowUploadTSVModal(false)
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, TSV_INFO[MANURE].tsvType)
+        uploadTSVToDB(this.state.manureUploadedFilename, this.state.manureTsvText, this.state.dairy.pk, TSV_INFO[MANURE].tsvType)
           .then(tsvUploadRes => {
-            console.log("Uploaded TSV to DB")
+            this.toggleShowUploadManureTSVModal(false)
+            this.getExportContact()
+            this.getOperators()
+            this.getExportHaulers()
+            this.getExportRecipients()
+            this.getExportDests()
+            this.getExportManifests()
+            this.props.onAlert('Success!', 'success')
           })
           .catch(err => {
             console.log(err)
+            this.toggleShowUploadManureTSVModal(false)
+            this.props.onAlert('Failed uploading.', 'error')
           })
-        this.getExportContact()
-        this.getOperators()
-        this.getExportHaulers()
-        this.getExportRecipients()
-        this.getExportDests()
-        this.getExportManifests()
-        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.toggleShowUploadManureTSVModal(false)
         this.props.onAlert('Failed uploading.', 'error')
       })
   }
 
   onUploadExportWastewaterTSV() {
-    // 24 columns from TSV
     let dairy_id = this.state.dairy.pk
     let numCols = TSV_INFO[WASTEWATER].numCols
-    let rows = processTSVText(this.state.tsvText, numCols) // extract rows from Text of tsv file TODO()
-    console.log("Rows WW", rows)
+    let rows = processTSVText(this.state.wastewaterTsvText, numCols)
 
     let promises = rows.map((row, i) => {
       return new Promise((resolve, reject) => {
@@ -1088,25 +1089,27 @@ class ExportTab extends Component {
 
     Promise.all(promises)
       .then(result => {
-        console.log("Done uploading, close model refetch all")
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, TSV_INFO[WASTEWATER].tsvType)
+        uploadTSVToDB(this.state.wastewaterUploadedFilename, this.state.wastewaterTsvText, this.state.dairy.pk, TSV_INFO[WASTEWATER].tsvType)
           .then(tsvUploadRes => {
             console.log("Uploaded TSV to DB")
+            this.toggleShowUploadWastewaterTSVModal(false)
+            this.getExportContact()
+            this.getOperators()
+            this.getExportHaulers()
+            this.getExportRecipients()
+            this.getExportDests()
+            this.getExportManifests()
+            this.props.onAlert('Success!', 'success')
           })
           .catch(err => {
             console.log(err)
+            this.toggleShowUploadWastewaterTSVModal(false)
+            this.props.onAlert('Failed uploading', 'error')
           })
-        this.toggleShowUploadTSVModal(false)
-        this.getExportContact()
-        this.getOperators()
-        this.getExportHaulers()
-        this.getExportRecipients()
-        this.getExportDests()
-        this.getExportManifests()
-        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log(err)
+        this.toggleShowUploadWastewaterTSVModal(false)
         this.props.onAlert('Failed uploading', 'error')
       })
 
@@ -1114,13 +1117,23 @@ class ExportTab extends Component {
 
   }
 
-  toggleShowUploadTSVModal(val) {
+  toggleShowUploadManureTSVModal(val) {
     this.setState({
-      showUploadTSVModal: val,
-      tsvText: "",
-      uploadedFilename: ""
+      showUploadManureTSVModal: val,
+      manureTsvText: "",
+      manureUploadedFilename: ""
     })
   }
+
+  toggleShowUploadWastewaterTSVModal(val) {
+    this.setState({
+      showUploadWastewaterTSVModal: val,
+      wastewaterTsvText: "",
+      wastewaterUploadedFilename: ""
+    })
+  }
+
+
   toggleShowViewManureTSVModal(val) {
     this.setState({ showViewManureTSVsModal: val })
   }
@@ -1130,7 +1143,7 @@ class ExportTab extends Component {
 
   setWindowListener() {
     window.addEventListener('resize', (ev) => {
-      console.log(window.innerWidth, window.innerHeight)
+      
       this.setState({ windowHeight: window.innerHeight, windowWidth: window.innerWidth })
     })
   }
@@ -1234,6 +1247,26 @@ class ExportTab extends Component {
       })
   }
 
+
+  onUploadManureTSVModalChange(ev) {
+    const { files } = ev.target
+    if (files.length > 0) {
+      readTSV(files[0], (_ev) => {
+        const { result } = _ev.target
+        this.setState({ manureTsvText: result, manureUploadedFilename: files[0].name })
+      })
+    }
+  }
+  onUploadWastewaterTSVModalChange(ev) {
+    const { files } = ev.target
+    if (files.length > 0) {
+      readTSV(files[0], (_ev) => {
+        const { result } = _ev.target
+        this.setState({ wastewaterTsvText: result, wastewaterUploadedFilename: files[0].name })
+      })
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -1292,25 +1325,34 @@ class ExportTab extends Component {
 
               </Grid>
               <Grid item container xs={4}>
-                <Grid item xs={3}>
-                  <Tooltip title="Upload TSV">
+                <Grid item xs={2}>
+                  <Tooltip title="Upload Manure TSV">
                     <IconButton color='primary'
-                      onClick={() => this.toggleShowUploadTSVModal(true)}
+                      onClick={() => this.toggleShowUploadManureTSVModal(true)}
                     >
                       <CloudUploadIcon />
                     </IconButton>
                   </Tooltip>
                 </Grid>
-                <Grid item xs={3}>
-                  <Tooltip title="View Manure TSV">
+                <Grid item xs={2}>
+                  <Tooltip title="Upload Wastewater TSV">
                     <IconButton color='secondary'
+                      onClick={() => this.toggleShowUploadWastewaterTSVModal(true)}
+                    >
+                      <CloudUploadIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+                <Grid item xs={2}>
+                  <Tooltip title="View Manure TSV">
+                    <IconButton color='primary'
                       onClick={() => this.toggleShowViewManureTSVModal(true)}
                     >
                       <AirlineSeatLegroomReducedIcon />
                     </IconButton>
                   </Tooltip>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                   <Tooltip title="View Wastewater TSV">
                     <IconButton color='secondary'
                       onClick={() => this.toggleShowViewWastewaterTSVModal(true)}
@@ -1484,7 +1526,7 @@ class ExportTab extends Component {
           onAction={this.deleteAllFromTable.bind(this)}
           onClose={() => this.confirmDeleteAllFromTable(false)}
         />
-        <UploadExportTSVModal
+        {/* <UploadExportTSVModal
           open={this.state.showUploadTSVModal}
           actionText="Add"
           cancelText="Cancel"
@@ -1495,6 +1537,29 @@ class ExportTab extends Component {
           uploadWastewaterTSV={this.onUploadExportWastewaterTSV.bind(this)}
           onChange={this.onUploadExportTSVModalChange.bind(this)}
           onClose={() => this.toggleShowUploadTSVModal(false)}
+        /> */}
+
+
+        <UploadTSVModal
+          open={this.state.showUploadManureTSVModal}
+          actionText="Add"
+          cancelText="Cancel"
+          modalText={`Upload Manure TSV`}
+          uploadedFilename={this.state.manureUploadedFilename}
+          onAction={this.onUploadExportManureTSV.bind(this)}
+          onChange={this.onUploadManureTSVModalChange.bind(this)}
+          onClose={() => this.toggleShowUploadManureTSVModal(false)}
+        />
+
+        <UploadTSVModal
+          open={this.state.showUploadWastewaterTSVModal}
+          actionText="Add"
+          cancelText="Cancel"
+          modalText={`Upload Wastewater TSV`}
+          uploadedFilename={this.state.wastewaterUploadedFilename}
+          onAction={this.onUploadExportWastewaterTSV.bind(this)}
+          onChange={this.onUploadWastewaterTSVModalChange.bind(this)}
+          onClose={() => this.toggleShowUploadWastewaterTSVModal(false)}
         />
 
         <AddExportContactModal

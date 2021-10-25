@@ -118,6 +118,7 @@ export const readTSV = (file, callback) => {
   reader.readAsText(file)
 }
 /** Uploads TSV file to DB by dairy_id and TSV type
+ *  Updates TSV text
  *  - Each Dairy per reporting year, will have a TSV file for Production Records(Harvests), Nutrient Applications, Imports/Exports
  */
 
@@ -132,9 +133,9 @@ export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
   return new Promise((res, rej) => {
     post(`${BASE_URL}/api/tsv/create`, tsvData)
       .then(result => {
-        console.log("Uploaded to DB: ", result)
+        console.log("Result from first attempt: ", result)
         if(result.existsErr){
-          console.log("TSV ALREADY EXISTS< LETS TRY AN UPDATE")
+          console.log("TSV ALREADY EXISTS, TRYING AN UPDATE")
           
           post(`${BASE_URL}/api/tsv/update`, tsvData)
           .then(result1 => {
@@ -150,7 +151,6 @@ export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
         }
       })
       .catch(err => {
-        
         console.log(err)
         rej(err)
       })

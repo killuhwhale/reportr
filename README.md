@@ -53,7 +53,16 @@ Need to get info from Tammy:
 
 Problems:
   
-  - Upload TSV process
+  - Dates are slightly off due to timezone....
+    - Creating a date inititally for a dairy, days should be jan 1st to dec 31st 
+      - Currently, the dates are created as dec 31st to dec 30th (1 day off)
+      
+
+  - Delete Dairy base
+    - No way to delete dairy base
+
+
+  - Upload TSV process 
     - Ensure there are rows of data bfore uploading.
     - Need to avoid updating TSV file in DB with an empty doc....
 

@@ -44,6 +44,7 @@ const REPORTING_PERIOD = 365
 class HerdTable extends Component {
   constructor(props) {
     super(props)
+    this.nonDigitRE = /\D/ // Search for non digit char
     this.state = {
       dairy: props.dairy,
       herds: {},
@@ -55,6 +56,40 @@ class HerdTable extends Component {
         calf_young: [0, 0, 0],
         calf_old: [0, 0, 0],
         totals: [0, 0, 0, 0, 0]
+      },
+      displayNames: {
+        milk_cows: 'Milk cows',
+        dry_cows: 'Dry cows',
+        bred_cows: 'Bred heifers',
+        cows: 'Heifers',
+        calf_young: 'Calves (4-6mo)',
+        calf_old: 'Calves (0-3mo)',
+        totals: 'Totals'
+      },
+      avgMilkProdError: false, // Must be at least 1
+      maxNumErrors: {                 // open con + under roof <= max number, 
+        milk_cows: false,
+        dry_cows: false,
+        bred_cows: false,
+        cows: false,
+        calf_young: false,
+        calf_old: false
+      },
+      liveWtErrors: {                 // Live weight between 1 & 5000
+        milk_cows: false,
+        dry_cows: false,
+        bred_cows: false,
+        cows: false,
+        calf_young: false,
+        calf_old: false
+      },
+      avgMaxNumErrors: {
+        milk_cows: false,
+        dry_cows: false,
+        bred_cows: false,
+        cows: false,
+        calf_young: false,
+        calf_old: false
       }
     }
   }
@@ -87,14 +122,91 @@ class HerdTable extends Component {
         console.log(err)
       })
   }
+
+  validate(){
+    // Validate herd input
+    // Sum of num under roof and open confinement must be <= maxium number
+    if(!this.state.herds || Object.keys(this.state.herds).length <= 1){
+      console.log("Error, herdInfo not found.")
+      return false
+    }
+    const keys = Object.keys(this.state.herds).sort()
+    let maxNumErrors = {
+      milk_cows: false,
+      dry_cows: false,
+      bred_cows: false,
+      cows: false,
+      calf_young: false,
+      calf_old: false
+    }
+    let liveWtErrors = {
+      milk_cows: false,
+      dry_cows: false,
+      bred_cows: false,
+      cows: false,
+      calf_young: false,
+      calf_old: false
+    }
+    let avgMaxNumErrors = {
+      milk_cows: false,
+      dry_cows: false,
+      bred_cows: false,
+      cows: false,
+      calf_young: false,
+      calf_old: false
+    }
+    
+    let valid = true 
+    keys.forEach((key, i) => {
+      if(key !== 'dairy_id' && key !== 'pk' ){
+        const row = this.state.herds[key]
+        console.log(row)
+        console.log(key, row[0], row[1], row[2])
+        if(row[0] + row[1] > row[2]){
+          this.props.onAlert(`Check ${this.state.displayNames[key]}, Number Open Confinement + Number Under Roof must be equal to or below Max Number.`)
+          console.log("Error, max number exceeded", this.state.displayNames[key])
+          valid = false
+          maxNumErrors[key] = true
+        }
+
+        if(row[3] > row[2]){
+          this.props.onAlert(`Check ${this.state.displayNames[key]}, Avg number must be lower than max number.`)
+          console.log("Error, max number exceeded by average number", this.state.displayNames[key])
+          valid = false
+          avgMaxNumErrors[key] = true
+        }
+
+        
+        if(key !== 'calf_old' && key !== 'calf_young'){
+          if(row[2] > 0 && row[4] <=0 || row[4] >5000){
+            this.props.onAlert(`Check ${this.state.displayNames[key]}, Avg Live Wt must be between 1-5000.`)
+            console.log("Error, Avg Wt must be between 1-5000", this.state.displayNames[key])
+            valid = false
+            liveWtErrors[key] = true
+  
+          }
+        }
+      }
+    })
+    this.setState({maxNumErrors: maxNumErrors, liveWtErrors: liveWtErrors, avgMaxNumErrors: avgMaxNumErrors})
+    
+    return valid
+  }
   onChange(ev) {
     const { name, value } = ev.target
     let [cowType, index] = name.split("~")
-    // console.log(cowType, index, value)
+    console.log(cowType, index, value)
     let herds = this.state.herds
-    herds[cowType][index] = value
+    if(this.nonDigitRE.test(value)){
+      // Tests for a match
+      console.log("Non digit char entered")
+      return
+    }
+    console.log(isNaN(value))
+    herds[cowType][index] = isNaN(value) || value === '' ? 0: parseInt(value)
     this.setState({ herds: herds })
   }
+
   createHerds() {
     // console.log(this.state.dairy)
     post(`${this.props.BASE_URL}/api/herds/create`, { dairy_id: this.state.dairy.pk })
@@ -109,17 +221,19 @@ class HerdTable extends Component {
 
   updateHerds() {
     // console.log("Updating Herds", this.state.herds)
-    post(`${this.props.BASE_URL}/api/herds/update`, this.state.herds)
-      .then(res => {
-        // console.log(res)
-        this.calcHerd()
-        // this.getHerds()
-        this.props.onAlert('Updated!', 'success')
-      })
-      .catch(err => {
-        console.log(err)
-        this.props.onAlert('Failed to update herds!', 'error')
-      })
+    if(this.validate()){
+      post(`${this.props.BASE_URL}/api/herds/update`, this.state.herds)
+        .then(res => {
+          // console.log(res)
+          this.calcHerd()
+          // this.getHerds()
+          this.props.onAlert('Updated!', 'success')
+        })
+        .catch(err => {
+          console.log(err)
+          this.props.onAlert('Failed to update herds!', 'error')
+        })
+    }
   }
 
   calcHerd() {
@@ -145,7 +259,7 @@ class HerdTable extends Component {
       <Grid item container spacing={2} xs={12} style={{ marginTop: "16px" }}>
         <Grid item container alignItems="center" xs={12}>
           <Grid item xs={5}>
-            <Typography variant="h2">
+            <Typography variant="h3" color='primary'>
               Dairy Herd Input
             </Typography>
           </Grid>
@@ -162,19 +276,19 @@ class HerdTable extends Component {
         {
           this.state.herds && Object.keys(this.state.herds).length > 0 ?
             <React.Fragment>
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid chartreuse" }} xs={6} spacing={1} justifyContent="space-between" key="Milk Cow Col/ data row" >
+              <Grid item container  xs={6} key="Milk Cow Col/ data row" >
                 <Grid item xs={12}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h5" color='primary'>
                     Milk Cowz
                   </Typography>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} style={{marginBottom: '8px'}}>
                   <TextField
                     name='milk_cows~5'
                     value={this.state.herds.milk_cows[5]}
                     onChange={this.onChange.bind(this)}
                     label="Avg milk production (lbs/cow/day)"
-                    style={{ width: "100%" }}
+                    style={{ width: "50%" }}
                   />
                 </Grid>
                 <Grid item xs={2}>
@@ -182,6 +296,7 @@ class HerdTable extends Component {
                     name='milk_cows~0'
                     value={this.state.herds.milk_cows[0]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['milk_cows']}
                     label="Open confinement"
                     style={{ width: "100%" }}
                   />
@@ -191,6 +306,7 @@ class HerdTable extends Component {
                     name='milk_cows~1'
                     value={this.state.herds.milk_cows[1]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['milk_cows']}
                     label="Under roof"
                     style={{ width: "100%" }}
                   />
@@ -200,6 +316,7 @@ class HerdTable extends Component {
                     name='milk_cows~2'
                     value={this.state.herds.milk_cows[2]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['milk_cows']}
                     label="Max number"
                     style={{ width: "100%" }}
                   />
@@ -209,6 +326,7 @@ class HerdTable extends Component {
                     name='milk_cows~3'
                     value={this.state.herds.milk_cows[3]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.avgMaxNumErrors['milk_cows']}
                     label="Avg number"
                     style={{ width: "100%" }}
                   />
@@ -218,68 +336,78 @@ class HerdTable extends Component {
                     name='milk_cows~4'
                     value={this.state.herds.milk_cows[4]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.liveWtErrors['milk_cows']}
                     label="Avg live wt (lbs)"
                     style={{ width: "100%" }}
                   />
                 </Grid>
               </Grid>
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid #56c6ff" }} xs={6} spacing={1} justifyContent="space-between" key="Bred cow">
+              <Grid item container  xs={6}  key="Bred cow">
                 <Grid item xs={12}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h5" color='primary'>
                     Bred Heifers (15-24mo)
                   </Typography>
 
                 </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    name='bred_cows~0'
-                    value={this.state.herds.bred_cows[0]}
-                    onChange={this.onChange.bind(this)}
-                    label="Open confinement"
-                    style={{ width: "100%" }}
-                  />
+
+                <Grid item container alignContent='flex-end' xs={12}>
+                  <Grid item xs={2}>
+                    <TextField
+                      name='bred_cows~0'
+                      value={this.state.herds.bred_cows[0]}
+                      onChange={this.onChange.bind(this)}
+                      error={this.state.maxNumErrors['bred_cows']}
+                      label="Open confinement"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      name='bred_cows~1'
+                      value={this.state.herds.bred_cows[1]}
+                      onChange={this.onChange.bind(this)}
+                      error={this.state.maxNumErrors['bred_cows']}
+                      label="Under roof"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      name='bred_cows~2'
+                      value={this.state.herds.bred_cows[2]}
+                      onChange={this.onChange.bind(this)}
+                      error={this.state.maxNumErrors['bred_cows']}
+                      label="Max number"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      name='bred_cows~3'
+                      value={this.state.herds.bred_cows[3]}
+                      onChange={this.onChange.bind(this)}
+                      error={this.state.avgMaxNumErrors['bred_cows']}
+                      label="Avg number"
+                      style={{ width: "100%" }}
+                      />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      name='bred_cows~4'
+                      value={this.state.herds.bred_cows[4]}
+                      error={this.state.liveWtErrors['bred_cows']}
+                      onChange={this.onChange.bind(this)}
+                      label="Avg live wt (lbs)"
+                      style={{ width: "100%" }}
+                    />
+                  </Grid>
                 </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    name='bred_cows~1'
-                    value={this.state.herds.bred_cows[1]}
-                    onChange={this.onChange.bind(this)}
-                    label="Under roof"
-                    style={{ width: "100%" }}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    name='bred_cows~2'
-                    value={this.state.herds.bred_cows[2]}
-                    onChange={this.onChange.bind(this)}
-                    label="Max number"
-                    style={{ width: "100%" }}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    name='bred_cows~3'
-                    value={this.state.herds.bred_cows[3]}
-                    onChange={this.onChange.bind(this)}
-                    label="Avg number"
-                    style={{ width: "100%" }}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    name='bred_cows~4'
-                    value={this.state.herds.bred_cows[4]}
-                    onChange={this.onChange.bind(this)}
-                    label="Avg live wt (lbs)"
-                    style={{ width: "100%" }}
-                  />
-                </Grid>
+
               </Grid>
 
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid chartreuse" }} xs={6} spacing={1} justifyContent="space-between" key="Dry cow">
+              <Grid item container  xs={6} key="Dry cow">
                 <Grid item xs={12}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h5" color='primary'>
                     Dry Cowz
                   </Typography>
 
@@ -289,6 +417,7 @@ class HerdTable extends Component {
                     name='dry_cows~0'
                     value={this.state.herds.dry_cows[0]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['dry_cows']}
                     label="Open confinement"
                     style={{ width: "100%" }}
                   />
@@ -298,6 +427,7 @@ class HerdTable extends Component {
                     name='dry_cows~1'
                     value={this.state.herds.dry_cows[1]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['dry_cows']}
                     label="Under roof"
                     style={{ width: "100%" }}
                   />
@@ -307,6 +437,7 @@ class HerdTable extends Component {
                     name='dry_cows~2'
                     value={this.state.herds.dry_cows[2]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['dry_cows']}
                     label="Max number"
                     style={{ width: "100%" }}
                   />
@@ -316,23 +447,25 @@ class HerdTable extends Component {
                     name='dry_cows~3'
                     value={this.state.herds.dry_cows[3]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.avgMaxNumErrors['dry_cows']}
                     label="Avg number"
                     style={{ width: "100%" }}
-                  />
+                    />
                 </Grid>
                 <Grid item xs={2}>
                   <TextField
                     name='dry_cows~4'
                     value={this.state.herds.dry_cows[4]}
+                    error={this.state.liveWtErrors['dry_cows']}
                     onChange={this.onChange.bind(this)}
                     label="Avg live wt (lbs)"
                     style={{ width: "100%" }}
                   />
                 </Grid>
               </Grid>
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid #56c6ff" }} xs={6} spacing={1} justifyContent="space-between" key="Calf young">
+              <Grid item container  xs={6} key="Calf young">
                 <Grid item xs={12}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h5" color='primary'>
                     Calves (0-3mo)
                   </Typography>
 
@@ -342,6 +475,7 @@ class HerdTable extends Component {
                     name='calf_young~0'
                     value={this.state.herds.calf_young[0]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['calf_young']}
                     label="Open confinement"
                     style={{ width: "100%" }}
                   />
@@ -351,6 +485,7 @@ class HerdTable extends Component {
                     name='calf_young~1'
                     value={this.state.herds.calf_young[1]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['calf_young']}
                     label="Under roof"
                     style={{ width: "100%" }}
                   />
@@ -360,24 +495,26 @@ class HerdTable extends Component {
                     name='calf_young~2'
                     value={this.state.herds.calf_young[2]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['calf_young']}
                     label="Max number"
                     style={{ width: "100%" }}
                   />
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={4}>
                   <TextField
                     name='calf_young~3'
                     value={this.state.herds.calf_young[3]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.avgMaxNumErrors['calf_young']}
                     label="Avg number"
                     style={{ width: "100%" }}
                   />
                 </Grid>
               </Grid>
 
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid chartreuse" }} xs={6} spacing={1} justifyContent="space-between" key="Cow">
+              <Grid item container  xs={6} key="Cow">
                 <Grid item xs={12}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h5" color='primary'>
                     Heifers (7-14mo to breeding)
                   </Typography>
 
@@ -387,6 +524,7 @@ class HerdTable extends Component {
                     name='cows~0'
                     value={this.state.herds.cows[0]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['cows']}
                     label="Open confinement"
                     style={{ width: "100%" }}
                   />
@@ -396,6 +534,7 @@ class HerdTable extends Component {
                     name='cows~1'
                     value={this.state.herds.cows[1]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['cows']}
                     label="Under roof"
                     style={{ width: "100%" }}
                   />
@@ -405,6 +544,7 @@ class HerdTable extends Component {
                     name='cows~2'
                     value={this.state.herds.cows[2]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['cows']}
                     label="Max number"
                     style={{ width: "100%" }}
                   />
@@ -414,6 +554,7 @@ class HerdTable extends Component {
                     name='cows~3'
                     value={this.state.herds.cows[3]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.avgMaxNumErrors['cows']}
                     label="Avg number"
                     style={{ width: "100%" }}
                   />
@@ -423,14 +564,15 @@ class HerdTable extends Component {
                     name='cows~4'
                     value={this.state.herds.cows[4]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.liveWtErrors['cows']}
                     label="Avg live wt (lbs)"
                     style={{ width: "100%" }}
                   />
                 </Grid>
               </Grid>
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid #56c6ff" }} xs={6} spacing={1} justifyContent="space-between" key="Calf old">
+              <Grid item container  xs={6} key="Calf old">
                 <Grid item xs={12}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h5" color='primary'>
                     Calves (4-6mo)
                   </Typography>
 
@@ -440,6 +582,7 @@ class HerdTable extends Component {
                     name='calf_old~0'
                     value={this.state.herds.calf_old[0]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['calf_old']}
                     label="Open confinement"
                     style={{ width: "100%" }}
                   />
@@ -449,6 +592,7 @@ class HerdTable extends Component {
                     name='calf_old~1'
                     value={this.state.herds.calf_old[1]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['calf_old']}
                     label="Under roof"
                     style={{ width: "100%" }}
                   />
@@ -458,15 +602,17 @@ class HerdTable extends Component {
                     name='calf_old~2'
                     value={this.state.herds.calf_old[2]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.maxNumErrors['calf_old']}
                     label="Max number"
                     style={{ width: "100%" }}
                   />
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={4}>
                   <TextField
                     name='calf_old~3'
                     value={this.state.herds.calf_old[3]}
                     onChange={this.onChange.bind(this)}
+                    error={this.state.avgMaxNumErrors['calf_old']}
                     label="Avg number"
                     style={{ width: "100%" }}
                   />
@@ -476,20 +622,21 @@ class HerdTable extends Component {
 
 
               <Grid item xs={12}>
-                <Typography variant="h2">
+                <Typography variant="h3" color='secondary'>
                   Output Data
                 </Typography>
               </Grid>
 
 
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid #ff2fbc", marginTop: "16px" }} xs={12} spacing={1} justifyContent="flex-start" key="Manure" >
+              <Grid item container xs={12} spacing={1} justifyContent="flex-start" key="Manure" >
                 <Grid item xs={3}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h6" color='secondary'>
                     Manure (tons/ yr)
                   </Typography>
                 </Grid>
                 <Grid item xs={1}>
                   <TextField disabled
+                  
                     name="milk_cows_man"
                     label="Milk"
                     value={this.state.herdCalc['milk_cows'][0].toFixed(0)}
@@ -544,9 +691,9 @@ class HerdTable extends Component {
                   />
                 </Grid>
               </Grid>
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid #ff2fbc" }} xs={12} spacing={1} justifyContent="flex-start" key="Nitrogen" >
+              <Grid item container  xs={12} spacing={1} justifyContent="flex-start" key="Nitrogen" >
                 <Grid item xs={3}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h6" color='secondary'>
                     Nitrogen (lbs/ yr)
                   </Typography>
                 </Grid>
@@ -600,9 +747,9 @@ class HerdTable extends Component {
                   />
                 </Grid>
               </Grid>
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid #ff2fbc" }} xs={12} spacing={1} justifyContent="flex-start" key="Phosphorus" >
+              <Grid item container  xs={12} spacing={1} justifyContent="flex-start" key="Phosphorus" >
                 <Grid item xs={3}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h6" color='secondary'>
                     Phosphorus (lbs/ yr)
                   </Typography>
                 </Grid>
@@ -656,9 +803,9 @@ class HerdTable extends Component {
                   />
                 </Grid>
               </Grid>
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid #ff2fbc" }} xs={12} spacing={1} justifyContent="flex-start" key="Potassium" >
+              <Grid item container  xs={12} spacing={1} justifyContent="flex-start" key="Potassium" >
                 <Grid item xs={3}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h6" color='secondary'>
                     Potassium (lbs/ yr)
                   </Typography>
                 </Grid>
@@ -686,9 +833,9 @@ class HerdTable extends Component {
                   />
                 </Grid>
               </Grid>
-              <Grid item container style={{ borderLeft: "1px solid white", borderBottom: "1px solid #ff2fbc" }} xs={12} spacing={1} justifyContent="flex-start" key="Salt" >
+              <Grid item container  xs={12} spacing={1} justifyContent="flex-start" key="Salt" >
                 <Grid item xs={3}>
-                  <Typography variant="subtitle1">
+                  <Typography variant="h6" color='secondary'>
                     Salt (lbs/ yr)
                   </Typography>
                 </Grid>
