@@ -38,7 +38,7 @@ export const getReportingPeriodDays = (baseUrl, dairy_id) => {
 export default function calculateHerdManNKPNaCl(herdsObj, reporting_period_days){
   let _herdCalc = {}
   let amtAvgMilkProduction = herdsObj.milk_cows[5]
-  let maxMilkCowCount = herdsObj.milk_cows[2]
+   // Documentaion says to use MaxCount but merced program is using AvgNumber
   let amtAvgMilkCowCount = herdsObj.milk_cows[3]
 
 
@@ -46,12 +46,12 @@ export default function calculateHerdManNKPNaCl(herdsObj, reporting_period_days)
   
 
 
-  let lblHerdManurePerYearMilkCow = ((milk * 0.647) + 43.212) * LBS_PER_KG * maxMilkCowCount * reporting_period_days;
+  let lblHerdManurePerYearMilkCow = ((milk * 0.647) + 43.212) * LBS_PER_KG * amtAvgMilkCowCount * reporting_period_days;
   let tonsHerdManurePerYearMilkCow = lblHerdManurePerYearMilkCow / 2000;
-  let lblHerdNPerYearMilkCow = maxMilkCowCount * ((milk * 4.204) + 283.3) * KG_PER_G * LBS_PER_KG * reporting_period_days;
-  let lblHerdPPerYearMilkCow = maxMilkCowCount * ((milk * 0.773) + 46.015) * KG_PER_G * LBS_PER_KG * reporting_period_days;
-  let lblHerdKPerYearMilkCow = maxMilkCowCount * ((milk * 1.800) + 31.154) * KG_PER_G * LBS_PER_KG * reporting_period_days;
-  let lblHerdSaltPerYearMilkCow = maxMilkCowCount * INORGANIC_SALT_EXCRETION_MILK_COW * reporting_period_days;
+  let lblHerdNPerYearMilkCow = amtAvgMilkCowCount * ((milk * 4.204) + 283.3) * KG_PER_G * LBS_PER_KG * reporting_period_days;
+  let lblHerdPPerYearMilkCow = amtAvgMilkCowCount * ((milk * 0.773) + 46.015) * KG_PER_G * LBS_PER_KG * reporting_period_days;
+  let lblHerdKPerYearMilkCow = amtAvgMilkCowCount * ((milk * 1.800) + 31.154) * KG_PER_G * LBS_PER_KG * reporting_period_days;
+  let lblHerdSaltPerYearMilkCow = amtAvgMilkCowCount * INORGANIC_SALT_EXCRETION_MILK_COW * reporting_period_days;
   let milk_cows = [
     tonsHerdManurePerYearMilkCow, lblHerdNPerYearMilkCow,
     lblHerdPPerYearMilkCow, lblHerdKPerYearMilkCow, lblHerdSaltPerYearMilkCow
@@ -59,63 +59,66 @@ export default function calculateHerdManNKPNaCl(herdsObj, reporting_period_days)
   _herdCalc['milk_cows'] = milk_cows
 
 
-
-  let amtMaxDryCowCount = herdsObj.dry_cows[2]
+ // Documentaion says to use MaxCount but merced program is using AvgNumber
+  let amtAvgDryCowCount = herdsObj.dry_cows[3]
   let amtDryCowAvgWeight = herdsObj.dry_cows[4]
-  let lblHerdManurePerYearDryCow = (((amtDryCowAvgWeight / LBS_PER_KG) * 0.022) + 21.844) * LBS_PER_KG * amtMaxDryCowCount * reporting_period_days;
+  let lblHerdManurePerYearDryCow = (((amtDryCowAvgWeight / LBS_PER_KG) * 0.022) + 21.844) * LBS_PER_KG * amtAvgDryCowCount * reporting_period_days;
   let tonsHerdManurePerYearDryCow = lblHerdManurePerYearDryCow / 2000;
-  let lblHerdNPerYearDryCow = amtMaxDryCowCount * NITROGEN_EXCRETION_DRY_COW * reporting_period_days;
-  let lblHerdPPerYearDryCow = amtMaxDryCowCount * PHOSPHORUS_EXCRETION_DRY_COW * reporting_period_days;
-  // let lblHerdKPerYearDryCow = amtMaxDryCowCount * POTASSIUM_EXCRETION_DRY_COW * reporting_period_days; // Documentation says to use MaxMilkCowCount
-  let lblHerdKPerYearDryCow = maxMilkCowCount * POTASSIUM_EXCRETION_DRY_COW * reporting_period_days;
-  let lblHerdSaltPerYearDryCow = amtMaxDryCowCount * INORGANIC_SALT_EXCRETION_DRY_COW * reporting_period_days;
+  let lblHerdNPerYearDryCow = amtAvgDryCowCount * NITROGEN_EXCRETION_DRY_COW * reporting_period_days;
+  let lblHerdPPerYearDryCow = amtAvgDryCowCount * PHOSPHORUS_EXCRETION_DRY_COW * reporting_period_days;
+  // let lblHerdKPerYearDryCow = amtAvgDryCowCount * POTASSIUM_EXCRETION_DRY_COW * reporting_period_days; 
+  // Documentation says to use MaxMilkCowCount but it uses AvgMilkCowCount
+  let lblHerdKPerYearDryCow = amtAvgMilkCowCount * POTASSIUM_EXCRETION_DRY_COW * reporting_period_days;
+  let lblHerdSaltPerYearDryCow = amtAvgDryCowCount * INORGANIC_SALT_EXCRETION_DRY_COW * reporting_period_days;
   let dry_cows = [
     tonsHerdManurePerYearDryCow, lblHerdNPerYearDryCow, lblHerdPPerYearDryCow, 
     lblHerdKPerYearDryCow, lblHerdSaltPerYearDryCow
   ]
   _herdCalc['dry_cows'] = dry_cows
   
-  let amtMaxHeifer15To24Count = herdsObj.bred_cows[2]
+  // Documentaion says to use MaxCount but merced program is using AvgNumber
+  let amtAvgHeifer15To24Count = herdsObj.bred_cows[3]
   let amtHeifer15To24AvgWeight = herdsObj.bred_cows[4]
-  let lblHerdManurePerYearHeifer15To24 = (((amtHeifer15To24AvgWeight / LBS_PER_KG) * 0.018) + 17.817) * LBS_PER_KG * amtMaxHeifer15To24Count * reporting_period_days;
+
+  let lblHerdManurePerYearHeifer15To24 = (((amtHeifer15To24AvgWeight / LBS_PER_KG) * 0.018) + 17.817) * LBS_PER_KG * amtAvgHeifer15To24Count * reporting_period_days;
   let tonsHerdManurePerYearHeifer15To24 = lblHerdManurePerYearHeifer15To24 / 2000;
-  let lblHerdNPerYearHeifer15To24 = amtMaxHeifer15To24Count * NITROGEN_EXCRETION_HEIFER * reporting_period_days;
-  let lblHerdPPerYearHeifer15To24 = amtMaxHeifer15To24Count * PHOSPHORUS_EXCRETION_HEIFER * reporting_period_days;
+  let lblHerdNPerYearHeifer15To24 = amtAvgHeifer15To24Count * NITROGEN_EXCRETION_HEIFER * reporting_period_days;
+  let lblHerdPPerYearHeifer15To24 = amtAvgHeifer15To24Count * PHOSPHORUS_EXCRETION_HEIFER * reporting_period_days;
 
   let bred_cows = [
     tonsHerdManurePerYearHeifer15To24, lblHerdNPerYearHeifer15To24, lblHerdPPerYearHeifer15To24
   ]
   _herdCalc['bred_cows'] = bred_cows
 
-  
-  let amtMaxHeifer7To14Count = herdsObj.cows[2]
+  // Documentaion says to use MaxCount but merced program is using AvgNumber
+  let amtAvgHeifer7To14Count = herdsObj.cows[3]
   let amtHeifer7To14AvgWeight = herdsObj.cows[4]
-  let lblHerdManurePerYearHeifer7To14 = (((amtHeifer7To14AvgWeight / LBS_PER_KG) * 0.018) + 17.817) * LBS_PER_KG * amtMaxHeifer7To14Count * reporting_period_days;
+  let lblHerdManurePerYearHeifer7To14 = (((amtHeifer7To14AvgWeight / LBS_PER_KG) * 0.018) + 17.817) * LBS_PER_KG * amtAvgHeifer7To14Count * reporting_period_days;
   let tonsHerdManurePerYearHeifer7To14 = lblHerdManurePerYearHeifer7To14 / 2000;
-  let lblHerdNPerYearHeifer7To14 = amtMaxHeifer7To14Count * NITROGEN_EXCRETION_HEIFER * reporting_period_days;
-  let lblHerdPPerYearHeifer7To14 = amtMaxHeifer7To14Count * PHOSPHORUS_EXCRETION_HEIFER * reporting_period_days;
+  let lblHerdNPerYearHeifer7To14 = amtAvgHeifer7To14Count * NITROGEN_EXCRETION_HEIFER * reporting_period_days;
+  let lblHerdPPerYearHeifer7To14 = amtAvgHeifer7To14Count * PHOSPHORUS_EXCRETION_HEIFER * reporting_period_days;
 
   let cows = [
     tonsHerdManurePerYearHeifer7To14, lblHerdNPerYearHeifer7To14, lblHerdPPerYearHeifer7To14
   ]
   _herdCalc['cows'] = cows
 
-  let amtMaxCalf4To6Count = herdsObj.calf_old[2]
-  let lblHerdManurePerYearCalf4To6 = 19 * amtMaxCalf4To6Count * reporting_period_days;
+  let amtAvgCalf4To6Count = herdsObj.calf_old[3]
+  let lblHerdManurePerYearCalf4To6 = 19 * amtAvgCalf4To6Count * reporting_period_days;
   let tonsHerdManurePerYearCalf4To6 = lblHerdManurePerYearCalf4To6 /2000;
-  let lblHerdNPerYearCalf4To6 = amtMaxCalf4To6Count * NITROGEN_EXCRETION_CALF * reporting_period_days;
-  let lblHerdPPerYearCalf4To6 = amtMaxCalf4To6Count * PHOSPHORUS_EXCRETION_CALF * reporting_period_days;
+  let lblHerdNPerYearCalf4To6 = amtAvgCalf4To6Count * NITROGEN_EXCRETION_CALF * reporting_period_days;
+  let lblHerdPPerYearCalf4To6 = amtAvgCalf4To6Count * PHOSPHORUS_EXCRETION_CALF * reporting_period_days;
   let calf_old = [
     tonsHerdManurePerYearCalf4To6, lblHerdNPerYearCalf4To6, lblHerdPPerYearCalf4To6
   ]
   _herdCalc['calf_old'] = calf_old
 
 
-  let amtMaxCalfTo3Count = herdsObj.calf_young[2]
-  let lblHerdManurePerYearCalfTo3 = 19 * amtMaxCalfTo3Count * reporting_period_days;
+  let amtAvgCalfTo3Count = herdsObj.calf_young[3]
+  let lblHerdManurePerYearCalfTo3 = 19 * amtAvgCalfTo3Count * reporting_period_days;
   let tonsHerdManurePerYearCalfTo3 = lblHerdManurePerYearCalfTo3 / 2000;
-  let lblHerdNPerYearCalfTo3 = amtMaxCalfTo3Count * NITROGEN_EXCRETION_CALF * reporting_period_days;
-  let lblHerdPPerYearCalfTo3 = amtMaxCalfTo3Count * PHOSPHORUS_EXCRETION_CALF * reporting_period_days;
+  let lblHerdNPerYearCalfTo3 = amtAvgCalfTo3Count * NITROGEN_EXCRETION_CALF * reporting_period_days;
+  let lblHerdPPerYearCalfTo3 = amtAvgCalfTo3Count * PHOSPHORUS_EXCRETION_CALF * reporting_period_days;
   let calf_young= [
     tonsHerdManurePerYearCalfTo3, lblHerdNPerYearCalfTo3, lblHerdPPerYearCalfTo3
   ]

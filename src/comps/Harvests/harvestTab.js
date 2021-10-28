@@ -24,19 +24,13 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import {
-  readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromHarvestTSVListRow, uploadTSVToDB
+  readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromHarvestTSVListRow, uploadTSVToDB, HARVEST
 } from "../../utils/TSV"
-
-
 
 
 const REPORTING_METHODS = ['dry-weight', 'as-is']
 const SOURCE_OF_ANALYSES = ['Lab Analysis', 'Other/ estimated']
 
-const BASIS = ['As-is', "Dry wt"]
-
-const HARVEST = 'field_crop_harvest'
-const NUM_COLS = 26
 
 class HarvestTab extends Component {
   constructor(props) {

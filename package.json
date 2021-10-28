@@ -24,7 +24,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-window": "^1.8.6",
-    "web-vitals": "^1.1.2"
+    "web-vitals": "^1.1.2",
+    "xlsx": "^0.17.3"
   },
   "scripts": {
     "start-client": "react-scripts start",

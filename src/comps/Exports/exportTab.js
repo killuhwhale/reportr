@@ -32,7 +32,10 @@ import UploadTSVModal from "../Modals/uploadTSVModal"
 
 import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
-import { TSV_INFO, checkEmpty, readTSV, processTSVText, lazyGet, uploadTSVToDB, MANURE, WASTEWATER } from '../../utils/TSV'
+import { 
+  TSV_INFO, checkEmpty, readTSV, processTSVText, lazyGet, uploadTSVToDB, MANURE, WASTEWATER,
+  createDataFromManureExportTSVListRow, createDataFromWastewaterExportTSVListRow 
+} from '../../utils/TSV'
 import { groupBySortBy } from '../../utils/format'
 
 
@@ -837,113 +840,7 @@ class ExportTab extends Component {
     let rows = processTSVText(this.state.manureTsvText, numCols)
 
     let promises = rows.map((row, i) => {
-      return new Promise((resolve, reject) => {
-        const [
-
-          last_date_hauled,
-          op_title,
-          op_primary_phone,
-          op_secondary_phone,
-          op_street,
-          op_city,
-          op_city_state,
-          op_city_zip,
-          op_is_owner,
-          op_is_responsible,  // Yes, No
-
-          contact_first_name,
-          contact_primary_phone,
-
-
-          hauler_title,
-          hauler_first_name,
-
-          hauler_primary_phone,
-          hauler_street,
-          hauler_cross_street,
-          hauler_county,
-          hauler_city,
-          hauler_city_state,
-          hauler_city_zip,
-
-
-
-          recipient_title,
-          dest_type,
-          recipient_primary_phone,
-          recipient_street,
-          recipient_cross_street,
-          recipient_county,
-          recipient_city,
-          recipient_city_state,
-          recipient_city_zip,
-
-          pnumber,
-          dest_street,
-          dest_cross_street,
-          dest_county,
-          dest_city,
-          dest_city_state,
-          dest_city_zip,
-
-
-          amount_hauled_method,
-          reporting_method,
-          material_type,
-          amount_hauled,
-
-          moisture,
-          n_con_mg_kg,
-          p_con_mg_kg,
-          k_con_mg_kg,
-          tfs,
-
-
-          n_lbs_rm,
-          p_lbs_rm,
-          k_lbs_rm,
-          salt_lbs_rm,
-        ] = row
-
-        this._lazyGetExportDest(row)
-          .then(dest_res => {
-            console.log(dest_res)
-            const [operatorObj, contactObj, haulerObj, destObj] = dest_res
-
-            let createManifestObj = {
-              dairy_id: dairy_id,
-              export_dest_id: destObj.pk,
-              operator_id: operatorObj.pk,
-              export_contact_id: contactObj.pk,
-              export_hauler_id: haulerObj.pk,
-              last_date_hauled,
-              amount_hauled_method,
-              reporting_method,
-              material_type,
-              amount_hauled: parseInt(checkEmpty(amount_hauled)),
-
-
-              moisture: checkEmpty(moisture),
-              n_con_mg_kg: checkEmpty(n_con_mg_kg),
-              p_con_mg_kg: checkEmpty(p_con_mg_kg),
-              k_con_mg_kg: checkEmpty(k_con_mg_kg),
-
-              tfs: checkEmpty(tfs),
-
-
-              n_lbs_rm: checkEmpty(n_lbs_rm),
-              p_lbs_rm: checkEmpty(p_lbs_rm),
-              k_lbs_rm: checkEmpty(k_lbs_rm),
-              salt_lbs_rm: checkEmpty(salt_lbs_rm),
-
-            }
-            resolve(post(`${this.props.BASE_URL}/api/export_manifest/create`, createManifestObj))
-          })
-          .catch(err => {
-            console.log(err)
-            reject(err)
-          })
-      })
+      return createDataFromManureExportTSVListRow(row, i, dairy_id)
     })
 
     Promise.all(promises)
@@ -978,113 +875,7 @@ class ExportTab extends Component {
     let rows = processTSVText(this.state.wastewaterTsvText, numCols)
 
     let promises = rows.map((row, i) => {
-      return new Promise((resolve, reject) => {
-        const [
-
-          last_date_hauled,
-          op_title,
-          op_primary_phone,
-          op_secondary_phone,
-          op_street,
-          op_city,
-          op_city_state,
-          op_city_zip,
-          op_is_owner,
-          op_is_responsible,  // Yes, No
-
-          contact_first_name,
-          contact_primary_phone,
-
-
-          hauler_title,
-          hauler_first_name,
-          hauler_primary_phone,
-          hauler_street,
-          hauler_cross_street,
-          hauler_county,
-          hauler_city,
-          hauler_city_state,
-          hauler_city_zip,
-
-
-
-          recipient_title,
-          dest_type,
-          recipient_primary_phone,
-          recipient_street,
-          recipient_cross_street,
-          recipient_county,
-          recipient_city,
-          recipient_city_state,
-          recipient_city_zip,
-
-          pnumber,
-          dest_street,
-          dest_cross_street,
-          dest_county,
-          dest_city,
-          dest_city_state,
-          dest_city_zip,
-
-
-          amount_hauled_method,
-
-
-          material_type,
-          hrs_ran,
-          gals_min,
-          amount_hauled,
-          src_desc,
-
-          n_con_mg_l,
-          p_con_mg_l,
-          k_con_mg_l,
-
-
-          ec_umhos_cm,
-          tds,
-
-          n_lbs_rm,
-          p_lbs_rm,
-          k_lbs_rm,
-        ] = row
-
-        this._lazyGetExportDest(row)
-          .then(dest_res => {
-            console.log(dest_res)
-            const [operatorObj, contactObj, haulerObj, destObj] = dest_res
-
-            let createManifestObj = {
-              dairy_id: dairy_id,
-              export_dest_id: destObj.pk,
-              operator_id: operatorObj.pk,
-              export_contact_id: contactObj.pk,
-              export_hauler_id: haulerObj.pk,
-              last_date_hauled,
-              amount_hauled_method,
-
-              material_type,
-              amount_hauled: parseInt(checkEmpty(amount_hauled)),
-
-              n_con_mg_l: checkEmpty(n_con_mg_l),
-              p_con_mg_l: checkEmpty(p_con_mg_l),
-              k_con_mg_l: checkEmpty(k_con_mg_l),
-              ec_umhos_cm: checkEmpty(ec_umhos_cm),
-              tds: checkEmpty(tds),
-
-
-              n_lbs_rm: checkEmpty(n_lbs_rm),
-              p_lbs_rm: checkEmpty(p_lbs_rm),
-              k_lbs_rm: checkEmpty(k_lbs_rm),
-
-            }
-            resolve(post(`${this.props.BASE_URL}/api/export_manifest/create`, createManifestObj))
-          })
-          .catch(err => {
-            console.log(err)
-            reject(err)
-          })
-      })
+      return createDataFromWastewaterExportTSVListRow(row, i, dairy_id)
     })
 
     Promise.all(promises)
@@ -1116,6 +907,297 @@ class ExportTab extends Component {
 
 
   }
+
+
+
+  // onUploadExportManureTSV() {
+  //   let dairy_id = this.state.dairy.pk
+  //   let numCols = TSV_INFO[MANURE].numCols
+  //   let rows = processTSVText(this.state.manureTsvText, numCols)
+
+  //   let promises = rows.map((row, i) => {
+  //     return new Promise((resolve, reject) => {
+  //       const [
+
+  //         last_date_hauled,
+  //         op_title,
+  //         op_primary_phone,
+  //         op_secondary_phone,
+  //         op_street,
+  //         op_city,
+  //         op_city_state,
+  //         op_city_zip,
+  //         op_is_owner,
+  //         op_is_responsible,  // Yes, No
+
+  //         contact_first_name,
+  //         contact_primary_phone,
+
+
+  //         hauler_title,
+  //         hauler_first_name,
+
+  //         hauler_primary_phone,
+  //         hauler_street,
+  //         hauler_cross_street,
+  //         hauler_county,
+  //         hauler_city,
+  //         hauler_city_state,
+  //         hauler_city_zip,
+
+
+
+  //         recipient_title,
+  //         dest_type,
+  //         recipient_primary_phone,
+  //         recipient_street,
+  //         recipient_cross_street,
+  //         recipient_county,
+  //         recipient_city,
+  //         recipient_city_state,
+  //         recipient_city_zip,
+
+  //         pnumber,
+  //         dest_street,
+  //         dest_cross_street,
+  //         dest_county,
+  //         dest_city,
+  //         dest_city_state,
+  //         dest_city_zip,
+
+
+  //         amount_hauled_method,
+  //         reporting_method,
+  //         material_type,
+  //         amount_hauled,
+
+  //         moisture,
+  //         n_con_mg_kg,
+  //         p_con_mg_kg,
+  //         k_con_mg_kg,
+  //         tfs,
+
+
+  //         n_lbs_rm,
+  //         p_lbs_rm,
+  //         k_lbs_rm,
+  //         salt_lbs_rm,
+  //       ] = row
+
+  //       this._lazyGetExportDest(row)
+  //         .then(dest_res => {
+  //           console.log(dest_res)
+  //           const [operatorObj, contactObj, haulerObj, destObj] = dest_res
+
+  //           let createManifestObj = {
+  //             dairy_id: dairy_id,
+  //             export_dest_id: destObj.pk,
+  //             operator_id: operatorObj.pk,
+  //             export_contact_id: contactObj.pk,
+  //             export_hauler_id: haulerObj.pk,
+  //             last_date_hauled,
+  //             amount_hauled_method,
+  //             reporting_method,
+  //             material_type,
+  //             amount_hauled: parseInt(checkEmpty(amount_hauled)),
+
+
+  //             moisture: checkEmpty(moisture),
+  //             n_con_mg_kg: checkEmpty(n_con_mg_kg),
+  //             p_con_mg_kg: checkEmpty(p_con_mg_kg),
+  //             k_con_mg_kg: checkEmpty(k_con_mg_kg),
+
+  //             tfs: checkEmpty(tfs),
+
+
+  //             n_lbs_rm: checkEmpty(n_lbs_rm),
+  //             p_lbs_rm: checkEmpty(p_lbs_rm),
+  //             k_lbs_rm: checkEmpty(k_lbs_rm),
+  //             salt_lbs_rm: checkEmpty(salt_lbs_rm),
+
+  //           }
+  //           resolve(post(`${this.props.BASE_URL}/api/export_manifest/create`, createManifestObj))
+  //         })
+  //         .catch(err => {
+  //           console.log(err)
+  //           reject(err)
+  //         })
+  //     })
+  //   })
+
+  //   Promise.all(promises)
+  //     .then(result => {
+  //       uploadTSVToDB(this.state.manureUploadedFilename, this.state.manureTsvText, this.state.dairy.pk, TSV_INFO[MANURE].tsvType)
+  //         .then(tsvUploadRes => {
+  //           this.toggleShowUploadManureTSVModal(false)
+  //           this.getExportContact()
+  //           this.getOperators()
+  //           this.getExportHaulers()
+  //           this.getExportRecipients()
+  //           this.getExportDests()
+  //           this.getExportManifests()
+  //           this.props.onAlert('Success!', 'success')
+  //         })
+  //         .catch(err => {
+  //           console.log(err)
+  //           this.toggleShowUploadManureTSVModal(false)
+  //           this.props.onAlert('Failed uploading.', 'error')
+  //         })
+  //     })
+  //     .catch(err => {
+  //       console.log(err)
+  //       this.toggleShowUploadManureTSVModal(false)
+  //       this.props.onAlert('Failed uploading.', 'error')
+  //     })
+  // }
+
+  // onUploadExportWastewaterTSV() {
+  //   let dairy_id = this.state.dairy.pk
+  //   let numCols = TSV_INFO[WASTEWATER].numCols
+  //   let rows = processTSVText(this.state.wastewaterTsvText, numCols)
+
+  //   let promises = rows.map((row, i) => {
+  //     return new Promise((resolve, reject) => {
+  //       const [
+
+  //         last_date_hauled,
+  //         op_title,
+  //         op_primary_phone,
+  //         op_secondary_phone,
+  //         op_street,
+  //         op_city,
+  //         op_city_state,
+  //         op_city_zip,
+  //         op_is_owner,
+  //         op_is_responsible,  // Yes, No
+
+  //         contact_first_name,
+  //         contact_primary_phone,
+
+
+  //         hauler_title,
+  //         hauler_first_name,
+  //         hauler_primary_phone,
+  //         hauler_street,
+  //         hauler_cross_street,
+  //         hauler_county,
+  //         hauler_city,
+  //         hauler_city_state,
+  //         hauler_city_zip,
+
+
+
+  //         recipient_title,
+  //         dest_type,
+  //         recipient_primary_phone,
+  //         recipient_street,
+  //         recipient_cross_street,
+  //         recipient_county,
+  //         recipient_city,
+  //         recipient_city_state,
+  //         recipient_city_zip,
+
+  //         pnumber,
+  //         dest_street,
+  //         dest_cross_street,
+  //         dest_county,
+  //         dest_city,
+  //         dest_city_state,
+  //         dest_city_zip,
+
+
+  //         amount_hauled_method,
+
+
+  //         material_type,
+  //         hrs_ran,
+  //         gals_min,
+  //         amount_hauled,
+  //         src_desc,
+
+  //         n_con_mg_l,
+  //         p_con_mg_l,
+  //         k_con_mg_l,
+
+
+  //         ec_umhos_cm,
+  //         tds,
+
+  //         n_lbs_rm,
+  //         p_lbs_rm,
+  //         k_lbs_rm,
+  //       ] = row
+
+  //       this._lazyGetExportDest(row)
+  //         .then(dest_res => {
+  //           console.log(dest_res)
+  //           const [operatorObj, contactObj, haulerObj, destObj] = dest_res
+
+  //           let createManifestObj = {
+  //             dairy_id: dairy_id,
+  //             export_dest_id: destObj.pk,
+  //             operator_id: operatorObj.pk,
+  //             export_contact_id: contactObj.pk,
+  //             export_hauler_id: haulerObj.pk,
+  //             last_date_hauled,
+  //             amount_hauled_method,
+
+  //             material_type,
+  //             amount_hauled: parseInt(checkEmpty(amount_hauled)),
+
+  //             n_con_mg_l: checkEmpty(n_con_mg_l),
+  //             p_con_mg_l: checkEmpty(p_con_mg_l),
+  //             k_con_mg_l: checkEmpty(k_con_mg_l),
+  //             ec_umhos_cm: checkEmpty(ec_umhos_cm),
+  //             tds: checkEmpty(tds),
+
+
+  //             n_lbs_rm: checkEmpty(n_lbs_rm),
+  //             p_lbs_rm: checkEmpty(p_lbs_rm),
+  //             k_lbs_rm: checkEmpty(k_lbs_rm),
+
+  //           }
+  //           resolve(post(`${this.props.BASE_URL}/api/export_manifest/create`, createManifestObj))
+  //         })
+  //         .catch(err => {
+  //           console.log(err)
+  //           reject(err)
+  //         })
+  //     })
+  //   })
+
+  //   Promise.all(promises)
+  //     .then(result => {
+  //       uploadTSVToDB(this.state.wastewaterUploadedFilename, this.state.wastewaterTsvText, this.state.dairy.pk, TSV_INFO[WASTEWATER].tsvType)
+  //         .then(tsvUploadRes => {
+  //           console.log("Uploaded TSV to DB")
+  //           this.toggleShowUploadWastewaterTSVModal(false)
+  //           this.getExportContact()
+  //           this.getOperators()
+  //           this.getExportHaulers()
+  //           this.getExportRecipients()
+  //           this.getExportDests()
+  //           this.getExportManifests()
+  //           this.props.onAlert('Success!', 'success')
+  //         })
+  //         .catch(err => {
+  //           console.log(err)
+  //           this.toggleShowUploadWastewaterTSVModal(false)
+  //           this.props.onAlert('Failed uploading', 'error')
+  //         })
+  //     })
+  //     .catch(err => {
+  //       console.log(err)
+  //       this.toggleShowUploadWastewaterTSVModal(false)
+  //       this.props.onAlert('Failed uploading', 'error')
+  //     })
+
+
+
+  // }
+
+
+
 
   toggleShowUploadManureTSVModal(val) {
     this.setState({

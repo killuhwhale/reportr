@@ -2,7 +2,7 @@ React
   reportrr % npm start
 
 Express
-reportrr/server % npm start 
+  reportrr/server % npm start 
 
 PSQL
   Running psql macos 
@@ -10,11 +10,26 @@ PSQL
   - added to .zshrc ==> $ runpsql
   start server from /server npm start
   start react from root npm start
+  DB: reportrr
+  user: admin
+  pass: mostdope
 
-  PSQL on Google Cloud Cloud(Not neeeded after all, able to use antoher method with name)
-    - psql "sslmode=verify-ca sslrootcert=server-ca.pem sslcert=client-cert.pem sslkey=client-key.pem hostaddr=34.102.61.45 port=5432 user=postgres dbname=postgres"
-
-
+HARCODED VARS:
+  - App.js
+    - isProd // Bool to indicate which enviroment the app is running in. Checks for localhost.
+    - BASE_URL // Determines BASE URL for Express backend local or Prod
+  - utils/TSV.js
+    - isProd
+    - BASE_URL 
+    - isTesting // For testing TSV Uploads
+    - Also Creates Vars that correspond to Sheet Names, sheet names must match in order for Upload XLSX workbook to work.
+  - DairyTab.js
+    - Variables to determine Chart size in Annual Report
+  - HomePage.js
+    - COUNTIES
+    - BASINS 
+    - BREEDS
+  
 
 ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
   - FRESH WATER APP EVENT Field 6 11/01/2019 planted, 10/10/2019 applied, this was in the spreadsheet but not in merced   
@@ -24,6 +39,11 @@ ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
 
 
 TODO
+
+- Make the left side panel and right side app content a div with minWidth properties make it fixed....
+
+- Entering Breed, when other is slected, the user must input text. 
+  - Implement the input method...
 
 Github is private, the only passwords visible in code is for the DB and that is in a .yaml file uploaded directly to Digital Ocean
   - Might not need env vars.

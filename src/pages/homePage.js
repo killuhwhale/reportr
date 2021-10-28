@@ -20,16 +20,14 @@ import ExportTab from "../comps/Exports/exportTab"
 import ActionCancelModal from "../comps/Modals/actionCancelModal"
 
 
-
 import { get, post, uploadFiles } from "../utils/requests"
 import "../App.css"
 
 // const this.props.BASE_URL = "http://localhost:3001"
 
-const COUNTIES = ["Merced", "San Joaquin"]
-const BASINS = ["River", "Rio"]
-const BREEDS = ["Heffy guy", "Milker Boi", "Steakz"]
-
+const COUNTIES = ['Amador','Butte','Colusa','Fresno','Glenn','Kern','Kings','Lassen','Madera','Merced','Modoc','Placer','Sacramento' ,'San Joaquin','Shasta','Solano','Stanislaus','Sutter','Tehama','Tulare','Yolo','Yuba']
+const BASINS = ["Sacramento River Basin", "San Joaquin River Basin", 'Tulare Basin']
+const BREEDS = [ 'Ayrshire', 'Brown Swiss', 'Guernsey', 'Holstein', 'Jersey', 'Jersey-Holstein Cross', 'Milking Shorthorn', 'Other']
 
 
 class HomePage extends Component {
@@ -219,11 +217,20 @@ class HomePage extends Component {
     })
   }
 
+
+  refreshAfterXLSXUpload(){
+    console.log("Calling getBaseDairies()")
+    this.getBaseDairies()
+  }
+
   render() {
     return (
       <Grid container direction="row" item xs={12} spacing={2}>
         <Grid item container alignItems='flex-start' xs={2} >
           <Grid item container xs={12}>
+            <Grid item xs={12} align='center'>
+              <img src="fr_logo_alpha.png" width="200px" height='75px' />
+            </Grid>
             <Grid item container justifyContent='center' alignItems='center' xs={12}>
               <Grid item xs={8} style={{marginBottom: '16px'}}>
                 <Typography variant='subtitle1'>
@@ -353,6 +360,7 @@ class HomePage extends Component {
                         onUpdate={this.updateDairy.bind(this)}
                         BASE_URL={this.props.BASE_URL}
                         onAlert={this.props.onAlert}
+                        refreshAfterXLSXUpload = {this.refreshAfterXLSXUpload.bind(this)}
                       />
                     </Grid>
 

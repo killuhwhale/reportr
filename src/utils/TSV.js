@@ -4,24 +4,26 @@ export default function mTea() { }
 
 
 const isProd = window.location.hostname !== 'localhost'
+const isTesting = true
 const BASE_URL = isProd? 'https://reportr-paai9.ondigitalocean.app': 'http://localhost:3001'
 
 
-export const HARVEST = 'field_crop_harvest'
+export const HARVEST = isTesting? 'Test - Production Records': 'Production Records'
+export const PROCESS_WASTEWATER =  isTesting? 'Test - WW Applications': 'WW Applications'
+export const FRESHWATER =  isTesting? 'Test - FW Applications': 'FW Applications'
+export const SOLIDMANURE =  isTesting? 'Test - SM Applications': 'SM Applications'
+export const FERTILIZER =  isTesting? 'Test - Commercial Fertilizer': 'Commercial Fertilizer'
+export const SOIL =  isTesting? 'Test - Soil Analyses': 'Soil Analyses'
+export const PLOWDOWN_CREDIT =  isTesting? 'Test - Plowdown Credit': 'Plowdown Credit'
+export const DRAIN =  isTesting? 'Test - Tile Drainage Systems': 'Tile Drainage Systems'
+export const DISCHARGE =  isTesting? 'Test - Discharge': 'Discharge'
+export const MANURE =  isTesting? 'Test - SM Exports': 'SM Exports'
+export const WASTEWATER =  isTesting? 'Test - WW Exports': 'WW Exports'
 
+export const SHEET_NAMES = [
+  HARVEST, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, MANURE, WASTEWATER,
+  ]
 
-export const PROCESS_WASTEWATER = 'process_wastewater'
-export const FRESHWATER = 'field_crop_app_freshwater'
-export const SOLIDMANURE = 'field_crop_app_solidmanure'
-export const FERTILIZER = 'field_crop_app_fertilizer'
-
-export const SOIL = 'field_crop_app_soil'
-export const PLOWDOWN_CREDIT = 'field_crop_app_plowdown_credit'
-export const DRAIN = 'DRAIN'
-export const DISCHARGE = 'Discharge'
-
-export const MANURE = 'export_manifest_manure'
-export const WASTEWATER = 'export_manifest_wastewater'
 
 export const TSV_INFO = {
   [DISCHARGE]: {
@@ -123,7 +125,7 @@ export const readTSV = (file, callback) => {
  */
 
 export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
-  console.log("Uploading TSV to DB", uploadedFilename, tsvText)
+  // console.log("Uploading TSV to DB", uploadedFilename, tsvText)
   const tsvData = {
     title: uploadedFilename,
     data: tsvText,
@@ -180,7 +182,7 @@ export const processTSVText = (csvText, numCols) => {
       }
     }
   })
-  console.log(rows)
+  // console.log(rows)
   return rows
 }
 export const createFieldSet = (rows) => {
@@ -268,10 +270,12 @@ const getFieldCrop = (commonRowData, dairy_pk) => {
     precip_before, precip_during, precip_after, app_method
   ] = commonRowData
   return new Promise((resolve, reject) => {
+    console.log("Preparing Field Crop", field_title, crop_title)
     prepareFieldCrop(field_title, crop_title, cropable, acres, dairy_pk)
       .then(res => {
         let fieldObj = res[0][0]
         let cropObj = res[1][0]
+        console.log("Field OBJ", fieldObj)
         if (fieldObj) {
           if (cropObj) {
             const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
@@ -306,6 +310,7 @@ const getFieldCrop = (commonRowData, dairy_pk) => {
       })
   })
 }
+
 const getFieldCropApp = (commonRowData, dairy_pk) => {
   const [
     app_date, field_title, acres_planted, cropable, acres, crop_title, plant_date,
@@ -333,8 +338,448 @@ const getFieldCropApp = (commonRowData, dairy_pk) => {
   })
 }
 
-/** Creates field_crop_harvest by creating or finding the data for each row
+// Handles upload of any sheet.
+// TODO
+/**
+ * - 
  * 
+ */
+export const onUploadXLSX = (dairy_id, tsvText, numCols, tsvType, uploadedFilename) => {
+  // 24 columns from TSV
+  let rows = processTSVText(tsvText, numCols) // extract rows from Text of tsv file TODO()
+  console.log(rows)
+  if(rows.length < 1){
+    return
+  }
+  return new Promise((resolve, reject) => {
+    // Create a set of fields to ensure duplicates are not attempted.
+    let fields = createFieldSet(rows)
+    createFieldsFromTSV(fields, dairy_id)      // Create fields before proceeding
+      .then(createFieldRes => {
+        let result_promises = rows.map((row, i) => {
+          
+          if(tsvType === MANURE){
+            return createDataFromManureExportTSVListRow(row, i, dairy_id)
+          }
+          if(tsvType === WASTEWATER){
+            return createDataFromWastewaterExportTSVListRow(row, i, dairy_id)
+          }
+
+          if(tsvType ===  HARVEST){
+            return createDataFromHarvestTSVListRow(row, i, dairy_id)
+          }
+          return createDataFromTSVListRow(row, i, dairy_id, tsvType)    // Create entries for ea row in TSV file based on Type
+        })
+  
+        Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
+          .then(res => {
+            uploadTSVToDB(uploadedFilename, tsvText, dairy_id, tsvType)
+            .then(res => {
+              resolve("Complete")
+            })
+            .catch(uploadTSVToDBErr=> {
+              reject(uploadTSVToDBErr)
+            })
+          })
+          .catch(err => {
+            console.log("Error with all promises", err)
+            reject(err)
+          })
+      })
+      .catch(createFieldErr => {
+        console.log(createFieldErr)
+        reject(createFieldErr)
+      })
+  })
+}
+
+
+const checkAny = (val) => {
+  // If the value is empty replace with asterisk.
+  // pnumber may be empty but is required to search with when looking for export destinations
+  return val ? val : "*"
+}
+
+const _lazyGetExportDest = (row, dairy_id) => {
+  let promises = []
+  const [
+
+    last_date_hauled,
+    op_title,
+    op_primary_phone,
+    op_secondary_phone,
+    op_street,
+    op_city,
+    op_city_state,
+    op_city_zip,
+    op_is_owner,
+    op_is_responsible,  // Yes, No
+
+    contact_first_name,
+    contact_primary_phone,
+
+
+    hauler_title,
+    hauler_first_name,
+
+    hauler_primary_phone,
+    hauler_street,
+    hauler_cross_street,
+    hauler_county,
+    hauler_city,
+    hauler_city_state,
+    hauler_city_zip,
+
+
+
+    recipient_title,
+    dest_type,
+    recipient_primary_phone,
+    recipient_street,
+    recipient_cross_street,
+    recipient_county,
+    recipient_city,
+    recipient_city_state,
+    recipient_city_zip,
+
+    pnumber,
+    dest_street,
+    dest_cross_street,
+    dest_county,
+    dest_city,
+    dest_city_state,
+    dest_city_zip,
+    ..._rest
+  ] = row
+
+  // need ot create a search endpoint for evertyhting, operators, export_ *contact, *hauler, *recipient
+  let opSearchURL = `${op_title}/${op_primary_phone}`
+  let createOperatorData = {
+    dairy_id: dairy_id,
+    title: op_title,
+    primary_phone: op_primary_phone,
+    secondary_phone: op_secondary_phone,
+    street: op_street,
+    city: op_city,
+    city_state: op_city_state,
+    city_zip: op_city_zip,
+    is_owner: op_is_owner,
+    is_responsible: op_is_responsible
+  }
+  promises.push(lazyGet('operators', opSearchURL, createOperatorData, dairy_id))
+
+
+  let contactSearchURL = `${contact_first_name}/${contact_primary_phone}`
+  let createContactData = {
+    dairy_id: dairy_id,
+    first_name: contact_first_name,
+    primary_phone: contact_primary_phone,
+  }
+  promises.push(lazyGet('export_contact', contactSearchURL, createContactData, dairy_id))
+
+  let haulerSearchURL = `${hauler_title}/${hauler_first_name}/${hauler_primary_phone}/${hauler_street}/${hauler_city_zip}`
+  let createHaulerData = {
+    dairy_id: dairy_id,
+    title: hauler_title,
+    first_name: hauler_first_name,
+    primary_phone: hauler_primary_phone,
+    street: hauler_street,
+    cross_street: hauler_cross_street,
+    county: hauler_county,
+    city: hauler_city,
+    city_state: hauler_city_state,
+    city_zip: hauler_city_zip,
+  }
+  promises.push(lazyGet('export_hauler', haulerSearchURL, createHaulerData, dairy_id))
+
+
+  // /title, street, city_zip, primary_phone
+  let recipientSearchURL = `${recipient_title}/${recipient_street}/${recipient_city_zip}/${recipient_primary_phone}`
+  let createRecipientData = {
+    dairy_id: dairy_id,
+    title: recipient_title,
+    dest_type: dest_type,
+    primary_phone: recipient_primary_phone,
+    street: recipient_street,
+    cross_street: recipient_cross_street,
+    county: recipient_county,
+    city: recipient_city,
+    city_state: recipient_city_state,
+    city_zip: recipient_city_zip,
+  }
+  console.log("LAxy get recipient data: ", createRecipientData)
+  promises.push(lazyGet('export_recipient', recipientSearchURL, createRecipientData, dairy_id))
+
+  return new Promise((resolve, reject) => {
+    Promise.all(promises)
+      .then(results => {
+        const operatorObj = results[0][0]
+        const contactObj = results[1][0]
+        const haulerObj = results[2][0]
+        const recipientObj = results[3][0]
+        console.log("Recipient", recipientObj)
+        //TODO
+        // Create Search for export_destination
+
+        // LazyGet export_dest
+        // export_recipient_id, pnumber, street, city_zip
+        // pnumber might be empty, which is valid, but will cause error in URL
+        let destSearchURL = `${encodeURIComponent(recipientObj.pk)}/${encodeURIComponent(checkAny(pnumber))}/${encodeURIComponent(dest_street)}/${encodeURIComponent(dest_city_zip)}`
+
+        let createDestData = {
+          dairy_id: dairy_id,
+          export_recipient_id: recipientObj.pk,
+          pnumber: pnumber,
+          street: dest_street,
+          cross_street: dest_cross_street,
+          county: dest_county,
+          city: dest_city,
+          city_state: dest_city_state,
+          city_zip: dest_city_zip,
+        }
+        lazyGet('export_dest', destSearchURL, createDestData, dairy_id)
+          .then(export_dest_res => {
+            resolve([operatorObj, contactObj, haulerObj, export_dest_res[0]])
+          })
+          .catch(err => {
+            console.log(err)
+            reject(err)
+          })
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+
+  })
+
+}
+
+export const createDataFromManureExportTSVListRow = (row, i, dairy_id) => {  
+  return new Promise((resolve, reject) => {
+    const [
+
+      last_date_hauled,
+      op_title,
+      op_primary_phone,
+      op_secondary_phone,
+      op_street,
+      op_city,
+      op_city_state,
+      op_city_zip,
+      op_is_owner,
+      op_is_responsible,  // Yes, No
+
+      contact_first_name,
+      contact_primary_phone,
+
+
+      hauler_title,
+      hauler_first_name,
+
+      hauler_primary_phone,
+      hauler_street,
+      hauler_cross_street,
+      hauler_county,
+      hauler_city,
+      hauler_city_state,
+      hauler_city_zip,
+
+
+
+      recipient_title,
+      dest_type,
+      recipient_primary_phone,
+      recipient_street,
+      recipient_cross_street,
+      recipient_county,
+      recipient_city,
+      recipient_city_state,
+      recipient_city_zip,
+
+      pnumber,
+      dest_street,
+      dest_cross_street,
+      dest_county,
+      dest_city,
+      dest_city_state,
+      dest_city_zip,
+
+
+      amount_hauled_method,
+      reporting_method,
+      material_type,
+      amount_hauled,
+
+      moisture,
+      n_con_mg_kg,
+      p_con_mg_kg,
+      k_con_mg_kg,
+      tfs,
+
+
+      n_lbs_rm,
+      p_lbs_rm,
+      k_lbs_rm,
+      salt_lbs_rm,
+    ] = row
+
+    _lazyGetExportDest(row, dairy_id)
+      .then(dest_res => {
+        const [operatorObj, contactObj, haulerObj, destObj] = dest_res
+
+        let createManifestObj = {
+          dairy_id: dairy_id,
+          export_dest_id: destObj.pk,
+          operator_id: operatorObj.pk,
+          export_contact_id: contactObj.pk,
+          export_hauler_id: haulerObj.pk,
+          last_date_hauled,
+          amount_hauled_method,
+          reporting_method,
+          material_type,
+          amount_hauled: parseInt(checkEmpty(amount_hauled)),
+
+
+          moisture: checkEmpty(moisture),
+          n_con_mg_kg: checkEmpty(n_con_mg_kg),
+          p_con_mg_kg: checkEmpty(p_con_mg_kg),
+          k_con_mg_kg: checkEmpty(k_con_mg_kg),
+
+          tfs: checkEmpty(tfs),
+
+
+          n_lbs_rm: checkEmpty(n_lbs_rm),
+          p_lbs_rm: checkEmpty(p_lbs_rm),
+          k_lbs_rm: checkEmpty(k_lbs_rm),
+          salt_lbs_rm: checkEmpty(salt_lbs_rm),
+
+        }
+        resolve(post(`${BASE_URL}/api/export_manifest/create`, createManifestObj))
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+  })
+}
+
+export const createDataFromWastewaterExportTSVListRow = (row, i, dairy_id) => {
+  return new Promise((resolve, reject) => {
+    const [
+
+      last_date_hauled,
+      op_title,
+      op_primary_phone,
+      op_secondary_phone,
+      op_street,
+      op_city,
+      op_city_state,
+      op_city_zip,
+      op_is_owner,
+      op_is_responsible,  // Yes, No
+
+      contact_first_name,
+      contact_primary_phone,
+
+
+      hauler_title,
+      hauler_first_name,
+      hauler_primary_phone,
+      hauler_street,
+      hauler_cross_street,
+      hauler_county,
+      hauler_city,
+      hauler_city_state,
+      hauler_city_zip,
+
+
+
+      recipient_title,
+      dest_type,
+      recipient_primary_phone,
+      recipient_street,
+      recipient_cross_street,
+      recipient_county,
+      recipient_city,
+      recipient_city_state,
+      recipient_city_zip,
+
+      pnumber,
+      dest_street,
+      dest_cross_street,
+      dest_county,
+      dest_city,
+      dest_city_state,
+      dest_city_zip,
+
+
+      amount_hauled_method,
+
+
+      material_type,
+      hrs_ran,
+      gals_min,
+      amount_hauled,
+      src_desc,
+
+      n_con_mg_l,
+      p_con_mg_l,
+      k_con_mg_l,
+
+
+      ec_umhos_cm,
+      tds,
+
+      n_lbs_rm,
+      p_lbs_rm,
+      k_lbs_rm,
+    ] = row
+
+    _lazyGetExportDest(row, dairy_id)
+      .then(dest_res => {
+        const [operatorObj, contactObj, haulerObj, destObj] = dest_res
+
+        let createManifestObj = {
+          dairy_id: dairy_id,
+          export_dest_id: destObj.pk,
+          operator_id: operatorObj.pk,
+          export_contact_id: contactObj.pk,
+          export_hauler_id: haulerObj.pk,
+          last_date_hauled,
+          amount_hauled_method,
+
+          material_type,
+          amount_hauled: parseInt(checkEmpty(amount_hauled)),
+
+          n_con_mg_l: checkEmpty(n_con_mg_l),
+          p_con_mg_l: checkEmpty(p_con_mg_l),
+          k_con_mg_l: checkEmpty(k_con_mg_l),
+          ec_umhos_cm: checkEmpty(ec_umhos_cm),
+          tds: checkEmpty(tds),
+
+
+          n_lbs_rm: checkEmpty(n_lbs_rm),
+          p_lbs_rm: checkEmpty(p_lbs_rm),
+          k_lbs_rm: checkEmpty(k_lbs_rm),
+
+        }
+        resolve(post(`${BASE_URL}/api/export_manifest/create`, createManifestObj))
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+  })
+ 
+  
+}
+
+
+
+
+/** Creates field_crop_harvest by creating or finding the data for each row
+ * // Typically creates teh field_crop
  */
 export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
   console.log("Creating db entreis for data:: ", row)
@@ -367,16 +812,6 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
     k_lbs_acre,
     salt_lbs_acre
   ] = row
-
-
-  // Added columns to spreadsheet
-  // Harvests will now have a plant tissue analysis tied to it
-  // Need to lazily create a harvest
-  // Neeed backend for this
-  // Sql Table: field_crop_harvest_plant_tissue_analysis
-  // Sql Index: insert, get, delete, search
-  // server Index: create, get, delete, search
-
 
   let fieldData = {
     data: {
@@ -468,6 +903,7 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
 
 
 /** Nutrient applications
+ *  These have very common columns and is at the same level i.e. they require fields & crops to be made.
  * 
  * @param {*} row: The row from the TSV contianing data
  * @param {*} i : index of row
@@ -533,6 +969,8 @@ export const checkEmpty = (val) => {
   // If value is empty, return 0 to avoid error in DB.
   return val.length > 0 ? val.replaceAll(',', '') : 0
 }
+
+
 
 /** Creates field_crop_app_process_wastewater(app event) && field_crop_app_process_wastewater_analysis
  * 

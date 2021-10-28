@@ -7,6 +7,7 @@ import {
 } from '@material-ui/pickers'
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import { CloudUpload } from '@material-ui/icons'
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
@@ -20,13 +21,15 @@ import pdfFonts from "pdfmake/build/vfs_fonts"
 import dd from "./pdf"
 import { getAnnualReportData } from "./pdfDB"
 import ActionCancelModal from "../Modals/actionCancelModal"
-
+import UploadTSVModal from "../Modals/uploadTSVModal"
 
 import { formatFloat } from "../../utils/format"
 import { toFloat, zeroTimeDate } from "../../utils/convertCalc"
 import { ImportExport } from '@material-ui/icons'
 
 import { getReportingPeriodDays } from "../../utils/herdCalculation"
+import { onUploadXLSX, TSV_INFO, SHEET_NAMES } from '../../utils/TSV'
+import XLSX from 'xlsx'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
@@ -110,6 +113,9 @@ class DairyTab extends Component {
       daysInPeriod: 0,
       fields: [],
       parcels: [],
+      uploadedFileData: null,
+      uploadedFilename: '',
+      showUploadXLSX: false
     }
     this.canvas = React.createRef()
     this.chart = null
@@ -125,21 +131,21 @@ class DairyTab extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if(prevState.dairy.pk !== this.state.dairy.pk) {
+    if (prevState.dairy.pk !== this.state.dairy.pk) {
       this.getAllFields()
       this.getAllParcels()
     }
     this.getDaysInPeriod()
   }
 
-  
-  getDaysInPeriod(){
+
+  getDaysInPeriod() {
     getReportingPeriodDays(this.props.BASE_URL, this.state.dairy.pk)
-    .then(days => this.setState({daysInPeriod: days}))
-    .catch(err => console.log(err))
+      .then(days => this.setState({ daysInPeriod: days }))
+      .catch(err => console.log(err))
   }
- 
-  
+
+
   getAllParcels() {
     get(`${this.props.BASE_URL}/api/parcels/${this.state.dairy.pk}`)
       .then(res => {
@@ -570,28 +576,110 @@ class DairyTab extends Component {
       })
   }
 
+  onUploadXLSXModalChange(ev) {
+    const { files } = ev.target
+    if (files.length > 0) {
+      const file = files[0];
+
+      file.arrayBuffer().then(data => {
+        const workbook = XLSX.read(data);
+        this.setState({ uploadedFileData: workbook, uploadedFilename: file.name })
+      })
+    }
+  }
+
+
+
+  onUploadXLSX() {
+    console.log(this.state.uploadedFilename, this.state.uploadedFileData)
+    const workbook = this.state.uploadedFileData
+    const sheets = workbook && workbook.Sheets ? workbook.Sheets : null
+
+    if (!sheets) {
+      console.log('Workbook not found: Filename, Data => ', this.state.uploadedFilename, this.state.uploadedFileData)
+      this.onAlert('Workbook not found!', 'error')
+      return
+    }
+
+    // For Each Sheet, feed to onUploadXLSX
+    let promises = []
+    workbook.SheetNames.forEach(sheetName => {
+      // const numCols = TSV_INFO[sheetName].numCols // todo sheetnames need to match the keys in TSV file 
+      // const tsvType = TSV_INFO[sheetName].tsvType
+      if (SHEET_NAMES.indexOf(sheetName) >= 0) {
+        const numCols = TSV_INFO[sheetName].numCols
+        const tsvType = TSV_INFO[sheetName].tsvType
+        const tsvText = XLSX.utils.sheet_to_csv(sheets[sheetName], { FS: '\t' })
+        console.log('Uploading: ', sheetName)
+        promises.push(
+          onUploadXLSX(this.state.dairy.pk, tsvText, numCols, tsvType, sheetName)
+        )
+      }
+    })
+
+    Promise.all(promises)
+      .then(res => {
+        console.log("Completed! C-engineer voice")
+        this.toggleShowUploadXLSX(false)
+        this.props.refreshAfterXLSXUpload()
+        this.getAllFields()
+        
+        this.props.onAlert('Success!', 'success')
+      })
+      .catch(err => {
+        console.log('Failure! SSBM Voice', err)
+        this.props.onAlert('Failed to Upload Workbook', 'error')
+      })
+
+  }
+
+  toggleShowUploadXLSX(val) {
+    this.setState({ showUploadXLSX: val })
+  }
+
   render() {
     return (
       <React.Fragment>
         {Object.keys(this.props.dairy).length > 0 ?
           <Grid item container xs={12} alignItems='center'>
+
             <Grid item container xs={12}>
               <Grid item container xs={7} alignItems='center'>
-                <Grid item xs={12} align='right'>
-                  <Typography variant="h5">
-                    {this.state.dairy.reporting_yr}
+                <Grid item xs={12}>
+                  <Typography color='primary' variant="h3">
+                    {this.state.dairy.title}
                   </Typography>
                 </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h3">
-                    {this.state.dairy.title}
+                <Grid item xs={12} align='right'>
+                  <Typography color='secondary' variant="h5" style={{marginRight: '25px'}}>
+                    {this.state.dairy.reporting_yr}
                   </Typography>
                 </Grid>
 
               </Grid>
               <Grid item container xs={5}>
                 <Grid item container xs={12}>
-                  <Grid item xs={6} align='left'>
+                  <Grid item xs={4} align='left'>
+                    <Tooltip title='Upload XLSX Workbook'>
+                      <IconButton color="primary" variant="outlined"
+                        onClick={() => this.toggleShowUploadXLSX(true)}
+                      >
+                        <CloudUpload />
+                      </IconButton>
+                    </Tooltip>
+                    <UploadTSVModal
+                      open={this.state.showUploadXLSX}
+                      actionText="Add"
+                      cancelText="Cancel"
+                      modalText={`Upload XLSX`}
+                      uploadedFilename={this.state.uploadedFilename}
+                      onAction={this.onUploadXLSX.bind(this)}
+                      onChange={this.onUploadXLSXModalChange.bind(this)}
+                      onClose={() => this.toggleShowUploadXLSX(false)}
+                    />
+                  </Grid>
+
+                  <Grid item xs={4} align='center'>
                     <Tooltip title="Generate Annual Report">
                       <IconButton onClick={this.generatePDF.bind(this)} >
                         <AssessmentIcon color='primary' />
@@ -599,7 +687,7 @@ class DairyTab extends Component {
                     </Tooltip>
                   </Grid>
 
-                  <Grid item xs={6} align='right'>
+                  <Grid item xs={4} align='right'>
                     <Tooltip title='Delete Dairy'>
                       <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
                         <DeleteSweepIcon color='error' />
@@ -785,8 +873,8 @@ class DairyTab extends Component {
               />
             </Grid>
 
-           
-           
+
+
             <Grid item container align="center" xs={12} style={{ marginTop: "24px" }} spacing={2}>
               <ParcelAndFieldView
                 reportingYr={this.state.dairy.reporting_yr}
@@ -803,7 +891,7 @@ class DairyTab extends Component {
             </Grid>
 
             <div id="chartArea" style={{ maxHeight: '1px', overflow: 'none' }}></div>
-          
+
             <ActionCancelModal
               open={this.state.toggleShowDeleteAllModal}
               actionText="Delete Dairy"

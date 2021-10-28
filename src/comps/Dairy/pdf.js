@@ -4582,7 +4582,7 @@ const nutrientAnalysisA = (props) => {
     pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
       {
-        width: "98%",
+
         table: {
           widths: ['100%'],
           body: [
@@ -4594,7 +4594,7 @@ const nutrientAnalysisA = (props) => {
         }
       },
       {
-        width: "98%",
+        
         table: {
           widths: ['100%'],
           body: [
@@ -4620,7 +4620,7 @@ const nutrientAnalysisB = (props) => {
       headlineLevel: `processWastewaterAnalyses${i}`,
       margin: [10, 0, 0, 5],
       table: {
-        widths: ['98%'],
+        widths: ['100%'],
         body: [
           [
             {// row 1
@@ -5030,9 +5030,9 @@ const nutrientAnalysisB = (props) => {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
       {
-        width: "98%",
+        
         table: {
-          widths: ['98%'],
+          widths: ['100%'],
           body: [
             [{
               border: [false, false, false, false],
@@ -5054,9 +5054,11 @@ const nutrientAnalysisC = (props) => {
   const subTable = (props, i) => {
     return [
       {
+        
         border: [true, false, true, false],
         table: {
-          widths: ['20%', '73%'],
+          headlineLevel: `freshWaterAnalyses${i}`,
+          widths: ['20%', '80%'],
           body: [
             [
               {
@@ -5343,7 +5345,7 @@ const nutrientAnalysisC = (props) => {
                         }
                       },
                       {
-                        headlineLevel: `freshWaterAnalyses${i}`,
+                       
                         text: {
                           text: props.tds_dl, fontSize: 7,
                         }
@@ -5351,7 +5353,7 @@ const nutrientAnalysisC = (props) => {
                     ],
                   ]
                 }
-              }, { text: ' ' }
+              }, { headlineLevel: `freshWaterAnalyses${i}`, text: ' ' }
             ]
           ]
         }
@@ -5367,10 +5369,10 @@ const nutrientAnalysisC = (props) => {
     })
 
     return {
-      headlineLevel: `freshWaterAnalyses${i}`,
+      width: "100%",
       margin: [10, 0, 0, 5],
       table: {
-        widths: ['98%'],
+        widths: ['99%'],
         body: [
           [
             {// row 1
@@ -5401,9 +5403,8 @@ const nutrientAnalysisC = (props) => {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
       {
-        width: "98%",
         table: {
-          widths: ['98%'],
+          widths: ['100%'],
           body: [
             [{
               border: [false, false, false, false],
@@ -5414,9 +5415,6 @@ const nutrientAnalysisC = (props) => {
         }
       },
       ...tables
-
-
-
     ]
   }
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 // Material UI
-import { Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui/core';
+import { Grid, Paper, Button, Typography, Modal, TextField, CircularProgress } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 import { get, post } from '../../utils/requests';
 import { zeroTimeDate } from "../../utils/convertCalc"
@@ -33,12 +33,12 @@ const isDuplicateYear = (entries, reportingYr) => {
 }
 
 
-const _createFieldParcel = (fieldParcel, dairy_id) => {
+const _createFieldParcel = (base_url, fieldParcel, dairy_id) => {
 	// Looks up field and parcel from previous field_parcel and creates a new one.
 	return new Promise((resolve, reject) => {
 		Promise.all([
-			get(`${this.props.BASE_URL}/api/search/fields/${fieldParcel.title}/${dairy_id}`),
-			get(`${this.props.BASE_URL}/api/search/parcels/${fieldParcel.pnumber}/${dairy_id}`)
+			get(`${base_url}/api/search/fields/${fieldParcel.title}/${dairy_id}`),
+			get(`${base_url}/api/search/parcels/${fieldParcel.pnumber}/${dairy_id}`)
 		])
 			.then(([[field], [parcel]]) => {
 				let fieldParcelData = {
@@ -46,7 +46,7 @@ const _createFieldParcel = (fieldParcel, dairy_id) => {
 					field_id: field.pk,
 					parcel_id: parcel.pk
 				}
-				post(`${this.props.BASE_URL}/api/field_parcel/create`, fieldParcelData)
+				post(`${base_url}/api/field_parcel/create`, fieldParcelData)
 					.then(res => {
 						resolve(res)
 					})
@@ -62,10 +62,10 @@ const _createFieldParcel = (fieldParcel, dairy_id) => {
 	})
 }
 
-const createFieldParcel = (field_parcel, dairy_id) => {
+const createFieldParcel = (base_url, field_parcel, dairy_id) => {
 	// Creates promises to create all previous field_parcels for new dairy year
 	const fpPromises = field_parcel.map(fp => {
-		return _createFieldParcel(fp, dairy_id)
+		return _createFieldParcel(base_url, fp, dairy_id)
 	})
 
 	return new Promise((resolve, reject) => {
@@ -88,7 +88,8 @@ class AddDairyModal extends Component {
 		super(props)
 		this.state = {
 			open: props.open,
-			reportingYearIdx: 0
+			reportingYearIdx: 0,
+			isLoading: false
 		}
 	}
 
@@ -101,10 +102,15 @@ class AddDairyModal extends Component {
 		this.setState({ [name]: value })
 	}
 
+	toggleIsLoading(val) {
+		this.setState({ isLoading: val })
+	}
+
 	createDairy() {
 		const reportingYear = YEARS[this.state.reportingYearIdx]
 		const dairyBase = this.state.dairyBase
 		const dairyBaseId = dairyBase.pk ? dairyBase.pk : -1
+		this.toggleIsLoading(true)
 
 		if (dairyBaseId > 0) {
 			// console.log("Creating a dairy for reporting year", reportingYear, dairyBaseId)
@@ -116,7 +122,7 @@ class AddDairyModal extends Component {
 						this.props.onDone()
 						this.props.onClose()
 						this.props.onAlert(`Error: Dairy already created for year: ${reportingYear}`, 'error')
-						
+
 					}
 					else if (dairies && typeof dairies === typeof [] && dairies.length > 0) {
 						// This dairy will be the dairy_id that will be used to query and duplicate each table.
@@ -191,10 +197,11 @@ class AddDairyModal extends Component {
 											Promise.all(promises)
 												.then(res => {
 													if (fields.length > 0 && parcels.length > 0 && field_parcel.length > 0) {
-														createFieldParcel(field_parcel, dairy.pk)
+														createFieldParcel(this.props.BASE_URL, field_parcel, dairy.pk)
 															.then(fieldCropResult => {
 																// Finish after creating field crops
 																this.props.onDone()
+																this.toggleIsLoading(false)
 																this.props.onClose()
 																this.props.onAlert('Created new Dairy!', 'success')
 															})
@@ -205,23 +212,27 @@ class AddDairyModal extends Component {
 													} else {
 														// Finish now
 														this.props.onDone()
+														this.toggleIsLoading(false)
 														this.props.onClose()
 														this.props.onAlert('Created new Dairy!', 'success')
 													}
 												})
 												.catch(err => {
 													console.log(err)
+													this.toggleIsLoading(false)
 													this.props.onAlert(`Faied to duplicate previous dairy's info!`, 'error')
 												})
 										})
 										.catch(err => {
 											console.log(err)
+											this.toggleIsLoading(false)
 											this.props.onAlert(`Faied to duplicate previous dairy's info while looking up info!`, 'error')
 										})
 								}
 							})
 							.catch(err => {
 								console.log("Failed to create new dairy", err)
+								this.toggleIsLoading(false)
 								this.props.onAlert('Faied to create new reporting year!', 'error')
 							})
 					} else {
@@ -234,12 +245,14 @@ class AddDairyModal extends Component {
 						})
 							.then(res => {
 								this.props.onDone()
+								this.toggleIsLoading(false)
 								this.props.onClose()
 								this.props.onAlert('Created new Dairy!', 'success')
 							})
 							.catch(err => {
 								console.log(err)
 								this.props.onDone()
+								this.toggleIsLoading(false)
 								this.props.onClose()
 								this.props.onAlert('Failed creating new Dairy for reporting year!', 'error')
 							})
@@ -256,6 +269,12 @@ class AddDairyModal extends Component {
 			// Create new dairy with basic info: title and reporting year
 
 
+		}
+	}
+
+	listenEnter(ev) {
+		if ((ev.keyCode || ev.which) === 13) {
+			this.createDairy()
 		}
 	}
 
@@ -290,6 +309,7 @@ class AddDairyModal extends Component {
 										name='reportingYearIdx'
 										value={this.state.reportingYearIdx}
 										onChange={this.onChange.bind(this)}
+										onKeyUp={this.listenEnter.bind(this)}
 										label="Reporting year"
 										style={{ width: "75%" }}
 										SelectProps={{
@@ -309,12 +329,17 @@ class AddDairyModal extends Component {
 									</Button>
 								</Grid>
 								<Grid item xs={6}>
-									<Button
-										color="primary"
-										variant="outlined"
-										onClick={this.createDairy.bind(this)}>
-										{this.props.actionText}
-									</Button>
+									{this.state.isLoading ?
+										<CircularProgress color='primary' />
+										:
+										<Button
+											disabled={this.state.isLoading}
+											color="primary"
+											variant="outlined"
+											onClick={this.createDairy.bind(this)}>
+											{this.props.actionText}
+										</Button>
+									}
 								</Grid>
 							</Grid>
 						</Paper>

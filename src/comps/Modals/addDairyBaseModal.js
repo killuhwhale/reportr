@@ -49,6 +49,12 @@ class AddBaseDairyModal extends Component{
         })
     }
   }
+	
+	listenEnter(ev){
+		if((ev.keyCode || ev.which) === 13){
+			this.createBaseDairy()
+		}
+	}
 
   onChange(ev){
     const { name, value } = ev.target
@@ -74,7 +80,7 @@ class AddBaseDairyModal extends Component{
 						align="center"
 						xs={12}
 					>
-					<Paper style={{height:"200px", display: "flex", flexDirection: "column", justifyContent: "center"}}>
+					<Paper style={{height:"250px", display: "flex", flexDirection: "column", justifyContent: "center"}}>
 						<Grid item container xs={12}>
 							<Grid item xs={12}>
 								<Typography variant="h6" style={{marginTop: "32px"}}>
@@ -86,6 +92,7 @@ class AddBaseDairyModal extends Component{
 									name='createDairyTitle'  
 									value={this.state.createDairyTitle}
 									onChange={this.onChange.bind(this)}
+									onKeyUp={this.listenEnter.bind(this)}
 									label="Name of Dairy"
 									style={{width: "80%"}}
 								/>
@@ -101,6 +108,7 @@ class AddBaseDairyModal extends Component{
 								<Button
 									color="primary"
 									variant="outlined"
+								
 									onClick={this.createBaseDairy.bind(this)}>
 									{this.props.actionText}
 								</Button>

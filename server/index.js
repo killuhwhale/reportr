@@ -16,10 +16,10 @@ const allowedOrigins = [
   "https://fragservices.app"
 ];
 // const storage = new Storage();
-
+const REQUEST_LIMIT = 1024 * 1024 * 10 // 10MB
 
 // Setup
-app.use(express.json())
+app.use(express.json({limit: REQUEST_LIMIT}))
 // Below will serve the app on :3001 as well....
 // app.use(express.static(path.join(__dirname, "..", "build")));
 // app.use(express.static(path.join(__dirname, "../public")));
