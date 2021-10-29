@@ -15,15 +15,16 @@ import {
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import CloseIcon from '@material-ui/icons/Close';
-import apptheme from "./css/apptheme"
-import pdftheme from "./css/lightTheme"
+import darkTheme from "./css/darkTheme"
+import pdftheme from "./css/pdfTheme"
+import lightTheme from "./css/lightTheme"
 
 import Login from "./pages/login"
 import HomePage from "./pages/homePage"
 import TSVPrint from "./pages/tsvPrint"
 
 import { TSV_INFO } from "./utils/TSV"
-
+import "./App.css"
 
 const isProd = window.location.hostname !== 'localhost'
 const BASE_URL = isProd ? 'https://reportr-paai9.ondigitalocean.app' : 'http://localhost:3001'
@@ -118,8 +119,9 @@ const BackgroundGrid = withStyles(theme => ({
 }))(Grid)
 
 const breakPoints = ['xs', 'sm', 'md', 'lg', 'xl']
-let darkTheme = responsiveFontSizes(createTheme(apptheme), breakPoints)
-let pdfTheme = responsiveFontSizes(createTheme(pdftheme), breakPoints)
+let DarkTheme = responsiveFontSizes(createTheme(darkTheme), breakPoints)
+let PdfTheme = responsiveFontSizes(createTheme(pdftheme), breakPoints)
+let LightTheme = responsiveFontSizes(createTheme(lightTheme), breakPoints)
 
 const auth = getAuth();
 
@@ -129,7 +131,8 @@ export default class App extends React.Component {
     super(props)
     this.state = {
       user: {},
-      theme: darkTheme,
+      // theme: darkTheme,
+      theme: LightTheme,
       showAlert: false,
       alertSeverity: '',
       alertMsg: '',
@@ -196,23 +199,21 @@ export default class App extends React.Component {
                           paddingRight: "8px"
                         }}
                       >
-                        <Paper style={{ minWidth: "100%" }}>
-                          <HomePage
-                            user={this.state.user}
-                            BASE_URL={BASE_URL}
-                            onAlert={this.onAlert.bind(this)}
-                          />
-                          {
-                            this.state.showAlert ?
-                              <SeverityAlert
-                                onClose={this.onCloseAlert.bind(this)}
-                                severity={this.state.alertSeverity}
-                                msg={this.state.alertMsg} />
-                              :
-                              <React.Fragment></React.Fragment>
+                        <HomePage
+                          user={this.state.user}
+                          BASE_URL={BASE_URL}
+                          onAlert={this.onAlert.bind(this)}
+                        />
+                        {
+                          this.state.showAlert ?
+                            <SeverityAlert
+                              onClose={this.onCloseAlert.bind(this)}
+                              severity={this.state.alertSeverity}
+                              msg={this.state.alertMsg} />
+                            :
+                            <React.Fragment></React.Fragment>
 
-                          }
-                        </Paper>
+                        }
                       </Grid>
                     </BackgroundGrid>
                   </Route>
@@ -220,7 +221,7 @@ export default class App extends React.Component {
                   <Route path="/tsv/:dairy_id/:tsvType"
                     render={props => {
                       return (
-                        <ThemeProvider theme={pdfTheme}>
+                        <ThemeProvider theme={PdfTheme}>
                           <TSVPrint
                             dairy_id={props.match.params.dairy_id}
                             tsvType={props.match.params.tsvType}

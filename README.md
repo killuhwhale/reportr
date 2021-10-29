@@ -14,7 +14,7 @@ PSQL
   user: admin
   pass: mostdope
 
-HARCODED VARS:
+HARCODED VARS:  TODO() Move these to src/sepcific.js
   - App.js
     - isProd // Bool to indicate which enviroment the app is running in. Checks for localhost.
     - BASE_URL // Determines BASE URL for Express backend local or Prod
@@ -49,50 +49,37 @@ Github is private, the only passwords visible in code is for the DB and that is 
   - Might not need env vars.
   - add baseURL to process env vars 
 
-
-Per Company Basis Issues:
-- Logos and Company Specific Assets Need to go into a DB Table
-  - Logo -- stored as text: base64 png
-    - Used in PDF Report(comps/dairy/pdf.js) && TSV Print pages (pages/tsvPrint.js)
-
-- Basin Plans
-  - Do these change dending on the company/ location of business?
-
-- Counties Dropdown list 
-  Change to TextiField? or place all counties in there for each State?
-  - Probably only work in 1 state so a drop down of counties is probably fine.
-
-
-Need to get info from Tammy:
-   - Counties to serve.
-   - Breeds (might be in Merced app)
-   - Basin Plans (might be in Merced app)
+- Nutrient Imports 
+  - Top section of that tap is rendered without using <List />
+    - i.e. it will render all items and not using a scrolled section. Will look bad with a lot of
 
 
 
-
-Problems:
   
-  - Dates are slightly off due to timezone....
-    - Creating a date inititally for a dairy, days should be jan 1st to dec 31st 
-      - Currently, the dates are created as dec 31st to dec 30th (1 day off)
-      
-
-  - Delete Dairy base
-    - No way to delete dairy base
+Need to get info from Tammy:
+  - Do these change dending on the company/ location of business?
+    - Counties to serve.
+    - Breeds
+    - Basin Plans
 
 
+Problems:  
   - Upload TSV process 
     - Ensure there are rows of data bfore uploading.
     - Need to avoid updating TSV file in DB with an empty doc....
 
+
+  - Dates are slightly off due to timezone.... (I think)
+    - Creating a date inititally for a dairy, days should be jan 1st to dec 31st 
+      - Currently, the dates are created as dec 31st to dec 30th (1 day off)
+      
+  - Delete Dairy base
+    - No way to delete dairy base
+
+
   - Remove amount_applied & Lbs/acre salt on Commercial fertilizer TSV
     - Remove from upload process and DB schema
 
-  - Add progress indicators when uploading TSV, maybe just make the button disabled and spin..... 
-    - Animated border would be cool.
-
-  - (BUG) Certification if there are no owners or operators, onupdate will crash
 
   - (BUG) No validation checks
     - All Spreadsheets need Numeric Data Validation. Could add to Spreadsheet but should also be in the code.
@@ -110,11 +97,6 @@ Problems:
         - Freshwater: N, Salt
         - Actual removal, Production Records: P, Salt
         - ** I think there is human error inputting data from spreadsheet to Merced App.
-
-  - (Quality Check) Check herd calculations: 
-    - Put same numbers in and see fi they match reports from Merced...
-
- 
 
 
 

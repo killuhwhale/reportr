@@ -53,7 +53,7 @@ class OperatorView extends Component {
       this.getAllOperators()
     }
   }
-  
+
   toggleOperatorModal(val) {
     this.setState({ showOperatorModal: val })
   }
@@ -93,7 +93,7 @@ class OperatorView extends Component {
 
   onOperatorChange(index, ev) {
     this.updatedOperators.add(index)
-    const { name, value } = ev.target    
+    const { name, value } = ev.target
     console.log('Operator @ index ', index, name, value)
     let operators = this.state.operators
     let operator = this.state.operators[index]
@@ -143,62 +143,60 @@ class OperatorView extends Component {
   render() {
     return (
       <Grid item xs={12}>
-        <Paper elevation={4}>
-          <Grid item container xs={12} style={{marginBottom: '8px'}}>
-            <Grid item xs={8}>
-              <Typography variant="h4">Owner Operators</Typography>
-            </Grid>
-            <Grid item container xs={4}>
-              <Grid item xs={10} align='right'>
-                <Tooltip title="Add Owner / Operator">
-                  <IconButton variant="outlined" color="primary"
-                    onClick={() => this.toggleOperatorModal(true)}
-                  >
-                    <InsertEmoticon />
-                  </IconButton>
-                </Tooltip>
+        <Grid item container xs={12} style={{ marginBottom: '8px' }}>
+          <Grid item xs={8}>
+            <Typography variant="h4">Owner Operators</Typography>
+          </Grid>
+          <Grid item container xs={4}>
+            <Grid item xs={10} align='right'>
+              <Tooltip title="Add Owner / Operator">
+                <IconButton variant="outlined" color="primary"
+                  onClick={() => this.toggleOperatorModal(true)}
+                >
+                  <InsertEmoticon />
+                </IconButton>
+              </Tooltip>
 
-              </Grid>
-              <Grid item xs={2}  align='right'>
-                <Tooltip title="Update owner / operators">
-                  <IconButton color="secondary" variant="outlined"
-                    onClick={this.updateOperators.bind(this)}
-                  >
-                    <ImportExport />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
+            </Grid>
+            <Grid item xs={2} align='right'>
+              <Tooltip title="Update owner / operators">
+                <IconButton color="secondary" variant="outlined"
+                  onClick={this.updateOperators.bind(this)}
+                >
+                  <ImportExport />
+                </IconButton>
+              </Tooltip>
             </Grid>
           </Grid>
+        </Grid>
 
-          {this.state.operators.length > 0 ?
-            this.state.operators.map((operator, i) => {
-              return (
-                <Paper elevation={2} key={`operatorOV${i}`}>
-                  <Grid item container xs={12}  justifyContent="center" alignItems="center" align="center" >
-                    <Grid item xs={10}>
-                      <OperatorForm 
-                        operator={operator}
-                        index={i}
-                        onChange={this.onOperatorChange.bind(this)}
-                      />
+        {this.state.operators.length > 0 ?
+          this.state.operators.map((operator, i) => {
+            return (
+              <Paper elevation={2} key={`operatorOV${i}`} style={{padding: '15px'}}>
+                <Grid item container xs={12} justifyContent="center" alignItems="center" align="center" >
+                  <Grid item xs={10}>
+                    <OperatorForm
+                      operator={operator}
+                      index={i}
+                      onChange={this.onOperatorChange.bind(this)}
+                    />
 
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Tooltip title="Delete Owner / Operator">
-                        <IconButton onClick={() => { this.confirmDeleteOperator(operator) }}>
-                          <DeleteIcon color="error" />
-                        </IconButton>
-                      </Tooltip>
-                    </Grid>
                   </Grid>
-                </Paper>
-              )
-            })
-            :
-            <React.Fragment></React.Fragment>
-          }
-        </Paper>
+                  <Grid item xs={2}>
+                    <Tooltip title="Delete Owner / Operator">
+                      <IconButton onClick={() => { this.confirmDeleteOperator(operator) }}>
+                        <DeleteIcon color="error" />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+                </Grid>
+              </Paper>
+            )
+          })
+          :
+          <React.Fragment></React.Fragment>
+        }
 
         <OperatorModal
           open={this.state.showOperatorModal}

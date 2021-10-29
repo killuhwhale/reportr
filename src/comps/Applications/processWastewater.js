@@ -94,43 +94,43 @@ const ProcessWastewaterAppEvent = (props) => {
               <Grid item container xs={10}>
 
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="Kjeldahl-nitrogen"
                     value={kn_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="Ammonium-nitrogen"
                     value={nh4_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="NH3-N"
                     value={nh3_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="Nitrate-nitrogen"
                     value={no3_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="Total phosphorus"
                     value={p_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="Total potassium "
                     value={k_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="TDS"
                     value={tds}
                   />
@@ -139,25 +139,25 @@ const ProcessWastewaterAppEvent = (props) => {
 
 
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="EC"
                     value={ec}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="N lbs/acre"
                     value={totaln}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="P lbs / acre"
                     value={totalp}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField 
                     label="K lbs / acre"
                     value={totalk}
                   />

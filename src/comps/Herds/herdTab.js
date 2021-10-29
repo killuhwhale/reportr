@@ -54,13 +54,13 @@ class HerdTab extends Component {
       <React.Fragment>
         {Object.keys(this.state.dairy).length > 0 ?
           <Grid item xs={12}>
-            <AppBar position="static" style={{ marginBottom: "32px", backgroundColor: "black" }} key='herdAppBar'>
+            <AppBar position="static" style={{ marginBottom: "32px"}} key='herdAppBar'>
               <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
                 onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='herdTabs'>
-                <Tab label="Herds" style={{ color: "#ec00d9" }} key='herdTab0' />
-                <Tab label="Tile Drainage" style={{ color: "#ec00d9" }} key='herdTab1' />
-                <Tab label="Discharges" style={{ color: "#ec00d9" }} key='herdTab2' />
-                <Tab label="NMP and Export Agreements" style={{ color: "#ec00d9" }} key='herdTab3' />
+                <Tab label="Herds"  key='herdTab0' />
+                <Tab label="Tile Drainage"  key='herdTab1' />
+                <Tab label="Discharges" key='herdTab2' />
+                <Tab label="NMP and Export Agreements"  key='herdTab3' />
               </Tabs>
             </AppBar>
 

@@ -61,12 +61,12 @@ class FieldForm extends Component {
     return(
       <Grid item container xs={12} style={{marginBottom: '8px'}}>
         <Grid item xs={7} >
-          <TextField disabled={!this.props.titleEditable}
+          <TextField 
             name='title'  
             value={this.state.field.title}
-            onChange={this.onChange.bind(this)}
+            onChange={this.props.titleEditable? this.onChange.bind(this): null}
             label="Field Name"
-            style={{width: "100%"}}        
+            style={{width: "100%"}}
           />
         </Grid>
         <Grid item xs={2} >

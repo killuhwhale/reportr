@@ -268,15 +268,15 @@ class NutrientApplicationTab extends Component {
             </Grid>
 
 
-            <AppBar position="static" style={{ marginBottom: "32px", backgroundColor: "black" }} key='appNutrientAppBar'>
+            <AppBar position="static" style={{ marginBottom: "32px"}} key='appNutrientAppBar'>
               <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
                 onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='appNutrientAppBarTabs'>
-                <Tab label="Process Wastewater" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab0' />
-                <Tab label="Fresh Water" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab1' />
-                <Tab label="Solid Manure" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab2' />
-                <Tab label="Commercial Fertilizer" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab3' />
-                <Tab label="Soil" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab4' />
-                <Tab label="Plowdown Credit" style={{ color: "#ec00d9" }} key='appNutrientAppBarTab5' />
+                <Tab label="Process Wastewater"  key='appNutrientAppBarTab0' />
+                <Tab label="Fresh Water"  key='appNutrientAppBarTab1' />
+                <Tab label="Solid Manure"  key='appNutrientAppBarTab2' />
+                <Tab label="Commercial Fertilizer" key='appNutrientAppBarTab3' />
+                <Tab label="Soil"  key='appNutrientAppBarTab4' />
+                <Tab label="Plowdown Credit"  key='appNutrientAppBarTab5' />
               </Tabs>
             </AppBar>
 

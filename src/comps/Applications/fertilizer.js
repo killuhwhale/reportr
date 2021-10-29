@@ -32,6 +32,7 @@ import { groupBySortBy } from "../../utils/format"
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
+import { DatePicker } from '@material-ui/pickers'
 
 
 
@@ -59,45 +60,57 @@ const FertilizerAppEvent = (props) => {
                 <Typography variant="subtitle1">{fertilizer.croptitle}</Typography>
               </Grid>
               <Grid item xs={6} align="right">
-                <Typography variant="subtitle1">Planted: {fertilizer.plant_date && fertilizer.plant_date.split('T')[0]}</Typography>
+                <DatePicker
+                  value={fertilizer.plant_date}
+                  label='Planted'
+                />
               </Grid>
-              <Grid item xs={6}>
-                <Typography variant="subtitle2"> Applied:{fertilizer.app_date && fertilizer.app_date.split('T')[0]} | {fertilizer.import_desc}</Typography>
-              </Grid>
+
+              <div style={{ display: 'flex', alignItems: 'center' }} >
+                <DatePicker
+                  label='Applied'
+                  value={fertilizer.app_date}
+                />
+                <TextField label='Type' value={fertilizer.import_desc}
+                />
+                
+
+              </div>
+
 
               <Grid item container xs={10}>
                 <Grid item xs={2}>
-                  <TextField disabled
-                    label="Amount applied tons"
+                  <TextField
+                    label="Applied (tons)"
                     value={fertilizer.amount_applied}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <TextField disabled
+                  <TextField
                     label="Moisture"
                     value={fertilizer.moisture}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <TextField disabled
-                    label="Nitrogen lbs / acre"
+                  <TextField
+                    label="N lbs / acre"
                     value={fertilizer.n_lbs_acre}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <TextField disabled
-                    label="Phosphorus lbs / acre"
+                  <TextField
+                    label="P lbs / acre"
                     value={fertilizer.p_lbs_acre}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <TextField disabled
-                    label="Potassium lbs / acre"
+                  <TextField
+                    label="K lbs / acre"
                     value={fertilizer.k_lbs_acre}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <TextField disabled
+                  <TextField
                     label="Salt lbs / acre"
                     value={fertilizer.salt_lbs_acre}
                   />
@@ -123,17 +136,30 @@ const NutrientImport = (props) => {
   return (
     <Grid item container xs={6} alignItems='center'>
       <Grid item container xs={10} >
-        <Grid item xs={12}>
-          <Typography>{props.nutrientImport.import_desc} | {props.nutrientImport.import_date && props.nutrientImport.import_date.split('T')[0]}</Typography>
-        </Grid>
         <Grid item container xs={12}>
-          <Grid item xs={6}>
-            <TextField
-              value={props.nutrientImport.amount_imported}
-              label="Amount imported"
-              style={{ width: "100%" }}
+        <Grid item xs={4}>
+            <DatePicker 
+              fullWidth
+              value={props.nutrientImport.import_date}
+              label="Import date"
             />
           </Grid>
+          <Grid item xs={4}>
+            <TextField 
+              fullWidth
+              value={props.nutrientImport.import_desc}
+              label="Type"
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              value={props.nutrientImport.amount_imported}
+              label="Amount"
+              fullWidth
+            />
+          </Grid>
+        </Grid>
+        {/* <Grid item container xs={12}>
           <Grid item xs={6}>
             <TextField
               value={props.nutrientImport.material_type}
@@ -141,32 +167,31 @@ const NutrientImport = (props) => {
               style={{ width: "100%" }}
             />
           </Grid>
+        </Grid> */}
 
-        </Grid>
-
-        <Grid item container xs={12}>
-          <Grid item xs={2}>
+        <Grid item container xs={12} style={{marginTop: '8px'}}>
+          <Grid item xs={3}>
             <TextField
               value={props.nutrientImport.n_con}
               label="Nitrogen"
               style={{ width: "100%" }}
             />
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={3}>
             <TextField
               value={props.nutrientImport.p_con}
               label="Phosphorus"
               style={{ width: "100%" }}
             />
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={3}>
             <TextField
               value={props.nutrientImport.k_con}
               label="Potassium"
               style={{ width: "100%" }}
             />
           </Grid>
-          <Grid item xs={2}>
+          <Grid item xs={3}>
             <TextField
               value={props.nutrientImport.salt_con}
               label="Salt"
@@ -260,14 +285,14 @@ class Fertilizer extends Component {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.getFieldCropAppEvents()
     this.getFieldCropAppFertilizer()
     this.getNutrientImport()
   }
 
-  componentDidUpdate(prevProps, prevState){
-    if(this.state.dairy_id !== prevState.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated){
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.dairy_id !== prevState.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated) {
       this.getFieldCropAppEvents()
       this.getFieldCropAppFertilizer()
       this.getNutrientImport()
@@ -421,7 +446,7 @@ class Fertilizer extends Component {
       showUploadFieldCropAppFertilizerTSVModal: val,
       tsvText: "",
       uploadedFilename: ""
-     })
+    })
   }
   onUploadFieldCropAppFreshwateTSVModalChange(ev) {
     const { files } = ev.target
@@ -482,8 +507,8 @@ class Fertilizer extends Component {
   getItemSize(index) {
     let field_crop_app_id = this.getSortedKeys()[index]
     let numRows = this.state.fieldCropAppFertilizers[field_crop_app_id].length
-    let headerSize = 50
-    let itemSize = 145
+    let headerSize = 80
+    let itemSize = 165
     return headerSize + (numRows * itemSize)
   }
 
@@ -651,7 +676,7 @@ class Fertilizer extends Component {
           modalText={`Delete All Fertilizer Application Events?`}
           onAction={this.deleteAllFromTable.bind(this)}
           onClose={() => this.confirmDeleteAllFromTable(false)}
-        />  
+        />
 
         <ActionCancelModal
           open={this.state.showConfirmDeleteFertilizerModal}

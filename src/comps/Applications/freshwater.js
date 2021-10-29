@@ -33,6 +33,7 @@ import { groupBySortBy } from "../../utils/format"
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
+import { DatePicker } from '@material-ui/pickers'
 
 const SOURCE_OF_ANALYSES = [
   'Lab Analysis',
@@ -55,35 +56,41 @@ const FreshwaterAppEvent = (props) => {
                 <Typography variant="subtitle1">{freshwater.croptitle}</Typography>
               </Grid>
               <Grid item xs={6} align="right">
-                <Typography variant="subtitle1">Planted: {freshwater.plant_date && freshwater.plant_date.split('T')[0]}</Typography>
+                <DatePicker
+                  value={freshwater.plant_date}
+                  label='Planted'
+                />
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="subtitle2">{freshwater.src_desc} | {freshwater.src_type}</Typography>
               </Grid>
               <Grid item xs={6} align="right">
-                <Typography variant="subtitle2">Applied: {freshwater.app_date && freshwater.app_date.split('T')[0]}</Typography>
+                <DatePicker
+                  value={freshwater.app_date}
+                  label='Applied'
+                />
               </Grid>
               <Grid item container xs={10}>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField
                     label="Amount Applied"
                     value={freshwater.amount_applied}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField
                     label="EC"
                     value={freshwater.ec}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField
                     label="TDS"
                     value={freshwater.tds}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField
                     label="Nitrogen lbs / acre"
                     value={freshwater.totaln}
                   />
@@ -109,8 +116,19 @@ const FreshwaterAppEvent = (props) => {
 const FreshwaterSource = (props) => {
   return (
     <Grid item container xs={6}>
-      <Grid item xs={10}>
-        <Typography>{props.source.src_desc} / {props.source.src_type}</Typography>
+      <Grid item container xs={10}>
+        <Grid item xs={6}>
+          <TextField
+            fullWidth
+            value={props.source.src_desc}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField
+            fullWidth
+            value={props.source.src_type}
+          />
+        </Grid>
       </Grid>
       <Grid item xs={2}>
         <Tooltip title="Delete Freshwater Source">
@@ -127,8 +145,19 @@ const FreshwaterSource = (props) => {
 const FreshwaterAnalysis = (props) => {
   return (
     <Grid item container xs={6}>
-      <Grid item xs={10}>
-        <Typography>{props.analysis.sample_date} / {props.analysis.sample_desc}</Typography>
+      <Grid item container xs={10}>
+        <Grid item xs={6}>
+          <DatePicker
+            fullWidth
+            value={props.analysis.sample_date}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField
+            fullWidth
+            value={props.analysis.sample_desc}
+          />
+        </Grid>
       </Grid>
       <Grid item xs={2}>
         <Tooltip title="Delete Freshwater Source">
@@ -451,10 +480,10 @@ class Freshwater extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppFreshwateTSVModal(val) {
-    this.setState({ 
+    this.setState({
       showUploadFieldCropAppFreshwateTSVModal: val,
       tsvText: "",
-      uploadedFilename: "" 
+      uploadedFilename: ""
     })
   }
   onUploadFieldCropAppFreshwateTSVModalChange(ev) {
@@ -534,10 +563,10 @@ class Freshwater extends Component {
     let numSources = parseInt(this.state.fieldCropAppFreshwaterSources.length / 2)
     let numAnalyses = parseInt(this.state.fieldCropAppFreshwaterAnalyses.length / 2)
 
-    let headerSize = 40
+    let headerSize = 80
     let sourceSectionSize = 32 + (48 * numSources)
     let analysisSectionSize = 32 + (48 * numAnalyses)
-    let itemSize = 100
+    let itemSize = 120
 
     return headerSize + (numRows * itemSize)
   }
@@ -665,7 +694,7 @@ class Freshwater extends Component {
           modalText={`Delete All Freshwater Application Events?`}
           onAction={this.deleteAllFromTable.bind(this)}
           onClose={() => this.confirmDeleteAllFromTable(false)}
-        />  
+        />
 
 
 

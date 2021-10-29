@@ -1,48 +1,11 @@
-export default  {
-  "overrides": {
-     "MuiContainer": {
-        "root":{
-           "background-color": "#fff"
-        }
-     },
-  },
-  "palette":{
-    "common":{
-       "black":"#000",
-       "white":"#fff"
-    },
-    "appBackground":{
-       "main": "#fff"
-      },
-    "background":{
-       "paper":"#fff",
-       "toolbar": "#fff",
-       "tableHeader": "#fff",
-       "default":"rgba(48, 48, 48, 1)"
-    },
-    "primary":{
-       "main1":"#fff",
-       "main":"#fff",
-       "mainGrad": '#fff',
-       "contrastText":"rgba(255, 255, 255, 1)"
-    },
-    "secondary":{
-       "light":"#fff",
-       "main":"#fff",
-       "dark":"#fff",
-       "contrastText":"#fff"
-    },
-    "error":{
-       "light":"#ea4331",
-       "main":"red",
-       "dark":"#2d0d0b",
-       "contrastText":"rgba(255, 255, 255, 1)"
-    },
-    "text":{
-       "primary":"#000",
-       "secondary":"#e0dfdf",
-       "disabled":"#bdbdbd",
-       "hint":"#afafaf"
-    }
- }
-}
+import appTheme from './baseTheme'
+
+const primaryColor = '#4ec5ff'
+const secondaryColor = '#14eac3'
+let backgroundColor = '#fffefe'
+let blkOrWhite = '#000'
+const appBarColor = primaryColor
+const appBarBackgroundColor = backgroundColor
+
+const lightTheme = appTheme(blkOrWhite, backgroundColor, primaryColor, secondaryColor, appBarColor, appBarBackgroundColor)
+export default lightTheme

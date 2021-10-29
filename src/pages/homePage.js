@@ -2,7 +2,7 @@ import { getAuth, sendPasswordResetEmail } from "firebase/auth"
 
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField, AppBar, Tabs, Tab
+  Grid, Button, Typography, IconButton, Tooltip, TextField, AppBar, Tabs, Tab
 } from '@material-ui/core'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
@@ -19,11 +19,9 @@ import NutrientApplicationTab from "../comps/Applications/appNutrientTab"
 import ExportTab from "../comps/Exports/exportTab"
 import ActionCancelModal from "../comps/Modals/actionCancelModal"
 
+import { get, post } from "../utils/requests"
 
-import { get, post, uploadFiles } from "../utils/requests"
-import "../App.css"
-
-// const this.props.BASE_URL = "http://localhost:3001"
+import { B64_LOGO } from "../specific"
 
 const COUNTIES = ['Amador','Butte','Colusa','Fresno','Glenn','Kern','Kings','Lassen','Madera','Merced','Modoc','Placer','Sacramento' ,'San Joaquin','Shasta','Solano','Stanislaus','Sutter','Tehama','Tulare','Yolo','Yuba']
 const BASINS = ["Sacramento River Basin", "San Joaquin River Basin", 'Tulare Basin']
@@ -229,7 +227,7 @@ class HomePage extends Component {
         <Grid item container alignItems='flex-start' xs={2} >
           <Grid item container xs={12}>
             <Grid item xs={12} align='center'>
-              <img src="fr_logo_alpha.png" width="200px" height='75px' />
+              <img src={B64_LOGO} width="100%" height='65px' />
             </Grid>
             <Grid item container justifyContent='center' alignItems='center' xs={12}>
               <Grid item xs={8} style={{marginBottom: '16px'}}>
@@ -335,15 +333,15 @@ class HomePage extends Component {
 
             {this.state.dairy && Object.keys(this.state.dairy).length > 0 ?
               <React.Fragment>
-                <AppBar position="static" style={{ marginBottom: "32px", backgroundColor: "black" }} key='homePageAppBar'>
+                <AppBar position="static" style={{ marginBottom: "32px"}} key='homePageAppBar'>
                   <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
                     onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='homePageAppBar'>
-                    <Tab label="Dairy" style={{ color: "#ec00d9" }} key='homePageAppBarTab0' />
-                    <Tab label="Herds" style={{ color: "#ec00d9" }} key='homePageAppBarTab1' />
-                    <Tab label="Crops planted" style={{ color: "#ec00d9" }} key='homePageAppBarTab2' />
-                    <Tab label="Crops harvested" style={{ color: "#ec00d9" }} key='homePageAppBarTab3' />
-                    <Tab label="Nutrient Applications " style={{ color: "#ec00d9" }} key='homePageAppBarTab4' />
-                    <Tab label="Nutrient Exports " style={{ color: "#ec00d9" }} key='homePageAppBarTab5' />
+                    <Tab label="Dairy" key='homePageAppBarTab0' />
+                    <Tab label="Info" key='homePageAppBarTab1' />
+                    <Tab label="Planted" key='homePageAppBarTab2' />
+                    <Tab label="Harvested" key='homePageAppBarTab3' />
+                    <Tab label="Applications " key='homePageAppBarTab4' />
+                    <Tab label="Exports " key='homePageAppBarTab5' />
                   </Tabs>
                 </AppBar>
 

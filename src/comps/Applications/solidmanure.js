@@ -32,6 +32,7 @@ import { groupBySortBy } from "../../utils/format"
 import {
   readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
 } from "../../utils/TSV"
+import { DatePicker } from '@material-ui/pickers'
 
 
 //Move to appnutrient and pass as prop
@@ -58,41 +59,49 @@ const SolidmanureAppEvent = (props) => {
                 <Typography variant="subtitle1">{solidmanure.croptitle}</Typography>
               </Grid>
               <Grid item xs={6} align="center">
-                <Typography variant="subtitle1">Planted: {solidmanure.plant_date && solidmanure.plant_date.split('T')[0]}</Typography>
+                <DatePicker
+                  value={solidmanure.plant_date}
+                  label='Planted'
+                />
+
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="subtitle2">{solidmanure.sample_desc} | {solidmanure.src_desc}</Typography>
               </Grid>
               <Grid item xs={6} align="center">
-                <Typography variant="subtitle2">Applied: {solidmanure.app_date && solidmanure.app_date.split('T')[0]}</Typography>
+                <DatePicker
+                  value={solidmanure.app_date}
+                  label='applied'
+                />
+
               </Grid>
               <Grid item container xs={10}>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField
                     label="Amount Applied"
                     value={solidmanure.amount_applied}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <TextField disabled
+                  <TextField
                     label="Nitrogen lbs / acre"
                     value={solidmanure.n_lbs_acre}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField disabled
+                  <TextField
                     label="Phosphorus lbs / acre"
                     value={solidmanure.p_lbs_acre}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <TextField disabled
+                  <TextField
                     label="Potassium lbs / acre"
                     value={solidmanure.k_lbs_acre}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <TextField disabled
+                  <TextField
                     label="Salt lbs / acre"
                     value={solidmanure.salt_lbs_acre}
                   />
@@ -118,8 +127,19 @@ const SolidmanureAnalysis = (props) => {
 
   return (
     <Grid item container xs={6}>
-      <Grid item xs={10}>
-        <Typography>{props.analysis.sample_date} / {props.analysis.sample_desc}</Typography>
+      <Grid item container xs={10}>
+        <Grid item xs={6}>
+          <DatePicker
+            fullWidth
+            value={props.analysis.sample_date}
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <TextField
+            fullWidth
+            value={props.analysis.sample_desc}
+          />
+        </Grid>
       </Grid>
       <Grid item xs={2}>
         <Tooltip title="Delete Solidmanure Source">
@@ -141,7 +161,7 @@ class Solidmanure extends Component {
       fieldCropAppEvents: [],
       fieldCropAppSolidmanureAnalyses: [],
       fieldCropAppSolidmanures: {},
-      
+
       tsvType: props.tsvType,
       numCols: props.numCols,
       toggleShowDeleteAllModal: false,
@@ -374,11 +394,11 @@ class Solidmanure extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppSolidmanureTSVModal(val) {
-    this.setState({ 
+    this.setState({
       showUploadFieldCropAppSolidmanureTSVModal: val,
       tsvText: "",
       uploadedFilename: ""
-     })
+    })
   }
   onUploadFieldCropAppFreshwateTSVModalChange(ev) {
     const { files } = ev.target
@@ -550,7 +570,7 @@ class Solidmanure extends Component {
           modalText={`Delete All Solid Manure Application Events?`}
           onAction={this.deleteAllFromTable.bind(this)}
           onClose={() => this.confirmDeleteAllFromTable(false)}
-        />    
+        />
         <UploadTSVModal
           open={this.state.showUploadFieldCropAppSolidmanureTSVModal}
           actionText="Add"
