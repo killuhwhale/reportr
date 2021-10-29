@@ -6,8 +6,10 @@ import {
 } from '@material-ui/core'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import RotateLeftIcon from '@material-ui/icons/RotateLeft';
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft'
+import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew'
+import FlareIcon from '@material-ui/icons/Flare'
+import NightsStayIcon from '@material-ui/icons/NightsStay'
 
 import DairyTab from "../comps/Dairy/dairyTab"
 import HerdTab from "../comps/Herds/herdTab"
@@ -23,9 +25,9 @@ import { get, post } from "../utils/requests"
 
 import { B64_LOGO } from "../specific"
 
-const COUNTIES = ['Amador','Butte','Colusa','Fresno','Glenn','Kern','Kings','Lassen','Madera','Merced','Modoc','Placer','Sacramento' ,'San Joaquin','Shasta','Solano','Stanislaus','Sutter','Tehama','Tulare','Yolo','Yuba']
+const COUNTIES = ['Amador', 'Butte', 'Colusa', 'Fresno', 'Glenn', 'Kern', 'Kings', 'Lassen', 'Madera', 'Merced', 'Modoc', 'Placer', 'Sacramento', 'San Joaquin', 'Shasta', 'Solano', 'Stanislaus', 'Sutter', 'Tehama', 'Tulare', 'Yolo', 'Yuba']
 const BASINS = ["Sacramento River Basin", "San Joaquin River Basin", 'Tulare Basin']
-const BREEDS = [ 'Ayrshire', 'Brown Swiss', 'Guernsey', 'Holstein', 'Jersey', 'Jersey-Holstein Cross', 'Milking Shorthorn', 'Other']
+const BREEDS = ['Ayrshire', 'Brown Swiss', 'Guernsey', 'Holstein', 'Jersey', 'Jersey-Holstein Cross', 'Milking Shorthorn', 'Other']
 
 
 class HomePage extends Component {
@@ -150,7 +152,7 @@ class HomePage extends Component {
     this.setState({ tabIndex: index, tabs: tabs })
   }
 
-  
+
 
   onBaseDairyChange(ev) {
     const { name, value: baseDairiesIdx } = ev.target
@@ -178,9 +180,9 @@ class HomePage extends Component {
     this.setState({ dairy, dairyIdx })
   }
 
-  
-  confirmLogout(val){
-    this.setState({toggleShowLogoutModal: val})
+
+  confirmLogout(val) {
+    this.setState({ toggleShowLogoutModal: val })
   }
 
   logout() {
@@ -196,27 +198,27 @@ class HomePage extends Component {
       })
   }
 
-  confirmResetPassword(val){
-    this.setState({showResetPasswordModal: val})
+  confirmResetPassword(val) {
+    this.setState({ showResetPasswordModal: val })
   }
 
-  resetPassword(){
+  resetPassword() {
     const auth = getAuth()
 
     sendPasswordResetEmail(auth, auth.currentUser.email)
-    .then(() => {
-      console.log("Email sent")
-      this.props.onAlert('Email sent!', 'success')
-      this.confirmResetPassword(false)
-    })
-    .catch(err => {
-      this.props.onAlert('Failed sending email.', 'error')
-      console.log(err)
-    })
+      .then(() => {
+        console.log("Email sent")
+        this.props.onAlert('Email sent!', 'success')
+        this.confirmResetPassword(false)
+      })
+      .catch(err => {
+        this.props.onAlert('Failed sending email.', 'error')
+        console.log(err)
+      })
   }
 
 
-  refreshAfterXLSXUpload(){
+  refreshAfterXLSXUpload() {
     console.log("Calling getBaseDairies()")
     this.getBaseDairies()
   }
@@ -230,9 +232,9 @@ class HomePage extends Component {
               <img src={B64_LOGO} width="100%" height='65px' />
             </Grid>
             <Grid item container justifyContent='center' alignItems='center' xs={12}>
-              <Grid item xs={8} style={{marginBottom: '16px'}}>
+              <Grid item xs={8} style={{ marginBottom: '16px' }}>
                 <Typography variant='subtitle1'>
-                  <TextField 
+                  <TextField
                     label='Email'
                     value={this.state.user.email}
                   />
@@ -318,7 +320,24 @@ class HomePage extends Component {
                 </Button>
               </Tooltip>
             </Grid>
-
+            <Grid item container xs={12}>
+              <Grid item xs={6} align='center'>
+                <Tooltip title="Light Theme">
+                  <IconButton fullWidth color="primary" variant="outlined" style={{ marginTop: "0px" }}
+                    onClick={() => this.props.toggleTheme('Light')}>
+                    <FlareIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid item xs={6} align='center'>
+                <Tooltip title="Dark Theme">
+                  <IconButton fullWidth color="primary" variant="outlined" style={{ marginTop: "0px" }}
+                    onClick={() => this.props.toggleTheme('Dark')}>
+                    <NightsStayIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
           </Grid>
 
 
@@ -333,7 +352,7 @@ class HomePage extends Component {
 
             {this.state.dairy && Object.keys(this.state.dairy).length > 0 ?
               <React.Fragment>
-                <AppBar position="static" style={{ marginBottom: "32px"}} key='homePageAppBar'>
+                <AppBar position="static" style={{ marginBottom: "32px" }} key='homePageAppBar'>
                   <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
                     onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='homePageAppBar'>
                     <Tab label="Dairy" key='homePageAppBarTab0' />
@@ -358,7 +377,7 @@ class HomePage extends Component {
                         onUpdate={this.updateDairy.bind(this)}
                         BASE_URL={this.props.BASE_URL}
                         onAlert={this.props.onAlert}
-                        refreshAfterXLSXUpload = {this.refreshAfterXLSXUpload.bind(this)}
+                        refreshAfterXLSXUpload={this.refreshAfterXLSXUpload.bind(this)}
                       />
                     </Grid>
 
@@ -451,7 +470,7 @@ class HomePage extends Component {
           onAction={this.logout.bind(this)}
           onClose={() => this.confirmLogout(false)}
         />
-         <ActionCancelModal
+        <ActionCancelModal
           open={this.state.showResetPasswordModal}
           actionText="Reset Password"
           cancelText="Cancel"

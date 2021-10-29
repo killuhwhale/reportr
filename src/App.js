@@ -71,7 +71,7 @@ const SeverityAlert = withTheme((props) => {
     return (
       <Grid item container justifyContent='center' alignItems='center' xs={12}>
         <Grid item xs={10}>
-          <Typography variant='h6'>
+          <Typography variant='h6' style={{color: 'inherit'}}>
             {props.msg}
           </Typography>
         </Grid>
@@ -162,7 +162,7 @@ export default class App extends React.Component {
 
   onAlert(alertMsg, alertSeverity) {
     this.setState({ alertMsg: alertMsg, alertSeverity: alertSeverity, showAlert: true })
-    this.delayedClose()
+    // this.delayedClose()
   }
 
   delayedClose() {
@@ -180,6 +180,10 @@ export default class App extends React.Component {
     this.setState({ user })
   }
 
+  toggleTheme(theme){
+    let newTheme = theme === 'Dark'? DarkTheme: theme === 'Light'? LightTheme: DarkTheme
+    this.setState({theme: newTheme})
+  }
 
   render() {
     return (
@@ -202,6 +206,7 @@ export default class App extends React.Component {
                         <HomePage
                           user={this.state.user}
                           BASE_URL={BASE_URL}
+                          toggleTheme={this.toggleTheme.bind(this)}
                           onAlert={this.onAlert.bind(this)}
                         />
                         {
