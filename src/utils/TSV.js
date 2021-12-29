@@ -1,28 +1,26 @@
 import { get, post } from './requests'
 import { toFloat } from './convertCalc'
+import { BASE_URL } from "./environment"
+
 export default function mTea() { }
 
-
-const isProd = window.location.hostname !== 'localhost'
 const isTesting = true
-const BASE_URL = isProd? 'https://reportr-paai9.ondigitalocean.app': 'http://localhost:3001'
 
-
-export const HARVEST = isTesting? 'Test - Production Records': 'Production Records'
-export const PROCESS_WASTEWATER =  isTesting? 'Test - WW Applications': 'WW Applications'
-export const FRESHWATER =  isTesting? 'Test - FW Applications': 'FW Applications'
-export const SOLIDMANURE =  isTesting? 'Test - SM Applications': 'SM Applications'
-export const FERTILIZER =  isTesting? 'Test - Commercial Fertilizer': 'Commercial Fertilizer'
-export const SOIL =  isTesting? 'Test - Soil Analyses': 'Soil Analyses'
-export const PLOWDOWN_CREDIT =  isTesting? 'Test - Plowdown Credit': 'Plowdown Credit'
-export const DRAIN =  isTesting? 'Test - Tile Drainage Systems': 'Tile Drainage Systems'
-export const DISCHARGE =  isTesting? 'Test - Discharge': 'Discharge'
-export const MANURE =  isTesting? 'Test - SM Exports': 'SM Exports'
-export const WASTEWATER =  isTesting? 'Test - WW Exports': 'WW Exports'
+export const HARVEST = isTesting ? 'Test - Production Records' : 'Production Records'
+export const PROCESS_WASTEWATER = isTesting ? 'Test - WW Applications' : 'WW Applications'
+export const FRESHWATER = isTesting ? 'Test - FW Applications' : 'FW Applications'
+export const SOLIDMANURE = isTesting ? 'Test - SM Applications' : 'SM Applications'
+export const FERTILIZER = isTesting ? 'Test - Commercial Fertilizer' : 'Commercial Fertilizer'
+export const SOIL = isTesting ? 'Test - Soil Analyses' : 'Soil Analyses'
+export const PLOWDOWN_CREDIT = isTesting ? 'Test - Plowdown Credit' : 'Plowdown Credit'
+export const DRAIN = isTesting ? 'Test - Tile Drainage Systems' : 'Tile Drainage Systems'
+export const DISCHARGE = isTesting ? 'Test - Discharge' : 'Discharge'
+export const MANURE = isTesting ? 'Test - SM Exports' : 'SM Exports'
+export const WASTEWATER = isTesting ? 'Test - WW Exports' : 'WW Exports'
 
 export const SHEET_NAMES = [
   HARVEST, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, MANURE, WASTEWATER,
-  ]
+]
 
 
 export const TSV_INFO = {
@@ -136,19 +134,19 @@ export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
     post(`${BASE_URL}/api/tsv/create`, tsvData)
       .then(result => {
         console.log("Result from first attempt: ", result)
-        if(result.existsErr){
+        if (result.existsErr) {
           console.log("TSV ALREADY EXISTS, TRYING AN UPDATE")
-          
+
           post(`${BASE_URL}/api/tsv/update`, tsvData)
-          .then(result1 => {
-            console.log("Updated: ", result1)
-            res(result1)
-          })
-          .catch(err => {
-            console.log(err)
-            rej(err)
-          })
-        }else{
+            .then(result1 => {
+              console.log("Updated: ", result1)
+              res(result1)
+            })
+            .catch(err => {
+              console.log(err)
+              rej(err)
+            })
+        } else {
           res(result)
         }
       })
@@ -348,7 +346,7 @@ export const onUploadXLSX = (dairy_id, tsvText, numCols, tsvType, uploadedFilena
   // 24 columns from TSV
   let rows = processTSVText(tsvText, numCols) // extract rows from Text of tsv file TODO()
   console.log(rows)
-  if(rows.length < 1){
+  if (rows.length < 1) {
     return
   }
   return new Promise((resolve, reject) => {
@@ -357,29 +355,29 @@ export const onUploadXLSX = (dairy_id, tsvText, numCols, tsvType, uploadedFilena
     createFieldsFromTSV(fields, dairy_id)      // Create fields before proceeding
       .then(createFieldRes => {
         let result_promises = rows.map((row, i) => {
-          
-          if(tsvType === MANURE){
+
+          if (tsvType === MANURE) {
             return createDataFromManureExportTSVListRow(row, i, dairy_id)
           }
-          if(tsvType === WASTEWATER){
+          if (tsvType === WASTEWATER) {
             return createDataFromWastewaterExportTSVListRow(row, i, dairy_id)
           }
 
-          if(tsvType ===  HARVEST){
+          if (tsvType === HARVEST) {
             return createDataFromHarvestTSVListRow(row, i, dairy_id)
           }
           return createDataFromTSVListRow(row, i, dairy_id, tsvType)    // Create entries for ea row in TSV file based on Type
         })
-  
+
         Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
           .then(res => {
             uploadTSVToDB(uploadedFilename, tsvText, dairy_id, tsvType)
-            .then(res => {
-              resolve("Complete")
-            })
-            .catch(uploadTSVToDBErr=> {
-              reject(uploadTSVToDBErr)
-            })
+              .then(res => {
+                resolve("Complete")
+              })
+              .catch(uploadTSVToDBErr => {
+                reject(uploadTSVToDBErr)
+              })
           })
           .catch(err => {
             console.log("Error with all promises", err)
@@ -555,7 +553,7 @@ const _lazyGetExportDest = (row, dairy_id) => {
 
 }
 
-export const createDataFromManureExportTSVListRow = (row, i, dairy_id) => {  
+export const createDataFromManureExportTSVListRow = (row, i, dairy_id) => {
   return new Promise((resolve, reject) => {
     const [
 
@@ -771,8 +769,8 @@ export const createDataFromWastewaterExportTSVListRow = (row, i, dairy_id) => {
         reject(err)
       })
   })
- 
-  
+
+
 }
 
 

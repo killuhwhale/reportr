@@ -3,11 +3,11 @@ import { toFloat } from '../../utils/convertCalc'
 import { formatFloat, groupBySortBy, groupByKeys } from '../../utils/format'
 import calculateHerdManNKPNaCl, { getReportingPeriodDays } from "../../utils/herdCalculation"
 import { NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES, WASTEWATER_MATERIAL_TYPES, FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
-
+import { BASE_URL } from "../../utils/environment"
 export default function mTEA() { }
 
 // TODO()
-const BASE_URL = `http://localhost:3001`
+
 
 const PPM_TO_DEC = .000001
 const GALS_PER_ACREINCH = 27154.2856
@@ -50,10 +50,10 @@ const percentToLBSFromTons = (con, moisture, amount, method_of_reporting) => {
   amount: float, unit is tons
   method_of_reporting: if dry_weight, must take into account the moisture and only calculate the dry portion.
   */
- 
- con = toFloat(con)
- con *= 0.01 // convert mg/ kg to decimal x/1,000,000 
- return _conLbsToTons(con, moisture, amount, method_of_reporting)
+
+  con = toFloat(con)
+  con *= 0.01 // convert mg/ kg to decimal x/1,000,000 
+  return _conLbsToTons(con, moisture, amount, method_of_reporting)
 }
 
 const mgKgToLbsFromTons = (con, moisture, amount, method_of_reporting) => {
@@ -86,7 +86,7 @@ const PPMToLBS = (ppm, amt) => {
   ppm = toFloat(ppm)
   amt = toFloat(amt)
 
-  return ppm * PPM_TO_LBS_PER_GAL * amt 
+  return ppm * PPM_TO_LBS_PER_GAL * amt
 }
 
 const percentToLBSForGals = (con, amt) => {
@@ -211,23 +211,23 @@ const getAvailableNutrientsAB = (dairy_id) => {
         }
         // Return herdInfo & calculations
         getReportingPeriodDays(BASE_URL, dairy_id)
-        .then(rpDays => {
-          let totals = calculateHerdManNKPNaCl(herdInfo[0], rpDays)
-                        .totals.map(total => new Intl.NumberFormat().format(total.toFixed(2)))
-  
-          resolve({
-            'availableNutrientsAB':
-            {
-              'herdInfo': herdInfo[0],
-              'herdCalc': totals,
-            }
-          })
+          .then(rpDays => {
+            let totals = calculateHerdManNKPNaCl(herdInfo[0], rpDays)
+              .totals.map(total => new Intl.NumberFormat().format(total.toFixed(2)))
 
-        })
-        .catch(err => {
-          console.log(err)
-          rej(err)
-        })
+            resolve({
+              'availableNutrientsAB':
+              {
+                'herdInfo': herdInfo[0],
+                'herdCalc': totals,
+              }
+            })
+
+          })
+          .catch(err => {
+            console.log(err)
+            rej(err)
+          })
       })
       .catch(err => {
         console.log(err)
@@ -311,10 +311,10 @@ const getAvailableNutrientsC = (dairy_id) => {
         let generated = opArrayByPos(opArrayByPos(applied, exported), imported, '-') // can be given true to do subtraction instead
         resolve({
           'availableNutrientsC': {
-            applied: applied.map(el => formatFloat(el) ),
-            exported: exported.map(el => formatFloat(el) ),
-            imported: imported.map(el => formatFloat(el) ),
-            generated: generated.map(el => formatFloat(el) ),
+            applied: applied.map(el => formatFloat(el)),
+            exported: exported.map(el => formatFloat(el)),
+            imported: imported.map(el => formatFloat(el)),
+            generated: generated.map(el => formatFloat(el)),
           }
         })
       })
@@ -444,7 +444,7 @@ const getAvailableNutrientsG = (dairy_id) => {
       get(`${BASE_URL}/api/export_manifest/material_type/${encodeURIComponent('Process%')}/${dairy_id}`)
     ])
       .then(([dry, process]) => {
-    
+
         let dryTotal = dry && dry.length > 0 ?
           dry.map(el => [
             percentToLBSFromTons(el.n_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
@@ -464,14 +464,14 @@ const getAvailableNutrientsG = (dairy_id) => {
           : [0, 0, 0, 0]
 
         // Converting values since values are in percent and need to be displayed in mg/kg
-        dry =  dry && dry.length > 0  ? dry.map(el => {
+        dry = dry && dry.length > 0 ? dry.map(el => {
           el.n_con_mg_kg = parseFloat(el.n_con_mg_kg.replaceAll(',', '')) * 1e4
           el.p_con_mg_kg = parseFloat(el.p_con_mg_kg.replaceAll(',', '')) * 1e4
           el.k_con_mg_kg = parseFloat(el.k_con_mg_kg.replaceAll(',', '')) * 1e4
           return el
         }) : []
 
-        process = process && process.length > 0 ? process: []
+        process = process && process.length > 0 ? process : []
 
         resolve({
           'availableNutrientsG': {
@@ -794,11 +794,11 @@ const getNutrientBudgetInfo = (dairy_id) => {
           totalHarvestByFieldId[el.field_id] = totalHarvestByFieldId[el.field_id] ? totalHarvestByFieldId[el.field_id] + 1 : 1
           return
         })
-        
+
         // Stores all total applciations for dairy in LBS
         let infoLBS = {
-          soils: [0,0,0,0],
-          plows: [0,0,0,0],
+          soils: [0, 0, 0, 0],
+          plows: [0, 0, 0, 0],
           fertilizers: [0, 0, 0, 0],
           manures: [0, 0, 0, 0],
           wastewaters: [0, 0, 0, 0],
@@ -808,18 +808,18 @@ const getNutrientBudgetInfo = (dairy_id) => {
           freshwater_app: [0, 0, 0],
           wastewater_app: [0, 0, 0],
           total_app: [0, 0, 0, 0],
-          nutrient_bal: [0,0,0,0],
-          nutrient_bal_ratio: [0,0,0,0],
+          nutrient_bal: [0, 0, 0, 0],
+          nutrient_bal_ratio: [0, 0, 0, 0],
           atmospheric_depo: 0
         }
 
         allEvents = Object.fromEntries(Object.keys(allEvents).sort().map(key => {
           let events = allEvents[key]
-          let headerInfo = events && events.length > 0 ? events[0] : {}          
+          let headerInfo = events && events.length > 0 ? events[0] : {}
           // Stores all total application for each fieldCrop (field & plant date) LBS/ ACRE
           let info = {
-            soils: [0,0,0,0],
-            plows: [0,0,0,0],
+            soils: [0, 0, 0, 0],
+            plows: [0, 0, 0, 0],
             fertilizers: [0, 0, 0, 0],
             manures: [0, 0, 0, 0],
             wastewaters: [0, 0, 0, 0],
@@ -829,8 +829,8 @@ const getNutrientBudgetInfo = (dairy_id) => {
             freshwater_app: [0, 0, 0],
             wastewater_app: [0, 0, 0],
             total_app: [0, 0, 0, 0],
-            nutrient_bal: [0,0,0,0],
-            nutrient_bal_ratio: [0,0,0,0],
+            nutrient_bal: [0, 0, 0, 0],
+            nutrient_bal_ratio: [0, 0, 0, 0],
             totalHarvests: 0,
             acres_planted: toFloat(headerInfo.acres_planted)
           }
@@ -872,29 +872,29 @@ const getNutrientBudgetInfo = (dairy_id) => {
 
               // Calc total app in LBS)else if
               // Depending on material_type, this will need to be calculated differently....
-              if(ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[1] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[3] ){ // == Commercial Solid
-                infoLBS.fertilizers[0] += percentToLBS(ev.n_con, ev.amount_applied) 
+              if (ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[1] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[3]) { // == Commercial Solid
+                infoLBS.fertilizers[0] += percentToLBS(ev.n_con, ev.amount_applied)
                 infoLBS.fertilizers[1] += percentToLBS(ev.p_con, ev.amount_applied)
                 infoLBS.fertilizers[2] += percentToLBS(ev.k_con, ev.amount_applied)
                 infoLBS.fertilizers[3] += percentToLBS(ev.salt_con, ev.amount_applied)
-              }else if(ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[0] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[2] ){  // === Commer Liquid
-                infoLBS.fertilizers[0] += percentToLBSForGals(ev.n_con, ev.amount_applied) 
+              } else if (ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[0] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[2]) {  // === Commer Liquid
+                infoLBS.fertilizers[0] += percentToLBSForGals(ev.n_con, ev.amount_applied)
                 infoLBS.fertilizers[1] += percentToLBSForGals(ev.p_con, ev.amount_applied)
                 infoLBS.fertilizers[2] += percentToLBSForGals(ev.k_con, ev.amount_applied)
-                infoLBS.fertilizers[3] += percentToLBSForGals(ev.salt_con, ev.amount_applied)                  
+                infoLBS.fertilizers[3] += percentToLBSForGals(ev.salt_con, ev.amount_applied)
               }
-              else if(NUTRIENT_IMPORT_MATERIAL_TYPES.slice(4, 8).indexOf(ev.material_type) >= 0){ // === dry manure
-                infoLBS.fertilizers[0] += percentToLBSFromTons(ev.n_con, ev.moisture, ev.amount_imported, ev.method_of_reporting) 
+              else if (NUTRIENT_IMPORT_MATERIAL_TYPES.slice(4, 8).indexOf(ev.material_type) >= 0) { // === dry manure
+                infoLBS.fertilizers[0] += percentToLBSFromTons(ev.n_con, ev.moisture, ev.amount_imported, ev.method_of_reporting)
                 infoLBS.fertilizers[1] += percentToLBSFromTons(ev.p_con, ev.moisture, ev.amount_imported, ev.method_of_reporting)
                 infoLBS.fertilizers[2] += percentToLBSFromTons(ev.k_con, ev.moisture, ev.amount_imported, ev.method_of_reporting)
                 infoLBS.fertilizers[3] += percentToLBSFromTons(ev.salt_con, ev.moisture, ev.amount_imported, ev.method_of_reporting)
-              }else if(NUTRIENT_IMPORT_MATERIAL_TYPES.slice(9, 10).indexOf(ev.material_type) >= 0){ // === process wastewater
-                infoLBS.fertilizers[0] += PPMToLBS(ev.n_con, ev.amount_applied) 
+              } else if (NUTRIENT_IMPORT_MATERIAL_TYPES.slice(9, 10).indexOf(ev.material_type) >= 0) { // === process wastewater
+                infoLBS.fertilizers[0] += PPMToLBS(ev.n_con, ev.amount_applied)
                 infoLBS.fertilizers[1] += PPMToLBS(ev.p_con, ev.amount_applied)
                 infoLBS.fertilizers[2] += PPMToLBS(ev.k_con, ev.amount_applied)
-                infoLBS.fertilizers[3] += PPMToLBS(ev.salt_con, ev.amount_applied)                
+                infoLBS.fertilizers[3] += PPMToLBS(ev.salt_con, ev.amount_applied)
               }
-            
+
 
             } else if (ev.entry_type === 'manure') {
               info.manures[0] += toFloat(ev.n_lbs_acre)
@@ -918,7 +918,7 @@ const getNutrientBudgetInfo = (dairy_id) => {
 
               infoLBS.freshwaters[0] += PPMToLBS(ev.n_con, ev.amount_applied)
               infoLBS.freshwaters[3] += PPMToLBS(ev.tds, ev.amount_applied)
-              
+
             } else if (ev.entry_type === 'wastewater') {
               info.wastewater_app[0] += toFloat(ev.amount_applied)
               let acreInches = (toFloat(ev.amount_applied) / GALS_PER_ACREINCH)
@@ -930,8 +930,8 @@ const getNutrientBudgetInfo = (dairy_id) => {
               info.wastewaters[1] += PPMToLBS(ev.p_con, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
               info.wastewaters[2] += PPMToLBS(ev.k_con, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
               info.wastewaters[3] += PPMToLBS(ev.tds, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
-              
-              
+
+
               infoLBS.wastewaters[0] += PPMToLBS(ev.kn_con, ev.amount_applied)
               infoLBS.wastewaters[1] += PPMToLBS(ev.p_con, ev.amount_applied)
               infoLBS.wastewaters[2] += PPMToLBS(ev.k_con, ev.amount_applied)
@@ -969,10 +969,10 @@ const getNutrientBudgetInfo = (dairy_id) => {
           // 14 pounds wet and dry deposition per planted crop acre per year
           // = RATE / (# of harvests for all crops on the field) * (of harvests for the crop)
           let total_app = opArrayByPos(info.soils, opArrayByPos(info.plows, opArrayByPos(info.fertilizers, opArrayByPos(info.manures, opArrayByPos(info.wastewaters, info.freshwaters)))))
-         
+
           const fieldAndCropHarvestCount = toFloat(totalHarvestByFieldId[headerInfo.field_id]) * info.totalHarvests
-          let atmospheric_depo = AND_RATE / (fieldAndCropHarvestCount !== 0.0 ? fieldAndCropHarvestCount: 1)
-          
+          let atmospheric_depo = AND_RATE / (fieldAndCropHarvestCount !== 0.0 ? fieldAndCropHarvestCount : 1)
+
           info.atmospheric_depo = atmospheric_depo  // Amount of nitrogen depositied by the atmosphere
           infoLBS.atmospheric_depo += atmospheric_depo
 
@@ -1108,7 +1108,7 @@ const getNutrientAnalysisA = (dairy_id) => {
         })
 
         drains = groupByKeys(drains, ['drain_source_id'])
-        
+
         soils = soils.map(el => {
           el.n_con = formatFloat(el.n_con)
           el.total_p_con = formatFloat(el.total_p_con)
@@ -1121,7 +1121,7 @@ const getNutrientAnalysisA = (dairy_id) => {
           el.p_dl = formatFloat(el.p_dl)
           el.k_dl = formatFloat(el.k_dl)
           el.ec_dl = formatFloat(el.ec_dl)
-          el.org_matter_dl = formatFloat(el.org_matter_dl)         
+          el.org_matter_dl = formatFloat(el.org_matter_dl)
           return el
         })
         soils = groupByKeys(soils, ['field_id'])
@@ -1146,23 +1146,23 @@ const getNaprbalABC = (dairy_id) => {
   // Summary information is used for section B chart.
   return new Promise((resolve, rej) => {
     getNutrientBudgetInfo(dairy_id)
-    .then(summary => {
-      summary = summary && summary.nutrientBudgetB && summary.nutrientBudgetB.totalAppsSummary && Object.keys(summary.nutrientBudgetB.totalAppsSummary).length > 0 ? summary.nutrientBudgetB.totalAppsSummary: {}
-      
-      let total_app = opArrayByPos(summary.fertilizers, opArrayByPos(summary.manures, opArrayByPos(summary.wastewaters, summary.freshwaters)))
-      summary.nutrient_bal = opArrayByPos(total_app, summary.actual_harvests, '-')
-      summary.nutrient_bal_ratio = opArrayByPos(total_app, summary.actual_harvests, '/')
-      summary.total_app = total_app
-      
-      resolve({
-        'naprbalA': summary
+      .then(summary => {
+        summary = summary && summary.nutrientBudgetB && summary.nutrientBudgetB.totalAppsSummary && Object.keys(summary.nutrientBudgetB.totalAppsSummary).length > 0 ? summary.nutrientBudgetB.totalAppsSummary : {}
+
+        let total_app = opArrayByPos(summary.fertilizers, opArrayByPos(summary.manures, opArrayByPos(summary.wastewaters, summary.freshwaters)))
+        summary.nutrient_bal = opArrayByPos(total_app, summary.actual_harvests, '-')
+        summary.nutrient_bal_ratio = opArrayByPos(total_app, summary.actual_harvests, '/')
+        summary.total_app = total_app
+
+        resolve({
+          'naprbalA': summary
+        })
+        return
       })
-      return
-    })
-    .catch(err => {
-      console.log(err)
-      rej(err)
-    })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
   })
 }
 
@@ -1174,7 +1174,7 @@ const getExceptionReportingABC = (dairy_id) => {
         console.log('Discharges', discharges)
 
         discharges = groupByKeys(discharges, ['discharge_type'])
-        
+
 
         resolve({
           'exceptionReportingABC': discharges
@@ -1192,7 +1192,7 @@ const getNmpeaStatementsAB = (dairy_id) => {
     get(`${BASE_URL}/api/agreement/${dairy_id}`)
       .then(([statement]) => {
         statement = statement && statement.test === undefined ? statement : {}
-      
+
         resolve({
           'nmpeaStatementsAB': statement
         })

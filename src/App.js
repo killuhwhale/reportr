@@ -22,13 +22,9 @@ import lightTheme from "./css/lightTheme"
 import Login from "./pages/login"
 import HomePage from "./pages/homePage"
 import TSVPrint from "./pages/tsvPrint"
-
+import { BASE_URL } from "./utils/environment"
 import { TSV_INFO } from "./utils/TSV"
 import "./App.css"
-
-const isProd = window.location.hostname !== 'localhost'
-const BASE_URL = isProd ? 'https://reportr-paai9.ondigitalocean.app' : 'http://localhost:3001'
-
 
 const AlertGrid = withStyles(theme => ({
   root: {
@@ -71,7 +67,7 @@ const SeverityAlert = withTheme((props) => {
     return (
       <Grid item container justifyContent='center' alignItems='center' xs={12}>
         <Grid item xs={10}>
-          <Typography variant='h6' style={{color: 'inherit'}}>
+          <Typography variant='h6' style={{ color: 'inherit' }}>
             {props.msg}
           </Typography>
         </Grid>
@@ -180,9 +176,9 @@ export default class App extends React.Component {
     this.setState({ user })
   }
 
-  toggleTheme(theme){
-    let newTheme = theme === 'Dark'? DarkTheme: theme === 'Light'? LightTheme: DarkTheme
-    this.setState({theme: newTheme})
+  toggleTheme(theme) {
+    let newTheme = theme === 'Dark' ? DarkTheme : theme === 'Light' ? LightTheme : DarkTheme
+    this.setState({ theme: newTheme })
   }
 
   render() {
