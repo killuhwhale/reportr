@@ -23,7 +23,7 @@ import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-type
 import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import {
-  DRAIN, TSV_INFO, readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB, lazyGet
+  DRAIN, TSV_INFO, readTSV, processTSVText, uploadTSVToDB, lazyGet
 } from "../../utils/TSV"
 
 

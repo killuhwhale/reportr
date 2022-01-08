@@ -30,7 +30,7 @@ import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
 import { groupBySortBy } from "../../utils/format"
 import {
-  readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
+  readTSV, uploadNutrientApp, uploadTSVToDB
 } from "../../utils/TSV"
 import { DatePicker } from '@material-ui/pickers'
 
@@ -412,35 +412,22 @@ class Solidmanure extends Component {
   onUploadFieldCropAppFreshwateTSV() {
     // 24 columns from TSV
     let dairy_pk = this.state.dairy_id
-    let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
-    // Create a set of fields to ensure duplicates are not attempted.
-    let fields = createFieldSet(rows)
-
-    createFieldsFromTSV(fields, dairy_pk)      // Create fields before proceeding
-      .then(createFieldRes => {
-        let result_promises = rows.map((row, i) => {
-          return createDataFromTSVListRow(row, i, dairy_pk, this.state.tsvType)    // Create entries for ea row in TSV file
-        })
-
-        Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
-          .then(res => {
-            console.log("Completed uploading Solidmanure TSV")
-            uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-            this.toggleShowUploadFieldCropAppSolidmanureTSVModal(false)
-            this.getFieldCropAppSolidmanure()
-            this.getFieldCropAppSolidmanureAnalysis()
-            this.props.onAlert('Success!', 'success')
-          })
-          .catch(err => {
-            console.log("Error with all promises")
-            console.log(err)
-            this.props.onAlert('Failed uploading!', 'error')
-          })
+    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
+      .then(res => {
+        console.log("Completed uploading Solidmanure TSV")
+        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
+        this.toggleShowUploadFieldCropAppSolidmanureTSVModal(false)
+        this.getFieldCropAppSolidmanure()
+        this.getFieldCropAppSolidmanureAnalysis()
+        this.props.onAlert('Success!', 'success')
       })
-      .catch(createFieldErr => {
-        console.log(createFieldErr)
+      .catch(err => {
+        console.log("Error with all promises")
+        console.log(err)
+        this.props.onAlert('Failed uploading!', 'error')
       })
   }
+
   toggleViewTSVsModal(val) {
     this.setState({ showViewTSVsModal: val })
   }

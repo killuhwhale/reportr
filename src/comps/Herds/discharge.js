@@ -25,7 +25,7 @@ import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-type
 import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import {
-  DISCHARGE, TSV_INFO, readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB, lazyGet, checkEmpty
+  DISCHARGE, TSV_INFO, readTSV, processTSVText, uploadTSVToDB, lazyGet, checkEmpty
 } from "../../utils/TSV"
 import { toFloat } from '../../utils/convertCalc'
 
@@ -33,11 +33,11 @@ import { toFloat } from '../../utils/convertCalc'
 /** View for Process Wastewater Entry in DB */
 const DischargeView = (props) => {
   const discharges = props && props.discharges ? props.discharges : []
-  const headerInfo = discharges && discharges.length > 0 ? discharges[0] :{}
-  
+  const headerInfo = discharges && discharges.length > 0 ? discharges[0] : {}
+
   return (
     <Grid container item xs={12} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
-      <Grid item xs ={12}>
+      <Grid item xs={12}>
         <Typography variant='h4'>
           {headerInfo.discharge_type}
         </Typography>
@@ -106,8 +106,8 @@ class Discharge extends Component {
     // this.setWindowListener()
     this.getFieldCropAppDischarges()
   }
-  componentDidUpdate(prevProps, prevState){
-    if(prevState.dairy_id !== this.state.dairy_id){
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.dairy_id !== this.state.dairy_id) {
       this.getFieldCropAppDischarges()
     }
   }
@@ -115,7 +115,7 @@ class Discharge extends Component {
     get(`${this.props.BASE_URL}/api/discharge/${this.state.dairy_id}`)
       .then(discharge => {
         let _discharge = groupByKeys(discharge, ['discharge_type'])
-        this.setState({ discharge:  _discharge})
+        this.setState({ discharge: _discharge })
       })
   }
 
@@ -141,11 +141,11 @@ class Discharge extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppDischargeTSVModal(val) {
-    this.setState({ 
+    this.setState({
       showUploadFieldCropAppDischargeTSVModal: val,
       tsvText: "",
       uploadedFilename: ""
-     })
+    })
   }
   onUploadFieldCropAppDischargeTSVModalChange(ev) {
     const { files } = ev.target
@@ -160,7 +160,7 @@ class Discharge extends Component {
     // 24 columns from TSV
     let dairy_pk = this.state.dairy_id
     let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
-    
+
 
     let result_promises = rows.map((row, i) => {
       const [
@@ -215,7 +215,7 @@ class Discharge extends Component {
   getDischargeSortedKeys() {
     return Object.keys(this.state.discharge).sort()
   }
-  
+
   renderDischarge({ index, style }) {
     let key = this.getDischargeSortedKeys()[index]
     let discharges = this.state.discharge[key]

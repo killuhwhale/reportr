@@ -28,7 +28,7 @@ import { toFloat, zeroTimeDate } from "../../utils/convertCalc"
 import { ImportExport } from '@material-ui/icons'
 
 import { getReportingPeriodDays } from "../../utils/herdCalculation"
-import { onUploadXLSX, TSV_INFO, SHEET_NAMES } from '../../utils/TSV'
+import { onUploadXLSX, TSV_INFO, SHEET_NAMES, uploadXLSX } from '../../utils/TSV'
 import XLSX from 'xlsx'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
@@ -593,31 +593,36 @@ class DairyTab extends Component {
   onUploadXLSX() {
     console.log(this.state.uploadedFilename, this.state.uploadedFileData)
     const workbook = this.state.uploadedFileData
-    const sheets = workbook && workbook.Sheets ? workbook.Sheets : null
+    // const sheets = workbook && workbook.Sheets ? workbook.Sheets : null
 
-    if (!sheets) {
-      console.log('Workbook not found: Filename, Data => ', this.state.uploadedFilename, this.state.uploadedFileData)
-      this.onAlert('Workbook not found!', 'error')
-      return
-    }
 
-    // For Each Sheet, feed to onUploadXLSX
-    let promises = []
-    workbook.SheetNames.forEach(sheetName => {
-      // const numCols = TSV_INFO[sheetName].numCols // todo sheetnames need to match the keys in TSV file 
-      // const tsvType = TSV_INFO[sheetName].tsvType
-      if (SHEET_NAMES.indexOf(sheetName) >= 0) {
-        const numCols = TSV_INFO[sheetName].numCols
-        const tsvType = TSV_INFO[sheetName].tsvType
-        const tsvText = XLSX.utils.sheet_to_csv(sheets[sheetName], { FS: '\t' })
-        console.log('Uploading: ', sheetName)
-        promises.push(
-          onUploadXLSX(this.state.dairy.pk, tsvText, numCols, tsvType, sheetName)
-        )
-      }
-    })
 
-    Promise.all(promises)
+    // if (!sheets) {
+    //   console.log('Workbook not found: Filename, Data => ', this.state.uploadedFilename, this.state.uploadedFileData)
+    //   this.onAlert('Workbook not found!', 'error')
+    //   return
+    // }
+
+    // // For Each Sheet, feed to onUploadXLSX
+    // let promises = []
+    // workbook.SheetNames.forEach(sheetName => {
+    //   // const numCols = TSV_INFO[sheetName].numCols // todo sheetnames need to match the keys in TSV file 
+    //   // const tsvType = TSV_INFO[sheetName].tsvType
+    //   if (SHEET_NAMES.indexOf(sheetName) >= 0) {
+    //     const numCols = TSV_INFO[sheetName].numCols
+    //     const tsvType = TSV_INFO[sheetName].tsvType
+    //     const tsvText = XLSX.utils.sheet_to_csv(sheets[sheetName], { FS: '\t' })
+    //     console.log('Uploading: ', sheetName)
+    //     promises.push(
+    //       onUploadXLSX(this.state.dairy.pk, tsvText, numCols, tsvType, sheetName)
+    //     )
+    //   }
+    // })
+
+    // Promise.all(promises)
+
+
+    uploadXLSX(workbook, this.state.dairy.pk)
       .then(res => {
         console.log("Completed! C-engineer voice")
         this.toggleShowUploadXLSX(false)
