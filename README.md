@@ -15,17 +15,12 @@ PSQL
   pass: mostdope
 
 HARCODED VARS:  TODO() Move these to src/sepcific.js
-  - App.js
-    - isProd // Bool to indicate which enviroment the app is running in. Checks for localhost.
-    - BASE_URL // Determines BASE URL for Express backend local or Prod
   - utils/TSV.js
-    - isProd
-    - BASE_URL 
     - isTesting // For testing TSV Uploads
     - Also Creates Vars that correspond to Sheet Names, sheet names must match in order for Upload XLSX workbook to work.
   - DairyTab.js
     - Variables to determine Chart size in Annual Report
-  - HomePage.js
+  - HomePage.js (Shouldnt change for a single company)
     - COUNTIES
     - BASINS 
     - BREEDS
@@ -39,9 +34,6 @@ ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
 
 
 TODO
-
-- Make the left side panel and right side app content a div with minWidth properties make it fixed....
-
 - Entering Breed, when other is slected, the user must input text. 
   - Implement the input method...
 
@@ -52,15 +44,6 @@ Github is private, the only passwords visible in code is for the DB and that is 
 - Nutrient Imports 
   - Top section of that tap is rendered without using <List />
     - i.e. it will render all items and not using a scrolled section. Will look bad with a lot of
-
-
-
-  
-Need to get info from Tammy:
-  - Do these change dending on the company/ location of business?
-    - Counties to serve.
-    - Breeds
-    - Basin Plans
 
 
 Problems:  

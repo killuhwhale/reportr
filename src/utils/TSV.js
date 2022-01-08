@@ -22,7 +22,6 @@ export const SHEET_NAMES = [
   HARVEST, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, MANURE, WASTEWATER,
 ]
 
-
 export const TSV_INFO = {
   [DISCHARGE]: {
     numCols: 10,
@@ -112,6 +111,7 @@ export const lazyGet = (endpoint, value, data, dairy_pk) => {
       })
   })
 }
+
 export const readTSV = (file, callback) => {
   const reader = new FileReader()
   reader.addEventListener('load', callback);
@@ -183,6 +183,7 @@ export const processTSVText = (csvText, numCols) => {
   // console.log(rows)
   return rows
 }
+
 export const createFieldSet = (rows) => {
   /**
    * Returns list of list where each list is [title, acres, planted] the minimum required info
@@ -328,6 +329,7 @@ const getFieldCropApp = (commonRowData, dairy_pk) => {
           precip_during: precip_during,
           precip_after: precip_after,
         }
+
         lazyGet('field_crop_app', field_crop_app_search_url, field_crop_app_data, dairy_pk)
           .then(field_crop_app_res => {
             resolve(field_crop_app_res[0])

@@ -1,0 +1,12 @@
+FROM node:15 
+WORKDIR /app
+COPY package.json .
+ARG NODE_ENV
+RUN if [ “$NODE_ENV” = “development” ]; \
+	Then npm install; \
+	Else npm install –only=production; \
+fi
+COPY . ./
+ENV PORT 3000
+EXPOSE $PORT
+CMD ["node", "index.js"]

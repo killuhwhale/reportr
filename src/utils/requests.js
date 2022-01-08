@@ -1,12 +1,10 @@
 import axios from "axios"
 
-export default function mTea() { }
-
-export let get = (url) => {
+const get = (url) => {
   return fetch(url).then(res => res.json())
 }
 
-export const getPDF = (url) => {
+const getPDF = (url) => {
   return axios.get(url, {
     responseType: 'arraybuffer',
     headers: {
@@ -15,7 +13,7 @@ export const getPDF = (url) => {
   })
 }
 
-export let post = (url, data) => {
+const post = (url, data) => {
   return fetch(url, {
     method: "POST",
     mode: "cors",
@@ -31,7 +29,7 @@ export let post = (url, data) => {
     .then(res => res.json())
 }
 
-export let uploadFiles = (url, files) => {
+const uploadFiles = (url, files) => {
   const formData = new FormData()
   for (let i = 0; i < files.length; i++) {
     // if(!['image/jpeg', 'image/png'].includes(files[i].type)){
@@ -49,3 +47,5 @@ export let uploadFiles = (url, files) => {
   })
     .then(res => res.json())
 }
+
+export { get, getPDF, post, uploadFiles }

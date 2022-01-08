@@ -8,18 +8,16 @@ const process = require('process');
 var http = require('http').createServer(app);
 const db = require('./db/index')
 const allowedOrigins = [
-  'http://localhost:3000', 
+  'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:8080',
-  "https://reportrr-918ff.web.app",
-  "reportrr-918ff.firebaseapp.com",
   "https://fragservices.app"
 ];
 // const storage = new Storage();
 const REQUEST_LIMIT = 1024 * 1024 * 10 // 10MB
 
 // Setup
-app.use(express.json({limit: REQUEST_LIMIT}))
+app.use(express.json({ limit: REQUEST_LIMIT }))
 // Below will serve the app on :3001 as well....
 // app.use(express.static(path.join(__dirname, "..", "build")));
 // app.use(express.static(path.join(__dirname, "../public")));
@@ -214,7 +212,7 @@ app.post("/api/dairies/full/create", (req, res) => {
   const {
     dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, title, city_zip,
     basin_plan, p_breed, began, period_start, period_end,
-    
+
   } = req.body
   console.log("Inserting full dairy info:", req.body)
   db.insertFullDairy([
@@ -227,7 +225,7 @@ app.post("/api/dairies/full/create", (req, res) => {
       return;
     }
     console.log(err)
-    res.json({ "test": "Inserted full dairy unsuccessful", failData:  req.body});
+    res.json({ "test": "Inserted full dairy unsuccessful", failData: req.body });
   })
 });
 app.post("/api/dairies/update", (req, res) => {
@@ -325,9 +323,9 @@ app.get("/api/parcels/:dairy_id", (req, res) => {
 });
 app.post("/api/parcels/create", (req, res) => {
   db.insertParcel([
-    req.body.pnumber, 
+    req.body.pnumber,
     req.body.dairy_id
-  ] , (err, result) => {
+  ], (err, result) => {
 
     if (!err) {
       res.json(result.rows)
@@ -1273,7 +1271,7 @@ app.post("/api/field_crop_app_freshwater/delete", (req, res) => {
 
 app.post("/api/field_crop_app_freshwater/deleteAll", (req, res) => {
   console.log("Deleting all field_crop_app_freshwater....", req.body)
-  
+
   db.rmAllFieldCropAppFreshwaterSource(req.body.dairy_id, (errA, resultA) => {
     db.rmAllFieldCropAppFreshwaterAnalysis(req.body.dairy_id, (errB, resultB) => {
       db.rmAllFieldCropAppFreshwater(req.body.dairy_id, (errC, resultC) => {

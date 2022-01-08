@@ -1,0 +1,8 @@
+Version: “3”
+Services:
+	Node-app: 
+		Build: . 
+		Ports:
+			- ”3000:3000”
+		Environment:
+      - port=3000

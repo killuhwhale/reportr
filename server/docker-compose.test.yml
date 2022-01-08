@@ -1,0 +1,14 @@
+Version: “3”
+Services:
+	Node-app: 
+    Build:
+      Context: .
+      Args:
+        - NODE_ENV: development
+    Volumes:
+      - ./:/app
+      - /app/node_modules
+    Environment:
+      - NODE_ENV=dev
+      - testing=true
+    Command: npm start

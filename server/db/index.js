@@ -3,24 +3,20 @@ const { Pool, Client } = require('pg');
 const process = require('process');
 
 const PORT = process.env.PORT || 3001;
-console.log("PORT", PORT)
+const TESTING = process.env.testing || false
+console.log("Testing: ", TESTING)
+
+const test = {
+  host: 'localhost',
+  database: 'testdb',
+  port: 5432,
+}
 
 const dev = {
   host: 'localhost',
   database: 'reportrr',
   user: 'admin',
   password: 'mostdope',
-  port: 5432,
-}
-
-
-const dbSocketPath = process.env.DB_SOCKET_PATH || '/cloudsql';
-
-const prodGoogleCloud = {
-  host: `${dbSocketPath}/reportrpsql:us-west2:reportr`,
-  database: 'reportr',
-  user: 'postgres',
-  password: 'CIJw5ijLs1f0fm8y',
   port: 5432,
 }
 
@@ -33,13 +29,13 @@ const prodDigitalOcean = {
   ssl: {
     rejectUnauthorized: false
   }
-  
+
 }
 
 const isProd = PORT !== 3001
-const pool = new Pool(isProd? prodDigitalOcean: dev)
+const pool = new Pool(TESTING ? test : isProd ? prodDigitalOcean : dev)
 
-console.log("isProd, pool",isProd, pool)
+console.log("isProd, pool", isProd, pool)
 
 module.exports = {
   query: (text, params, callback) => {
@@ -2159,8 +2155,8 @@ module.exports = {
   },
   getExportManifestByMaterialType: (values, callback) => {
     return pool.query(
-      
-        `SELECT 
+
+      `SELECT 
         em.pk,
         em.last_date_hauled,
         em.amount_hauled,
@@ -2471,7 +2467,7 @@ module.exports = {
     )
   },
 
-  
+
   rmAllFieldCrop: (id, callback) => {
     return pool.query(
       format("DELETE FROM field_crop where dairy_id = %L", id),
@@ -2614,6 +2610,6 @@ module.exports = {
   }
 
 
-  
+
 }
 
