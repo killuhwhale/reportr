@@ -30,7 +30,7 @@ import { VariableSizeList as List } from "react-window";
 import { groupBySortBy } from "../../utils/format"
 
 import {
-  readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
+  readTSV, uploadTSVToDB, uploadNutrientApp
 } from "../../utils/TSV"
 import { DatePicker } from '@material-ui/pickers'
 
@@ -73,7 +73,7 @@ const FertilizerAppEvent = (props) => {
                 />
                 <TextField label='Type' value={fertilizer.import_desc}
                 />
-                
+
 
               </div>
 
@@ -137,15 +137,15 @@ const NutrientImport = (props) => {
     <Grid item container xs={6} alignItems='center'>
       <Grid item container xs={10} >
         <Grid item container xs={12}>
-        <Grid item xs={4}>
-            <DatePicker 
+          <Grid item xs={4}>
+            <DatePicker
               fullWidth
               value={props.nutrientImport.import_date}
               label="Import date"
             />
           </Grid>
           <Grid item xs={4}>
-            <TextField 
+            <TextField
               fullWidth
               value={props.nutrientImport.import_desc}
               label="Type"
@@ -169,7 +169,7 @@ const NutrientImport = (props) => {
           </Grid>
         </Grid> */}
 
-        <Grid item container xs={12} style={{marginTop: '8px'}}>
+        <Grid item container xs={12} style={{ marginTop: '8px' }}>
           <Grid item xs={3}>
             <TextField
               value={props.nutrientImport.n_con}
@@ -460,35 +460,23 @@ class Fertilizer extends Component {
   onUploadFieldCropAppFreshwateTSV() {
     // 24 columns from TSV
     let dairy_pk = this.state.dairy_id
-    let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
-    // Create a set of fields to ensure duplicates are not attempted.
-    let fields = createFieldSet(rows)
-
-    createFieldsFromTSV(fields, dairy_pk)      // Create fields before proceeding
-      .then(createFieldRes => {
-        let result_promises = rows.map((row, i) => {
-          return createDataFromTSVListRow(row, i, dairy_pk, this.state.tsvType)    // Create entries for ea row in TSV file
-        })
-
-        Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
-          .then(res => {
-            console.log("Completed uploading Fertilizer TSV")
-            uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-            this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)
-            this.getFieldCropAppFertilizer()
-            this.getNutrientImport()
-            this.props.onAlert('Success!', 'success')
-          })
-          .catch(err => {
-            console.log("Error with all promises")
-            console.log(err)
-            this.props.onAlert('Failed uploading.', 'error')
-          })
+    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
+      .then(res => {
+        console.log("Completed uploading Fertilizer TSV")
+        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
+        this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)
+        this.getFieldCropAppFertilizer()
+        this.getNutrientImport()
+        this.props.onAlert('Success!', 'success')
       })
-      .catch(createFieldErr => {
-        console.log(createFieldErr)
+      .catch(err => {
+        console.log("Error with all promises")
+        console.log(err)
+        this.props.onAlert('Failed uploading.', 'error')
       })
   }
+
+
   toggleViewTSVsModal(val) {
     this.setState({ showViewTSVsModal: val })
   }

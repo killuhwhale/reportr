@@ -24,7 +24,7 @@ import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-type
 import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import {
-  SOIL, TSV_INFO, readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
+  SOIL, TSV_INFO, readTSV, uploadNutrientApp, uploadTSVToDB
 } from "../../utils/TSV"
 
 
@@ -32,7 +32,7 @@ import {
 /** View for Process Wastewater Entry in DB */
 const SoilView = (props) => {
   const soils = props && props.soils ? props.soils : []
-  const headerInfo = soils && soils.length > 0 ? soils[0]: {}
+  const headerInfo = soils && soils.length > 0 ? soils[0] : {}
 
   return (
     <Grid container item xs={12} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
@@ -190,8 +190,8 @@ class Soil extends Component {
     this.getFieldCropAppSoilAnalyses()
   }
 
-  componentDidUpdate(prevProps, prevState){
-    if(prevProps.dairy_id !== this.state.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated){
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.dairy_id !== this.state.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated) {
       this.getFieldCropAppSoils()
       this.getFieldCropAppSoilAnalyses()
     }
@@ -257,7 +257,7 @@ class Soil extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppSoilTSVModal(val) {
-    this.setState({ 
+    this.setState({
       showUploadFieldCropAppSoilTSVModal: val,
       tsvText: "",
       uploadedFilename: ""
@@ -275,36 +275,22 @@ class Soil extends Component {
   onUploadFieldCropAppSoilTSV() {
     // 24 columns from TSV
     let dairy_pk = this.state.dairy_id
-    let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
-
-    // Create a set of fields to ensure duplicates are not attempted.
-    let fields = createFieldSet(rows)
-
-    createFieldsFromTSV(fields, dairy_pk)      // Create fields before proceeding
-      .then(createFieldRes => {
-        let result_promises = rows.map((row, i) => {
-          return createDataFromTSVListRow(row, i, dairy_pk, this.state.tsvType)    // Create entries for ea row in TSV file
-        })
-
-        Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
-          .then(res => {
-            console.log("Completed uploading Process Wastewater TSV", res)
-            uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-            this.toggleShowUploadFieldCropAppSoilTSVModal(false)
-            this.getFieldCropAppSoils()
-            this.getFieldCropAppSoilAnalyses()
-            this.props.onAlert('Success!', 'success')
-          })
-          .catch(err => {
-            console.log("Error with all promises")
-            console.log(err)
-            this.props.onAlert('Failed uploading', 'error')
-          })
+    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
+      .then(res => {
+        console.log("Completed uploading Process Wastewater TSV", res)
+        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
+        this.toggleShowUploadFieldCropAppSoilTSVModal(false)
+        this.getFieldCropAppSoils()
+        this.getFieldCropAppSoilAnalyses()
+        this.props.onAlert('Success!', 'success')
       })
-      .catch(createFieldErr => {
-        console.log(createFieldErr)
+      .catch(err => {
+        console.log("Error with all promises")
+        console.log(err)
+        this.props.onAlert('Failed uploading', 'error')
       })
   }
+
   toggleViewTSVsModal(val) {
     this.setState({ showViewTSVsModal: val })
   }
@@ -413,7 +399,7 @@ class Soil extends Component {
             <React.Fragment></React.Fragment>
           }
         </Grid>
-        
+
         <Grid item xs={12}>
           <Typography variant='h3'>Soil Applications</Typography>
           {this.getSoilSortedKeys().length > 0 ?
@@ -427,7 +413,7 @@ class Soil extends Component {
             </List>
             :
             <React.Fragment></React.Fragment>
-          }        
+          }
         </Grid>
 
 
@@ -448,7 +434,7 @@ class Soil extends Component {
           modalText={`Delete All Soil Sample Events?`}
           onAction={this.deleteAllFromTable.bind(this)}
           onClose={() => this.confirmDeleteAllFromTable(false)}
-        />  
+        />
 
         <ActionCancelModal
           open={this.state.showConfirmDeleteSoilAnalysisModal}

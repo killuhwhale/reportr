@@ -28,7 +28,7 @@ import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import { groupBySortBy } from "../../utils/format"
 import {
-  readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB
+  readTSV, uploadNutrientApp, uploadTSVToDB
 } from "../../utils/TSV"
 
 
@@ -94,43 +94,43 @@ const ProcessWastewaterAppEvent = (props) => {
               <Grid item container xs={10}>
 
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="Kjeldahl-nitrogen"
                     value={kn_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="Ammonium-nitrogen"
                     value={nh4_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="NH3-N"
                     value={nh3_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="Nitrate-nitrogen"
                     value={no3_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="Total phosphorus"
                     value={p_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="Total potassium "
                     value={k_con}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="TDS"
                     value={tds}
                   />
@@ -139,25 +139,25 @@ const ProcessWastewaterAppEvent = (props) => {
 
 
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="EC"
                     value={ec}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="N lbs/acre"
                     value={totaln}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="P lbs / acre"
                     value={totalp}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <TextField 
+                  <TextField
                     label="K lbs / acre"
                     value={totalk}
                   />
@@ -342,7 +342,7 @@ class ProcessWastewater extends Component {
 
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppProcessWastewaterTSVModal(val) {
-    this.setState({ 
+    this.setState({
       showUploadFieldCropAppProcessWastewateTSVModal: val,
       tsvText: "",
       uploadedFilename: ""
@@ -360,41 +360,22 @@ class ProcessWastewater extends Component {
   onUploadFieldCropAppProcessWastewaterTSV() {
     // 24 columns from TSV
     let dairy_pk = this.state.dairy_id
-    let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
-    console.log(rows)
-    if(rows.length < 1){
-      this.props.onAlert("No data found.", 'error')
-      this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
-      return
-    }
-    // Create a set of fields to ensure duplicates are not attempted.
-    let fields = createFieldSet(rows)
-
-    createFieldsFromTSV(fields, dairy_pk)      // Create fields before proceeding
-      .then(createFieldRes => {
-        let result_promises = rows.map((row, i) => {
-          return createDataFromTSVListRow(row, i, dairy_pk, this.state.tsvType)    // Create entries for ea row in TSV file
-        })
-
-        Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
-          .then(res => {
-            console.log("Completed uploading Process Wastewater TSV")
-            uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-            this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
-            this.getFieldCropAppEvents()
-            this.getFieldCropAppProcessWastewater()
-            this.props.onAlert('Success!', 'success')
-          })
-          .catch(err => {
-            console.log("Error with all promises")
-            console.log(err)
-            this.props.onAlert('Failed uploading', 'error')
-          })
+    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
+      .then(res => {
+        console.log("Completed uploading Process Wastewater TSV")
+        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
+        this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
+        this.getFieldCropAppEvents()
+        this.getFieldCropAppProcessWastewater()
+        this.props.onAlert('Success!', 'success')
       })
-      .catch(createFieldErr => {
-        console.log(createFieldErr)
+      .catch(err => {
+        console.log("Error with all promises")
+        console.log(err)
+        this.props.onAlert('Failed uploading', 'error')
       })
   }
+
   toggleViewTSVsModal(val) {
     this.setState({ showViewTSVsModal: val })
   }
@@ -516,7 +497,7 @@ class ProcessWastewater extends Component {
           modalText={`Delete All Process Wastewater Application Events?`}
           onAction={this.deleteAllFromTable.bind(this)}
           onClose={() => this.confirmDeleteAllFromTable(false)}
-        />  
+        />
         <AddProcessWastewaterModal
           open={this.state.showAddProcessWastewaterModal}
           actionText="Add"
