@@ -78,7 +78,6 @@ class CropTab extends Component {
       ])
   }
   createFieldCrop() {
-    console.log("Create field_crop")
     let createFieldObj = this.state.createFieldCropObj
     let field = this.state.fields[createFieldObj.createFieldIdx]
     let crop = this.state.crops[createFieldObj.createCropIdx]
@@ -100,7 +99,6 @@ class CropTab extends Component {
 
     post(`${this.props.BASE_URL}/api/field_crop/create`, field_crop)
       .then(res => {
-        console.log(res)
         this.toggleShowAddFieldCropModal(false)
         this.getAllFieldCrops()
       })
@@ -115,9 +113,12 @@ class CropTab extends Component {
         if (res.test) {
           console.log("Field Crops not found.")
         } else {
-          let convertedFieldCrops = groupBySortBy(res, ['fieldtitle'])
+          let convertedFieldCrops = groupBySortBy(res, 'fieldtitle', 'plant_date')
           this.setState({ field_crops: res, convertedFieldCrops })
         }
+      })
+      .catch(err => {
+        console.log(err)
       })
   }
 
@@ -130,18 +131,18 @@ class CropTab extends Component {
       })
   }
 
-  confirmDeleteAllFromTable(val){
-      this.setState({toggleShowDeleteAllModal: val})
+  confirmDeleteAllFromTable(val) {
+    this.setState({ toggleShowDeleteAllModal: val })
   }
-  deleteAllFromTable(){
-    post(`${this.props.BASE_URL}/api/field_crop/deleteAll`,{dairy_id: this.state.dairy.pk})
-    .then(res => {
-      this.getAllFieldCrops()
-      this.confirmDeleteAllFromTable(false)
-    })
-    .catch(err => {
-      console.log(err)
-    })
+  deleteAllFromTable() {
+    post(`${this.props.BASE_URL}/api/field_crop/deleteAll`, { dairy_id: this.state.dairy.pk })
+      .then(res => {
+        this.getAllFieldCrops()
+        this.confirmDeleteAllFromTable(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   render() {

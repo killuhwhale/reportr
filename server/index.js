@@ -41,11 +41,11 @@ app.post("/api/tsv/create", (req, res) => {
   const { dairy_id, title, data, tsvType } = req.body
   db.insertTSV([dairy_id, title, data, tsvType], (err, result) => {
     if (!err) {
-      res.json({ "test": "Inserted TSV successfully" });
+      res.json({ "data": "Inserted TSV successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Inserted TSV unsuccessful", existsErr: err.code === '23505' });
+    res.json({ "error": "Inserted TSV unsuccessful", existsErr: err.code === '23505' });
   })
 });
 app.get("/api/tsv/:dairy_id/:tsvType", (req, res) => {
@@ -56,29 +56,29 @@ app.get("/api/tsv/:dairy_id/:tsvType", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get all TSVs unsuccessful" });
+      res.json({ "error": "Get all TSVs unsuccessful" });
     })
 });
 app.post("/api/tsv/delete", (req, res) => {
   console.log("Deleting TSV w/ pk: ", req.body.pk)
   db.rmTSV(req.body.pk, (err, result) => {
     if (!err) {
-      res.json({ "test": "Deleted TSV successfully" });
+      res.json({ "error": "Deleted TSV successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted TSV unsuccessful" });
+    res.json({ "error": "Deleted TSV unsuccessful" });
   })
 });
 app.post("/api/tsv/type/delete", (req, res) => {
   console.log("Deleting TSV w/ dairy_id and tsvtype: ", req.body)
   db.rmTSVByDairyIDTSVType([req.body.dairy_id, req.body.tsvType], (err, result) => {
     if (!err) {
-      res.json({ "test": "Deleted TSV successfully" });
+      res.json({ "error": "Deleted TSV successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted TSV unsuccessful" });
+    res.json({ "error": "Deleted TSV unsuccessful" });
   })
 });
 app.post("/api/tsv/update", (req, res) => {
@@ -86,11 +86,11 @@ app.post("/api/tsv/update", (req, res) => {
   const { title, data, pk } = req.body
   db.updateTSV([title, data, pk], (err, result) => {
     if (!err) {
-      res.json({ "test": "Updated tsv successfully" });
+      res.json({ "error": "Updated tsv successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated tsv unsuccessful" });
+    res.json({ "error": "Updated tsv unsuccessful" });
   })
 });
 
@@ -105,7 +105,7 @@ app.get("/api/dairy_base", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get dairy_base unsuccessful", err: err });
+      res.json({ "error": "Get dairy_base unsuccessful", err: err });
     })
 });
 
@@ -117,11 +117,11 @@ app.post("/api/dairy_base/create", (req, res) => {
   db.insertDairyBase([title], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Inserted dairy_base successfully" });
+      res.json({ "error": "Inserted dairy_base successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Inserted dairy_base unsuccessful" });
+    res.json({ "error": "Inserted dairy_base unsuccessful" });
   })
 });
 app.post("/api/dairy_base/update", (req, res) => {
@@ -140,7 +140,7 @@ app.post("/api/dairy_base/update", (req, res) => {
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated dairy_base unsuccessful" });
+    res.json({ "error": "Updated dairy_base unsuccessful" });
   })
 });
 
@@ -149,11 +149,11 @@ app.post("/api/dairy_base/delete", (req, res) => {
   db.rmDairyBase(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted dairy_base successfully" });
+      res.json({ "error": "Deleted dairy_base successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted dairy_base unsuccessful" });
+    res.json({ "error": "Deleted dairy_base unsuccessful" });
   })
 });
 
@@ -166,7 +166,7 @@ app.get("/api/dairies/dairyBaseId/:dairyBaseId", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get all dairies by base id unsuccessful" });
+      res.json({ "error": "Get all dairies by base id unsuccessful" });
     })
 });
 app.get("/api/dairies/:reportingYear", (req, res) => {
@@ -177,7 +177,7 @@ app.get("/api/dairies/:reportingYear", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get all dairies unsuccessful" });
+      res.json({ "error": "Get all dairies unsuccessful" });
     })
 });
 
@@ -188,7 +188,7 @@ app.get("/api/dairy/:dairy_id", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get dairy unsuccessful" });
+      res.json({ "error": "Get dairy unsuccessful" });
     })
 });
 app.post("/api/dairies/create", (req, res) => {
@@ -201,11 +201,11 @@ app.post("/api/dairies/create", (req, res) => {
   ], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Inserted dairy successfully" });
+      res.json({ "error": "Inserted dairy successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Inserted dairy unsuccessful" });
+    res.json({ "error": "Inserted dairy unsuccessful" });
   })
 });
 app.post("/api/dairies/full/create", (req, res) => {
@@ -225,7 +225,7 @@ app.post("/api/dairies/full/create", (req, res) => {
       return;
     }
     console.log(err)
-    res.json({ "test": "Inserted full dairy unsuccessful", failData: req.body });
+    res.json({ "error": "Inserted full dairy unsuccessful", failData: req.body });
   })
 });
 app.post("/api/dairies/update", (req, res) => {
@@ -244,7 +244,7 @@ app.post("/api/dairies/update", (req, res) => {
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated dairy unsuccessful" });
+    res.json({ "error": "Updated dairy unsuccessful" });
   })
 });
 app.post("/api/dairies/delete", (req, res) => {
@@ -252,11 +252,11 @@ app.post("/api/dairies/delete", (req, res) => {
   db.rmDairy(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted dairy successfully" });
+      res.json({ "error": "Deleted dairy successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted dairy unsuccessful" });
+    res.json({ "error": "Deleted dairy unsuccessful" });
   })
 });
 app.get("/api/fields/:dairy_id", (req, res) => {
@@ -268,7 +268,7 @@ app.get("/api/fields/:dairy_id", (req, res) => {
         return;
       }
       console.log(req.params.dairy_id)
-      res.json({ "test": "Get all fields unsuccessful" });
+      res.json({ "error": "Get all fields unsuccessful" });
     })
 });
 app.post("/api/fields/create", (req, res) => {
@@ -278,11 +278,11 @@ app.post("/api/fields/create", (req, res) => {
   db.insertField([title, acres, cropable, dairy_id], (err, result) => {
     if (!err) {
       res.json(result.rows)
-      // res.json({"test": "Inserted field successfully"});
+      // res.json({"error": "Inserted field successfully"});
       return;
     }
     console.log(err)
-    res.json({ "test": err });
+    res.json({ "error": err });
   })
 });
 app.post("/api/fields/update", (req, res) => {
@@ -291,11 +291,11 @@ app.post("/api/fields/update", (req, res) => {
   db.updateField([title, acres, cropable, pk], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated field successfully" });
+      res.json({ "error": "Updated field successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated field unsuccessful" });
+    res.json({ "error": "Updated field unsuccessful" });
   })
 });
 app.post("/api/fields/delete", (req, res) => {
@@ -303,11 +303,11 @@ app.post("/api/fields/delete", (req, res) => {
   db.rmField(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field successfully" });
+      res.json({ "error": "Deleted field successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field unsuccessful" });
+    res.json({ "error": "Deleted field unsuccessful" });
   })
 });
 app.get("/api/parcels/:dairy_id", (req, res) => {
@@ -318,7 +318,7 @@ app.get("/api/parcels/:dairy_id", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get all parcels unsuccessful" });
+      res.json({ "error": "Get all parcels unsuccessful" });
     })
 });
 app.post("/api/parcels/create", (req, res) => {
@@ -332,7 +332,7 @@ app.post("/api/parcels/create", (req, res) => {
       return;
     }
     console.log(err)
-    res.json({ "test": "Inserted parcel unsuccessful" });
+    res.json({ "error": "Inserted parcel unsuccessful" });
   })
 });
 app.post("/api/parcels/update", (req, res) => {
@@ -341,11 +341,11 @@ app.post("/api/parcels/update", (req, res) => {
   db.updateParcel([pnumber, pk], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated parcel successfully" });
+      res.json({ "error": "Updated parcel successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated parcel unsuccessful" });
+    res.json({ "error": "Updated parcel unsuccessful" });
   })
 });
 app.post("/api/parcels/delete", (req, res) => {
@@ -353,11 +353,11 @@ app.post("/api/parcels/delete", (req, res) => {
   db.rmParcel(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted parcel successfully" });
+      res.json({ "error": "Deleted parcel successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted parcel unsuccessful" });
+    res.json({ "error": "Deleted parcel unsuccessful" });
   })
 });
 app.get("/api/field_parcel/:dairy_id", (req, res) => {
@@ -369,7 +369,7 @@ app.get("/api/field_parcel/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_parcel unsuccessful" });
+      res.json({ "error": "Get all field_parcel unsuccessful" });
     })
 });
 app.post("/api/field_parcel/create", (req, res) => {
@@ -381,7 +381,7 @@ app.post("/api/field_parcel/create", (req, res) => {
       return;
     }
     console.log(err)
-    res.json({ "test": "Inserted field_parcel unsuccessful" });
+    res.json({ "error": "Inserted field_parcel unsuccessful" });
   })
 });
 app.post("/api/field_parcel/delete", (req, res) => {
@@ -389,11 +389,11 @@ app.post("/api/field_parcel/delete", (req, res) => {
   db.rmFieldParcel(req.body.data, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_parcel successfully" });
+      res.json({ "error": "Deleted field_parcel successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_parcel unsuccessful" });
+    res.json({ "error": "Deleted field_parcel unsuccessful" });
   })
 });
 app.post("/api/operators/create", (req, res) => {
@@ -408,11 +408,11 @@ app.post("/api/operators/create", (req, res) => {
     (err, result) => {
 
       if (!err) {
-        res.json({ "test": "Created operator successfully" });
+        res.json({ "error": "Created operator successfully" });
         return;
       }
       console.log(err)
-      res.json({ "test": "Created operator unsuccessful" });
+      res.json({ "error": "Created operator unsuccessful" });
     }
   )
 });
@@ -424,7 +424,7 @@ app.get("/api/operators/:dairy_id", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get all operators unsuccessful" });
+      res.json({ "error": "Get all operators unsuccessful" });
     })
 });
 app.get("/api/operators/is_owner/:is_owner/:dairy_id", (req, res) => {
@@ -434,7 +434,7 @@ app.get("/api/operators/is_owner/:is_owner/:dairy_id", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get all operators by owner status unsuccessful" });
+      res.json({ "error": "Get all operators by owner status unsuccessful" });
     })
 });
 app.get("/api/operators/is_operator/:is_operator/:dairy_id", (req, res) => {
@@ -444,7 +444,7 @@ app.get("/api/operators/is_operator/:is_operator/:dairy_id", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get all operators by operator status unsuccessful" });
+      res.json({ "error": "Get all operators by operator status unsuccessful" });
     })
 });
 app.post("/api/operators/update", (req, res) => {
@@ -479,11 +479,11 @@ app.post("/api/operators/update", (req, res) => {
   ], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated operator successfully" });
+      res.json({ "error": "Updated operator successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated operator unsuccessful" });
+    res.json({ "error": "Updated operator unsuccessful" });
   })
 });
 app.post("/api/operators/delete", (req, res) => {
@@ -491,11 +491,11 @@ app.post("/api/operators/delete", (req, res) => {
   db.rmOperator(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted operator successfully" });
+      res.json({ "error": "Deleted operator successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted operator unsuccessful" });
+    res.json({ "error": "Deleted operator unsuccessful" });
   })
 });
 
@@ -511,11 +511,11 @@ app.post("/api/herds/create", (req, res) => {
     (err, result) => {
 
       if (!err) {
-        res.json({ "test": "Created herds successfully" });
+        res.json({ "error": "Created herds successfully" });
         return;
       }
       console.log(err)
-      res.json({ "test": "Created herds unsuccessful" });
+      res.json({ "error": "Created herds unsuccessful" });
     }
   )
 });
@@ -541,11 +541,11 @@ app.post("/api/herds/full/create", (req, res) => {
     (err, result) => {
 
       if (!err) {
-        res.json({ "test": "Created full herds successfully" });
+        res.json({ "error": "Created full herds successfully" });
         return;
       }
       console.log(err)
-      res.json({ "test": "Created full herds unsuccessful" });
+      res.json({ "error": "Created full herds unsuccessful" });
     }
   )
 });
@@ -557,7 +557,7 @@ app.get("/api/herds/:dairy_id", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get all herds unsuccessful" });
+      res.json({ "error": "Get all herds unsuccessful" });
     })
 });
 app.post("/api/herds/update", (req, res) => {
@@ -568,11 +568,11 @@ app.post("/api/herds/update", (req, res) => {
   ], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated herds successfully" });
+      res.json({ "error": "Updated herds successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated herds unsuccessful" });
+    res.json({ "error": "Updated herds unsuccessful" });
   })
 });
 
@@ -585,7 +585,7 @@ app.get("/api/crops/:title", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get crops by Title unsuccessful" });
+      res.json({ "error": "Get crops by Title unsuccessful" });
     })
 });
 app.get("/api/crops", (req, res) => {
@@ -596,7 +596,7 @@ app.get("/api/crops", (req, res) => {
         res.json(result.rows)
         return;
       }
-      res.json({ "test": "Get all crops unsuccessful" });
+      res.json({ "error": "Get all crops unsuccessful" });
     })
 });
 
@@ -612,11 +612,11 @@ app.post("/api/field_crop/create", (req, res) => {
 
       if (!err) {
         res.json(result.rows)
-        // res.json({"test": "Created field_crop successfully"});
+        // res.json({"error": "Created field_crop successfully"});
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop unsuccessful" });
+      res.json({ "error": "Created field_crop unsuccessful" });
     }
   )
 });
@@ -629,7 +629,7 @@ app.get("/api/field_crop/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop unsuccessful" });
+      res.json({ "error": "Get all field_crop unsuccessful" });
     })
 });
 app.post("/api/field_crop/update", (req, res) => {
@@ -640,11 +640,11 @@ app.post("/api/field_crop/update", (req, res) => {
   ], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated field_crop successfully" });
+      res.json({ "error": "Updated field_crop successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated field_crop unsuccessful" });
+    res.json({ "error": "Updated field_crop unsuccessful" });
   })
 });
 
@@ -653,11 +653,11 @@ app.post("/api/field_crop/delete", (req, res) => {
   db.rmFieldCrop(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop successfully" });
+      res.json({ "error": "Deleted field_crop successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop unsuccessful" });
+    res.json({ "error": "Deleted field_crop unsuccessful" });
   })
 });
 
@@ -666,11 +666,11 @@ app.post("/api/field_crop/deleteAll", (req, res) => {
   db.rmAllFieldCrop(req.body.dairy_id, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted all field_crop successfully" });
+      res.json({ "error": "Deleted all field_crop successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted all field_crop unsuccessful" });
+    res.json({ "error": "Deleted all field_crop unsuccessful" });
   })
 });
 
@@ -728,11 +728,11 @@ app.post("/api/field_crop_harvest/create", (req, res) => {
 
       if (!err) {
         res.json(result)
-        // res.json({"test": "Created field_crop_harvest successfully"});
+        // res.json({"error": "Created field_crop_harvest successfully"});
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_harvest unsuccessful" });
+      res.json({ "error": "Created field_crop_harvest unsuccessful" });
     }
   )
 });
@@ -745,7 +745,7 @@ app.get("/api/field_crop_harvest/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_harvest unsuccessful" });
+      res.json({ "error": "Get all field_crop_harvest unsuccessful" });
     })
 });
 app.post("/api/field_crop_harvest/update", (req, res) => {
@@ -758,11 +758,11 @@ app.post("/api/field_crop_harvest/update", (req, res) => {
   ], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated field_crop_harvest successfully" });
+      res.json({ "error": "Updated field_crop_harvest successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated field_crop_harvest unsuccessful" });
+    res.json({ "error": "Updated field_crop_harvest unsuccessful" });
   })
 });
 app.post("/api/field_crop_harvest/delete", (req, res) => {
@@ -770,11 +770,11 @@ app.post("/api/field_crop_harvest/delete", (req, res) => {
   db.rmFieldCropHarvest(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_harvest successfully" });
+      res.json({ "error": "Deleted field_crop_harvest successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_harvest unsuccessful" });
+    res.json({ "error": "Deleted field_crop_harvest unsuccessful" });
   })
 });
 app.post("/api/field_crop_harvest/deleteAll", (req, res) => {
@@ -782,11 +782,11 @@ app.post("/api/field_crop_harvest/deleteAll", (req, res) => {
   db.rmAllFieldCropHarvest(req.body.dairy_id, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted all field_crop_harvest successfully" });
+      res.json({ "error": "Deleted all field_crop_harvest successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted all field_crop_harvest unsuccessful" });
+    res.json({ "error": "Deleted all field_crop_harvest unsuccessful" });
   })
 });
 
@@ -801,11 +801,11 @@ app.post("/api/field_crop_app/create", (req, res) => {
 
       if (!err) {
         res.json(result.rows)
-        // res.json({"test": "Created field_crop_harvest successfully"});
+        // res.json({"error": "Created field_crop_harvest successfully"});
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app unsuccessful" });
+      res.json({ "error": "Created field_crop_app unsuccessful" });
     }
   )
 });
@@ -818,7 +818,7 @@ app.get("/api/field_crop_app/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app unsuccessful" });
+      res.json({ "error": "Get all field_crop_app unsuccessful" });
     })
 });
 app.post("/api/field_crop_app/update", (req, res) => {
@@ -831,11 +831,11 @@ app.post("/api/field_crop_app/update", (req, res) => {
   ], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated field_crop_app successfully" });
+      res.json({ "error": "Updated field_crop_app successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated field_crop_app unsuccessful" });
+    res.json({ "error": "Updated field_crop_app unsuccessful" });
   })
 });
 app.post("/api/field_crop_app/delete", (req, res) => {
@@ -843,11 +843,11 @@ app.post("/api/field_crop_app/delete", (req, res) => {
   db.rmFieldCropApplication(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app successfully" });
+      res.json({ "error": "Deleted field_crop_app successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app unsuccessful" });
   })
 });
 app.post("/api/field_crop_app/deleteAll", (req, res) => {
@@ -855,11 +855,11 @@ app.post("/api/field_crop_app/deleteAll", (req, res) => {
   db.rmAllFieldCropApp(req.body.dairy_id, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted all field_crop_app successfully" });
+      res.json({ "error": "Deleted all field_crop_app successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted all field_crop_app unsuccessful" });
+    res.json({ "error": "Deleted all field_crop_app unsuccessful" });
   })
 });
 
@@ -948,7 +948,7 @@ app.post("/api/field_crop_app_process_wastewater_analysis/create", (req, res) =>
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_process_wastewater_analysis unsuccessful" });
+      res.json({ "error": "Created field_crop_app_process_wastewater_analysis unsuccessful" });
     }
   )
 });
@@ -960,7 +960,7 @@ app.get("/api/field_crop_app_process_wastewater_analysis/:dairy_id", (req, res) 
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_process_wastewater_analysis unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_process_wastewater_analysis unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_process_wastewater_analysis/delete", (req, res) => {
@@ -968,11 +968,11 @@ app.post("/api/field_crop_app_process_wastewater_analysis/delete", (req, res) =>
   db.rmFieldCropApplicationProcessWastewaterAnalysis(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_process_wastewater_analysis successfully" });
+      res.json({ "error": "Deleted field_crop_app_process_wastewater_analysis successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_process_wastewater_analysis unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_process_wastewater_analysis unsuccessful" });
   })
 });
 
@@ -1009,7 +1009,7 @@ app.post("/api/field_crop_app_process_wastewater/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_process_wastewater unsuccessful" });
+      res.json({ "error": "Created field_crop_app_process_wastewater unsuccessful" });
     }
   )
 });
@@ -1022,7 +1022,7 @@ app.get("/api/field_crop_app_process_wastewater/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_process_wastewater unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_process_wastewater unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_process_wastewater/delete", (req, res) => {
@@ -1030,11 +1030,11 @@ app.post("/api/field_crop_app_process_wastewater/delete", (req, res) => {
   db.rmFieldCropApplicationProcessWastewater(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_process_wastewater successfully" });
+      res.json({ "error": "Deleted field_crop_app_process_wastewater successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_process_wastewater unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_process_wastewater unsuccessful" });
   })
 });
 
@@ -1045,11 +1045,11 @@ app.post("/api/field_crop_app_process_wastewater/deleteAll", (req, res) => {
     db.rmAllFieldCropAppProcessWastewater(req.body.dairy_id, (errB, resultB) => {
 
       if (!errA && !errB) {
-        res.json({ "test": "Deleted all field_crop_app_process_wastewater successfully" });
+        res.json({ "error": "Deleted all field_crop_app_process_wastewater successfully" });
         return;
       }
       console.log(errA, errB)
-      res.json({ "test": "Deleted all field_crop_app_process_wastewater unsuccessful" });
+      res.json({ "error": "Deleted all field_crop_app_process_wastewater unsuccessful" });
     })
   })
 });
@@ -1079,7 +1079,7 @@ app.post("/api/field_crop_app_freshwater_source/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_freshwater_source unsuccessful" });
+      res.json({ "error": "Created field_crop_app_freshwater_source unsuccessful" });
     }
   )
 });
@@ -1092,7 +1092,7 @@ app.get("/api/field_crop_app_freshwater_source/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_freshwater_source unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_freshwater_source unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_freshwater_source/delete", (req, res) => {
@@ -1100,11 +1100,11 @@ app.post("/api/field_crop_app_freshwater_source/delete", (req, res) => {
   db.rmFieldCropApplicationFreshwaterSource(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_freshwater_source successfully" });
+      res.json({ "error": "Deleted field_crop_app_freshwater_source successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_freshwater_source unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_freshwater_source unsuccessful" });
   })
 });
 
@@ -1179,7 +1179,7 @@ app.post("/api/field_crop_app_freshwater_analysis/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_freshwater_analysis unsuccessful" });
+      res.json({ "error": "Created field_crop_app_freshwater_analysis unsuccessful" });
     }
   )
 });
@@ -1192,7 +1192,7 @@ app.get("/api/field_crop_app_freshwater_analysis/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_freshwater_analysis unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_freshwater_analysis unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_freshwater_analysis/delete", (req, res) => {
@@ -1200,11 +1200,11 @@ app.post("/api/field_crop_app_freshwater_analysis/delete", (req, res) => {
   db.rmFieldCropApplicationFreshwaterAnalysis(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_freshwater_analysis successfully" });
+      res.json({ "error": "Deleted field_crop_app_freshwater_analysis successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_freshwater_analysis unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_freshwater_analysis unsuccessful" });
   })
 });
 
@@ -1239,7 +1239,7 @@ app.post("/api/field_crop_app_freshwater/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_freshwater unsuccessful" });
+      res.json({ "error": "Created field_crop_app_freshwater unsuccessful" });
     }
   )
 });
@@ -1253,7 +1253,7 @@ app.get("/api/field_crop_app_freshwater/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_freshwater unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_freshwater unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_freshwater/delete", (req, res) => {
@@ -1261,11 +1261,11 @@ app.post("/api/field_crop_app_freshwater/delete", (req, res) => {
   db.rmFieldCropApplicationFreshwater(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_freshwater successfully" });
+      res.json({ "error": "Deleted field_crop_app_freshwater successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_freshwater unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_freshwater unsuccessful" });
   })
 });
 
@@ -1277,11 +1277,11 @@ app.post("/api/field_crop_app_freshwater/deleteAll", (req, res) => {
       db.rmAllFieldCropAppFreshwater(req.body.dairy_id, (errC, resultC) => {
 
         if (!errA && !errB && !errC) {
-          res.json({ "test": "Deleted all field_crop_app_freshwater successfully" });
+          res.json({ "error": "Deleted all field_crop_app_freshwater successfully" });
           return;
         }
         console.log(errA, errB, errC)
-        res.json({ "test": "Deleted all field_crop_app_freshwater unsuccessful" });
+        res.json({ "error": "Deleted all field_crop_app_freshwater unsuccessful" });
       })
     })
   })
@@ -1352,7 +1352,7 @@ app.post("/api/field_crop_app_solidmanure_analysis/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_solidmanure_analysis unsuccessful" });
+      res.json({ "error": "Created field_crop_app_solidmanure_analysis unsuccessful" });
     }
   )
 });
@@ -1366,7 +1366,7 @@ app.get("/api/field_crop_app_solidmanure_analysis/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_solidmanure_analysis unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_solidmanure_analysis unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_solidmanure_analysis/delete", (req, res) => {
@@ -1374,11 +1374,11 @@ app.post("/api/field_crop_app_solidmanure_analysis/delete", (req, res) => {
   db.rmFieldCropApplicationSolidmanureAnalysis(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_solidmanure_analysis successfully" });
+      res.json({ "error": "Deleted field_crop_app_solidmanure_analysis successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_solidmanure_analysis unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_solidmanure_analysis unsuccessful" });
   })
 });
 
@@ -1417,7 +1417,7 @@ app.post("/api/field_crop_app_solidmanure/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_solidmanure unsuccessful" });
+      res.json({ "error": "Created field_crop_app_solidmanure unsuccessful" });
     }
   )
 });
@@ -1431,7 +1431,7 @@ app.get("/api/field_crop_app_solidmanure/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_solidmanure unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_solidmanure unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_solidmanure/delete", (req, res) => {
@@ -1439,11 +1439,11 @@ app.post("/api/field_crop_app_solidmanure/delete", (req, res) => {
   db.rmFieldCropApplicationSolidmanure(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_solidmanure successfully" });
+      res.json({ "error": "Deleted field_crop_app_solidmanure successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_solidmanure unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_solidmanure unsuccessful" });
   })
 });
 
@@ -1454,11 +1454,11 @@ app.post("/api/field_crop_app_solidmanure/deleteAll", (req, res) => {
     db.rmAllFieldCropAppSolidmanure(req.body.dairy_id, (errB, resultB) => {
 
       if (!errA && !errB) {
-        res.json({ "test": "Deleted all field_crop_app_solidmanure successfully" });
+        res.json({ "error": "Deleted all field_crop_app_solidmanure successfully" });
         return;
       }
       console.log(errA, errB)
-      res.json({ "test": "Deleted all field_crop_app_solidmanure unsuccessful" });
+      res.json({ "error": "Deleted all field_crop_app_solidmanure unsuccessful" });
     })
   })
 });
@@ -1499,7 +1499,7 @@ app.post("/api/nutrient_import/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created nutrient_import unsuccessful" });
+      res.json({ "error": "Created nutrient_import unsuccessful" });
     }
   )
 });
@@ -1512,7 +1512,7 @@ app.get("/api/nutrient_import/material_type/:material_type/:dairy_id", (req, res
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all nutrient_import by material_type unsuccessful" });
+      res.json({ "error": "Get all nutrient_import by material_type unsuccessful" });
     })
 });
 app.get("/api/nutrient_import/wastewater/:dairy_id", (req, res) => {
@@ -1523,7 +1523,7 @@ app.get("/api/nutrient_import/wastewater/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all nutrient_import by wastewater unsuccessful" });
+      res.json({ "error": "Get all nutrient_import by wastewater unsuccessful" });
     })
 });
 app.post("/api/nutrient_import/delete", (req, res) => {
@@ -1531,11 +1531,11 @@ app.post("/api/nutrient_import/delete", (req, res) => {
   db.rmNutrientImport(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted nutrient_import successfully" });
+      res.json({ "error": "Deleted nutrient_import successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted nutrient_import unsuccessful" });
+    res.json({ "error": "Deleted nutrient_import unsuccessful" });
   })
 });
 app.get("/api/nutrient_import/:dairy_id", (req, res) => {
@@ -1548,7 +1548,7 @@ app.get("/api/nutrient_import/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all nutrient_import unsuccessful" });
+      res.json({ "error": "Get all nutrient_import unsuccessful" });
     })
 });
 // Remember, a nutrient import is the analysis for a field crop fertilizer.... aka field crop nutrient import 
@@ -1582,7 +1582,7 @@ app.post("/api/field_crop_app_fertilizer/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_fertilizer unsuccessful" });
+      res.json({ "error": "Created field_crop_app_fertilizer unsuccessful" });
     }
   )
 });
@@ -1596,7 +1596,7 @@ app.get("/api/field_crop_app_fertilizer/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_fertilizer unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_fertilizer unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_fertilizer/delete", (req, res) => {
@@ -1604,11 +1604,11 @@ app.post("/api/field_crop_app_fertilizer/delete", (req, res) => {
   db.rmFieldCropApplicationFertilizer(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_fertilizer successfully" });
+      res.json({ "error": "Deleted field_crop_app_fertilizer successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_fertilizer unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_fertilizer unsuccessful" });
   })
 });
 
@@ -1619,11 +1619,11 @@ app.post("/api/field_crop_app_fertilizer/deleteAll", (req, res) => {
     db.rmAllFieldCropAppFertilizer(req.body.dairy_id, (errB, resultB) => {
 
       if (!errA && !errB) {
-        res.json({ "test": "Deleted all field_crop_app_fertilizer successfully" });
+        res.json({ "error": "Deleted all field_crop_app_fertilizer successfully" });
         return;
       }
       console.log(errA, errB)
-      res.json({ "test": "Deleted all field_crop_app_fertilizer unsuccessful" });
+      res.json({ "error": "Deleted all field_crop_app_fertilizer unsuccessful" });
     })
   })
 });
@@ -1676,7 +1676,7 @@ app.post("/api/field_crop_app_soil_analysis/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_soil_analysis unsuccessful" });
+      res.json({ "error": "Created field_crop_app_soil_analysis unsuccessful" });
     }
   )
 });
@@ -1690,7 +1690,7 @@ app.get("/api/field_crop_app_soil_analysis/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_soil_analysis unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_soil_analysis unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_soil_analysis/delete", (req, res) => {
@@ -1698,11 +1698,11 @@ app.post("/api/field_crop_app_soil_analysis/delete", (req, res) => {
   db.rmFieldCropApplicationSoilAnalysis(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_soil_analysis successfully" });
+      res.json({ "error": "Deleted field_crop_app_soil_analysis successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_soil_analysis unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_soil_analysis unsuccessful" });
   })
 });
 
@@ -1734,7 +1734,7 @@ app.post("/api/field_crop_app_soil/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_soil unsuccessful" });
+      res.json({ "error": "Created field_crop_app_soil unsuccessful" });
     }
   )
 });
@@ -1747,18 +1747,18 @@ app.get("/api/field_crop_app_soil/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_soil unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_soil unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_soil/delete", (req, res) => {
   console.log("Deleting....", req.body.pk)
   db.rmFieldCropApplicationSoil(req.body.pk, (err, result) => {
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_soil successfully" });
+      res.json({ "error": "Deleted field_crop_app_soil successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_soil unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_soil unsuccessful" });
   })
 });
 
@@ -1769,11 +1769,11 @@ app.post("/api/field_crop_app_soil/deleteAll", (req, res) => {
     db.rmAllFieldCropAppSoil(req.body.dairy_id, (errB, resultB) => {
 
       if (!errA && !errB) {
-        res.json({ "test": "Deleted all field_crop_app_soil successfully" });
+        res.json({ "error": "Deleted all field_crop_app_soil successfully" });
         return;
       }
       console.log(errA, errB)
-      res.json({ "test": "Deleted all field_crop_app_soil unsuccessful" });
+      res.json({ "error": "Deleted all field_crop_app_soil unsuccessful" });
     })
   })
 });
@@ -1806,7 +1806,7 @@ app.post("/api/field_crop_app_plowdown_credit/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created field_crop_app_plowdown_credit unsuccessful" });
+      res.json({ "error": "Created field_crop_app_plowdown_credit unsuccessful" });
     }
   )
 });
@@ -1818,18 +1818,18 @@ app.get("/api/field_crop_app_plowdown_credit/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all field_crop_app_plowdown_credit unsuccessful" });
+      res.json({ "error": "Get all field_crop_app_plowdown_credit unsuccessful" });
     })
 });
 app.post("/api/field_crop_app_plowdown_credit/delete", (req, res) => {
   console.log("Deleting....", req.body.pk)
   db.rmFieldCropApplicationPlowdownCredit(req.body.pk, (err, result) => {
     if (!err) {
-      res.json({ "test": "Deleted field_crop_app_plowdown_credit successfully" });
+      res.json({ "error": "Deleted field_crop_app_plowdown_credit successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted field_crop_app_plowdown_credit unsuccessful" });
+    res.json({ "error": "Deleted field_crop_app_plowdown_credit unsuccessful" });
   })
 });
 
@@ -1838,11 +1838,11 @@ app.post("/api/field_crop_app_plowdown_credit/deleteAll", (req, res) => {
 
   db.rmAllFieldCropAppPlowdownCredit(req.body.dairy_id, (errA, resultA) => {
     if (!errA) {
-      res.json({ "test": "Deleted all field_crop_app_plowdown_credit successfully" });
+      res.json({ "error": "Deleted all field_crop_app_plowdown_credit successfully" });
       return;
     }
     console.log(errA)
-    res.json({ "test": "Deleted all field_crop_app_plowdown_credit unsuccessful" });
+    res.json({ "error": "Deleted all field_crop_app_plowdown_credit unsuccessful" });
   })
 });
 
@@ -1864,7 +1864,7 @@ app.post("/api/drain_source/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created drain_source unsuccessful" });
+      res.json({ "error": "Created drain_source unsuccessful" });
     }
   )
 });
@@ -1876,18 +1876,18 @@ app.get("/api/drain_source/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all drain_source unsuccessful" });
+      res.json({ "error": "Get all drain_source unsuccessful" });
     })
 });
 app.post("/api/drain_source/delete", (req, res) => {
   console.log("Deleting....", req.body.pk)
   db.rmDrainSource(req.body.pk, (err, result) => {
     if (!err) {
-      res.json({ "test": "Deleted drain_source successfully" });
+      res.json({ "error": "Deleted drain_source successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted drain_source unsuccessful" });
+    res.json({ "error": "Deleted drain_source unsuccessful" });
   })
 });
 
@@ -1935,7 +1935,7 @@ app.post("/api/drain_analysis/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created drain_analysis unsuccessful" });
+      res.json({ "error": "Created drain_analysis unsuccessful" });
     }
   )
 });
@@ -1947,18 +1947,18 @@ app.get("/api/drain_analysis/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all drain_analysis unsuccessful" });
+      res.json({ "error": "Get all drain_analysis unsuccessful" });
     })
 });
 app.post("/api/drain_analysis/delete", (req, res) => {
   console.log("Deleting....", req.body.pk)
   db.rmDrainAnalysis(req.body.pk, (err, result) => {
     if (!err) {
-      res.json({ "test": "Deleted drain_analysis successfully" });
+      res.json({ "error": "Deleted drain_analysis successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted drain_analysis unsuccessful" });
+    res.json({ "error": "Deleted drain_analysis unsuccessful" });
   })
 });
 
@@ -1999,7 +1999,7 @@ app.post("/api/export_hauler/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created export_hauler unsuccessful" });
+      res.json({ "error": "Created export_hauler unsuccessful" });
     }
   )
 });
@@ -2013,7 +2013,7 @@ app.get("/api/export_hauler/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all export_hauler unsuccessful" });
+      res.json({ "error": "Get all export_hauler unsuccessful" });
     })
 });
 app.post("/api/export_hauler/delete", (req, res) => {
@@ -2021,11 +2021,11 @@ app.post("/api/export_hauler/delete", (req, res) => {
   db.rmExportHauler(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted export_hauler successfully" });
+      res.json({ "error": "Deleted export_hauler successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted export_hauler unsuccessful" });
+    res.json({ "error": "Deleted export_hauler unsuccessful" });
   })
 });
 
@@ -2051,7 +2051,7 @@ app.post("/api/export_contact/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created export_contact unsuccessful" });
+      res.json({ "error": "Created export_contact unsuccessful" });
     }
   )
 });
@@ -2065,7 +2065,7 @@ app.get("/api/export_contact/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all export_contact unsuccessful" });
+      res.json({ "error": "Get all export_contact unsuccessful" });
     })
 });
 app.post("/api/export_contact/delete", (req, res) => {
@@ -2073,11 +2073,11 @@ app.post("/api/export_contact/delete", (req, res) => {
   db.rmExportContact(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted export_contact successfully" });
+      res.json({ "error": "Deleted export_contact successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted export_contact unsuccessful" });
+    res.json({ "error": "Deleted export_contact unsuccessful" });
   })
 });
 
@@ -2116,7 +2116,7 @@ app.post("/api/export_recipient/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created export_recipient unsuccessful" });
+      res.json({ "error": "Created export_recipient unsuccessful" });
     }
   )
 });
@@ -2130,7 +2130,7 @@ app.get("/api/export_recipient/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all export_recipient unsuccessful" });
+      res.json({ "error": "Get all export_recipient unsuccessful" });
     })
 });
 app.post("/api/export_recipient/delete", (req, res) => {
@@ -2138,11 +2138,11 @@ app.post("/api/export_recipient/delete", (req, res) => {
   db.rmExportRecipient(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted export_recipient successfully" });
+      res.json({ "error": "Deleted export_recipient successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted export_recipient unsuccessful" });
+    res.json({ "error": "Deleted export_recipient unsuccessful" });
   })
 });
 
@@ -2178,7 +2178,7 @@ app.post("/api/export_dest/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created export_dest unsuccessful" });
+      res.json({ "error": "Created export_dest unsuccessful" });
     }
   )
 });
@@ -2192,7 +2192,7 @@ app.get("/api/export_dest/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all export_dest unsuccessful" });
+      res.json({ "error": "Get all export_dest unsuccessful" });
     })
 });
 app.post("/api/export_dest/delete", (req, res) => {
@@ -2200,11 +2200,11 @@ app.post("/api/export_dest/delete", (req, res) => {
   db.rmExportDest(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted export_dest successfully" });
+      res.json({ "error": "Deleted export_dest successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted export_dest unsuccessful" });
+    res.json({ "error": "Deleted export_dest unsuccessful" });
   })
 });
 
@@ -2284,7 +2284,7 @@ app.post("/api/export_manifest/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created export_manifest unsuccessful" });
+      res.json({ "error": "Created export_manifest unsuccessful" });
     }
   )
 });
@@ -2296,7 +2296,7 @@ app.get("/api/export_manifest/wastewater/:dairy_id", (req, res) => {
         return;
       }
       console.log("Export manifest wastewater", err)
-      res.json({ "test": "Get all export_manifest wastewater unsuccessful" });
+      res.json({ "error": "Get all export_manifest wastewater unsuccessful" });
     })
 });
 app.get("/api/export_manifest/material_type/:material_type/:dairy_id", (req, res) => {
@@ -2309,7 +2309,7 @@ app.get("/api/export_manifest/material_type/:material_type/:dairy_id", (req, res
         return;
       }
       console.log("Export manifest", err)
-      res.json({ "test": "Get all export_manifest unsuccessful" });
+      res.json({ "error": "Get all export_manifest unsuccessful" });
     })
 });
 app.get("/api/export_manifest/:dairy_id", (req, res) => {
@@ -2322,7 +2322,7 @@ app.get("/api/export_manifest/:dairy_id", (req, res) => {
         return;
       }
       console.log("Export manifest", err)
-      res.json({ "test": "Get all export_manifest unsuccessful" });
+      res.json({ "error": "Get all export_manifest unsuccessful" });
     })
 });
 app.post("/api/export_manifest/delete", (req, res) => {
@@ -2330,11 +2330,11 @@ app.post("/api/export_manifest/delete", (req, res) => {
   db.rmExportManifest(req.body.pk, (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Deleted export_manifest successfully" });
+      res.json({ "error": "Deleted export_manifest successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted export_manifest unsuccessful" });
+    res.json({ "error": "Deleted export_manifest unsuccessful" });
   })
 });
 
@@ -2349,11 +2349,11 @@ app.post("/api/export_manifest/deleteAll", (req, res) => {
           db.rmExportManifest(req.body.dairy_id, (errE, resultE) => {
 
             if (!errA && !errB && !errC && !errD && !errE) {
-              res.json({ "test": "Deleted all export_manifest successfully" });
+              res.json({ "error": "Deleted all export_manifest successfully" });
               return;
             }
             console.log(errA, errB, errC, errD, errE)
-            res.json({ "test": "Deleted all export_manifest unsuccessful" });
+            res.json({ "error": "Deleted all export_manifest unsuccessful" });
           })
         })
       })
@@ -2397,7 +2397,7 @@ app.post("/api/discharge/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created discharge unsuccessful" });
+      res.json({ "error": "Created discharge unsuccessful" });
     }
   )
 });
@@ -2409,18 +2409,18 @@ app.get("/api/discharge/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all discharge unsuccessful" });
+      res.json({ "error": "Get all discharge unsuccessful" });
     })
 });
 app.post("/api/discharge/delete", (req, res) => {
   console.log("Deleting.... discharge", req.body.pk)
   db.rmDischarge(req.body.pk, (err, result) => {
     if (!err) {
-      res.json({ "test": "Deleted discharge successfully" });
+      res.json({ "error": "Deleted discharge successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted discharge unsuccessful" });
+    res.json({ "error": "Deleted discharge unsuccessful" });
   })
 });
 
@@ -2448,7 +2448,7 @@ app.post("/api/agreement/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created agreement unsuccessful" });
+      res.json({ "error": "Created agreement unsuccessful" });
     }
   )
 });
@@ -2460,18 +2460,18 @@ app.get("/api/agreement/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all agreement unsuccessful" });
+      res.json({ "error": "Get all agreement unsuccessful" });
     })
 });
 app.post("/api/agreement/delete", (req, res) => {
   console.log("Deleting.... agreement", req.body.pk)
   db.rmAgreement(req.body.pk, (err, result) => {
     if (!err) {
-      res.json({ "test": "Deleted agreement successfully" });
+      res.json({ "error": "Deleted agreement successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted agreement unsuccessful" });
+    res.json({ "error": "Deleted agreement unsuccessful" });
   })
 });
 app.post("/api/agreement/update", (req, res) => {
@@ -2490,11 +2490,11 @@ app.post("/api/agreement/update", (req, res) => {
   ], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated agreement successfully" });
+      res.json({ "error": "Updated agreement successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated agreement unsuccessful" });
+    res.json({ "error": "Updated agreement unsuccessful" });
   })
 });
 
@@ -2516,7 +2516,7 @@ app.post("/api/note/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created note unsuccessful" });
+      res.json({ "error": "Created note unsuccessful" });
     }
   )
 });
@@ -2528,18 +2528,18 @@ app.get("/api/note/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all note unsuccessful" });
+      res.json({ "error": "Get all note unsuccessful" });
     })
 });
 app.post("/api/note/delete", (req, res) => {
   console.log("Deleting.... note", req.body.pk)
   db.rmNote(req.body.pk, (err, result) => {
     if (!err) {
-      res.json({ "test": "Deleted note successfully" });
+      res.json({ "error": "Deleted note successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted note unsuccessful" });
+    res.json({ "error": "Deleted note unsuccessful" });
   })
 });
 app.post("/api/note/update", (req, res) => {
@@ -2552,11 +2552,11 @@ app.post("/api/note/update", (req, res) => {
   ], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated note successfully" });
+      res.json({ "error": "Updated note successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated note unsuccessful" });
+    res.json({ "error": "Updated note unsuccessful" });
   })
 });
 
@@ -2581,7 +2581,7 @@ app.post("/api/certification/create", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Created certification unsuccessful" });
+      res.json({ "error": "Created certification unsuccessful" });
     }
   )
 });
@@ -2593,18 +2593,18 @@ app.get("/api/certification/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all certification unsuccessful" });
+      res.json({ "error": "Get all certification unsuccessful" });
     })
 });
 app.post("/api/certification/delete", (req, res) => {
   console.log("Deleting.... certification", req.body.pk)
   db.rmCertification(req.body.pk, (err, result) => {
     if (!err) {
-      res.json({ "test": "Deleted certification successfully" });
+      res.json({ "error": "Deleted certification successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Deleted certification unsuccessful" });
+    res.json({ "error": "Deleted certification unsuccessful" });
   })
 });
 app.post("/api/certification/update", (req, res) => {
@@ -2621,11 +2621,11 @@ app.post("/api/certification/update", (req, res) => {
   ], (err, result) => {
 
     if (!err) {
-      res.json({ "test": "Updated certification successfully" });
+      res.json({ "error": "Updated certification successfully" });
       return;
     }
     console.log(err)
-    res.json({ "test": "Updated certification unsuccessful" });
+    res.json({ "error": "Updated certification unsuccessful" });
   })
 });
 
@@ -2642,7 +2642,7 @@ app.get("/api/search/fields/:title/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all fields by Title unsuccessful" });
+      res.json({ "error": "Get all fields by Title unsuccessful" });
     })
 });
 app.get("/api/search/parcels/:pnumber/:dairy_id", (req, res) => {
@@ -2653,7 +2653,7 @@ app.get("/api/search/parcels/:pnumber/:dairy_id", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all parcels by pnumber unsuccessful" });
+      res.json({ "error": "Get all parcels by pnumber unsuccessful" });
     })
 });
 app.get("/api/search/field_crop/:field_id/:crop_id/:plant_date/:dairy_id", (req, res) => {
@@ -2666,7 +2666,7 @@ app.get("/api/search/field_crop/:field_id/:crop_id/:plant_date/:dairy_id", (req,
         return;
       }
       console.log(err)
-      res.json({ "test": "Get all searchFieldCropsByFieldCropPlantdate unsuccessful" });
+      res.json({ "error": "Get all searchFieldCropsByFieldCropPlantdate unsuccessful" });
     })
 });
 app.get("/api/search/field_crop_app/:field_crop_id/:app_date/:dairy_pk", (req, res) => {
@@ -2683,7 +2683,7 @@ app.get("/api/search/field_crop_app/:field_crop_id/:app_date/:dairy_pk", (req, r
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all searchFieldCropApplicationsByFieldCropIDAppDate unsuccessful" });
+      res.json({ "error": "Search all searchFieldCropApplicationsByFieldCropIDAppDate unsuccessful" });
     })
 });
 app.get("/api/search/field_crop_app_process_wastewater_analysis/:sample_date/:sample_desc/:dairy_pk", (req, res) => {
@@ -2700,7 +2700,7 @@ app.get("/api/search/field_crop_app_process_wastewater_analysis/:sample_date/:sa
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc unsuccessful" });
+      res.json({ "error": "Search all searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc unsuccessful" });
     })
 });
 app.get("/api/search/field_crop_app_freshwater_source/:src_desc/:src_type/:dairy_pk", (req, res) => {
@@ -2717,7 +2717,7 @@ app.get("/api/search/field_crop_app_freshwater_source/:src_desc/:src_type/:dairy
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all searchFieldCropAppFreshwaterSource unsuccessful" });
+      res.json({ "error": "Search all searchFieldCropAppFreshwaterSource unsuccessful" });
     })
 });
 app.get("/api/search/field_crop_app_freshwater_analysis/:sample_date/:sample_desc/:src_of_analysis/:fresh_water_source_id/:dairy_pk", (req, res) => {
@@ -2736,7 +2736,7 @@ app.get("/api/search/field_crop_app_freshwater_analysis/:sample_date/:sample_des
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all searchFieldCropAppFreshwaterAnalysis unsuccessful" });
+      res.json({ "error": "Search all searchFieldCropAppFreshwaterAnalysis unsuccessful" });
     })
 });
 app.get("/api/search/field_crop_app_solidmanure_analysis/:sample_date/:sample_desc/:src_of_analysis/:dairy_pk", (req, res) => {
@@ -2754,7 +2754,7 @@ app.get("/api/search/field_crop_app_solidmanure_analysis/:sample_date/:sample_de
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all searchFieldCropAppSolidmanureAnalysis unsuccessful" });
+      res.json({ "error": "Search all searchFieldCropAppSolidmanureAnalysis unsuccessful" });
     })
 });
 // import_date, material_type, import_desc
@@ -2773,7 +2773,7 @@ app.get("/api/search/nutrient_import/:import_date/:material_type/:import_desc/:d
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all nutrient_import unsuccessful" });
+      res.json({ "error": "Search all nutrient_import unsuccessful" });
     })
 });
 
@@ -2793,7 +2793,7 @@ app.get("/api/search/operators/:title/:primary_phone/:dairy_pk", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all operators unsuccessful" });
+      res.json({ "error": "Search all operators unsuccessful" });
     })
 });
 // title, first_name, primary_phone, street, city_zip
@@ -2814,7 +2814,7 @@ app.get("/api/search/export_hauler/:title/:first_name/:primary_phone/:street/:ci
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all export_hauler unsuccessful" });
+      res.json({ "error": "Search all export_hauler unsuccessful" });
     })
 });
 app.get("/api/search/export_contact/:first_name/:primary_phone/:dairy_pk", (req, res) => {
@@ -2831,7 +2831,7 @@ app.get("/api/search/export_contact/:first_name/:primary_phone/:dairy_pk", (req,
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all searchExportContact unsuccessful" });
+      res.json({ "error": "Search all searchExportContact unsuccessful" });
     })
 });
 
@@ -2852,7 +2852,7 @@ app.get("/api/search/export_recipient/:title/:street/:city_zip/:primary_phone/:d
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all searchExportRecipient unsuccessful" });
+      res.json({ "error": "Search all searchExportRecipient unsuccessful" });
     })
 });
 
@@ -2873,7 +2873,7 @@ app.get("/api/search/export_dest/:export_recipient_id/:pnumber/:street/:city_zip
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all searchExportDest unsuccessful" });
+      res.json({ "error": "Search all searchExportDest unsuccessful" });
     })
 });
 ////////////////////////////////
@@ -2892,7 +2892,7 @@ app.get("/api/search/field_crop_app_soil_analysis/:field_id/:sample_date/:dairy_
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all searchFieldCropApplicationSoilAnalysis unsuccessful" });
+      res.json({ "error": "Search all searchFieldCropApplicationSoilAnalysis unsuccessful" });
     })
 });
 
@@ -2910,7 +2910,7 @@ app.get("/api/search/drain_source/:src_desc/:dairy_pk", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all drain_source unsuccessful" });
+      res.json({ "error": "Search all drain_source unsuccessful" });
     })
 });
 
@@ -2925,7 +2925,7 @@ app.get("/api/search/certification/:no_val/:dairy_pk", (req, res) => {
         return;
       }
       console.log(err)
-      res.json({ "test": "Search all certifications unsuccessful" });
+      res.json({ "error": "Search all certifications unsuccessful" });
     })
 });
 
@@ -2943,7 +2943,7 @@ app.post("/api/postImage", (req, res) => {
   // tempFilePath: '',
   // truncated: false,
   // mimetype: 'image/heic',
-  // res.json({"test": `Sent test data: ${req.body.data}`})
+  // res.json({"error": `Sent test data: ${req.body.data}`})
 })
 
 app.get('/', (req, res) => {

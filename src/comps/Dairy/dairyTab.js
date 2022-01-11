@@ -135,6 +135,7 @@ class DairyTab extends Component {
       this.getAllFields()
       this.getAllParcels()
     }
+    // TODO() this is called when unmounting and produces a warning error
     this.getDaysInPeriod()
   }
 
@@ -172,7 +173,6 @@ class DairyTab extends Component {
     let nutrientBudgetB = props[0]
     let summary = props[1]
 
-
     let nutrientData = Object.keys(nutrientBudgetB).map(key => {
       const ev = nutrientBudgetB[key]
       return { key: key, data: [ev.total_app, ev.anti_harvests, ev.actual_harvests] }
@@ -180,8 +180,6 @@ class DairyTab extends Component {
 
     let totalNutrientAppAntiHarvestData = [summary.total_app, summary.anti_harvests, summary.actual_harvests]
     // console.log("Creating Overall Summary Chart:", totalNutrientAppAntiHarvestData, summary)
-
-
 
     let materialLabels = [
       'Existing soil nutrient content',

@@ -323,7 +323,7 @@ class HomePage extends Component {
             <Grid item container xs={12}>
               <Grid item xs={6} align='center'>
                 <Tooltip title="Light Theme">
-                  <IconButton fullWidth color="primary" variant="outlined" style={{ marginTop: "0px" }}
+                  <IconButton color="primary" variant="outlined" style={{ marginTop: "0px" }}
                     onClick={() => this.props.toggleTheme('Light')}>
                     <FlareIcon />
                   </IconButton>
@@ -331,7 +331,7 @@ class HomePage extends Component {
               </Grid>
               <Grid item xs={6} align='center'>
                 <Tooltip title="Dark Theme">
-                  <IconButton fullWidth color="primary" variant="outlined" style={{ marginTop: "0px" }}
+                  <IconButton color="primary" variant="outlined" style={{ marginTop: "0px" }}
                     onClick={() => this.props.toggleTheme('Dark')}>
                     <NightsStayIcon />
                   </IconButton>

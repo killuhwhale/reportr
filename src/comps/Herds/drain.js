@@ -23,7 +23,7 @@ import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-type
 import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import {
-  DRAIN, TSV_INFO, readTSV, processTSVText, uploadTSVToDB, lazyGet
+  DRAIN, TSV_INFO, readTSV, uploadTileDrainage, uploadTSVToDB
 } from "../../utils/TSV"
 
 
@@ -242,64 +242,7 @@ class Drain extends Component {
   onUploadFieldCropAppDrainTSV() {
     // 24 columns from TSV
     let dairy_pk = this.state.dairy_id
-    let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
-
-
-
-    let result_promises = rows.map((row, i) => {
-      const [
-        src_desc,
-        sample_date,
-        sample_desc,
-        src_of_analysis,
-        nh4_con,
-        no2_con,
-        p_con,
-        ec,
-        tds,
-        nh4_dl,
-        no2_dl,
-        p_dl,
-        ec_dl,
-        tds_dl
-      ] = row
-      let drainSourceData = {
-        dairy_id: dairy_pk,
-        src_desc
-      }
-
-      return new Promise((resolve, reject) => {
-        lazyGet('drain_source', encodeURIComponent(src_desc), drainSourceData, dairy_pk)
-          .then(([drainSource]) => {
-            console.log(drainSource)
-            const drainAnalysisData = {
-              dairy_id: dairy_pk,
-              drain_source_id: drainSource.pk,
-              sample_date,
-              sample_desc,
-              src_of_analysis,
-              nh4_con,
-              no2_con,
-              p_con,
-              ec,
-              tds,
-              nh4_dl,
-              no2_dl,
-              p_dl,
-              ec_dl,
-              tds_dl
-            }
-            resolve(post(`${this.props.BASE_URL}/api/drain_analysis/create`, drainAnalysisData))
-          })
-          .catch(err => {
-            console.log(err)
-            reject(err)
-          })
-      })
-    })
-
-
-    Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
+    uploadTileDrainage(this.state.tsvText, this.state.tsvType, dairy_pk)
       .then(res => {
         console.log("Completed uploading Process Wastewater TSV", res)
         uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)

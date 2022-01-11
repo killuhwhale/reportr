@@ -547,7 +547,7 @@ CREATE TABLE IF NOT EXISTS field_crop_app_soil_analysis(
   k_dl NUMERIC(8,2) DEFAULT 100,
   ec_dl NUMERIC(8,2) DEFAULT 0.0,
   org_matter_dl NUMERIC(8,2) DEFAULT 0.0,
-  UNIQUE(dairy_id, field_id, sample_date),
+  UNIQUE(dairy_id, field_id, sample_date, sample_desc),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
     REFERENCES dairies(pk)

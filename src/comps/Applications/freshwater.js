@@ -31,7 +31,7 @@ import { checkEmpty } from '../../utils/TSV'
 import { FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
 import { groupBySortBy } from "../../utils/format"
 import {
-  readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromTSVListRow, uploadTSVToDB, uploadNutrientApp
+  readTSV, uploadTSVToDB, uploadNutrientApp
 } from "../../utils/TSV"
 import { DatePicker } from '@material-ui/pickers'
 

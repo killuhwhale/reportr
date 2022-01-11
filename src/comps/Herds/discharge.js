@@ -25,7 +25,7 @@ import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-type
 import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import {
-  DISCHARGE, TSV_INFO, readTSV, processTSVText, uploadTSVToDB, lazyGet, checkEmpty
+  DISCHARGE, TSV_INFO, readTSV, uploadDischargeTSV, uploadTSVToDB
 } from "../../utils/TSV"
 import { toFloat } from '../../utils/convertCalc'
 
@@ -159,42 +159,44 @@ class Discharge extends Component {
   onUploadFieldCropAppDischargeTSV() {
     // 24 columns from TSV
     let dairy_pk = this.state.dairy_id
-    let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
+    // let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
 
 
-    let result_promises = rows.map((row, i) => {
-      const [
-        discharge_type,
-        discharge_datetime,
-        discharge_loc,
-        vol,
-        vol_unit,
-        duration_of_discharge,
-        discharge_src,
-        method_of_measuring,
-        sample_location_reason,
-        ref_number
-      ] = row
+    // let result_promises = rows.map((row, i) => {
+    //   const [
+    //     discharge_type,
+    //     discharge_datetime,
+    //     discharge_loc,
+    //     vol,
+    //     vol_unit,
+    //     duration_of_discharge,
+    //     discharge_src,
+    //     method_of_measuring,
+    //     sample_location_reason,
+    //     ref_number
+    //   ] = row
 
-      let dischargeData = {
-        dairy_id: dairy_pk,
-        discharge_type,
-        discharge_datetime,
-        discharge_loc,
-        vol: toFloat(checkEmpty(vol)),
-        vol_unit,
-        duration_of_discharge: toFloat(checkEmpty(duration_of_discharge)),
-        discharge_src,
-        method_of_measuring,
-        sample_location_reason,
-        ref_number
-      }
+    //   let dischargeData = {
+    //     dairy_id: dairy_pk,
+    //     discharge_type,
+    //     discharge_datetime,
+    //     discharge_loc,
+    //     vol: toFloat(checkEmpty(vol)),
+    //     vol_unit,
+    //     duration_of_discharge: toFloat(checkEmpty(duration_of_discharge)),
+    //     discharge_src,
+    //     method_of_measuring,
+    //     sample_location_reason,
+    //     ref_number
+    //   }
 
-      return post(`${this.props.BASE_URL}/api/discharge/create`, dischargeData)
-    })
+    //   return post(`${this.props.BASE_URL}/api/discharge/create`, dischargeData)
+    // })
 
 
-    Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
+    // Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
+
+    uploadDischargeTSV(this.state.tsvText, this.state.tsvType, dairy_pk)
       .then(res => {
         console.log("Completed uploading Discharge TSV", res)
         uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)

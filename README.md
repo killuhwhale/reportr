@@ -51,7 +51,6 @@ Problems:
     - Ensure there are rows of data bfore uploading.
     - Need to avoid updating TSV file in DB with an empty doc....
 
-
   - Dates are slightly off due to timezone.... (I think)
     - Creating a date inititally for a dairy, days should be jan 1st to dec 31st 
       - Currently, the dates are created as dec 31st to dec 30th (1 day off)
@@ -59,11 +58,13 @@ Problems:
   - Delete Dairy base
     - No way to delete dairy base
 
-
   - Remove amount_applied & Lbs/acre salt on Commercial fertilizer TSV
     - Remove from upload process and DB schema
 
+  - Decided to NOT use spreadsheet calculated columns
+    - Freshwater App uses precalculated totalN from spreadsheet
 
+    
   - (BUG) No validation checks
     - All Spreadsheets need Numeric Data Validation. Could add to Spreadsheet but should also be in the code.
       - Check website by entering wrong info and implement it.
