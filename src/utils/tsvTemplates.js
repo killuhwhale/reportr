@@ -182,7 +182,7 @@ const cfTemplate = {
     "Amount Imported (tons/ gals)": '',
     "Method of Reporting": '',
     "Application Rate (Lbs/Acre)": '',
-    "Amount applied ": '',
+    "Amount Applied": '',
     "% Moisture": '',
     "% N": '',
     "% P": '',
@@ -192,7 +192,7 @@ const cfTemplate = {
 
 
 const smExportTemplate = {
-    "Date last hauled": '',
+    "Date": '',
     "Operator Name": '',
     "Operator Phone": '',
     "Operator 2nd Phone": '',
@@ -201,8 +201,7 @@ const smExportTemplate = {
     "Operator State": '',
     "Operator Zip": '',
     "Operator Is Owner": '',
-    "Operator": '',
-    "Responsible for Fees": '',
+    "Operator Responsible for Fees": '',
     "Contact First": '',
     "Contact Phone": '',
     "Hauler": '',
@@ -213,7 +212,6 @@ const smExportTemplate = {
     "Hauler County": '',
     "Hauler City": '',
     "Hauler State": '',
-
     "Hauler Zip": '',
     "Recipient": '',
     "Destination Type": '',
@@ -231,7 +229,7 @@ const smExportTemplate = {
     "Destination City": '',
     "Destination State": '',
     "Destination Zip": '',
-    "Method used to determine amount hauled:": '',
+    "Method Used to Determine Amount Hauled": '',
     "Reporting Method": '',
     "Material Type": '',
     "Amount (Tons)": '',
@@ -244,7 +242,7 @@ const smExportTemplate = {
 
 
 const wwExportTemplate = {
-    "Date last hauled": '',
+    "Date": '',
     "Operator Name": '',
     "Operator Phone": '',
     "Operator 2nd Phone": '',
@@ -253,8 +251,7 @@ const wwExportTemplate = {
     "Operator State": '',
     "Operator Zip": '',
     "Operator Is Owner": '',
-    "Operator": '',
-    "Responsible for Fees": '',
+    "Operator Responsible for Fees": '',
     "Contact First": '',
     "Contact Phone": '',
     "Hauler": '',
@@ -282,12 +279,11 @@ const wwExportTemplate = {
     "Destination City": '',
     "Destination State": '',
     "Destination Zip": '',
-    "Method used to determine amount hauled:": '',
-    "Reporting Method": '',
+    "Method Used to Determine Amount Hauled": '',
     "Material Type": '',
     "Hours": '',
     "GPM": '',
-    "Amount (Gallons)": '',
+    "Amount (Gals)": '',
     "Source Description": '',
     "N (PPM)": '',
     "P (PPM)": '',
@@ -358,8 +354,6 @@ const soilTemplate = {
     "K3 DL": '',
     "EC3 DL": '',
     "Organic Matter3 DL": '',
-
-
 }
 
 
@@ -387,16 +381,16 @@ const tiledrainageTemplate = {
     "Sample Date": '',
     "Sample Description": '',
     "Source of Analysis": '',
-    "Ammonium-N (mg/ L)": '',
-    "Nitrate-N": '',
-    "P": '',
-    "EC (μmhos/cm)": '',
-    "TDS (mg/ L)": '',
-    "Ammonium-N DL (mg/ L)": '',
-    "Nitrate-N DL": '',
+    "NH4-N (mg/L)": '',
+    "NO3-N (mg/L)": '',
+    "P (mg/L)": '',
+    "EC (umhos/cm)": '',
+    "TDS (mg/L)": '',
+    "NH4-N DL": '',
+    "NO3-N DL": '',
     "P DL": '',
-    "EC DL (μmhos/cm)": '',
-    "TDS DL (mg/ L)": '',
+    "EC DL": '',
+    "TDS DL": '',
 }
 
 

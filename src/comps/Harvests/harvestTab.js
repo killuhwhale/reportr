@@ -14,7 +14,7 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import HarvestView from "./harvestView"
 import AddFieldCropHarvestModal from '../Modals/addFieldCropHarvestModal'
-import UploadHarvestCSVModal from '../Modals/uploadHarvestCSVModal'
+import UploadTSVModal from '../Modals/uploadTSVModal'
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 import { get, post } from '../../utils/requests';
 import { MG_KG, KG_MG } from '../../utils/convertCalc'
@@ -24,7 +24,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import {
-  readTSV, processTSVText, createFieldSet, createFieldsFromTSV, createDataFromHarvestTSVListRow, uploadTSVToDB, HARVEST
+  readTSV, uploadHarvestTSV, uploadTSVToDB, HARVEST
 } from "../../utils/TSV"
 
 
@@ -64,14 +64,7 @@ class HarvestTab extends Component {
         n_lbs_acre: 0,
         p_lbs_acre: 0,
         k_lbs_acre: 0,
-        salt_lbs_acre: 0
-
-
-
-
-
-
-
+        salt_lbs_acre: 0,
       }
     }
   }
@@ -249,35 +242,23 @@ class HarvestTab extends Component {
 
   // Triggered when user presses Add btn in Modal
   uploadTSV() {
-    let rows = processTSVText(this.state.tsvText, TSV_INFO[HARVEST].numCols)
-
-    // Create a set of fields to ensure duplicates are not attempted.
-    let fields = createFieldSet(rows)
+    const dairy_id = this.state.dairy.pk
 
 
-    createFieldsFromTSV(fields)      // Create fields before proceeding
-      .then(createFieldRes => {
-        console.log(createFieldRes)
-        let result_promises = rows.map((row, i) => {
-          return createDataFromHarvestTSVListRow(row, i, this.state.dairy.pk)    // Create entries for ea row in TSV file
-        })
-
-        Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
-          .then(res => {
-            uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, HARVEST) // remove this when done testing, do this after the data was successfully create in DB
-            this.toggleShowUploadTSV(false)
-            this.getAllFieldCropHarvests()
-            this.props.onAlert('Uploaded!', 'success')
-          })
-          .catch(err => {
-            console.log("Error with all promises")
-            console.log(err)
-            this.props.onAlert('Failed uploading!', 'error')
-          })
+    uploadHarvestTSV(this.state.tsvText, HARVEST, dairy_id)
+      .then(res => {
+        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, HARVEST) // remove this when done testing, do this after the data was successfully create in DB
+        this.toggleShowUploadTSV(false)
+        this.getAllFieldCropHarvests()
+        this.props.onAlert('Uploaded!', 'success')
       })
-      .catch(createFieldErr => {
-        console.log(createFieldErr)
+      .catch(err => {
+        console.log("Error with all promises")
+        console.log(err)
+        this.props.onAlert('Failed uploading!', 'error')
       })
+
+
   }
 
   toggleShowTSVsModal(val) {
@@ -393,11 +374,11 @@ class HarvestTab extends Component {
           onClose={() => this.confirmDeleteAllFromTable(false)}
         />
 
-        <UploadHarvestCSVModal
+        <UploadTSVModal
           open={this.state.showUploadTSV}
           actionText="Upload"
           cancelText="Cancel"
-          modalText={`Import TSV file, (must be a tab separated value file)`}
+          modalText={`Upload Production Records TSV`}
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.uploadTSV.bind(this)}
           onChange={this.onCSVChange.bind(this)}

@@ -59,6 +59,10 @@ const groupByKeys = (list, groupKeys) => {
 
 // Formats a number accorind to precision as a string with commas
 const formatFloat = (num, precision = 2) => {
+  if (num === null || num === undefined) {
+    console.warn("Null or undefined received.")
+    return new Intl.NumberFormat().format(parseFloat('0').toFixed(precision))
+  }
   if (precision < 0 || precision > 4) {
     precision = 2
   }

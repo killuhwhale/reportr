@@ -17,6 +17,7 @@ const LBS_PER_GAL = 8.345
 
 
 const opArrayByPos = (a, b, op = "+") => {
+  // Given two arrays of same length and an operator, apply the operation between the two values in each array by index
   return a.map((el, i) => {
     return op === '+' ? el + b[i] : op === '-' ? el - b[i] : op === '*' ? el * b[i] : op === '/' ? el / (b[i] != 0 ? b[i] : 1) : null
   })
@@ -1106,7 +1107,6 @@ const getNutrientAnalysisA = (dairy_id) => {
           el.tds_dl = formatFloat(el.tds_dl)
           return el
         })
-
         drains = groupByKeys(drains, ['drain_source_id'])
 
         soils = soils.map(el => {
@@ -1125,8 +1125,6 @@ const getNutrientAnalysisA = (dairy_id) => {
           return el
         })
         soils = groupByKeys(soils, ['field_id'])
-
-        console.log('soils:', soils)
 
         resolve({
           'nutrientAnalysis': {

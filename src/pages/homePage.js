@@ -229,7 +229,7 @@ class HomePage extends Component {
         <Grid item container alignItems='flex-start' xs={2} >
           <Grid item container xs={12}>
             <Grid item xs={12} align='center'>
-              <img src={B64_LOGO} width="100%" height='65px' />
+              <img src={'/fr_logo_alpha.png'} width="100%" height='65px' />
             </Grid>
             <Grid item container justifyContent='center' alignItems='center' xs={12}>
               <Grid item xs={8} style={{ marginBottom: '16px' }}>

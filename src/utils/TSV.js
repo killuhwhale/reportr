@@ -10,18 +10,19 @@ import {
 
 export default function mTea() { }
 
+const isTesting = false
 
-export const HARVEST = 'Production Records'
-export const PROCESS_WASTEWATER = 'WW Applications'
-export const FRESHWATER = 'FW Applications'
-export const SOLIDMANURE = 'SM Applications'
-export const FERTILIZER = 'Commercial Fertilizer'
-export const SOIL = 'Soil Analyses'
-export const PLOWDOWN_CREDIT = 'Plowdown Credit'
-export const DRAIN = 'Tile Drainage Systems'
-export const DISCHARGE = 'Discharge'
-export const MANURE = 'SM Exports'
-export const WASTEWATER = 'WW Exports'
+export const HARVEST = isTesting ? 'Test - Production Records' : 'Production Records'
+export const PROCESS_WASTEWATER = isTesting ? 'Test - WW Applications' : 'WW Applications'
+export const FRESHWATER = isTesting ? 'Test - FW Applications' : 'FW Applications'
+export const SOLIDMANURE = isTesting ? 'Test - SM Applications' : 'SM Applications'
+export const FERTILIZER = isTesting ? 'Test - Commercial Fertilizer' : 'Commercial Fertilizer'
+export const SOIL = isTesting ? 'Test - Soil Analyses' : 'Soil Analyses'
+export const PLOWDOWN_CREDIT = isTesting ? 'Test - Plowdown Credit' : 'Plowdown Credit'
+export const DRAIN = isTesting ? 'Test - Tile Drainage Systems' : 'Tile Drainage Systems'
+export const DISCHARGE = isTesting ? 'Test - Discharges' : 'Discharges'
+export const MANURE = isTesting ? 'Test - SM Exports' : 'SM Exports'
+export const WASTEWATER = isTesting ? 'Test - WW Exports' : 'WW Exports'
 
 
 export const SHEET_NAMES = [
@@ -86,9 +87,9 @@ export const TSV_INFO = {
   }
 }
 
-export const lazyGet = (endpoint, value, data, dairy_pk) => {
+export const lazyGet = (endpoint, value, data, dairy_id) => {
   return new Promise((resolve, rej) => {
-    get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
+    get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_id}`)
       .then(res => {
         // If not found, Attempt to create
         if (Object.keys(res).length == 0) {
@@ -97,15 +98,10 @@ export const lazyGet = (endpoint, value, data, dairy_pk) => {
               // console.log("Created from lazyget: ", result)
 
               // If there is an error response from server.
-              if (result.test) {
-
+              if (result.error) {
                 // console.log("Create failed, race conditon happened. Attempting to re-fetch")
-                get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_pk}`)
+                get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_id}`)
                   .then(secondResult => {
-                    // console.log("Found entry after failing to create entry", secondResult)
-                    if (secondResult.length == 0) {
-                      // console.log(endpoint, value, data)
-                    }
                     // Found entry, on second attempt.
                     resolve(secondResult)
                   })
@@ -299,7 +295,7 @@ export const createFieldSetFromMap = (rows) => {
  *      creating a field_crop_app_process_wastewater, etc... fresh water, SM, and Commerial fetilizer(yet to be created.)
  * 
  */
-export const createFieldsFromTSV = (fields, dairy_pk) => {
+export const createFieldsFromTSV = (fields, dairy_id) => {
   // Helper to create all fields in spreadsheet since they are parents of everything else
   // There is an issue when multiple rows try to create a field and there is a race condition conflict.
 
@@ -307,7 +303,7 @@ export const createFieldsFromTSV = (fields, dairy_pk) => {
   let promises = fields.map(field => {
     let data = {
       data: {
-        dairy_id: dairy_pk,
+        dairy_id: dairy_id,
         title: field[0],
         acres: field[1],
         cropable: field[2]
@@ -329,19 +325,19 @@ export const createFieldsFromTSV = (fields, dairy_pk) => {
 /** Following three methods help create or find data for rows associated with nutrient applications.
  * 
  */
-const prepareFieldCrop = (field_title, crop_title, cropable, acres, dairy_pk) => {
+const prepareFieldCrop = (field_title, crop_title, cropable, acres, dairy_id) => {
   let fieldData = {
     data: {
       title: field_title,
       cropable: cropable,
       acres: acres,
-      dairy_id: dairy_pk
+      dairy_id: dairy_id
     }
   }
 
   return new Promise((resolve, rej) => {
     Promise.all([
-      lazyGet('fields', field_title, fieldData, dairy_pk),
+      lazyGet('fields', field_title, fieldData, dairy_id),
       get(`${BASE_URL}/api/crops/${crop_title}`) // list of crops in DB are predefined based on spreadsheet. HARDCODED
     ])
       .then(res => {
@@ -352,14 +348,14 @@ const prepareFieldCrop = (field_title, crop_title, cropable, acres, dairy_pk) =>
       })
   })
 }
-const getFieldCrop = (commonRowData, dairy_pk) => {
+const getFieldCrop = (commonRowData, dairy_id) => {
   const [
     app_date, field_title, acres_planted, cropable, acres, crop_title, plant_date,
     precip_before, precip_during, precip_after, app_method
   ] = commonRowData
   return new Promise((resolve, reject) => {
     console.log(`Preparing Field (${field_title}) Crop(${crop_title})`)
-    prepareFieldCrop(field_title, crop_title, cropable, acres, dairy_pk)
+    prepareFieldCrop(field_title, crop_title, cropable, acres, dairy_id)
       .then(res => {
         let fieldObj = res[0][0]
         let cropObj = res[1][0]
@@ -370,7 +366,7 @@ const getFieldCrop = (commonRowData, dairy_pk) => {
             const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
             let field_crop_search_url = `${fieldObj.pk}/${cropObj.pk}/${encodeURIComponent(plant_date)}`
             let field_crop_data = {
-              dairy_id: dairy_pk,
+              dairy_id: dairy_id,
               field_id: fieldObj.pk,
               crop_id: cropObj.pk,
               plant_date: plant_date,
@@ -382,7 +378,7 @@ const getFieldCrop = (commonRowData, dairy_pk) => {
               k: typical_k,
               salt: salt
             }
-            lazyGet('field_crop', field_crop_search_url, field_crop_data, dairy_pk)
+            lazyGet('field_crop', field_crop_search_url, field_crop_data, dairy_id)
               .then(field_crop_res => {
                 resolve(field_crop_res[0])
               })
@@ -400,18 +396,18 @@ const getFieldCrop = (commonRowData, dairy_pk) => {
   })
 }
 
-const getFieldCropApp = (commonRowData, dairy_pk) => {
+const getFieldCropApp = (commonRowData, dairy_id) => {
   const [
     app_date, field_title, acres_planted, cropable, acres, crop_title, plant_date,
     precip_before, precip_during, precip_after, app_method
   ] = commonRowData
 
   return new Promise((resolve, reject) => {
-    getFieldCrop(commonRowData, dairy_pk)
+    getFieldCrop(commonRowData, dairy_id)
       .then(field_crop_res => {
         const field_crop_app_search_url = `${field_crop_res.pk}/${encodeURIComponent(app_date)}`
         const field_crop_app_data = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_crop_id: field_crop_res.pk,
           app_date: app_date,
           app_method: app_method,
@@ -420,7 +416,7 @@ const getFieldCropApp = (commonRowData, dairy_pk) => {
           precip_after: precip_after,
         }
 
-        lazyGet('field_crop_app', field_crop_app_search_url, field_crop_app_data, dairy_pk)
+        lazyGet('field_crop_app', field_crop_app_search_url, field_crop_app_data, dairy_id)
           .then(field_crop_app_res => {
             resolve(field_crop_app_res[0])
           })
@@ -428,7 +424,7 @@ const getFieldCropApp = (commonRowData, dairy_pk) => {
   })
 }
 
-const getFieldCropFromMap = (commonRowData, dairy_pk) => {
+const getFieldCropFromMap = (commonRowData, dairy_id) => {
   const field_title = commonRowData['Field']
   const acres_planted = commonRowData['Acres Planted']
   const cropable = commonRowData['Cropable']
@@ -438,7 +434,7 @@ const getFieldCropFromMap = (commonRowData, dairy_pk) => {
 
   return new Promise((resolve, reject) => {
     console.log(`Preparing Field (${field_title}) Crop(${crop_title})`)
-    prepareFieldCrop(field_title, crop_title, cropable, acres, dairy_pk)
+    prepareFieldCrop(field_title, crop_title, cropable, acres, dairy_id)
       .then(res => {
         let fieldObj = res[0][0]
         let cropObj = res[1][0]
@@ -448,7 +444,7 @@ const getFieldCropFromMap = (commonRowData, dairy_pk) => {
             const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
             let field_crop_search_url = `${fieldObj.pk}/${cropObj.pk}/${encodeURIComponent(plant_date)}`
             let field_crop_data = {
-              dairy_id: dairy_pk,
+              dairy_id: dairy_id,
               field_id: fieldObj.pk,
               crop_id: cropObj.pk,
               plant_date: plant_date,
@@ -460,7 +456,7 @@ const getFieldCropFromMap = (commonRowData, dairy_pk) => {
               k: typical_k,
               salt: salt
             }
-            lazyGet('field_crop', field_crop_search_url, field_crop_data, dairy_pk)
+            lazyGet('field_crop', field_crop_search_url, field_crop_data, dairy_id)
               .then(field_crop_res => {
                 resolve(field_crop_res[0])
               })
@@ -479,7 +475,7 @@ const getFieldCropFromMap = (commonRowData, dairy_pk) => {
 }
 
 
-const getFieldCropAppFromMap = (commonRowData, dairy_pk) => {
+const getFieldCropAppFromMap = (commonRowData, dairy_id) => {
   const app_date = commonRowData['Application Date']
   const precip_before = commonRowData['Rain Day Prior to Event']
   const precip_during = commonRowData['Rain Day of Event']
@@ -488,11 +484,11 @@ const getFieldCropAppFromMap = (commonRowData, dairy_pk) => {
 
 
   return new Promise((resolve, reject) => {
-    getFieldCropFromMap(commonRowData, dairy_pk)
+    getFieldCropFromMap(commonRowData, dairy_id)
       .then(field_crop_res => {
         const field_crop_app_search_url = `${field_crop_res.pk}/${encodeURIComponent(app_date)}`
         const field_crop_app_data = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_crop_id: field_crop_res.pk,
           app_date: app_date,
           app_method: app_method,
@@ -501,7 +497,7 @@ const getFieldCropAppFromMap = (commonRowData, dairy_pk) => {
           precip_after: precip_after,
         }
 
-        lazyGet('field_crop_app', field_crop_app_search_url, field_crop_app_data, dairy_pk)
+        lazyGet('field_crop_app', field_crop_app_search_url, field_crop_app_data, dairy_id)
           .then(field_crop_app_res => {
             console.log("FCAFromMap", field_crop_app_res)
             resolve(field_crop_app_res[0])
@@ -517,50 +513,39 @@ const getFieldCropAppFromMap = (commonRowData, dairy_pk) => {
  * 
  */
 export const onUploadXLSX = (dairy_id, tsvText, numCols, tsvType, uploadedFilename) => {
-  // 24 columns from TSV
-  let rows = processTSVText(tsvText, numCols) // extract rows from Text of tsv file TODO()
-  console.log(rows)
-  if (rows.length < 1) {
-    return
+  const nutrientAppTypes = [PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT]
+  let promise = null
+  if (tsvType === MANURE || tsvType === WASTEWATER) {
+    // return createDataFromManureExportTSVListRow(row, i, dairy_id)
+    promise = uploadExportTSV(tsvText, tsvType, dairy_id)
   }
+  if (tsvType === HARVEST) {
+    promise = uploadHarvestTSV(tsvText, tsvType, dairy_id)
+    // return createDataFromHarvestTSVListRow(row, i, dairy_id)
+  }
+  if (tsvType === DISCHARGE) {
+    promise = uploadDischargeTSV(tsvText, tsvType, dairy_id)
+  }
+  if (tsvType === DRAIN) {
+    promise = uploadTileDrainage(tsvText, tsvType, dairy_id)
+  }
+  if (nutrientAppTypes.indexOf(tsvType >= 0)) {
+    promise = uploadNutrientApp(tsvText, tsvType, dairy_id)
+  }
+
   return new Promise((resolve, reject) => {
-    // Create a set of fields to ensure duplicates are not attempted.
-    let fields = createFieldSet(rows)
-    createFieldsFromTSV(fields, dairy_id)      // Create fields before proceeding
-      .then(createFieldRes => {
-        let result_promises = rows.map((row, i) => {
-
-          if (tsvType === MANURE) {
-            return createDataFromManureExportTSVListRow(row, i, dairy_id)
-          }
-          if (tsvType === WASTEWATER) {
-            return createDataFromWastewaterExportTSVListRow(row, i, dairy_id)
-          }
-
-          if (tsvType === HARVEST) {
-            return createDataFromHarvestTSVListRow(row, i, dairy_id)
-          }
-          return createDataFromTSVListRow(row, i, dairy_id, tsvType)    // Create entries for ea row in TSV file based on Type
+    promise.then(res => {
+      uploadTSVToDB(uploadedFilename, tsvText, dairy_id, tsvType)
+        .then(res => {
+          resolve("Complete")
         })
-
-        Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
-          .then(res => {
-            uploadTSVToDB(uploadedFilename, tsvText, dairy_id, tsvType)
-              .then(res => {
-                resolve("Complete")
-              })
-              .catch(uploadTSVToDBErr => {
-                reject(uploadTSVToDBErr)
-              })
-          })
-          .catch(err => {
-            console.log("Error with all promises", err)
-            reject(err)
-          })
-      })
-      .catch(createFieldErr => {
-        console.log(createFieldErr)
-        reject(createFieldErr)
+        .catch(uploadTSVToDBErr => {
+          reject(uploadTSVToDBErr)
+        })
+    })
+      .catch(err => {
+        console.log("Error with all promises", err)
+        reject(err)
       })
   })
 }
@@ -601,7 +586,7 @@ export const uploadXLSX = (workbook, dairy_id) => {
 /** Creates field_crop_harvest by creating or finding the data for each row
  * // Typically creates teh field_crop
  */
-export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
+export const createDataFromHarvestTSVListRow = (row, i, dairy_id) => {
   console.log("Creating db entreis for data:: ", row)
   // Spreadsheet headers (used db col names)
   const [
@@ -638,14 +623,14 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
       title: field_title,
       cropable: cropable,
       acres: acres,
-      dairy_id: dairy_pk
+      dairy_id: dairy_id
     }
   }
 
   return new Promise((resolve, rej) => {
     // Get Field and Crop
     Promise.all([
-      lazyGet('fields', field_title, fieldData, dairy_pk),
+      lazyGet('fields', field_title, fieldData, dairy_id),
       get(`${BASE_URL}/api/crops/${crop_title}`) // list of crops in DB are predefined based on spreadsheet. HARDCODED
     ])
       .then(res => {
@@ -656,7 +641,7 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
             const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
             let field_crop_search_value = `${fieldObj.pk}/${cropObj.pk}/${encodeURIComponent(plant_date)}`
             let field_crop_data = {
-              dairy_id: dairy_pk,
+              dairy_id: dairy_id,
               field_id: fieldObj.pk,
               crop_id: cropObj.pk,
               plant_date: plant_date,
@@ -669,11 +654,11 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
               salt: salt
             }
 
-            lazyGet('field_crop', field_crop_search_value, field_crop_data, dairy_pk)
+            lazyGet('field_crop', field_crop_search_value, field_crop_data, dairy_id)
               .then(field_crop_res => {
                 const fieldCropObj = field_crop_res[0]
                 const field_crop_harvest_data = {
-                  dairy_id: dairy_pk,
+                  dairy_id: dairy_id,
                   field_crop_id: fieldCropObj.pk,
                   harvest_date,
                   sample_date,
@@ -718,10 +703,188 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_pk) => {
 
 }
 
+export const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
+
+  // Spreadsheet headers (used db col names)
+
+  const field_title = row['Field']
+  const acres_planted = row['Acres Planted']
+  const cropable = row['Cropable']
+  const acres = row['Total Acres']
+  const crop_title = row['Crop']
+  const plant_date = row['Plant Date']
+  const harvest_date = row['Harvest Dates']
+  const expected_yield_tons_acre = row['Expected Yield Tons/Acre']
+  const actual_yield_tons_per_acre = row['Actual Yield Tons/Acre']
+  const actual_yield = row['Actual Yield Total Tons']
+  const sample_date = row['Sample Date']
+  const src_of_analysis = row['Source of Analysis']
+  const method_of_reporting = row['Reporting Method']
+  const moisture = row['% Moisture']
+  const n = row['% N']
+  const p = row['% P']
+  const k = row['% K']
+  const tfs = row['% TFS Salt (Dry Basis)']
+  const n_dl = row['N DL (mg/kg)']
+  const p_dl = row['P DL (mg/kg)']
+  const k_dl = row['K DL (mg/kg)']
+  const tfs_dl = row['TFS DL %']
+
+  let fieldData = {
+    data: {
+      title: field_title,
+      cropable: cropable,
+      acres: acres,
+      dairy_id: dairy_id
+    }
+  }
+
+  return new Promise((resolve, rej) => {
+    // Get Field and Crop
+    Promise.all([
+      lazyGet('fields', field_title, fieldData, dairy_id),
+      get(`${BASE_URL}/api/crops/${crop_title}`) // list of crops in DB are predefined based on spreadsheet. HARDCODED
+    ])
+      .then(res => {
+        let fieldObj = res[0][0] // res = [res1, res2], res1=[data]
+        let cropObj = res[1][0]
+        if (fieldObj) {
+          if (cropObj) {
+            const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
+            let field_crop_search_value = `${fieldObj.pk}/${cropObj.pk}/${encodeURIComponent(plant_date)}`
+            let field_crop_data = {
+              dairy_id: dairy_id,
+              field_id: fieldObj.pk,
+              crop_id: cropObj.pk,
+              plant_date: plant_date,
+              acres_planted: acres_planted,
+              typical_yield: typical_yield,
+              moisture: typical_moisture,
+              n: typical_n,
+              p: typical_p,
+              k: typical_k,
+              salt: salt
+            }
+
+            lazyGet('field_crop', field_crop_search_value, field_crop_data, dairy_id)
+              .then(field_crop_res => {
+                const fieldCropObj = field_crop_res[0]
+                const field_crop_harvest_data = {
+                  dairy_id: dairy_id,
+                  field_crop_id: fieldCropObj.pk,
+                  harvest_date,
+                  sample_date,
+                  src_of_analysis,
+                  method_of_reporting,
+                  expected_yield_tons_acre: checkEmpty(expected_yield_tons_acre),
+                  actual_yield: checkEmpty(actual_yield),
+                  moisture: checkEmpty(moisture),
+                  n: checkEmpty(n),
+                  p: checkEmpty(p),
+                  k: checkEmpty(k),
+                  tfs: checkEmpty(tfs),
+                  n_dl: checkEmpty(n_dl),
+                  p_dl: checkEmpty(p_dl),
+                  k_dl: checkEmpty(k_dl),
+                  tfs_dl: checkEmpty(tfs_dl),
+                  n_lbs_acre: 1337,
+                  p_lbs_acre: 1337,
+                  k_lbs_acre: 1337,
+                  salt_lbs_acre: 1337,
+                }
+
+                resolve(post(`${BASE_URL}/api/field_crop_harvest/create`, field_crop_harvest_data))
+
+              })
+              .catch(field_crop_err => {
+                rej(field_crop_err)
+              })
+          } else {
+            rej(res)
+          }
+        } else {
+          rej(res)
+        }
+      })
+      .catch(err => {
+        rej(err)
+      })
+  })
+
+}
+
 export const checkEmpty = (val) => {
   // If value is empty, return 0 to avoid error in DB.
   return val.length > 0 ? val.replaceAll(',', '') : 0
 }
+/** Harvest
+ * 
+ * 
+ */
+
+export const createHarvestTSV = (tsvText, tsvType, dairy_id) => {
+  let rows = processTSVText(tsvText, TSV_INFO[tsvType].numCols)
+  // Create a set of fields to ensure duplicates are not attempted.
+  let fields = createFieldSet(rows)
+
+  return new Promise((resolve, reject) => {
+    createFieldsFromTSV(fields)      // Create fields before proceeding
+      .then(createFieldRes => {
+        console.log(createFieldRes)
+        let result_promises = rows.map((row, i) => {
+          return createDataFromHarvestTSVListRow(row, i, dairy_id)    // Create entries for ea row in TSV file
+        })
+
+        Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
+          .then(res => {
+            resolve(res)
+          })
+          .catch(err => {
+            console.log(err)
+            reject(err)
+          })
+      })
+      .catch(createFieldErr => {
+        console.log(createFieldErr)
+        reject(createFieldErr)
+      })
+  })
+}
+
+export const createHarvestTSVFromMap = (tsvText, tsvType, dairy_id) => {
+  let rows = processTSVTextAsMap(tsvText, tsvType)
+  // Create a set of fields to ensure duplicates are not attempted.
+  let fields = createFieldSetFromMap(rows)
+
+  return new Promise((resolve, reject) => {
+    createFieldsFromTSV(fields)      // Create fields before proceeding
+      .then(createFieldRes => {
+        console.log('Harvest createFields res', createFieldRes)
+        let result_promises = rows.map((row, i) => {
+          return createDataFromHarvestTSVListRowMap(row, i, dairy_id)    // Create entries for ea row in TSV file
+        })
+
+        Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
+          .then(res => {
+            resolve(res)
+          })
+          .catch(err => {
+            console.log(err)
+            reject(err)
+          })
+      })
+      .catch(createFieldErr => {
+        console.log(createFieldErr)
+        reject(createFieldErr)
+      })
+  })
+}
+export const uploadHarvestTSV = (tsvText, tsvType, dairy_id) => {
+  // return createHarvestTSV(tsvText, tsvType, dairy_id)
+  return createHarvestTSVFromMap(tsvText, tsvType, dairy_id)
+}
+
+
 
 /**
  *     Nutrient Applications
@@ -730,10 +893,10 @@ export const checkEmpty = (val) => {
  * 
  * @param {*} row: List of all columns from TSV row.
  * @param {*} field_crop_app: Object from DB with current data from row.
- * @param {*} dairy_pk: The primary key of the current dairy.
+ * @param {*} dairy_id: The primary key of the current dairy.
  * @returns The created field_crop_app_process_wastewater.
  */
-const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
+const createProcessWastewaterApplication = (row, field_crop_app, dairy_id) => {
   const [
     sample_date,
     sample_desc,
@@ -780,7 +943,7 @@ const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
     totalK
   ] = row.slice(11, TSV_INFO[PROCESS_WASTEWATER].numCols)
   const process_wastewater_analysis_data = {
-    dairy_id: dairy_pk,
+    dairy_id: dairy_id,
     sample_date,
     sample_desc,
     sample_data_src,
@@ -820,10 +983,10 @@ const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
   const field_crop_app_process_wastewater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}`
   return new Promise((resolve, rej) => {
     // Need to lazyget process_wastewater_analysis
-    lazyGet('field_crop_app_process_wastewater_analysis', field_crop_app_process_wastewater_analysis_search_url, process_wastewater_analysis_data, dairy_pk)
+    lazyGet('field_crop_app_process_wastewater_analysis', field_crop_app_process_wastewater_analysis_search_url, process_wastewater_analysis_data, dairy_id)
       .then(res => {
         const process_wastewater_data = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_crop_app_id: field_crop_app.pk,
           field_crop_app_process_wastewater_analysis_id: res[0].pk,
           app_desc,
@@ -842,7 +1005,7 @@ const createProcessWastewaterApplication = (row, field_crop_app, dairy_pk) => {
       })
   })
 }
-const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_pk) => {
+const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
   const sample_date = row['Sample Date']
   const sample_desc = row['Sample Description']
@@ -889,7 +1052,7 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_pk
 
 
   const process_wastewater_analysis_data = {
-    dairy_id: dairy_pk,
+    dairy_id: dairy_id,
     sample_date,
     sample_desc,
     sample_data_src,
@@ -933,11 +1096,11 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_pk
     lazyGet('field_crop_app_process_wastewater_analysis',
       field_crop_app_process_wastewater_analysis_search_url,
       process_wastewater_analysis_data,
-      dairy_pk
+      dairy_id
     )
       .then(res => {
         const process_wastewater_data = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_crop_app_id: field_crop_app.pk,
           field_crop_app_process_wastewater_analysis_id: res[0].pk,
           app_desc,
@@ -956,7 +1119,7 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_pk
   })
 }
 
-const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
+const createFreshwaterApplication = (row, field_crop_app, dairy_id) => {
 
 
   const [
@@ -1000,7 +1163,7 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
   // dairy_id, sample_date, sample_desc
   const field_crop_app_freshwater_source_search_url = `${encodeURIComponent(src_desc)}/${encodeURIComponent(src_type)}`
   const freshwater_source_data = {
-    dairy_id: dairy_pk,
+    dairy_id: dairy_id,
     src_desc,
     src_type
   }
@@ -1008,7 +1171,7 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
   // Get Source
   return new Promise((resolve, rej) => {
     // lazyget freshwater_source
-    lazyGet('field_crop_app_freshwater_source', field_crop_app_freshwater_source_search_url, freshwater_source_data, dairy_pk)
+    lazyGet('field_crop_app_freshwater_source', field_crop_app_freshwater_source_search_url, freshwater_source_data, dairy_id)
       .then(field_crop_app_freshwater_source_res => {
         if (field_crop_app_freshwater_source_res.length > 0) {
           let fresh_water_source_obj = field_crop_app_freshwater_source_res[0]
@@ -1018,7 +1181,7 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
           // lazyget freshwater_analysis , sample_date, sample_desc, src_of_analysis, fresh_water_source_id
           const field_crop_app_freshwater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${src_of_analysis}/${fresh_water_source_id}`
           const freshwater_analysis_data = {
-            dairy_id: dairy_pk,
+            dairy_id: dairy_id,
             fresh_water_source_id: fresh_water_source_obj.pk,
             sample_date,
             src_desc,
@@ -1051,11 +1214,11 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
             tds_dl: checkEmpty(tds_dl)
           }
 
-          lazyGet('field_crop_app_freshwater_analysis', field_crop_app_freshwater_analysis_search_url, freshwater_analysis_data, dairy_pk)
+          lazyGet('field_crop_app_freshwater_analysis', field_crop_app_freshwater_analysis_search_url, freshwater_analysis_data, dairy_id)
             .then(freshwater_analysis_res => {
               let freshwater_analysis_obj = freshwater_analysis_res[0]
               const freshwater_data = {
-                dairy_id: dairy_pk,
+                dairy_id: dairy_id,
                 field_crop_app_id: field_crop_app.pk,
                 field_crop_app_freshwater_analysis_id: freshwater_analysis_obj.pk,
                 app_rate: checkEmpty(app_rate),
@@ -1083,7 +1246,7 @@ const createFreshwaterApplication = (row, field_crop_app, dairy_pk) => {
 
 
 }
-const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_pk) => {
+const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
 
   const sample_date = row['Sample Date']
@@ -1124,7 +1287,7 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_pk) => {
   // dairy_id, sample_date, sample_desc
   const field_crop_app_freshwater_source_search_url = `${encodeURIComponent(src_desc)}/${encodeURIComponent(src_type)}`
   const freshwater_source_data = {
-    dairy_id: dairy_pk,
+    dairy_id: dairy_id,
     src_desc,
     src_type
   }
@@ -1132,7 +1295,7 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_pk) => {
   // Get Source
   return new Promise((resolve, rej) => {
     // lazyget freshwater_source
-    lazyGet('field_crop_app_freshwater_source', field_crop_app_freshwater_source_search_url, freshwater_source_data, dairy_pk)
+    lazyGet('field_crop_app_freshwater_source', field_crop_app_freshwater_source_search_url, freshwater_source_data, dairy_id)
       .then(field_crop_app_freshwater_source_res => {
         if (field_crop_app_freshwater_source_res.length > 0) {
           let fresh_water_source_obj = field_crop_app_freshwater_source_res[0]
@@ -1142,7 +1305,7 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_pk) => {
           // lazyget freshwater_analysis , sample_date, sample_desc, src_of_analysis, fresh_water_source_id
           const field_crop_app_freshwater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${src_of_analysis}/${fresh_water_source_id}`
           const freshwater_analysis_data = {
-            dairy_id: dairy_pk,
+            dairy_id: dairy_id,
             fresh_water_source_id: fresh_water_source_obj.pk,
             sample_date,
             src_desc,
@@ -1175,15 +1338,15 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_pk) => {
             tds_dl: checkEmpty(tds_dl)
           }
 
-          lazyGet('field_crop_app_freshwater_analysis', field_crop_app_freshwater_analysis_search_url, freshwater_analysis_data, dairy_pk)
+          lazyGet('field_crop_app_freshwater_analysis', field_crop_app_freshwater_analysis_search_url, freshwater_analysis_data, dairy_id)
             .then(freshwater_analysis_res => {
               let freshwater_analysis_obj = freshwater_analysis_res[0]
               const freshwater_data = {
-                dairy_id: dairy_pk,
+                dairy_id: dairy_id,
                 field_crop_app_id: field_crop_app.pk,
                 field_crop_app_freshwater_analysis_id: freshwater_analysis_obj.pk,
                 app_rate: checkEmpty(app_rate),
-                run_time: checkEmpty(),
+                run_time: checkEmpty(run_time),
                 amount_applied: checkEmpty(amount_applied),
                 amt_applied_per_acre: checkEmpty(amt_applied_per_acre),
                 totalN: checkEmpty("1337")
@@ -1208,7 +1371,7 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_pk) => {
 
 }
 
-const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
+const createSolidmanureApplication = (row, field_crop_app, dairy_id) => {
 
 
   const [
@@ -1249,7 +1412,7 @@ const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
   // dairy_id, sample_date, sample_desc
   const field_crop_app_solidmanure_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${encodeURIComponent(src_of_analysis)}`
   const solidmanure_analysis_data = {
-    dairy_id: dairy_pk,
+    dairy_id: dairy_id,
     sample_desc,
     sample_date,
     material_type,
@@ -1279,7 +1442,7 @@ const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
   // Get Source
   return new Promise((resolve, rej) => {
     // lazyget freshwater_source
-    lazyGet('field_crop_app_solidmanure_analysis', field_crop_app_solidmanure_analysis_search_url, solidmanure_analysis_data, dairy_pk)
+    lazyGet('field_crop_app_solidmanure_analysis', field_crop_app_solidmanure_analysis_search_url, solidmanure_analysis_data, dairy_id)
       .then(field_crop_app_solidmanure_analysis_res => {
         if (field_crop_app_solidmanure_analysis_res.length > 0) {
           let solidmanure_analysis_obj = field_crop_app_solidmanure_analysis_res[0]
@@ -1287,7 +1450,7 @@ const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
 
 
           const solidmanure_data = {
-            dairy_id: dairy_pk,
+            dairy_id: dairy_id,
             field_crop_app_id: field_crop_app.pk,
             field_crop_app_solidmanure_analysis_id: solidmanure_analysis_id,
             src_desc,
@@ -1316,7 +1479,7 @@ const createSolidmanureApplication = (row, field_crop_app, dairy_pk) => {
 
 
 }
-const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_pk) => {
+const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
   const sample_date = row['Sample Date']
   const sample_desc = row['Sample Description']
@@ -1349,7 +1512,7 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_pk) => {
   // dairy_id, sample_date, sample_desc
   const field_crop_app_solidmanure_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${encodeURIComponent(src_of_analysis)}`
   const solidmanure_analysis_data = {
-    dairy_id: dairy_pk,
+    dairy_id: dairy_id,
     sample_desc,
     sample_date,
     material_type,
@@ -1379,7 +1542,7 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_pk) => {
   // Get Source
   return new Promise((resolve, rej) => {
     // lazyget freshwater_source
-    lazyGet('field_crop_app_solidmanure_analysis', field_crop_app_solidmanure_analysis_search_url, solidmanure_analysis_data, dairy_pk)
+    lazyGet('field_crop_app_solidmanure_analysis', field_crop_app_solidmanure_analysis_search_url, solidmanure_analysis_data, dairy_id)
       .then(field_crop_app_solidmanure_analysis_res => {
         if (field_crop_app_solidmanure_analysis_res.length > 0) {
           let solidmanure_analysis_obj = field_crop_app_solidmanure_analysis_res[0]
@@ -1387,7 +1550,7 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_pk) => {
 
 
           const solidmanure_data = {
-            dairy_id: dairy_pk,
+            dairy_id: dairy_id,
             field_crop_app_id: field_crop_app.pk,
             field_crop_app_solidmanure_analysis_id: solidmanure_analysis_id,
             src_desc,
@@ -1417,7 +1580,7 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_pk) => {
 
 }
 
-const createFertilizerApplication = (row, field_crop_app, dairy_pk) => {
+const createFertilizerApplication = (row, field_crop_app, dairy_id) => {
 
 
   const [
@@ -1443,7 +1606,7 @@ const createFertilizerApplication = (row, field_crop_app, dairy_pk) => {
   // import_date, material_type, import_desc
   const field_crop_app_nutrient_import_search_url = `${encodeURIComponent(import_date)}/${encodeURIComponent(material_type)}/${encodeURIComponent(import_desc)}`
   const nutrient_import_data = {
-    dairy_id: dairy_pk,
+    dairy_id: dairy_id,
     import_desc,
     import_date,
     material_type,
@@ -1459,7 +1622,7 @@ const createFertilizerApplication = (row, field_crop_app, dairy_pk) => {
   // Get Source
   return new Promise((resolve, rej) => {
     // lazyget freshwater_source
-    lazyGet('nutrient_import', field_crop_app_nutrient_import_search_url, nutrient_import_data, dairy_pk)
+    lazyGet('nutrient_import', field_crop_app_nutrient_import_search_url, nutrient_import_data, dairy_id)
       .then(nutrient_import_res => {
         if (nutrient_import_res.length > 0) {
           let nutrient_import_obj = nutrient_import_res[0]
@@ -1467,7 +1630,7 @@ const createFertilizerApplication = (row, field_crop_app, dairy_pk) => {
 
 
           const fertilizer_data = {
-            dairy_id: dairy_pk,
+            dairy_id: dairy_id,
             field_crop_app_id: field_crop_app.pk,
             nutrient_import_id: nutrient_import_id,
 
@@ -1494,8 +1657,8 @@ const createFertilizerApplication = (row, field_crop_app, dairy_pk) => {
       })
   })
 }
-const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_pk) => {
-
+const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_id) => {
+  console.log("Creating Commercial Fetilizer", row)
   const import_desc = row['Import Description']
   const import_date = row['Import Date']
   const material_type = row['Material Type']
@@ -1512,7 +1675,7 @@ const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_pk) => {
   // import_date, material_type, import_desc
   const field_crop_app_nutrient_import_search_url = `${encodeURIComponent(import_date)}/${encodeURIComponent(material_type)}/${encodeURIComponent(import_desc)}`
   const nutrient_import_data = {
-    dairy_id: dairy_pk,
+    dairy_id: dairy_id,
     import_desc,
     import_date,
     material_type,
@@ -1525,18 +1688,17 @@ const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_pk) => {
     salt_con: checkEmpty(salt_con),
   }
 
-  console.log("FCA", field_crop_app)
   // Get Source
   return new Promise((resolve, rej) => {
     // lazyget freshwater_source
-    lazyGet('nutrient_import', field_crop_app_nutrient_import_search_url, nutrient_import_data, dairy_pk)
+    lazyGet('nutrient_import', field_crop_app_nutrient_import_search_url, nutrient_import_data, dairy_id)
       .then(nutrient_import_res => {
         if (nutrient_import_res.length > 0) {
           let nutrient_import_obj = nutrient_import_res[0]
           let nutrient_import_id = nutrient_import_obj.pk
 
           const fertilizer_data = {
-            dairy_id: dairy_pk,
+            dairy_id: dairy_id,
             field_crop_app_id: field_crop_app.pk,
             nutrient_import_id: nutrient_import_id,
             amount_applied: checkEmpty(amt_applied_per_acre),
@@ -1559,7 +1721,7 @@ const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_pk) => {
   })
 }
 
-const createSoilApplication = (row, field_crop_app, dairy_pk) => {
+const createSoilApplication = (row, field_crop_app, dairy_id) => {
   const [
     src_desc,
 
@@ -1616,17 +1778,17 @@ const createSoilApplication = (row, field_crop_app, dairy_pk) => {
       title: row[1],
       cropable: row[3],
       acres: row[4],
-      dairy_id: dairy_pk
+      dairy_id: dairy_id
     }
   }
   return new Promise((resolve, reject) => {
-    lazyGet('fields', row[1], fieldData, dairy_pk)
+    lazyGet('fields', row[1], fieldData, dairy_id)
       .then(([field]) => {
         console.log('Field: ', field)
         console.log("Create all fca_soil_analysis here")
 
         const sampleData0 = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_id: field.pk,
           sample_desc: sample_desc_0,
           sample_date: sample_date_0,
@@ -1645,7 +1807,7 @@ const createSoilApplication = (row, field_crop_app, dairy_pk) => {
           org_matter_dl: org_matter_dl_0
         }
         const sampleData1 = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_id: field.pk,
           sample_desc: sample_desc_1,
           sample_date: sample_date_1,
@@ -1664,7 +1826,7 @@ const createSoilApplication = (row, field_crop_app, dairy_pk) => {
           org_matter_dl: org_matter_dl_1
         }
         const sampleData2 = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_id: field.pk,
           sample_desc: sample_desc_2,
           sample_date: sample_date_2,
@@ -1684,9 +1846,9 @@ const createSoilApplication = (row, field_crop_app, dairy_pk) => {
         }
 
         Promise.all([
-          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_0)}`, sampleData0, dairy_pk),
-          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_1)}`, sampleData1, dairy_pk),
-          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_2)}`, sampleData2, dairy_pk),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_0)}`, sampleData0, dairy_id),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_1)}`, sampleData1, dairy_id),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_2)}`, sampleData2, dairy_id),
         ])
           .then(([[analysis0], [analysis1], [analysis2]]) => {
             console.log("3 depths, 3 analyses for NPKSalt", analysis0, analysis1, analysis2)
@@ -1697,7 +1859,7 @@ const createSoilApplication = (row, field_crop_app, dairy_pk) => {
             let salt_lbs_acre = (toFloat(ec_0) + toFloat(ec_1) + toFloat(ec_2)) * 2.4
 
             const fca_soil_data = {
-              dairy_id: dairy_pk,
+              dairy_id: dairy_id,
               field_crop_app_id: field_crop_app.pk,
               src_desc,
               n_lbs_acre,
@@ -1726,7 +1888,7 @@ const createSoilApplication = (row, field_crop_app, dairy_pk) => {
   })
 }
 
-const createSoilApplicationFromMap = (row, field_crop_app, dairy_pk) => {
+const createSoilApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
 
   const fieldTitle = row['Field']
@@ -1742,8 +1904,8 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_pk) => {
   const total_p_con_0 = row['P1 (mg/Kg)']
   const p_con_0 = row['Sol P1 (mg/Kg)']
   const k_con_0 = row['K1 (mg/Kg)']
-  const ec_0 = row['EC1 (mg/Kg)']
-  const org_matter_0 = row['Organic Matter1 (mg/Kg)']
+  const ec_0 = row['EC1 (umhos/cm)']
+  const org_matter_0 = row['Organic Matter1 (%)']
   const n_dl_0 = row['N1 DL']
   const total_p_dl_0 = row['P1 DL']
   const p_dl_0 = row['Sol P1 DL']
@@ -1758,8 +1920,8 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_pk) => {
   const total_p_con_1 = row['P2 (mg/Kg)']
   const p_con_1 = row['Sol P2 (mg/Kg)']
   const k_con_1 = row['K2 (mg/Kg)']
-  const ec_1 = row['EC2 (mg/Kg)']
-  const org_matter_1 = row['Organic Matter2 (mg/Kg)']
+  const ec_1 = row['EC2 (umhos/cm)']
+  const org_matter_1 = row['Organic Matter2 (%)']
   const n_dl_1 = row['N2 DL']
   const total_p_dl_1 = row['P2 DL']
   const p_dl_1 = row['Sol P2 DL']
@@ -1775,8 +1937,8 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_pk) => {
   const total_p_con_2 = row['P3 (mg/Kg)']
   const p_con_2 = row['Sol P3 (mg/Kg)']
   const k_con_2 = row['K3 (mg/Kg)']
-  const ec_2 = row['EC3 (mg/Kg)']
-  const org_matter_2 = row['Organic Matter3 (mg/Kg)']
+  const ec_2 = row['EC3 (umhos/cm)']
+  const org_matter_2 = row['Organic Matter3 (%)']
   const n_dl_2 = row['N3 DL']
   const total_p_dl_2 = row['P3 DL']
   const p_dl_2 = row['Sol P3 DL']
@@ -1791,18 +1953,18 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_pk) => {
       title: fieldTitle,
       cropable,
       acres,
-      dairy_id: dairy_pk
+      dairy_id: dairy_id
     }
   }
 
   return new Promise((resolve, reject) => {
-    lazyGet('fields', fieldTitle, fieldData, dairy_pk)
+    lazyGet('fields', fieldTitle, fieldData, dairy_id)
       .then(([field]) => {
         console.log('Field: ', field)
         console.log("Create all fca_soil_analysis here")
 
         const sampleData0 = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_id: field.pk,
           sample_desc: sample_desc_0,
           sample_date: sample_date_0,
@@ -1821,7 +1983,7 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_pk) => {
           org_matter_dl: org_matter_dl_0
         }
         const sampleData1 = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_id: field.pk,
           sample_desc: sample_desc_1,
           sample_date: sample_date_1,
@@ -1840,7 +2002,7 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_pk) => {
           org_matter_dl: org_matter_dl_1
         }
         const sampleData2 = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_id: field.pk,
           sample_desc: sample_desc_2,
           sample_date: sample_date_2,
@@ -1860,9 +2022,9 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_pk) => {
         }
 
         Promise.all([
-          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_0)}`, sampleData0, dairy_pk),
-          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_1)}`, sampleData1, dairy_pk),
-          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_2)}`, sampleData2, dairy_pk),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_0)}`, sampleData0, dairy_id),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_1)}`, sampleData1, dairy_id),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_2)}`, sampleData2, dairy_id),
         ])
           .then(([analysis0, analysis1, analysis2]) => {
             console.log("3 depths, 3 analyses for NPKSalt", analysis0, analysis1, analysis2)
@@ -1873,7 +2035,7 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_pk) => {
             let salt_lbs_acre = (toFloat(ec_0) + toFloat(ec_1) + toFloat(ec_2)) * 2.4
 
             const fca_soil_data = {
-              dairy_id: dairy_pk,
+              dairy_id: dairy_id,
               field_crop_app_id: field_crop_app.pk,
               src_desc,
               n_lbs_acre,
@@ -1902,7 +2064,7 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_pk) => {
   })
 }
 
-const createPlowdownCreditApplication = (row, field_crop_app, dairy_pk) => {
+const createPlowdownCreditApplication = (row, field_crop_app, dairy_id) => {
   const [
     src_desc,
     n_lbs_acre,
@@ -1915,17 +2077,17 @@ const createPlowdownCreditApplication = (row, field_crop_app, dairy_pk) => {
       title: row[1],
       cropable: row[3],
       acres: row[4],
-      dairy_id: dairy_pk
+      dairy_id: dairy_id
     }
   }
 
   return new Promise((resolve, reject) => {
-    lazyGet('fields', row[1], fieldData, dairy_pk)
+    lazyGet('fields', row[1], fieldData, dairy_id)
       .then(([field]) => {
         console.log('Field: ', field)
         console.log("Create all fca_soil_analysis here")
         const fca_plowdown_credit_data = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_crop_app_id: field_crop_app.pk,
           src_desc,
           n_lbs_acre,
@@ -1949,7 +2111,7 @@ const createPlowdownCreditApplication = (row, field_crop_app, dairy_pk) => {
       })
   })
 }
-const createPlowdownCreditApplicationFromMap = (row, field_crop_app, dairy_pk) => {
+const createPlowdownCreditApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
   const fieldTitle = row['Field']
   const acres = row['Total Acres']
@@ -1969,17 +2131,17 @@ const createPlowdownCreditApplicationFromMap = (row, field_crop_app, dairy_pk) =
       title: fieldTitle,
       cropable: cropable,
       acres: acres,
-      dairy_id: dairy_pk
+      dairy_id: dairy_id
     }
   }
 
   return new Promise((resolve, reject) => {
-    lazyGet('fields', fieldTitle, fieldData, dairy_pk)
+    lazyGet('fields', fieldTitle, fieldData, dairy_id)
       .then(([field]) => {
         console.log('Field: ', field)
         console.log("Create all fca_soil_analysis here")
         const fca_plowdown_credit_data = {
-          dairy_id: dairy_pk,
+          dairy_id: dairy_id,
           field_crop_app_id: field_crop_app.pk,
           src_desc,
           n_lbs_acre,
@@ -2009,7 +2171,7 @@ const createPlowdownCreditApplicationFromMap = (row, field_crop_app, dairy_pk) =
  * 
  * @param {*} row: The row from the TSV contianing data
  * @param {*} i : index of row
- * @param {*} dairy_pk: The current dairys pk in the dairy table.
+ * @param {*} dairy_id: The current dairys pk in the dairy table.
  * @param {*} table: The specific nutrient application table that the data will be stored in
  *    - Options: ['process_wastewater', 'fresh_water', 'solid_manure', 'commerical_fertilizer']
  *    - This will call a function insert the data after the neccessary data is created.
@@ -2017,7 +2179,7 @@ const createPlowdownCreditApplicationFromMap = (row, field_crop_app, dairy_pk) =
  * 
  * @returns a promise that the resolves with the final  created DB entry or rejects w/ an error.
  */
-export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
+export const createDataFromTSVListRow = (row, i, dairy_id, tsvType) => {
   const [app_date, field_title, acres_planted, cropable, acres, crop_title, plant_date,
     precip_before, precip_during, precip_after, app_method] = row.slice(0, 11)  // First 10 rows are common rows to create a field_crop_app
   /**
@@ -2026,7 +2188,7 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
     *  This part will lazily create everything based on the first 7 entries on the sheet.
     */
   return new Promise((resolve, rej) => {
-    getFieldCropApp(row.slice(0, 11), dairy_pk)
+    getFieldCropApp(row.slice(0, 11), dairy_id)
       .then(field_crop_app => {
         /**
          * #######################################################################
@@ -2039,24 +2201,24 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
          */
 
         if (tsvType === PROCESS_WASTEWATER) {
-          resolve(createProcessWastewaterApplication(row, field_crop_app, dairy_pk)) // Creates analysis and application_event
+          resolve(createProcessWastewaterApplication(row, field_crop_app, dairy_id)) // Creates analysis and application_event
         } else if (tsvType === FRESHWATER) {
           // Creates source, analysis and event
-          resolve(createFreshwaterApplication(row, field_crop_app, dairy_pk))
+          resolve(createFreshwaterApplication(row, field_crop_app, dairy_id))
         } else if (tsvType === SOLIDMANURE) {
           // Creates source, analysis and event
-          resolve(createSolidmanureApplication(row, field_crop_app, dairy_pk))
+          resolve(createSolidmanureApplication(row, field_crop_app, dairy_id))
         }
         else if (tsvType === FERTILIZER) {
           // Creates Nutrient Import, Fertilizer
-          resolve(createFertilizerApplication(row, field_crop_app, dairy_pk))
+          resolve(createFertilizerApplication(row, field_crop_app, dairy_id))
         }
         else if (tsvType === SOIL) {
           // Creates Nutrient Import, Fertilizer
-          resolve(createSoilApplication(row, field_crop_app, dairy_pk))
+          resolve(createSoilApplication(row, field_crop_app, dairy_id))
         } else if (tsvType === PLOWDOWN_CREDIT) {
           // Creates Nutrient Import, Fertilizer
-          resolve(createPlowdownCreditApplication(row, field_crop_app, dairy_pk))
+          resolve(createPlowdownCreditApplication(row, field_crop_app, dairy_id))
         }
 
       })
@@ -2067,14 +2229,14 @@ export const createDataFromTSVListRow = (row, i, dairy_pk, tsvType) => {
   })
 }
 
-export const createDataFromTSVListRowMap = (row, i, dairy_pk, tsvType) => {
+export const createDataFromTSVListRowMap = (row, i, dairy_id, tsvType) => {
   /**
   * 
   *  For all TSV sheets, the data relies on a Field, Field_crop, Field_crop_app. 
   *  This part will lazily create everything based on the first 7 entries on the sheet.
   */
   return new Promise((resolve, rej) => {
-    getFieldCropAppFromMap(row, dairy_pk)
+    getFieldCropAppFromMap(row, dairy_id)
       .then(field_crop_app => {
         /**
          * #######################################################################
@@ -2088,31 +2250,31 @@ export const createDataFromTSVListRowMap = (row, i, dairy_pk, tsvType) => {
 
 
         if (tsvType === PROCESS_WASTEWATER) {
-          // resolve(createProcessWastewaterApplication(row, field_crop_app, dairy_pk)) // Creates analysis and application_event
-          resolve(createProcessWastewaterApplicationFromMap(row, field_crop_app, dairy_pk)) // Creates analysis and application_event
+          // resolve(createProcessWastewaterApplication(row, field_crop_app, dairy_id)) // Creates analysis and application_event
+          resolve(createProcessWastewaterApplicationFromMap(row, field_crop_app, dairy_id)) // Creates analysis and application_event
 
         } else if (tsvType === FRESHWATER) {
           // Creates source, analysis and event
-          // resolve(createFreshwaterApplication(row, field_crop_app, dairy_pk))
-          resolve(createFreshwaterApplicationFromMap(row, field_crop_app, dairy_pk))
+          // resolve(createFreshwaterApplication(row, field_crop_app, dairy_id))
+          resolve(createFreshwaterApplicationFromMap(row, field_crop_app, dairy_id))
         } else if (tsvType === SOLIDMANURE) {
           // Creates source, analysis and event
-          // resolve(createSolidmanureApplication(row, field_crop_app, dairy_pk))
-          resolve(createSolidmanureApplicationFromMap(row, field_crop_app, dairy_pk))
+          // resolve(createSolidmanureApplication(row, field_crop_app, dairy_id))
+          resolve(createSolidmanureApplicationFromMap(row, field_crop_app, dairy_id))
         }
         else if (tsvType === FERTILIZER) {
           // Creates Nutrient Import, Fertilizer
-          // resolve(createFertilizerApplication(row, field_crop_app, dairy_pk))
-          resolve(createFertilizerApplicationFromMap(row, field_crop_app, dairy_pk))
+          // resolve(createFertilizerApplication(row, field_crop_app, dairy_id))
+          resolve(createFertilizerApplicationFromMap(row, field_crop_app, dairy_id))
         }
         else if (tsvType === SOIL) {
           // Creates Nutrient Import, Fertilizer
-          // resolve(createSoilApplication(row, field_crop_app, dairy_pk))
-          resolve(createSoilApplicationFromMap(row, field_crop_app, dairy_pk))
+          // resolve(createSoilApplication(row, field_crop_app, dairy_id))
+          resolve(createSoilApplicationFromMap(row, field_crop_app, dairy_id))
         } else if (tsvType === PLOWDOWN_CREDIT) {
           // Creates Nutrient Import, Fertilizer
-          // resolve(createPlowdownCreditApplication(row, field_crop_app, dairy_pk))
-          resolve(createPlowdownCreditApplicationFromMap(row, field_crop_app, dairy_pk))
+          // resolve(createPlowdownCreditApplication(row, field_crop_app, dairy_id))
+          resolve(createPlowdownCreditApplicationFromMap(row, field_crop_app, dairy_id))
         }
 
       })
@@ -2123,7 +2285,10 @@ export const createDataFromTSVListRowMap = (row, i, dairy_pk, tsvType) => {
   })
 }
 
-export const uploadNutrientApp = (tsvText, tsvType, dairy_pk) => {
+
+// Handles an upload of tsv data for a nutrient application
+// Entry point for single upload of nutrient app
+export const uploadNutrientApp = (tsvText, tsvType, dairy_id) => {
   console.log("Uploading nutrient application!")
   // let rows = processTSVText(tsvText, TSV_INFO[tsvType].numCols) // extract rows from Text of tsv file TODO()
   let rows = processTSVTextAsMap(tsvText, tsvType) // extract rows from Text of tsv file TODO()
@@ -2133,14 +2298,12 @@ export const uploadNutrientApp = (tsvText, tsvType, dairy_pk) => {
 
 
   return new Promise((resolve, reject) => {
-    createFieldsFromTSV(fields, dairy_pk)      // Create fields before proceeding
+    createFieldsFromTSV(fields, dairy_id)      // Create fields before proceeding
       .then(createFieldRes => {
 
-
-
         let promises = rows.map((row, i) => {
-          // return createDataFromTSVListRow(row, i, dairy_pk, tsvType)    // Create entries for ea row in TSV file
-          return createDataFromTSVListRowMap(row, i, dairy_pk, tsvType)
+          // return createDataFromTSVListRow(row, i, dairy_id, tsvType)    // Create entries for ea row in TSV file
+          return createDataFromTSVListRowMap(row, i, dairy_id, tsvType)
         })
         Promise.all(promises)
           .then((res) => {
@@ -2219,6 +2382,7 @@ const _lazyGetExportDest = (row, dairy_id) => {
     ..._rest
   ] = row
 
+
   // need ot create a search endpoint for evertyhting, operators, export_ *contact, *hauler, *recipient
   let opSearchURL = `${op_title}/${op_primary_phone}`
   let createOperatorData = {
@@ -2285,6 +2449,154 @@ const _lazyGetExportDest = (row, dairy_id) => {
         const haulerObj = results[2][0]
         const recipientObj = results[3][0]
         console.log("Recipient", recipientObj)
+        //TODO
+        // Create Search for export_destination
+
+        // LazyGet export_dest
+        // export_recipient_id, pnumber, street, city_zip
+        // pnumber might be empty, which is valid, but will cause error in URL
+        let destSearchURL = `${encodeURIComponent(recipientObj.pk)}/${encodeURIComponent(checkAny(pnumber))}/${encodeURIComponent(dest_street)}/${encodeURIComponent(dest_city_zip)}`
+
+        let createDestData = {
+          dairy_id: dairy_id,
+          export_recipient_id: recipientObj.pk,
+          pnumber: pnumber,
+          street: dest_street,
+          cross_street: dest_cross_street,
+          county: dest_county,
+          city: dest_city,
+          city_state: dest_city_state,
+          city_zip: dest_city_zip,
+        }
+        lazyGet('export_dest', destSearchURL, createDestData, dairy_id)
+          .then(export_dest_res => {
+            resolve([operatorObj, contactObj, haulerObj, export_dest_res[0]])
+          })
+          .catch(err => {
+            console.log(err)
+            reject(err)
+          })
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+
+  })
+
+}
+const _lazyGetExportDestFromMap = (row, dairy_id) => {
+  let promises = []
+  const checkAny = (val) => {
+    // If the value is empty replace with asterisk.
+    // pnumber may be empty but is required to search with when looking for export destinations
+    return val ? val : "*"
+  }
+
+  const op_title = row["Operator Name"]
+  const op_primary_phone = row["Operator Phone"]
+  const op_secondary_phone = row["Operator 2nd Phone"]
+  const op_street = row["Operator Street"]
+  const op_city = row["Operator City"]
+  const op_city_state = row["Operator State"]
+  const op_city_zip = row["Operator Zip"]
+  const op_is_owner = row["Operator Is Owner"]
+  const op_is_responsible = row["Operator Responsible for Fees"]
+  const contact_first_name = row["Contact First"]
+  const contact_primary_phone = row["Contact Phone"]
+  const hauler_title = row["Hauler"]
+  const hauler_first_name = row["Hauler First"]
+  const hauler_primary_phone = row["Hauler Phone"]
+  const hauler_street = row["Hauler Street"]
+  const hauler_cross_street = row["Hauler Cross Street"]
+  const hauler_county = row["Hauler County"]
+  const hauler_city = row["Hauler City"]
+  const hauler_city_state = row["Hauler State"]
+  const hauler_city_zip = row["Hauler Zip"]
+  const recipient_title = row["Recipient"]
+  const dest_type = row["Destination Type"]
+  const recipient_primary_phone = row["Recipient Phone"]
+  const recipient_street = row["Recipient Street"]
+  const recipient_cross_street = row["Recipient Cross Street"]
+  const recipient_county = row["Recipient County"]
+  const recipient_city = row["Recipient City"]
+  const recipient_city_state = row["Recipient State"]
+  const recipient_city_zip = row["Recipient Zip"]
+  const pnumber = row["APN"]
+  const dest_street = row["Destination Street"]
+  const dest_cross_street = row["Destination Cross Street"]
+  const dest_county = row["Destination County"]
+  const dest_city = row["Destination City"]
+  const dest_city_state = row["Destination State"]
+  const dest_city_zip = row["Destination Zip"]
+
+
+  // need ot create a search endpoint for evertyhting, operators, export_ *contact, *hauler, *recipient
+  let opSearchURL = `${op_title}/${op_primary_phone}`
+  let createOperatorData = {
+    dairy_id: dairy_id,
+    title: op_title,
+    primary_phone: op_primary_phone,
+    secondary_phone: op_secondary_phone,
+    street: op_street,
+    city: op_city,
+    city_state: op_city_state,
+    city_zip: op_city_zip,
+    is_owner: op_is_owner,
+    is_responsible: op_is_responsible
+  }
+  promises.push(lazyGet('operators', opSearchURL, createOperatorData, dairy_id))
+
+
+  let contactSearchURL = `${contact_first_name}/${contact_primary_phone}`
+  let createContactData = {
+    dairy_id: dairy_id,
+    first_name: contact_first_name,
+    primary_phone: contact_primary_phone,
+  }
+  promises.push(lazyGet('export_contact', contactSearchURL, createContactData, dairy_id))
+
+  let haulerSearchURL = `${hauler_title}/${hauler_first_name}/${hauler_primary_phone}/${hauler_street}/${hauler_city_zip}`
+  let createHaulerData = {
+    dairy_id: dairy_id,
+    title: hauler_title,
+    first_name: hauler_first_name,
+    primary_phone: hauler_primary_phone,
+    street: hauler_street,
+    cross_street: hauler_cross_street,
+    county: hauler_county,
+    city: hauler_city,
+    city_state: hauler_city_state,
+    city_zip: hauler_city_zip,
+  }
+  promises.push(lazyGet('export_hauler', haulerSearchURL, createHaulerData, dairy_id))
+
+
+  // /title, street, city_zip, primary_phone
+  let recipientSearchURL = `${recipient_title}/${recipient_street}/${recipient_city_zip}/${recipient_primary_phone}`
+  let createRecipientData = {
+    dairy_id: dairy_id,
+    title: recipient_title,
+    dest_type: dest_type,
+    primary_phone: recipient_primary_phone,
+    street: recipient_street,
+    cross_street: recipient_cross_street,
+    county: recipient_county,
+    city: recipient_city,
+    city_state: recipient_city_state,
+    city_zip: recipient_city_zip,
+  }
+
+  promises.push(lazyGet('export_recipient', recipientSearchURL, createRecipientData, dairy_id))
+
+  return new Promise((resolve, reject) => {
+    Promise.all(promises)
+      .then(results => {
+        const operatorObj = results[0][0]
+        const contactObj = results[1][0]
+        const haulerObj = results[2][0]
+        const recipientObj = results[3][0]
+        console.log("Results from lazy get operator, contact, hauler, recipient", results)
         //TODO
         // Create Search for export_destination
 
@@ -2430,6 +2742,62 @@ export const createDataFromManureExportTSVListRow = (row, i, dairy_id) => {
       })
   })
 }
+export const createDataFromManureExportTSVListRowMap = (row, i, dairy_id) => {
+  return new Promise((resolve, reject) => {
+
+    const last_date_hauled = row["Date"]
+
+    const amount_hauled_method = row["Method Used to Determine Amount Hauled"]
+    const reporting_method = row['Reporting Method']
+    const material_type = row["Material Type"]
+    const amount_hauled = row["Amount (Tons)"]
+    const moisture = row["% Moisture"]
+    const n_con_mg_kg = row["% N"]
+    const p_con_mg_kg = row["% P"]
+    const k_con_mg_kg = row["% K"]
+    const tfs = row["% TFS"]
+
+
+    _lazyGetExportDestFromMap(row, dairy_id)
+      .then(dest_res => {
+        const [operatorObj, contactObj, haulerObj, destObj] = dest_res
+
+        let createManifestObj = {
+          dairy_id: dairy_id,
+          export_dest_id: destObj.pk,
+          operator_id: operatorObj.pk,
+          export_contact_id: contactObj.pk,
+          export_hauler_id: haulerObj.pk,
+          last_date_hauled,
+          amount_hauled_method,
+          reporting_method,
+          material_type,
+          amount_hauled: parseInt(checkEmpty(amount_hauled)),
+
+
+          moisture: checkEmpty(moisture),
+          n_con_mg_kg: checkEmpty(n_con_mg_kg),
+          p_con_mg_kg: checkEmpty(p_con_mg_kg),
+          k_con_mg_kg: checkEmpty(k_con_mg_kg),
+
+          tfs: checkEmpty(tfs),
+
+
+          n_lbs_rm: 1337,
+          p_lbs_rm: 1337,
+          k_lbs_rm: 1337,
+          salt_lbs_rm: 1337,
+
+        }
+        resolve(post(`${BASE_URL}/api/export_manifest/create`, createManifestObj))
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+  })
+}
+
 
 export const createDataFromWastewaterExportTSVListRow = (row, i, dairy_id) => {
   return new Promise((resolve, reject) => {
@@ -2541,12 +2909,103 @@ export const createDataFromWastewaterExportTSVListRow = (row, i, dairy_id) => {
 
 
 }
+export const createDataFromWastewaterExportTSVListRowMap = (row, i, dairy_id) => {
+  return new Promise((resolve, reject) => {
+
+    // TODO() Need to add to schema, hrs_ran, gals_min and source description.
+    // The calculation for total N,P,K is (hrs_ran * gals_min * 60) * (***_con_mg_l*0.008345)*(amount_hauled/1000)
+    const last_date_hauled = row["Date"]
+    const amount_hauled_method = row["Method Used to Determine Amount Hauled"]
+    const material_type = row["Material Type"]
+    const hrs_ran = row["Hours"]
+    const gals_min = row["GPM"]
+    const amount_hauled = row["Amount (Gals)"]
+    const src_desc = row["Source Description"]
+    const n_con_mg_l = row["N (PPM)"]
+    const p_con_mg_l = row["P (PPM)"]
+    const k_con_mg_l = row["K (PPM)"]
+    const ec_umhos_cm = row["EC (umhos/cm)"]
+    const tds = row["TDS (mg/L)"]
+
+
+    _lazyGetExportDestFromMap(row, dairy_id)
+      .then(dest_res => {
+        const [operatorObj, contactObj, haulerObj, destObj] = dest_res
+        console.log(operatorObj, contactObj, haulerObj, destObj)
+        let createManifestObj = {
+          dairy_id: dairy_id,
+          export_dest_id: destObj.pk,
+          operator_id: operatorObj.pk,
+          export_contact_id: contactObj.pk,
+          export_hauler_id: haulerObj.pk,
+          last_date_hauled,
+          amount_hauled_method,
+
+          material_type,
+          amount_hauled: parseInt(checkEmpty(amount_hauled)),
+
+          n_con_mg_l: checkEmpty(n_con_mg_l),
+          p_con_mg_l: checkEmpty(p_con_mg_l),
+          k_con_mg_l: checkEmpty(k_con_mg_l),
+          ec_umhos_cm: checkEmpty(ec_umhos_cm),
+          tds: checkEmpty(tds),
+
+
+          n_lbs_rm: 1337,
+          p_lbs_rm: 1337,
+          k_lbs_rm: 1337,
+
+        }
+        resolve(post(`${BASE_URL}/api/export_manifest/create`, createManifestObj))
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+  })
+
+
+}
+
+
+export const uploadExportTSV = (tsvText, tsvType, dairy_id) => {
+  let numCols = TSV_INFO[tsvType].numCols
+  // let rows = processTSVText(tsvText, numCols)
+  let rows = processTSVTextAsMap(tsvText, tsvType)
+
+
+  let promises = rows.map((row, i) => {
+    if (tsvType == WASTEWATER) {
+      // return createDataFromWastewaterExportTSVListRow(row, i, dairy_id)
+      return createDataFromWastewaterExportTSVListRowMap(row, i, dairy_id)
+    }
+    if (tsvType === MANURE) {
+      // return createDataFromManureExportTSVListRow(row, i, dairy_id)
+      return createDataFromManureExportTSVListRowMap(row, i, dairy_id)
+    }
+  })
+
+  return new Promise((resolve, reject) => {
+    Promise.all(promises)
+      .then(res => {
+        resolve(res)
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+  })
+
+}
+
 
 
 /** Tile Drainage
  * 
  */
-export const uploadTileDrainage = (tsvText, tsvType, dairy_pk) => {
+
+
+export const createTileDrainage = (tsvText, tsvType, dairy_id) => {
   let rows = processTSVText(tsvText, TSV_INFO[tsvType].numCols) // extract rows from Text of tsv file TODO()
 
   let result_promises = rows.map((row, i) => {
@@ -2568,16 +3027,16 @@ export const uploadTileDrainage = (tsvText, tsvType, dairy_pk) => {
     ] = row
 
     let drainSourceData = {
-      dairy_id: dairy_pk,
+      dairy_id: dairy_id,
       src_desc
     }
 
     return new Promise((resolve, reject) => {
-      lazyGet('drain_source', encodeURIComponent(src_desc), drainSourceData, dairy_pk)
+      lazyGet('drain_source', encodeURIComponent(src_desc), drainSourceData, dairy_id)
         .then(([drainSource]) => {
           console.log(drainSource)
           const drainAnalysisData = {
-            dairy_id: dairy_pk,
+            dairy_id: dairy_id,
             drain_source_id: drainSource.pk,
             sample_date,
             sample_desc,
@@ -2613,12 +3072,85 @@ export const uploadTileDrainage = (tsvText, tsvType, dairy_pk) => {
       })
   })
 }
+export const createTileDrainageFromMap = (tsvText, tsvType, dairy_id) => {
+  let rows = processTSVTextAsMap(tsvText, tsvType) // extract rows from Text of tsv file TODO()
+
+  let result_promises = rows.map((row, i) => {
+
+    const src_desc = row["Source Description"]
+    const sample_date = row["Sample Date"]
+    const sample_desc = row["Sample Description"]
+    const src_of_analysis = row["Source of Analysis"]
+    const nh4_con = row["NH4-N (mg/L)"]
+    const no2_con = row["NO3-N (mg/L)"]
+    const p_con = row["P (mg/L)"]
+    const ec = row["EC (umhos/cm)"]
+    const tds = row["TDS (mg/L)"]
+    const nh4_dl = row["NH4-N DL"]
+    const no2_dl = row["NO3-N DL"]
+    const p_dl = row["P DL"]
+    const ec_dl = row["EC DL"]
+    const tds_dl = row["TDS DL"]
+
+
+    let drainSourceData = {
+      dairy_id: dairy_id,
+      src_desc
+    }
+
+    return new Promise((resolve, reject) => {
+      lazyGet('drain_source', encodeURIComponent(src_desc), drainSourceData, dairy_id)
+        .then(([drainSource]) => {
+          console.log(drainSource)
+          const drainAnalysisData = {
+            dairy_id: dairy_id,
+            drain_source_id: drainSource.pk,
+            sample_date,
+            sample_desc,
+            src_of_analysis,
+            nh4_con,
+            no2_con,
+            p_con,
+            ec,
+            tds,
+            nh4_dl,
+            no2_dl,
+            p_dl,
+            ec_dl,
+            tds_dl
+          }
+          resolve(post(`${BASE_URL}/api/drain_analysis/create`, drainAnalysisData))
+        })
+        .catch(err => {
+          console.log(err)
+          reject(err)
+        })
+    })
+  })
+
+  return new Promise((resolve, reject) => {
+    Promise.all(result_promises)
+      .then(res => {
+        resolve(res)
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+  })
+}
+export const uploadTileDrainage = (tsvText, tsvType, dairy_id) => {
+
+  // return createTileDrainage(tsvText, tsvType, dairy_id)
+  return createTileDrainageFromMap(tsvText, tsvType, dairy_id)
+}
+
 
 /** Discharge
  * 
  */
 
-export const uploadDischargeTSV = (tsvText, tsvType, dairy_pk) => {
+export const ceateDischargeTSV = (tsvText, tsvType, dairy_id) => {
   let rows = processTSVText(tsvText, TSV_INFO[tsvType].numCols) // extract rows from Text of tsv file TODO()
 
   let result_promises = rows.map((row, i) => {
@@ -2636,7 +3168,7 @@ export const uploadDischargeTSV = (tsvText, tsvType, dairy_pk) => {
     ] = row
 
     let dischargeData = {
-      dairy_id: dairy_pk,
+      dairy_id: dairy_id,
       discharge_type,
       discharge_datetime,
       discharge_loc,
@@ -2662,4 +3194,54 @@ export const uploadDischargeTSV = (tsvText, tsvType, dairy_pk) => {
         reject(err)
       })
   })
+}
+export const ceateDischargeTSVFromMap = (tsvText, tsvType, dairy_id) => {
+  let rows = processTSVTextAsMap(tsvText, tsvType) // extract rows from Text of tsv file TODO()
+
+  let result_promises = rows.map((row, i) => {
+
+    const discharge_type = row["Type"]
+    const discharge_datetime = row["Date Time"]
+    const discharge_loc = row["Location"]
+    const vol = row["Volume discharged"]
+    const vol_unit = row["Volume Unit"]
+    const duration_of_discharge = row["Duration of Discharge (mins)"]
+    const discharge_src = row["Discharge Source"]
+    const method_of_measuring = row["Method of Measuring"]
+    const sample_location_reason = row["Rationale for Sample Location"]
+    const ref_number = row["Reference Number for Discharge Site"]
+
+
+    let dischargeData = {
+      dairy_id: dairy_id,
+      discharge_type,
+      discharge_datetime,
+      discharge_loc,
+      vol: toFloat(checkEmpty(vol)),
+      vol_unit,
+      duration_of_discharge: toFloat(checkEmpty(duration_of_discharge)),
+      discharge_src,
+      method_of_measuring,
+      sample_location_reason,
+      ref_number
+    }
+
+    return post(`${BASE_URL}/api/discharge/create`, dischargeData)
+  })
+
+  return new Promise((resolve, reject) => {
+    Promise.all(result_promises)
+      .then(res => {
+        resolve(res)
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+  })
+}
+export const uploadDischargeTSV = (tsvText, tsvType, dairy_id) => {
+
+  // return ceateDischargeTSVFromMap(tsvText, tsvType, dairy_id)
+  return ceateDischargeTSVFromMap(tsvText, tsvType, dairy_id)
 }

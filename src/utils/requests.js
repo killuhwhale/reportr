@@ -1,7 +1,17 @@
 import axios from "axios"
 
 const get = (url) => {
-  return fetch(url).then(res => res.json())
+  return new Promise((resolve, reject) => {
+    fetch(url)
+      .then(res => {
+        resolve(res.json())
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+
+  })
 }
 
 const getPDF = (url) => {
