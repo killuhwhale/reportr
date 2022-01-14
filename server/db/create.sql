@@ -139,6 +139,7 @@ CREATE TABLE IF NOT EXISTS crops(
   salt NUMERIC(10,3),
   UNIQUE(title)
 );
+
 CREATE TABLE IF NOT EXISTS field_crop(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
@@ -147,6 +148,8 @@ CREATE TABLE IF NOT EXISTS field_crop(
   plant_date timestamp,
   acres_planted NUMERIC(6,2),
   typical_yield NUMERIC(6,2), -- tons/ acre 
+  
+  -- TODO() Typical data copied from crops, consider dropping this and using crop_id to get info instead.
   moisture NUMERIC(6,2), -- stored as a percent 10 == 10%
   n NUMERIC(10,3), -- Concentration by default data, lb/ton 
   p NUMERIC(10,3), 
@@ -167,11 +170,6 @@ CREATE TABLE IF NOT EXISTS field_crop(
     ON UPDATE CASCADE ON DELETE CASCADE
 );
 
--- NEED TO UPDATE:
- -- field_crop_harvest, field_crop_app_process_wastewater_analysis, field_crop_app_freshwater_analysis, 
- -- field_crop_app_solidmanure, nutrient_import , export_manifest
-
-
 -- Harvests
 CREATE TABLE IF NOT EXISTS field_crop_harvest(
   pk SERIAL PRIMARY KEY,
@@ -183,6 +181,7 @@ CREATE TABLE IF NOT EXISTS field_crop_harvest(
   method_of_reporting VARCHAR(20)  NOT NULL, -- reporting method
   actual_yield NUMERIC(6,2)  NOT NULL, -- tons -- calculate to find tons/ acres by field_crop.acres_planted 
   src_of_analysis VARCHAR(50) NOT NULL,
+  -- Actual concentrations
   moisture NUMERIC(5,2), -- Percent range 0.01 -> 100.00
   n NUMERIC(5,3) DEFAULT 0.0, -- Percent .001 -> 99.999 
   p NUMERIC(5,3) DEFAULT 0.0,  

@@ -83,7 +83,6 @@ class OperatorView extends Component {
   getAllOperators() {
     get(`${this.props.BASE_URL}/api/operators/${this.state.dairy.pk}`)
       .then(res => {
-        console.log(res)
         this.setState({ operators: res })
       })
       .catch(err => {
@@ -173,7 +172,7 @@ class OperatorView extends Component {
         {this.state.operators.length > 0 ?
           this.state.operators.map((operator, i) => {
             return (
-              <Paper elevation={2} key={`operatorOV${i}`} style={{padding: '15px'}}>
+              <Paper elevation={2} key={`operatorOV${i}`} style={{ padding: '15px' }}>
                 <Grid item container xs={12} justifyContent="center" alignItems="center" align="center" >
                   <Grid item xs={10}>
                     <OperatorForm

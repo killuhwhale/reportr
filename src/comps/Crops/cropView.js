@@ -19,11 +19,10 @@ import { PollTwoTone, SpeakerGroup } from '@material-ui/icons';
 
 
 const CropViewTable = withTheme((props) => {
-  const fc = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0? props.field_crops[0]: {}
-  const fcs = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0? props.field_crops: []
- 
+  const fc = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0 ? props.field_crops[0] : {}
+  const fcs = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0 ? props.field_crops : []
   return (
-    <Grid item xs={12} style={{ marginBottom: "32px", ...props.style}}>
+    <Grid item xs={12} style={{ marginBottom: "32px", ...props.style }}>
       <Grid item container xs={12}>
         <Grid item xs={4}>
           <Typography variant="h4" >
@@ -32,12 +31,12 @@ const CropViewTable = withTheme((props) => {
         </Grid>
         <Grid item xs={4} >
           <Typography variant="h6" gutterBottom>
-            {fc.acres} Acres
+            {fc.acres} Total Acres
           </Typography>
         </Grid>
         <Grid item xs={4}>
-          <Typography variant="h6"  gutterBottom>
-            {fc.cropable} cropable acres
+          <Typography variant="h6" gutterBottom>
+            {fc.cropable} Cropable Acres
           </Typography>
         </Grid>
       </Grid>
@@ -52,17 +51,17 @@ const CropViewTable = withTheme((props) => {
               </Grid>
             </Grid>
             <Grid item xs={2} align="right">
-                <DatePicker label="Plant Date" 
-                  value={field_crop.plant_date}
-                  open={false}
-                />
-              </Grid>
+              <DatePicker label="Plant Date"
+                value={field_crop.plant_date}
+                open={false}
+              />
+            </Grid>
             <Grid item xs={2}>
               <TextField
                 label="Acres Planted"
                 name="acres_planted"
                 value={field_crop.acres_planted}
-                
+
                 style={{ width: "100%" }}
               />
             </Grid>
@@ -148,11 +147,11 @@ class CropView extends Component {
   componentDidMount() {
     this.setWindowListener()
   }
-  getConvertedFieldCropKeys(fc){
+  getConvertedFieldCropKeys(fc) {
     return Object.keys(fc)
-    .sort(new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare)
+      .sort(new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare)
   }
-  componentDidUpdate(prevProps, prevState){
+  componentDidUpdate(prevProps, prevState) {
   }
   onFieldCropChange(ev, key, index) {
     let updates = this.state.convertedFieldCrops
@@ -222,8 +221,8 @@ class CropView extends Component {
     let keys = this.getConvertedFieldCropKeys(this.state.convertedFieldCrops)
     let field_id = keys[index]
     let field_crops = this.state.convertedFieldCrops[field_id]
-    let numRows = field_crops && field_crops.length ? field_crops.length: 45
-    
+    let numRows = field_crops && field_crops.length ? field_crops.length : 45
+
     return headerSize + (numRows * itemSize)
   }
   renderItem({ index, style }) {
@@ -263,7 +262,7 @@ class CropView extends Component {
                 >
                   {this.renderItem.bind(this)}
                 </List>
-              :
+                :
                 <React.Fragment></React.Fragment>
               }
 

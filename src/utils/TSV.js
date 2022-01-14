@@ -1,6 +1,9 @@
 import XLSX from 'xlsx'
 import { get, post } from './requests'
-import { toFloat } from './convertCalc'
+import {
+  toFloat, opArrayByPos, calcAmountLbsFromTonsPercent, mgKgToLbsFromTons,
+  displayPercentageAsMGKG, MGMLToLBS, percentToLBSForGals, percentToLBS
+} from './convertCalc'
 import { BASE_URL } from "./environment"
 import {
   harvestTemplate, wwTemplate, fwTemplate, smTemplate, cfTemplate, smExportTemplate,
@@ -95,11 +98,8 @@ export const lazyGet = (endpoint, value, data, dairy_id) => {
         if (Object.keys(res).length == 0) {
           post(`${BASE_URL}/api/${endpoint}/create`, data)
             .then(result => {
-              // console.log("Created from lazyget: ", result)
-
               // If there is an error response from server.
               if (result.error) {
-                // console.log("Create failed, race conditon happened. Attempting to re-fetch")
                 get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_id}`)
                   .then(secondResult => {
                     // Found entry, on second attempt.
@@ -120,6 +120,7 @@ export const lazyGet = (endpoint, value, data, dairy_id) => {
         }
       })
       .catch(err => {
+        console.log(err)
         rej(err)
       })
   })
@@ -136,7 +137,6 @@ export const readTSV = (file, callback) => {
  */
 
 export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
-  // console.log("Uploading TSV to DB", uploadedFilename, tsvText)
   const tsvData = {
     title: uploadedFilename,
     data: tsvText,
@@ -146,13 +146,9 @@ export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
   return new Promise((res, rej) => {
     post(`${BASE_URL}/api/tsv/create`, tsvData)
       .then(result => {
-        console.log("Result from first attempt: ", result)
         if (result.existsErr) {
-          console.log("TSV ALREADY EXISTS, TRYING AN UPDATE")
-
           post(`${BASE_URL}/api/tsv/update`, tsvData)
             .then(result1 => {
-              console.log("Updated: ", result1)
               res(result1)
             })
             .catch(err => {
@@ -172,14 +168,13 @@ export const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
 /**
  * where callback == (ev) => {
     const { result } = ev.target
-    this.setState({ csvText: result, uploadedFilename: file.name })
+    this.setState({ tsvText: result, uploadedFilename: file.name })
   }
  */
 
-export const processTSVText = (csvText, numCols) => {
-  // console.log("Processing CSV Text", csvText, numCols)
+export const processTSVText = (tsvText, numCols) => {
   // Field,Acres,Crop,Plant Date,Harvest Dates,Expected Yield Tons/Acre,Actual Yield Tons/Acre,Actual Yield Total Tons,Reporting Method,% Moisture,% N,% P,% K,% TFS    Salt  (Dry Basis),Lbs/Acre N,Lbs/Acre P,Lbs/Acre K,Lbs/Acre Salt
-  let lines = csvText.split("\n")
+  let lines = tsvText.split("\n")
   let started = false
   let rows = []
   lines.forEach((line, i) => {
@@ -193,7 +188,6 @@ export const processTSVText = (csvText, numCols) => {
       }
     }
   })
-  // console.log(rows)
   return rows
 }
 
@@ -212,20 +206,15 @@ const mapsColToTemplate = (cols, headerMap, template) => {
   const rowTemplate = { ...template }
   cols.forEach((item, i) => {
     const key = headerMap[i]
-    // console.log(key, template[key])
-
     if (key && rowTemplate[key] != undefined) {
       rowTemplate[key] = item
     } else {
-      // console.log(`(${key}) not found in template.`)
     }
   })
   return rowTemplate
 }
-export const processTSVTextAsMap = (csvText, tsvType) => {
-  // console.log("Processing CSV Text", csvText, numCols)
-  // Field,Acres,Crop,Plant Date,Harvest Dates,Expected Yield Tons/Acre,Actual Yield Tons/Acre,Actual Yield Total Tons,Reporting Method,% Moisture,% N,% P,% K,% TFS    Salt  (Dry Basis),Lbs/Acre N,Lbs/Acre P,Lbs/Acre K,Lbs/Acre Salt
-  let lines = csvText.split("\n")
+export const processTSVTextAsMap = (tsvText, tsvType) => {
+  let lines = tsvText.split("\n")
   let started = false
   let rows = [] // Each row of the TSV file containing data as a Map 
   let headerMap = {} // Maps column index to a String that is the header for that column e.g. '0': "Application Date"
@@ -244,7 +233,6 @@ export const processTSVTextAsMap = (csvText, tsvType) => {
       }
     }
   })
-  console.log(rows)
   return rows
 }
 
@@ -315,7 +303,8 @@ export const createFieldsFromTSV = (fields, dairy_id) => {
           res(result)
         })
         .catch(error => {
-          res(error)
+          console.log(error)
+          rej(error)
         })
     })
   })
@@ -354,13 +343,11 @@ const getFieldCrop = (commonRowData, dairy_id) => {
     precip_before, precip_during, precip_after, app_method
   ] = commonRowData
   return new Promise((resolve, reject) => {
-    console.log(`Preparing Field (${field_title}) Crop(${crop_title})`)
     prepareFieldCrop(field_title, crop_title, cropable, acres, dairy_id)
       .then(res => {
         let fieldObj = res[0][0]
         let cropObj = res[1][0]
 
-        console.log("Field OBJ", fieldObj)
         if (fieldObj) {
           if (cropObj) {
             const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
@@ -373,7 +360,7 @@ const getFieldCrop = (commonRowData, dairy_id) => {
               acres_planted: acres_planted,
               typical_yield: typical_yield,
               moisture: typical_moisture,
-              n: typical_n,  // I now reliaze copying this data is rather pointless.. but takes more work to remove...
+              n: typical_n,
               p: typical_p,
               k: typical_k,
               salt: salt
@@ -433,7 +420,11 @@ const getFieldCropFromMap = (commonRowData, dairy_id) => {
   const plant_date = commonRowData['Plant Date']
 
   return new Promise((resolve, reject) => {
-    console.log(`Preparing Field (${field_title}) Crop(${crop_title})`)
+    if (!field_title || !crop_title) {
+      reject(`Field crop data not found: ${field_title} - ${crop_title} - ${cropable} - ${acres}`)
+      return
+    }
+
     prepareFieldCrop(field_title, crop_title, cropable, acres, dairy_id)
       .then(res => {
         let fieldObj = res[0][0]
@@ -498,9 +489,12 @@ const getFieldCropAppFromMap = (commonRowData, dairy_id) => {
         }
 
         lazyGet('field_crop_app', field_crop_app_search_url, field_crop_app_data, dairy_id)
-          .then(field_crop_app_res => {
-            console.log("FCAFromMap", field_crop_app_res)
-            resolve(field_crop_app_res[0])
+          .then((field_crop_app_res) => {
+            if (field_crop_app_res.error) {
+              console.log("Error", commonRowData)
+            } else {
+              resolve(field_crop_app_res[0])
+            }
           })
       })
   })
@@ -529,7 +523,7 @@ export const onUploadXLSX = (dairy_id, tsvText, numCols, tsvType, uploadedFilena
   if (tsvType === DRAIN) {
     promise = uploadTileDrainage(tsvText, tsvType, dairy_id)
   }
-  if (nutrientAppTypes.indexOf(tsvType >= 0)) {
+  if (nutrientAppTypes.indexOf(tsvType) >= 0) {
     promise = uploadNutrientApp(tsvText, tsvType, dairy_id)
   }
 
@@ -556,6 +550,7 @@ export const uploadXLSX = (workbook, dairy_id) => {
   return new Promise((resolve, reject) => {
     if (!sheets) {
       reject("No sheets found.")
+      return
     }
 
     // For Each Sheet, feed to onUploadXLSX
@@ -567,7 +562,6 @@ export const uploadXLSX = (workbook, dairy_id) => {
         const numCols = TSV_INFO[sheetName].numCols
         const tsvType = TSV_INFO[sheetName].tsvType
         const tsvText = XLSX.utils.sheet_to_csv(sheets[sheetName], { FS: '\t' })
-        console.log('Uploading: ', sheetName)
         promises.push(
           onUploadXLSX(dairy_id, tsvText, numCols, tsvType, sheetName)
         )
@@ -587,7 +581,6 @@ export const uploadXLSX = (workbook, dairy_id) => {
  * // Typically creates teh field_crop
  */
 export const createDataFromHarvestTSVListRow = (row, i, dairy_id) => {
-  console.log("Creating db entreis for data:: ", row)
   // Spreadsheet headers (used db col names)
   const [
     field_title,
@@ -681,8 +674,6 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_id) => {
                   salt_lbs_acre: checkEmpty(salt_lbs_acre)
 
                 }
-
-                console.log("")
                 resolve(post(`${BASE_URL}/api/field_crop_harvest/create`, field_crop_harvest_data))
 
               })
@@ -706,7 +697,6 @@ export const createDataFromHarvestTSVListRow = (row, i, dairy_id) => {
 export const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
 
   // Spreadsheet headers (used db col names)
-
   const field_title = row['Field']
   const acres_planted = row['Acres Planted']
   const cropable = row['Cropable']
@@ -715,8 +705,8 @@ export const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
   const plant_date = row['Plant Date']
   const harvest_date = row['Harvest Dates']
   const expected_yield_tons_acre = row['Expected Yield Tons/Acre']
-  const actual_yield_tons_per_acre = row['Actual Yield Tons/Acre']
   const actual_yield = row['Actual Yield Total Tons']
+  const actual_yield_tons_per_acre = row['Actual Yield Tons/Acre']
   const sample_date = row['Sample Date']
   const src_of_analysis = row['Source of Analysis']
   const method_of_reporting = row['Reporting Method']
@@ -725,10 +715,10 @@ export const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
   const p = row['% P']
   const k = row['% K']
   const tfs = row['% TFS Salt (Dry Basis)']
-  const n_dl = row['N DL (mg/kg)']
-  const p_dl = row['P DL (mg/kg)']
-  const k_dl = row['K DL (mg/kg)']
-  const tfs_dl = row['TFS DL %']
+  const n_dl = row['N DL']
+  const p_dl = row['P DL']
+  const k_dl = row['K DL']
+  const tfs_dl = row['TFS DL']
 
   let fieldData = {
     data: {
@@ -769,6 +759,8 @@ export const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
             lazyGet('field_crop', field_crop_search_value, field_crop_data, dairy_id)
               .then(field_crop_res => {
                 const fieldCropObj = field_crop_res[0]
+
+                const yieldTonsPerAcre = (toFloat(actual_yield) / toFloat(acres_planted))
                 const field_crop_harvest_data = {
                   dairy_id: dairy_id,
                   field_crop_id: fieldCropObj.pk,
@@ -787,10 +779,14 @@ export const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
                   p_dl: checkEmpty(p_dl),
                   k_dl: checkEmpty(k_dl),
                   tfs_dl: checkEmpty(tfs_dl),
-                  n_lbs_acre: 1337,
-                  p_lbs_acre: 1337,
-                  k_lbs_acre: 1337,
-                  salt_lbs_acre: 1337,
+
+                  // percentToLBSFromTons(ev.actual_n, ev.actual_moisture, amt_per_acre, ev.method_of_reporting)
+
+
+                  n_lbs_acre: calcAmountLbsFromTonsPercent(n, moisture, yieldTonsPerAcre, method_of_reporting),
+                  p_lbs_acre: calcAmountLbsFromTonsPercent(p, moisture, yieldTonsPerAcre, method_of_reporting),
+                  k_lbs_acre: calcAmountLbsFromTonsPercent(k, moisture, yieldTonsPerAcre, method_of_reporting),
+                  salt_lbs_acre: calcAmountLbsFromTonsPercent(tfs, moisture, yieldTonsPerAcre, 'dry-weight'),
                 }
 
                 resolve(post(`${BASE_URL}/api/field_crop_harvest/create`, field_crop_harvest_data))
@@ -830,7 +826,6 @@ export const createHarvestTSV = (tsvText, tsvType, dairy_id) => {
   return new Promise((resolve, reject) => {
     createFieldsFromTSV(fields)      // Create fields before proceeding
       .then(createFieldRes => {
-        console.log(createFieldRes)
         let result_promises = rows.map((row, i) => {
           return createDataFromHarvestTSVListRow(row, i, dairy_id)    // Create entries for ea row in TSV file
         })
@@ -859,7 +854,6 @@ export const createHarvestTSVFromMap = (tsvText, tsvType, dairy_id) => {
   return new Promise((resolve, reject) => {
     createFieldsFromTSV(fields)      // Create fields before proceeding
       .then(createFieldRes => {
-        console.log('Harvest createFields res', createFieldRes)
         let result_promises = rows.map((row, i) => {
           return createDataFromHarvestTSVListRowMap(row, i, dairy_id)    // Create entries for ea row in TSV file
         })
@@ -1658,7 +1652,6 @@ const createFertilizerApplication = (row, field_crop_app, dairy_id) => {
   })
 }
 const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_id) => {
-  console.log("Creating Commercial Fetilizer", row)
   const import_desc = row['Import Description']
   const import_date = row['Import Date']
   const material_type = row['Material Type']
@@ -1784,9 +1777,6 @@ const createSoilApplication = (row, field_crop_app, dairy_id) => {
   return new Promise((resolve, reject) => {
     lazyGet('fields', row[1], fieldData, dairy_id)
       .then(([field]) => {
-        console.log('Field: ', field)
-        console.log("Create all fca_soil_analysis here")
-
         const sampleData0 = {
           dairy_id: dairy_id,
           field_id: field.pk,
@@ -1851,8 +1841,6 @@ const createSoilApplication = (row, field_crop_app, dairy_id) => {
           lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_2)}`, sampleData2, dairy_id),
         ])
           .then(([[analysis0], [analysis1], [analysis2]]) => {
-            console.log("3 depths, 3 analyses for NPKSalt", analysis0, analysis1, analysis2)
-            console.log("Calculate them noW!!!!!! muahaha")
             let n_lbs_acre = (toFloat(n_con_0) + toFloat(n_con_1) + toFloat(n_con_2)) * 4.0  // Testing in the calc gave me the number 4.... 1mg/kg  == 4lbs/acre
             let p_lbs_acre = (toFloat(p_con_0) + toFloat(p_con_1) + toFloat(p_con_2)) * 4.0  // _con is in mg/ kg
             let k_lbs_acre = (toFloat(k_con_0) + toFloat(k_con_1) + toFloat(k_con_2)) * 4.0
@@ -1960,8 +1948,6 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_id) => {
   return new Promise((resolve, reject) => {
     lazyGet('fields', fieldTitle, fieldData, dairy_id)
       .then(([field]) => {
-        console.log('Field: ', field)
-        console.log("Create all fca_soil_analysis here")
 
         const sampleData0 = {
           dairy_id: dairy_id,
@@ -2027,8 +2013,6 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_id) => {
           lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_2)}`, sampleData2, dairy_id),
         ])
           .then(([analysis0, analysis1, analysis2]) => {
-            console.log("3 depths, 3 analyses for NPKSalt", analysis0, analysis1, analysis2)
-            console.log("Calculate them noW!!!!!! muahaha")
             let n_lbs_acre = (toFloat(n_con_0) + toFloat(n_con_1) + toFloat(n_con_2)) * 4.0  // Testing in the calc gave me the number 4.... 1mg/kg  == 4lbs/acre
             let p_lbs_acre = (toFloat(p_con_0) + toFloat(p_con_1) + toFloat(p_con_2)) * 4.0  // _con is in mg/ kg
             let k_lbs_acre = (toFloat(k_con_0) + toFloat(k_con_1) + toFloat(k_con_2)) * 4.0
@@ -2084,8 +2068,7 @@ const createPlowdownCreditApplication = (row, field_crop_app, dairy_id) => {
   return new Promise((resolve, reject) => {
     lazyGet('fields', row[1], fieldData, dairy_id)
       .then(([field]) => {
-        console.log('Field: ', field)
-        console.log("Create all fca_soil_analysis here")
+
         const fca_plowdown_credit_data = {
           dairy_id: dairy_id,
           field_crop_app_id: field_crop_app.pk,
@@ -2138,8 +2121,6 @@ const createPlowdownCreditApplicationFromMap = (row, field_crop_app, dairy_id) =
   return new Promise((resolve, reject) => {
     lazyGet('fields', fieldTitle, fieldData, dairy_id)
       .then(([field]) => {
-        console.log('Field: ', field)
-        console.log("Create all fca_soil_analysis here")
         const fca_plowdown_credit_data = {
           dairy_id: dairy_id,
           field_crop_app_id: field_crop_app.pk,
@@ -2289,7 +2270,6 @@ export const createDataFromTSVListRowMap = (row, i, dairy_id, tsvType) => {
 // Handles an upload of tsv data for a nutrient application
 // Entry point for single upload of nutrient app
 export const uploadNutrientApp = (tsvText, tsvType, dairy_id) => {
-  console.log("Uploading nutrient application!")
   // let rows = processTSVText(tsvText, TSV_INFO[tsvType].numCols) // extract rows from Text of tsv file TODO()
   let rows = processTSVTextAsMap(tsvText, tsvType) // extract rows from Text of tsv file TODO()
 
@@ -2343,15 +2323,12 @@ const _lazyGetExportDest = (row, dairy_id) => {
     op_city_state,
     op_city_zip,
     op_is_owner,
-    op_is_responsible,  // Yes, No
-
+    op_is_responsible,
     contact_first_name,
     contact_primary_phone,
 
-
     hauler_title,
     hauler_first_name,
-
     hauler_primary_phone,
     hauler_street,
     hauler_cross_street,
@@ -2359,8 +2336,6 @@ const _lazyGetExportDest = (row, dairy_id) => {
     hauler_city,
     hauler_city_state,
     hauler_city_zip,
-
-
 
     recipient_title,
     dest_type,
@@ -2438,7 +2413,6 @@ const _lazyGetExportDest = (row, dairy_id) => {
     city_state: recipient_city_state,
     city_zip: recipient_city_zip,
   }
-  console.log("LAxy get recipient data: ", createRecipientData)
   promises.push(lazyGet('export_recipient', recipientSearchURL, createRecipientData, dairy_id))
 
   return new Promise((resolve, reject) => {
@@ -2448,9 +2422,6 @@ const _lazyGetExportDest = (row, dairy_id) => {
         const contactObj = results[1][0]
         const haulerObj = results[2][0]
         const recipientObj = results[3][0]
-        console.log("Recipient", recipientObj)
-        //TODO
-        // Create Search for export_destination
 
         // LazyGet export_dest
         // export_recipient_id, pnumber, street, city_zip
@@ -2596,9 +2567,6 @@ const _lazyGetExportDestFromMap = (row, dairy_id) => {
         const contactObj = results[1][0]
         const haulerObj = results[2][0]
         const recipientObj = results[3][0]
-        console.log("Results from lazy get operator, contact, hauler, recipient", results)
-        //TODO
-        // Create Search for export_destination
 
         // LazyGet export_dest
         // export_recipient_id, pnumber, street, city_zip
@@ -2931,7 +2899,6 @@ export const createDataFromWastewaterExportTSVListRowMap = (row, i, dairy_id) =>
     _lazyGetExportDestFromMap(row, dairy_id)
       .then(dest_res => {
         const [operatorObj, contactObj, haulerObj, destObj] = dest_res
-        console.log(operatorObj, contactObj, haulerObj, destObj)
         let createManifestObj = {
           dairy_id: dairy_id,
           export_dest_id: destObj.pk,
@@ -3034,7 +3001,6 @@ export const createTileDrainage = (tsvText, tsvType, dairy_id) => {
     return new Promise((resolve, reject) => {
       lazyGet('drain_source', encodeURIComponent(src_desc), drainSourceData, dairy_id)
         .then(([drainSource]) => {
-          console.log(drainSource)
           const drainAnalysisData = {
             dairy_id: dairy_id,
             drain_source_id: drainSource.pk,
@@ -3101,7 +3067,6 @@ export const createTileDrainageFromMap = (tsvText, tsvType, dairy_id) => {
     return new Promise((resolve, reject) => {
       lazyGet('drain_source', encodeURIComponent(src_desc), drainSourceData, dairy_id)
         .then(([drainSource]) => {
-          console.log(drainSource)
           const drainAnalysisData = {
             dairy_id: dairy_id,
             drain_source_id: drainSource.pk,

@@ -518,13 +518,18 @@ class DairyTab extends Component {
         chartInstance.data.datasets.forEach((dataset, di) => {
           for (var i = 0; i < dataset.data.length; i++) {
             // rewrite text if it is too close to edge for hoizontal bar chart
-
+            if (isNaN(dataset.data[i])) {
+              console.log("Error num?", dataset.data[i])
+              console.log(dataset.data)
+              return
+            }
             let bar = chartInstance._metasets[di].data[i]
             let maxX = chartInstance.scales.x.maxWidth
             // let maxY = chartInstance.scales.y.maxHeight
             let numChars = dataset.data[i].toString().length
             let singleCharLen = 4
             var xOffset = (500 - bar.x) / 500 < 0.03 ? ((numChars * -singleCharLen) - 10) : 0;
+
             let num = Math.round(toFloat(dataset.data[i]))
             num = num && num >= 1e4 ? `${formatFloat(Math.round(num / 1000))}K` : formatFloat(num)
             if (chartInstance.scales.x.type === "logarithmic") {

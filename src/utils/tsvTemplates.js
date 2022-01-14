@@ -426,10 +426,10 @@ const harvestTemplate = {
     '% P': '',
     '% K': '',
     '% TFS Salt (Dry Basis)': '',
-    'N DL (mg/kg)': '',
-    'P DL (mg/kg)': '',
-    'K DL (mg/kg)': '',
-    'TFS DL %': '',
+    'N DL': '',
+    'P DL': '',
+    'K DL': '',
+    'TFS DL': '',
 }
 
 
