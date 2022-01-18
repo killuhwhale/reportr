@@ -1,6 +1,6 @@
 import { get, post } from '../../utils/requests'
 import {
-  toFloat, opArrayByPos, calcAmountLbsFromTonsPercent, mgKgToLbsFromTons,
+  toFloat, opArrayByPos, calcLbsFromTonsAsPercent, calcLbsFromTonsAsMGKG,
   displayPercentageAsMGKG, MGMLToLBS, percentToLBSForGals, percentToLBS
 } from '../../utils/convertCalc'
 import { formatFloat, groupBySortBy, groupByKeys } from '../../utils/format'
@@ -285,10 +285,10 @@ const getAvailableNutrientsF = (dairy_id) => {
           // Account for moistture on salt always. **This doesnt apply to commercial imports
           dry.map(el => [
             // instead of percent
-            mgKgToLbsFromTons(el.n_con, el.moisture, el.amount_imported, el.method_of_reporting),
-            mgKgToLbsFromTons(el.p_con, el.moisture, el.amount_imported, el.method_of_reporting),
-            mgKgToLbsFromTons(el.k_con, el.moisture, el.amount_imported, el.method_of_reporting),
-            calcAmountLbsFromTonsPercent(el.salt_con, el.moisture, el.amount_imported, "dry-weight"), // Method of reporting doesnt affect, should always acount for moisture, also in percent
+            calcLbsFromTonsAsMGKG(el.n_con, el.moisture, el.amount_imported, el.method_of_reporting),
+            calcLbsFromTonsAsMGKG(el.p_con, el.moisture, el.amount_imported, el.method_of_reporting),
+            calcLbsFromTonsAsMGKG(el.k_con, el.moisture, el.amount_imported, el.method_of_reporting),
+            calcLbsFromTonsAsPercent(el.salt_con, el.moisture, el.amount_imported, "dry-weight"), // Method of reporting doesnt affect, should always acount for moisture, also in percent
           ])
             .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]
@@ -305,10 +305,10 @@ const getAvailableNutrientsF = (dairy_id) => {
 
         let commercialSolidTotals = commercialSolid.length > 0 ?
           commercialSolid.map(el => [
-            calcAmountLbsFromTonsPercent(el.n_con, el.moisture, el.amount_imported, el.method_of_reporting),
-            calcAmountLbsFromTonsPercent(el.p_con, el.moisture, el.amount_imported, el.method_of_reporting),
-            calcAmountLbsFromTonsPercent(el.k_con, el.moisture, el.amount_imported, el.method_of_reporting),
-            calcAmountLbsFromTonsPercent(el.salt_con, el.moisture, el.amount_imported, el.method_of_reporting),
+            calcLbsFromTonsAsPercent(el.n_con, el.moisture, el.amount_imported, el.method_of_reporting),
+            calcLbsFromTonsAsPercent(el.p_con, el.moisture, el.amount_imported, el.method_of_reporting),
+            calcLbsFromTonsAsPercent(el.k_con, el.moisture, el.amount_imported, el.method_of_reporting),
+            calcLbsFromTonsAsPercent(el.salt_con, el.moisture, el.amount_imported, el.method_of_reporting),
           ])
             .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]
@@ -322,7 +322,6 @@ const getAvailableNutrientsF = (dairy_id) => {
           ])
             .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]
-
 
         // list of summarys and list items for each section: dry, process, and commercial
         resolve({
@@ -356,10 +355,10 @@ const getAvailableNutrientsG = (dairy_id) => {
 
         let dryTotal = dry && dry.length > 0 ?
           dry.map(el => [
-            calcAmountLbsFromTonsPercent(el.n_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
-            calcAmountLbsFromTonsPercent(el.p_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
-            calcAmountLbsFromTonsPercent(el.k_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
-            calcAmountLbsFromTonsPercent(el.tfs, el.moisture, el.amount_hauled, el.reporting_method),
+            calcLbsFromTonsAsPercent(el.n_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
+            calcLbsFromTonsAsPercent(el.p_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
+            calcLbsFromTonsAsPercent(el.k_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
+            calcLbsFromTonsAsPercent(el.tfs, el.moisture, el.amount_hauled, el.reporting_method),
           ]).reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]
 
@@ -514,22 +513,26 @@ const getApplicationAreaB = (dairy_id) => {
             let totals = [0, 0, 0, 0, 0] // Holds totals of yield, n,p,k, salt for summary table
             let harvestsByPlantDate = fieldHarvestsObj[key]
             harvestsByPlantDate.map(el => {
+              const lbs_acre = toFloat(el.actual_yield / el.acres_planted)
+              const n_lbs_acre = calcLbsFromTonsAsPercent(el.actual_n, el.actual_moisture, lbs_acre, el.method_of_reporting)
+              const p_lbs_acre = calcLbsFromTonsAsPercent(el.actual_p, el.actual_moisture, lbs_acre, el.method_of_reporting)
+              const k_lbs_acre = calcLbsFromTonsAsPercent(el.actual_k, el.actual_moisture, lbs_acre, el.method_of_reporting)
+              const salt_lbs_acre = calcLbsFromTonsAsPercent(el.tfs, el.actual_moisture, lbs_acre, 'dry-weight')
+
+              totals[0] += lbs_acre
+              totals[1] += toFloat(n_lbs_acre)
+              totals[2] += toFloat(p_lbs_acre)
+              totals[3] += toFloat(k_lbs_acre)
+              totals[4] += toFloat(salt_lbs_acre)
+
+              // Format values
               el.actual_yield = toFloat(el.actual_yield)
-              el.actual_n = formatFloat(displayPercentageAsMGKG(el.actual_n)) // For display only, not used in calculations or for totals, its just a concentation
+              el.actual_n = formatFloat(displayPercentageAsMGKG(el.actual_n))
               el.actual_p = formatFloat(displayPercentageAsMGKG(el.actual_p)) // For display only
               el.actual_k = formatFloat(displayPercentageAsMGKG(el.actual_k)) // For display only
               el.tfs = toFloat(el.tfs)
               el.acres_planted = toFloat(el.acres_planted)
               el.actual_moisture = toFloat(el.actual_moisture)
-
-
-              totals[0] += (el.actual_yield / el.acres_planted)
-              totals[1] += toFloat(el.n_lbs_acre)
-              totals[2] += toFloat(el.p_lbs_acre)
-              totals[3] += toFloat(el.k_lbs_acre)
-              // Calculate amount of salt, 
-              //  tfs * yield / acre * (1-mositure)
-              totals[4] += toFloat(el.salt_lbs_acre)
               return
             })
 
@@ -597,28 +600,26 @@ const getNutrientBudgetA = (dairy_id) => {
           plantDateEventObj = Object.fromEntries(Object.keys(plantDateEventObj).map(key => {
             let plantDateEvents = plantDateEventObj[key]
             let appDatesObj = groupBySortBy(plantDateEvents, 'app_date', 'src_desc')
-
-
-
             appDatesObj = Object.fromEntries(Object.keys(appDatesObj).map(key => {
               let appDatesObjList = appDatesObj[key]
               let totals = [0, 0, 0, 0]
-
               // Total each list NPK, Salt and update *lbs_acre to easily display the total.
               appDatesObjList = appDatesObjList.map(el => {
                 // Tricky part with totaling the events is that NPK and salt variable names are not consistent
-                if (el.src_type) {
+                if (el.entry_type === "freshwater") {
                   // Fresh water
-                  totals[0] += toFloat(el.totaln)
+                  const n_lbs_acre = MGMLToLBS(el.n_con, el.amt_applied_per_acre)
+                  totals[0] += n_lbs_acre
                   // p and k are not given in sheet
-                  totals[3] += MGMLToLBS(el.tds, el.amt_applied_per_acre)
+                  const salt_lbs_acre = MGMLToLBS(el.tds, el.amt_applied_per_acre)
+                  totals[3] += salt_lbs_acre
 
                   // Update for easy display in PDF
-                  el.n_lbs_acre = formatFloat(toFloat(el.totaln))
+                  el.n_lbs_acre = formatFloat(n_lbs_acre)
                   el.p_lbs_acre = 0
                   el.k_lbs_acre = 0
-                  el.salt_lbs_acre = formatFloat(MGMLToLBS(el.tds, el.amt_applied_per_acre))
-                } else if (WASTEWATER_MATERIAL_TYPES.indexOf(el.material_type) > -1) {
+                  el.salt_lbs_acre = formatFloat(salt_lbs_acre)
+                } else if (el.entry_type === "wastewater") {
                   let amt_applied_per_acre = toFloat(el.amount_applied) / toFloat(el.acres_planted)
 
                   // Process wastewater
@@ -632,17 +633,36 @@ const getNutrientBudgetA = (dairy_id) => {
                   el.k_lbs_acre = formatFloat(MGMLToLBS(el.k_con, amt_applied_per_acre))
                   el.salt_lbs_acre = formatFloat(MGMLToLBS(el.tds, amt_applied_per_acre))
 
-                } else if ([...NUTRIENT_IMPORT_MATERIAL_TYPES, ...MATERIAL_TYPES].indexOf(el.material_type) > -1) {
-                  // Tally up solidmanure or commerical fertilizer
-                  totals[0] += toFloat(el.n_lbs_acre)
-                  totals[1] += toFloat(el.p_lbs_acre)
-                  totals[2] += toFloat(el.k_lbs_acre)
-                  totals[3] += toFloat(el.salt_lbs_acre)
+                }
+                else if (el.entry_type === "fertilizer") {
+                  // TODO() further separate based on type of fertilizer/ nutrient import
+                  const [n_lbs_acre, p_lbs_acre, k_lbs_acre, salt_lbs_acre] = calculateFertilizer(el)
+                  console.log('_LBS_ACREx', n_lbs_acre, p_lbs_acre, k_lbs_acre, salt_lbs_acre)
+                  totals[0] += toFloat(n_lbs_acre)
+                  totals[1] += toFloat(p_lbs_acre)
+                  totals[2] += toFloat(k_lbs_acre)
+                  totals[3] += toFloat(salt_lbs_acre)
 
-                  el.n_lbs_acre = formatFloat(toFloat(el.n_lbs_acre))
-                  el.p_lbs_acre = formatFloat(toFloat(el.p_lbs_acre))
-                  el.k_lbs_acre = formatFloat(toFloat(el.k_lbs_acre))
-                  el.salt_lbs_acre = formatFloat(toFloat(el.salt_lbs_acre))
+                  el.n_lbs_acre = formatFloat(toFloat(n_lbs_acre))
+                  el.p_lbs_acre = formatFloat(toFloat(p_lbs_acre))
+                  el.k_lbs_acre = formatFloat(toFloat(k_lbs_acre))
+                  el.salt_lbs_acre = formatFloat(toFloat(salt_lbs_acre))
+                }
+                else if (el.entry_type === "manure") {
+                  const lbs_acre = toFloat(el.amount_applied) / toFloat(el.acres_planted)
+                  const n_lbs_acre = calcLbsFromTonsAsPercent(el.n_con, el.moisture, lbs_acre, el.method_of_reporting)
+                  const p_lbs_acre = calcLbsFromTonsAsPercent(el.p_con, el.moisture, lbs_acre, el.method_of_reporting)
+                  const k_lbs_acre = calcLbsFromTonsAsPercent(el.k_con, el.moisture, lbs_acre, el.method_of_reporting)
+                  const salt_lbs_acre = calcLbsFromTonsAsPercent(el.salt_con, el.moisture, lbs_acre, el.method_of_reporting)
+                  totals[0] += toFloat(n_lbs_acre)
+                  totals[1] += toFloat(p_lbs_acre)
+                  totals[2] += toFloat(k_lbs_acre)
+                  totals[3] += toFloat(salt_lbs_acre)
+
+                  el.n_lbs_acre = formatFloat(toFloat(n_lbs_acre))
+                  el.p_lbs_acre = formatFloat(toFloat(p_lbs_acre))
+                  el.k_lbs_acre = formatFloat(toFloat(k_lbs_acre))
+                  el.salt_lbs_acre = formatFloat(toFloat(salt_lbs_acre))
                 }
                 el.amount_applied = formatFloat(el.amount_applied)
                 return el
@@ -675,6 +695,45 @@ const getNutrientBudgetA = (dairy_id) => {
 }
 
 
+const calculateFertilizer = (ev) => {
+  let n_lbs_acre = 0
+  let p_lbs_acre = 0
+  let k_lbs_acre = 0
+  let salt_lbs_acre = 0
+
+  if (ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[1] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[3]) {
+    // == Commercial Solid
+    console.log("Ev for fertilizer:commericalSolid", ev)
+    n_lbs_acre = percentToLBS(ev.n_con, ev.amount_applied)
+    p_lbs_acre = percentToLBS(ev.p_con, ev.amount_applied)
+    k_lbs_acre = percentToLBS(ev.k_con, ev.amount_applied)
+    salt_lbs_acre = percentToLBS(ev.salt_con, ev.amount_applied)
+
+  } else if (ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[0] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[2]) {  // === Commer Liquid
+    n_lbs_acre = percentToLBSForGals(ev.n_con, ev.amount_applied)
+    p_lbs_acre = percentToLBSForGals(ev.p_con, ev.amount_applied)
+    k_lbs_acre = percentToLBSForGals(ev.k_con, ev.amount_applied)
+    salt_lbs_acre = percentToLBSForGals(ev.salt_con, ev.amount_applied)
+
+  }
+  else if (NUTRIENT_IMPORT_MATERIAL_TYPES.slice(4, 8).indexOf(ev.material_type) >= 0) {
+    // === dry manure
+    console.log("Ev for fertilizer:drymanure", ev)
+    n_lbs_acre = calcLbsFromTonsAsPercent(ev.n_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
+
+    p_lbs_acre = calcLbsFromTonsAsPercent(ev.p_con, ev.moisture, ev.amount_applied / 2000, ev.method_of_reporting)
+    k_lbs_acre = calcLbsFromTonsAsPercent(ev.k_con, ev.moisture, ev.amount_applied / 2000, ev.method_of_reporting)
+    salt_lbs_acre = calcLbsFromTonsAsPercent(ev.salt_con, ev.moisture, ev.amount_applied / 2000, ev.method_of_reporting)
+  } else if (NUTRIENT_IMPORT_MATERIAL_TYPES.slice(9, 10).indexOf(ev.material_type) >= 0) {
+    // === process wastewater
+    n_lbs_acre = MGMLToLBS(ev.n_con, ev.amount_applied)
+    p_lbs_acre = MGMLToLBS(ev.p_con, ev.amount_applied)
+    k_lbs_acre = MGMLToLBS(ev.k_con, ev.amount_applied)
+    salt_lbs_acre = MGMLToLBS(ev.salt_con, ev.amount_applied)
+  }
+  return [n_lbs_acre, p_lbs_acre, k_lbs_acre, salt_lbs_acre]
+}
+
 const getNutrientBudgetInfo = (dairy_id) => {
   return new Promise((resolve, rej) => {
     Promise.all([
@@ -687,7 +746,6 @@ const getNutrientBudgetInfo = (dairy_id) => {
       get(`${BASE_URL}/api/field_crop_harvest/${dairy_id}`),
     ])
       .then(([plows, soils, fertilizers, manures, wastewaters, freshwaters, harvests]) => {
-
         let allEvents = groupByKeys([
           ...plows,
           ...soils,
@@ -750,19 +808,23 @@ const getNutrientBudgetInfo = (dairy_id) => {
           events.map(ev => {
             if (ev.entry_type === 'soil') {
               // This is calculated by the program when created via uploading spreadsheet.
-              console.log(ev)
-              infoLBS.soils[0] += toFloat(ev.n_lbs_acre) * toFloat(ev.acres_planted)
-              infoLBS.soils[1] += toFloat(ev.p_lbs_acre) * toFloat(ev.acres_planted)
-              infoLBS.soils[2] += toFloat(ev.k_lbs_acre) * toFloat(ev.acres_planted)
-              infoLBS.soils[3] += toFloat(ev.salt_lbs_acre) * toFloat(ev.acres_planted)
+              // Testing in the calc gave me the number 4.... 1mg/kg  == 4lbs/acre
+              let n_lbs_acre = (toFloat(ev.n_con_0) + toFloat(ev.n_con_1) + toFloat(ev.n_con_2)) * 4.0 || 0
+              let p_lbs_acre = (toFloat(ev.p_con_0) + toFloat(ev.p_con_1) + toFloat(ev.p_con_2)) * 4.0 || 0
+              let k_lbs_acre = (toFloat(ev.k_con_0) + toFloat(ev.k_con_1) + toFloat(ev.k_con_2)) * 4.0 || 0
+              let salt_lbs_acre = (toFloat(ev.ec_0) + toFloat(ev.ec_1) + toFloat(ev.ec_2)) * 2.4 || 0
 
-              info.soils[0] += toFloat(ev.n_lbs_acre)
-              info.soils[1] += toFloat(ev.p_lbs_acre)
-              info.soils[2] += toFloat(ev.k_lbs_acre)
-              info.soils[3] += toFloat(ev.salt_lbs_acre)
+              info.soils[0] += toFloat(n_lbs_acre)
+              info.soils[1] += toFloat(p_lbs_acre)
+              info.soils[2] += toFloat(k_lbs_acre)
+              info.soils[3] += toFloat(salt_lbs_acre)
+
+              infoLBS.soils[0] += toFloat(n_lbs_acre) * toFloat(ev.acres_planted)
+              infoLBS.soils[1] += toFloat(p_lbs_acre) * toFloat(ev.acres_planted)
+              infoLBS.soils[2] += toFloat(k_lbs_acre) * toFloat(ev.acres_planted)
+              infoLBS.soils[3] += toFloat(salt_lbs_acre) * toFloat(ev.acres_planted)
             }
             else if (ev.entry_type === 'plowdown') {
-              console.log(ev)
               infoLBS.plows[0] += toFloat(ev.n_lbs_acre) * toFloat(ev.acres_planted)
               infoLBS.plows[1] += toFloat(ev.p_lbs_acre) * toFloat(ev.acres_planted)
               infoLBS.plows[2] += toFloat(ev.k_lbs_acre) * toFloat(ev.acres_planted)
@@ -774,31 +836,29 @@ const getNutrientBudgetInfo = (dairy_id) => {
               info.plows[3] += toFloat(ev.salt_lbs_acre)
             }
             else if (ev.entry_type === 'fertilizer') {
-              // Calc total app in lbs/ acres
-              info.fertilizers[0] += toFloat(ev.n_lbs_acre)
-              info.fertilizers[1] += toFloat(ev.p_lbs_acre)
-              info.fertilizers[2] += toFloat(ev.k_lbs_acre)
-              info.fertilizers[3] += toFloat(ev.salt_lbs_acre)
-
               // Calc total app in LBS)else if
               // Depending on material_type, this will need to be calculated differently....
-              if (ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[1] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[3]) { // == Commercial Solid
+              if (ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[1] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[3]) {
+                // == Commercial Solid
                 infoLBS.fertilizers[0] += percentToLBS(ev.n_con, ev.amount_applied)
                 infoLBS.fertilizers[1] += percentToLBS(ev.p_con, ev.amount_applied)
                 infoLBS.fertilizers[2] += percentToLBS(ev.k_con, ev.amount_applied)
                 infoLBS.fertilizers[3] += percentToLBS(ev.salt_con, ev.amount_applied)
+
               } else if (ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[0] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[2]) {  // === Commer Liquid
                 infoLBS.fertilizers[0] += percentToLBSForGals(ev.n_con, ev.amount_applied)
                 infoLBS.fertilizers[1] += percentToLBSForGals(ev.p_con, ev.amount_applied)
                 infoLBS.fertilizers[2] += percentToLBSForGals(ev.k_con, ev.amount_applied)
                 infoLBS.fertilizers[3] += percentToLBSForGals(ev.salt_con, ev.amount_applied)
               }
-              else if (NUTRIENT_IMPORT_MATERIAL_TYPES.slice(4, 8).indexOf(ev.material_type) >= 0) { // === dry manure
-                infoLBS.fertilizers[0] += calcAmountLbsFromTonsPercent(ev.n_con, ev.moisture, ev.amount_imported, ev.method_of_reporting)
-                infoLBS.fertilizers[1] += calcAmountLbsFromTonsPercent(ev.p_con, ev.moisture, ev.amount_imported, ev.method_of_reporting)
-                infoLBS.fertilizers[2] += calcAmountLbsFromTonsPercent(ev.k_con, ev.moisture, ev.amount_imported, ev.method_of_reporting)
-                infoLBS.fertilizers[3] += calcAmountLbsFromTonsPercent(ev.salt_con, ev.moisture, ev.amount_imported, ev.method_of_reporting)
-              } else if (NUTRIENT_IMPORT_MATERIAL_TYPES.slice(9, 10).indexOf(ev.material_type) >= 0) { // === process wastewater
+              else if (NUTRIENT_IMPORT_MATERIAL_TYPES.slice(4, 8).indexOf(ev.material_type) >= 0) {
+                // === dry manure
+                infoLBS.fertilizers[0] += calcLbsFromTonsAsPercent(ev.n_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
+                infoLBS.fertilizers[1] += calcLbsFromTonsAsPercent(ev.p_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
+                infoLBS.fertilizers[2] += calcLbsFromTonsAsPercent(ev.k_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
+                infoLBS.fertilizers[3] += calcLbsFromTonsAsPercent(ev.salt_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
+              } else if (NUTRIENT_IMPORT_MATERIAL_TYPES.slice(9, 10).indexOf(ev.material_type) >= 0) {
+                // === process wastewater
                 infoLBS.fertilizers[0] += MGMLToLBS(ev.n_con, ev.amount_applied)
                 infoLBS.fertilizers[1] += MGMLToLBS(ev.p_con, ev.amount_applied)
                 infoLBS.fertilizers[2] += MGMLToLBS(ev.k_con, ev.amount_applied)
@@ -807,15 +867,16 @@ const getNutrientBudgetInfo = (dairy_id) => {
 
 
             } else if (ev.entry_type === 'manure') {
-              info.manures[0] += toFloat(ev.n_lbs_acre)
-              info.manures[1] += toFloat(ev.p_lbs_acre)
-              info.manures[2] += toFloat(ev.k_lbs_acre)
-              info.manures[3] += toFloat(ev.salt_lbs_acre)
+              const lbs_acre = toFloat(ev.amount_applied) / toFloat(ev.acres_planted)
+              info.manures[0] += calcLbsFromTonsAsPercent(ev.n_con, ev.moisture, lbs_acre, ev.method_of_reporting)
+              info.manures[1] += calcLbsFromTonsAsPercent(ev.p_con, ev.moisture, lbs_acre, ev.method_of_reporting)
+              info.manures[2] += calcLbsFromTonsAsPercent(ev.k_con, ev.moisture, lbs_acre, ev.method_of_reporting)
+              info.manures[3] += calcLbsFromTonsAsPercent(ev.salt_con, ev.moisture, lbs_acre, ev.method_of_reporting)
 
-              infoLBS.manures[0] += calcAmountLbsFromTonsPercent(ev.n_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
-              infoLBS.manures[1] += calcAmountLbsFromTonsPercent(ev.p_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
-              infoLBS.manures[2] += calcAmountLbsFromTonsPercent(ev.k_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
-              infoLBS.manures[3] += calcAmountLbsFromTonsPercent(ev.salt_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
+              infoLBS.manures[0] += calcLbsFromTonsAsPercent(ev.n_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
+              infoLBS.manures[1] += calcLbsFromTonsAsPercent(ev.p_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
+              infoLBS.manures[2] += calcLbsFromTonsAsPercent(ev.k_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
+              infoLBS.manures[3] += calcLbsFromTonsAsPercent(ev.salt_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
             } else if (ev.entry_type === 'freshwater') {
               info.freshwater_app[0] += toFloat(ev.amount_applied)
               let acreInches = toFloat(ev.amount_applied) / GALS_PER_ACREINCH
@@ -848,34 +909,35 @@ const getNutrientBudgetInfo = (dairy_id) => {
               infoLBS.wastewaters[3] += MGMLToLBS(ev.tds, ev.amount_applied)
 
             } else if (ev.entry_type === 'harvest') {
-              // if(ev.fieldtitle === 'Field 1')
-              //   console.log(ev)
               info.totalHarvests += 1
-              let amt_per_acre = toFloat(ev.actual_yield) / toFloat(ev.acres_planted)
 
-              info.anti_harvests[0] += toFloat(ev.typical_n) * amt_per_acre // (already in )lbs_per_ton, multiple by tons/amt per acre
-              info.anti_harvests[1] += toFloat(ev.typical_p) * amt_per_acre
-              info.anti_harvests[2] += toFloat(ev.typical_k) * amt_per_acre
-              info.anti_harvests[3] += toFloat(ev.typical_salt) * amt_per_acre
+              ev.typical_yield = toFloat(ev.typical_yield)
+              info.anti_harvests[0] += toFloat(ev.typical_n) * ev.typical_yield
+              info.anti_harvests[1] += toFloat(ev.typical_p) * ev.typical_yield
+              info.anti_harvests[2] += toFloat(ev.typical_k) * ev.typical_yield
+              info.anti_harvests[3] += toFloat(ev.typical_salt) * ev.typical_yield
 
-              infoLBS.anti_harvests[0] += toFloat(ev.typical_n) * toFloat(ev.actual_yield)
-              infoLBS.anti_harvests[1] += toFloat(ev.typical_p) * toFloat(ev.actual_yield)
-              infoLBS.anti_harvests[2] += toFloat(ev.typical_k) * toFloat(ev.actual_yield)
-              infoLBS.anti_harvests[3] += toFloat(ev.typical_salt) * toFloat(ev.actual_yield)
+              const typical_lbs_acre = toFloat(ev.typical_yield) * toFloat(ev.acres_planted)
+              infoLBS.anti_harvests[0] += toFloat(ev.typical_n) * typical_lbs_acre
+              infoLBS.anti_harvests[1] += toFloat(ev.typical_p) * typical_lbs_acre
+              infoLBS.anti_harvests[2] += toFloat(ev.typical_k) * typical_lbs_acre
+              infoLBS.anti_harvests[3] += toFloat(ev.typical_salt) * typical_lbs_acre
 
+              const lbs_acre = toFloat(ev.actual_yield) / toFloat(ev.acres_planted)
+              const n_lbs_acre = calcLbsFromTonsAsPercent(ev.actual_n, ev.actual_moisture, lbs_acre, ev.method_of_reporting)
+              const p_lbs_acre = calcLbsFromTonsAsPercent(ev.actual_p, ev.actual_moisture, lbs_acre, ev.method_of_reporting)
+              const k_lbs_acre = calcLbsFromTonsAsPercent(ev.actual_k, ev.actual_moisture, lbs_acre, ev.method_of_reporting)
+              const salt_lbs_acre = calcLbsFromTonsAsPercent(ev.tfs, ev.actual_moisture, lbs_acre, 'dry-weight')
 
-              // TODO() use => Instead of calculating here used npksalt_lbs_acre
-              console.log("Harvest Event", ev)
-              info.actual_harvests[0] += ev.n_lbs_acre
-              info.actual_harvests[1] += ev.p_lbs_acre
-              info.actual_harvests[2] += ev.k_lbs_acre
-              // It seems salt calculation doesnt depend on reporting method, always account for moisture....
-              info.actual_harvests[3] += ev.salt_lbs_acre
+              info.actual_harvests[0] += n_lbs_acre
+              info.actual_harvests[1] += p_lbs_acre
+              info.actual_harvests[2] += k_lbs_acre
+              info.actual_harvests[3] += salt_lbs_acre
 
-              infoLBS.actual_harvests[0] += ev.n_lbs_acre * amt_per_acre
-              infoLBS.actual_harvests[1] += ev.p_lbs_acre * amt_per_acre
-              infoLBS.actual_harvests[2] += ev.k_lbs_acre * amt_per_acre
-              infoLBS.actual_harvests[3] += ev.salt_lbs_acre * amt_per_acre
+              infoLBS.actual_harvests[0] += n_lbs_acre * lbs_acre
+              infoLBS.actual_harvests[1] += p_lbs_acre * lbs_acre
+              infoLBS.actual_harvests[2] += k_lbs_acre * lbs_acre
+              infoLBS.actual_harvests[3] += salt_lbs_acre * lbs_acre
             }
           })
           // Atmospheric deposition
@@ -896,6 +958,8 @@ const getNutrientBudgetInfo = (dairy_id) => {
 
           info.nutrient_bal = opArrayByPos(info.total_app, info.actual_harvests, '-')
           info.nutrient_bal_ratio = opArrayByPos(info.total_app, info.actual_harvests, '/')
+
+
           return [key, info]
         }))
 
@@ -1148,3 +1212,4 @@ const getCertificationA = (dairy_id) => {
 
 
 
+export { getNutrientBudgetInfo };

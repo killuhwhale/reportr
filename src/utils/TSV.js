@@ -4,6 +4,7 @@ import {
   toFloat, opArrayByPos, calcAmountLbsFromTonsPercent, mgKgToLbsFromTons,
   displayPercentageAsMGKG, MGMLToLBS, percentToLBSForGals, percentToLBS
 } from './convertCalc'
+import { NUTRIENT_IMPORT_MATERIAL_TYPES } from './constants'
 import { BASE_URL } from "./environment"
 import {
   harvestTemplate, wwTemplate, fwTemplate, smTemplate, cfTemplate, smExportTemplate,
@@ -266,7 +267,7 @@ export const createFieldSetFromMap = (rows) => {
   // Create a set of fields to ensure duplicates are not attempted.
   rows.forEach(row => {
     const title = row['Field']
-    const acres = row['Acres Planted']
+    const acres = row['Total Acres']
     const cropable = row['Cropable']
 
     if (!fieldSet.has(title)) {
@@ -411,7 +412,7 @@ const getFieldCropApp = (commonRowData, dairy_id) => {
   })
 }
 
-const getFieldCropFromMap = (commonRowData, dairy_id) => {
+const getFieldCropFromMap = (commonRowData, dairy_id, tsvType) => {
   const field_title = commonRowData['Field']
   const acres_planted = commonRowData['Acres Planted']
   const cropable = commonRowData['Cropable']
@@ -429,7 +430,6 @@ const getFieldCropFromMap = (commonRowData, dairy_id) => {
       .then(res => {
         let fieldObj = res[0][0]
         let cropObj = res[1][0]
-
         if (fieldObj) {
           if (cropObj) {
             const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
@@ -447,6 +447,9 @@ const getFieldCropFromMap = (commonRowData, dairy_id) => {
               k: typical_k,
               salt: salt
             }
+
+
+
             lazyGet('field_crop', field_crop_search_url, field_crop_data, dairy_id)
               .then(field_crop_res => {
                 resolve(field_crop_res[0])
@@ -466,7 +469,7 @@ const getFieldCropFromMap = (commonRowData, dairy_id) => {
 }
 
 
-const getFieldCropAppFromMap = (commonRowData, dairy_id) => {
+const getFieldCropAppFromMap = (commonRowData, dairy_id, tsvType) => {
   const app_date = commonRowData['Application Date']
   const precip_before = commonRowData['Rain Day Prior to Event']
   const precip_during = commonRowData['Rain Day of Event']
@@ -475,7 +478,7 @@ const getFieldCropAppFromMap = (commonRowData, dairy_id) => {
 
 
   return new Promise((resolve, reject) => {
-    getFieldCropFromMap(commonRowData, dairy_id)
+    getFieldCropFromMap(commonRowData, dairy_id, tsvType)
       .then(field_crop_res => {
         const field_crop_app_search_url = `${field_crop_res.pk}/${encodeURIComponent(app_date)}`
         const field_crop_app_data = {
@@ -779,14 +782,6 @@ export const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
                   p_dl: checkEmpty(p_dl),
                   k_dl: checkEmpty(k_dl),
                   tfs_dl: checkEmpty(tfs_dl),
-
-                  // percentToLBSFromTons(ev.actual_n, ev.actual_moisture, amt_per_acre, ev.method_of_reporting)
-
-
-                  n_lbs_acre: calcAmountLbsFromTonsPercent(n, moisture, yieldTonsPerAcre, method_of_reporting),
-                  p_lbs_acre: calcAmountLbsFromTonsPercent(p, moisture, yieldTonsPerAcre, method_of_reporting),
-                  k_lbs_acre: calcAmountLbsFromTonsPercent(k, moisture, yieldTonsPerAcre, method_of_reporting),
-                  salt_lbs_acre: calcAmountLbsFromTonsPercent(tfs, moisture, yieldTonsPerAcre, 'dry-weight'),
                 }
 
                 resolve(post(`${BASE_URL}/api/field_crop_harvest/create`, field_crop_harvest_data))
@@ -1100,9 +1095,6 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id
           app_desc,
           material_type,
           amount_applied: amount_applied.replaceAll(',', ''),
-          totalN: '1337',
-          totalP: '1337',
-          totalK: '1337',
         }
         resolve(post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data))
       })
@@ -1342,8 +1334,7 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
                 app_rate: checkEmpty(app_rate),
                 run_time: checkEmpty(run_time),
                 amount_applied: checkEmpty(amount_applied),
-                amt_applied_per_acre: checkEmpty(amt_applied_per_acre),
-                totalN: checkEmpty("1337")
+                amt_applied_per_acre: checkEmpty(amt_applied_per_acre)
               }
 
               resolve(post(`${BASE_URL}/api/field_crop_app_freshwater/create`, freshwater_data))
@@ -1550,10 +1541,6 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_id) => {
             src_desc,
             amount_applied: checkEmpty(amount_applied),
             amt_applied_per_acre: checkEmpty(amt_applied_per_acre),
-            n_lbs_acre: checkEmpty('1337'),
-            p_lbs_acre: checkEmpty('1337'),
-            k_lbs_acre: checkEmpty('1337'),
-            salt_lbs_acre: checkEmpty('1337')
           }
 
           resolve(post(`${BASE_URL}/api/field_crop_app_solidmanure/create`, solidmanure_data))
@@ -1695,10 +1682,6 @@ const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_id) => {
             field_crop_app_id: field_crop_app.pk,
             nutrient_import_id: nutrient_import_id,
             amount_applied: checkEmpty(amt_applied_per_acre),
-            n_lbs_acre: "1337",
-            p_lbs_acre: "1337",
-            k_lbs_acre: "1337",
-            salt_lbs_acre: "1337"
           }
 
           resolve(post(`${BASE_URL}/api/field_crop_app_fertilizer/create`, fertilizer_data))
@@ -2008,24 +1991,18 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_id) => {
         }
 
         Promise.all([
-          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_0)}`, sampleData0, dairy_id),
-          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_1)}`, sampleData1, dairy_id),
-          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_2)}`, sampleData2, dairy_id),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_0)}/${encodeURIComponent(sample_desc_0)}`, sampleData0, dairy_id),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_1)}/${encodeURIComponent(sample_desc_1)}`, sampleData1, dairy_id),
+          lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_2)}/${encodeURIComponent(sample_desc_2)}`, sampleData2, dairy_id),
         ])
-          .then(([analysis0, analysis1, analysis2]) => {
-            let n_lbs_acre = (toFloat(n_con_0) + toFloat(n_con_1) + toFloat(n_con_2)) * 4.0  // Testing in the calc gave me the number 4.... 1mg/kg  == 4lbs/acre
-            let p_lbs_acre = (toFloat(p_con_0) + toFloat(p_con_1) + toFloat(p_con_2)) * 4.0  // _con is in mg/ kg
-            let k_lbs_acre = (toFloat(k_con_0) + toFloat(k_con_1) + toFloat(k_con_2)) * 4.0
-            let salt_lbs_acre = (toFloat(ec_0) + toFloat(ec_1) + toFloat(ec_2)) * 2.4
-
+          .then(([[analysis0], [analysis1], [analysis2]]) => {
             const fca_soil_data = {
               dairy_id: dairy_id,
               field_crop_app_id: field_crop_app.pk,
               src_desc,
-              n_lbs_acre,
-              p_lbs_acre,
-              k_lbs_acre,
-              salt_lbs_acre
+              analysis_one: analysis0.pk,
+              analysis_two: analysis1.pk,
+              analysis_three: analysis2.pk
             }
             post(`${BASE_URL}/api/field_crop_app_soil/create`, fca_soil_data)
               .then(res => {
@@ -2106,8 +2083,6 @@ const createPlowdownCreditApplicationFromMap = (row, field_crop_app, dairy_id) =
   const p_lbs_acre = row['P lbs/ acre']
   const k_lbs_acre = row['K lbs/ acre']
   const salt_lbs_acre = row['Salt lbs/ acre']
-
-
 
   let fieldData = {
     data: {
@@ -2217,7 +2192,7 @@ export const createDataFromTSVListRowMap = (row, i, dairy_id, tsvType) => {
   *  This part will lazily create everything based on the first 7 entries on the sheet.
   */
   return new Promise((resolve, rej) => {
-    getFieldCropAppFromMap(row, dairy_id)
+    getFieldCropAppFromMap(row, dairy_id, tsvType)
       .then(field_crop_app => {
         /**
          * #######################################################################

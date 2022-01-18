@@ -47,6 +47,12 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 
 Problems:  
+
+  - PDF - Chart Field 17 Anticipated Nutrient Removal is 0, not sure if it should be.
+  - Finish removing n_lbs_acre from db and everywhere.
+  - Nutrient import calculations are very different based on material type. This needs to be handled better.
+  - Undo Fertilizer in TSV.js
+
   - Upload TSV process 
     - Ensure there are rows of data bfore uploading.
     - Need to avoid updating TSV file in DB with an empty doc....
@@ -63,6 +69,9 @@ Problems:
 
   - Decided to NOT use spreadsheet calculated columns
     - Freshwater App uses precalculated totalN from spreadsheet
+    - For each sheet, calculate totals to store in DB, they are needed for totals in views
+  
+  - Need Data Summaries in ea view similar to Merced Site
 
     
   - (BUG) No validation checks

@@ -8,6 +8,7 @@ const process = require('process');
 var http = require('http').createServer(app);
 const db = require('./db/index')
 const allowedOrigins = [
+  'http://localhost',
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:8080',
@@ -28,8 +29,8 @@ app.use(cors({
     // (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) === -1) {
-      var msg = 'The CORS policy for this site does not ' +
-        'allow access from the specified Origin.';
+      var msg = `The CORS policy for this site does not 
+        allow access from the specified Origin(${origin}).`
       return callback(new Error(msg), false);
     }
     return callback(null, true);
@@ -694,11 +695,7 @@ app.post("/api/field_crop_harvest/create", (req, res) => {
     n_dl,
     p_dl,
     k_dl,
-    tfs_dl,
-    n_lbs_acre,
-    p_lbs_acre,
-    k_lbs_acre,
-    salt_lbs_acre
+    tfs_dl
   } = req.body
   db.insertFieldCropHarvest(
     [
@@ -718,11 +715,7 @@ app.post("/api/field_crop_harvest/create", (req, res) => {
       n_dl,
       p_dl,
       k_dl,
-      tfs_dl,
-      n_lbs_acre,
-      p_lbs_acre,
-      k_lbs_acre,
-      salt_lbs_acre
+      tfs_dl
     ],
     (err, result) => {
 
@@ -985,10 +978,7 @@ app.post("/api/field_crop_app_process_wastewater/create", (req, res) => {
     field_crop_app_process_wastewater_analysis_id,
     material_type,
     app_desc,
-    amount_applied,
-    totalN,
-    totalP,
-    totalK,
+    amount_applied
   } = req.body
   db.insertFieldCropApplicationProcessWastewater(
     [
@@ -997,10 +987,7 @@ app.post("/api/field_crop_app_process_wastewater/create", (req, res) => {
       field_crop_app_process_wastewater_analysis_id,
       material_type,
       app_desc,
-      amount_applied,
-      totalN,
-      totalP,
-      totalK,
+      amount_applied
     ],
     (err, result) => {
 
@@ -1218,8 +1205,7 @@ app.post("/api/field_crop_app_freshwater/create", (req, res) => {
     app_rate,
     run_time,
     amount_applied,
-    amt_applied_per_acre,
-    totalN
+    amt_applied_per_acre
   } = req.body
   db.insertFieldCropApplicationFreshwater(
     [
@@ -1229,8 +1215,7 @@ app.post("/api/field_crop_app_freshwater/create", (req, res) => {
       app_rate,
       run_time,
       amount_applied,
-      amt_applied_per_acre,
-      totalN
+      amt_applied_per_acre
     ],
     (err, result) => {
 
@@ -1391,11 +1376,7 @@ app.post("/api/field_crop_app_solidmanure/create", (req, res) => {
     field_crop_app_solidmanure_analysis_id,
     src_desc,
     amount_applied,
-    amt_applied_per_acre,
-    n_lbs_acre,
-    p_lbs_acre,
-    k_lbs_acre,
-    salt_lbs_acre
+    amt_applied_per_acre
   } = req.body
   db.insertFieldCropApplicationSolidmanure(
     [
@@ -1404,11 +1385,7 @@ app.post("/api/field_crop_app_solidmanure/create", (req, res) => {
       field_crop_app_solidmanure_analysis_id,
       src_desc,
       amount_applied,
-      amt_applied_per_acre,
-      n_lbs_acre,
-      p_lbs_acre,
-      k_lbs_acre,
-      salt_lbs_acre
+      amt_applied_per_acre
     ],
     (err, result) => {
 
@@ -1558,22 +1535,15 @@ app.post("/api/field_crop_app_fertilizer/create", (req, res) => {
     dairy_id,
     field_crop_app_id,
     nutrient_import_id,
-    amount_applied,
-    n_lbs_acre,
-    p_lbs_acre,
-    k_lbs_acre,
-    salt_lbs_acre
+    amount_applied
   } = req.body
+
   db.insertFieldCropApplicationFertilizer(
     [
       dairy_id,
       field_crop_app_id,
       nutrient_import_id,
-      amount_applied,
-      n_lbs_acre,
-      p_lbs_acre,
-      k_lbs_acre,
-      salt_lbs_acre
+      amount_applied
     ],
     (err, result) => {
 
@@ -1712,20 +1682,18 @@ app.post("/api/field_crop_app_soil/create", (req, res) => {
     dairy_id,
     field_crop_app_id,
     src_desc,
-    n_lbs_acre,
-    p_lbs_acre,
-    k_lbs_acre,
-    salt_lbs_acre
+    analysis_one,
+    analysis_two,
+    analysis_three
   } = req.body
   db.insertFieldCropApplicationSoil(
     [
       dairy_id,
       field_crop_app_id,
       src_desc,
-      n_lbs_acre,
-      p_lbs_acre,
-      k_lbs_acre,
-      salt_lbs_acre
+      analysis_one,
+      analysis_two,
+      analysis_three
     ],
     (err, result) => {
 
@@ -2878,16 +2846,16 @@ app.get("/api/search/export_dest/:export_recipient_id/:pnumber/:street/:city_zip
 });
 ////////////////////////////////
 
-app.get("/api/search/field_crop_app_soil_analysis/:field_id/:sample_date/:dairy_pk", (req, res) => {
+app.get("/api/search/field_crop_app_soil_analysis/:field_id/:sample_date/:sample_desc/:dairy_pk", (req, res) => {
   db.searchFieldCropApplicationSoilAnalysis(
     [
       req.params.field_id,
       req.params.sample_date,
+      req.params.sample_desc,
       req.params.dairy_pk,
     ],
     (err, result) => {
       if (!err) {
-
         res.json(result.rows)
         return;
       }

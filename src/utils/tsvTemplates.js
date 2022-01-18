@@ -78,8 +78,7 @@ const wwTemplate = {
 const fwTemplate = {
     "Application Date": '',
     "Field": '',
-    "Acres ": '',
-    "Planted": '',
+    "Acres Planted": '',
     "Cropable": '',
     "Total Acres": '',
     "Crop": '',

@@ -52,7 +52,9 @@ const groupByKeys = (list, groupKeys) => {
       }
     })
   } catch {
-    throw "Failed to create entry in object"
+    console.error(`List: ${list} - Keys: ${groupKeys.toString()}`)
+    console.log(list)
+    throw "groupByKeys::Failed to create entry in object"
   }
   return grouped
 }

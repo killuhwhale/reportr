@@ -485,11 +485,7 @@ module.exports = {
         n_dl,
         p_dl,
         k_dl,
-        tfs_dl,
-        n_lbs_acre,
-        p_lbs_acre,
-        k_lbs_acre,
-        salt_lbs_acre
+        tfs_dl
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -516,11 +512,6 @@ module.exports = {
            fch.sample_date,
            fch.src_of_analysis,
            fch.expected_yield_tons_acre,
-           fch.n_lbs_acre,
-           fch.p_lbs_acre,
-           fch.k_lbs_acre,
-           fch.salt_lbs_acre,
-
 
            c.title as croptitle,
            f.title as fieldtitle,
@@ -791,10 +782,7 @@ module.exports = {
         field_crop_app_process_wastewater_analysis_id,
         material_type,
         app_desc,
-        amount_applied,
-        totalN,
-        totalP,
-        totalK
+        amount_applied
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -803,7 +791,6 @@ module.exports = {
   getFieldCropApplicationProcessWastewater: (dairy_id, callback) => {
     return pool.query(
       format(
-        // nitrateN, totalP, totalK, totalTDS
         `SELECT 
           'wastewater' as entry_type,
           fcapww.pk,
@@ -813,9 +800,6 @@ module.exports = {
           fcapww.material_type,
           fcapww.app_desc,
           fcapww.amount_applied,
-          fcapww.totalN,
-          fcapww.totalP,
-          fcapww.totalK,
 
           fcapwwa.sample_date,
           fcapwwa.sample_desc,
@@ -1014,8 +998,7 @@ module.exports = {
         app_rate,
         run_time,
         amount_applied,
-        amt_applied_per_acre,
-        totalN
+        amt_applied_per_acre
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -1048,7 +1031,6 @@ module.exports = {
           run_time,
           amount_applied,
           amt_applied_per_acre,
-          totalN,
 
           f.title as fieldtitle,
           f.pk as field_id,
@@ -1169,11 +1151,7 @@ module.exports = {
         field_crop_app_solidmanure_analysis_id,
         src_desc,
         amount_applied,
-        amt_applied_per_acre,
-        n_lbs_acre,
-        p_lbs_acre,
-        k_lbs_acre,
-        salt_lbs_acre 
+        amt_applied_per_acre
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -1188,10 +1166,6 @@ module.exports = {
         fcasm.src_desc,
         fcasm.amount_applied,
         fcasm.amt_applied_per_acre,
-        fcasm.n_lbs_acre,
-        fcasm.p_lbs_acre,
-        fcasm.k_lbs_acre,
-        fcasm.salt_lbs_acre,
 
         fcasma.sample_desc,
         fcasma.sample_date,
@@ -1338,11 +1312,7 @@ module.exports = {
         dairy_id,
         field_crop_app_id,
         nutrient_import_id,
-        amount_applied,
-        n_lbs_acre,
-        p_lbs_acre,
-        k_lbs_acre,
-        salt_lbs_acre 
+        amount_applied
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -1355,10 +1325,6 @@ module.exports = {
         `SELECT 
         'fertilizer' as entry_type,
         fcaf.amount_applied,
-        fcaf.n_lbs_acre,
-        fcaf.p_lbs_acre,
-        fcaf.k_lbs_acre,
-        fcaf.salt_lbs_acre,
 
         ni.import_desc,
         ni.import_date,
@@ -1476,7 +1442,7 @@ module.exports = {
   searchFieldCropApplicationSoilAnalysis: (values, callback) => {
     return pool.query(
       `SELECT * FROM field_crop_app_soil_analysis
-      where field_id = $1 and sample_date = $2 and dairy_id = $3`,
+      where field_id = $1 and sample_date = $2 and sample_desc = $3 and dairy_id = $4`,
       values,
       callback
     )
@@ -1488,10 +1454,9 @@ module.exports = {
         dairy_id,
         field_crop_app_id,
         src_desc,
-        n_lbs_acre,
-        p_lbs_acre,
-        k_lbs_acre,
-        salt_lbs_acre
+        analysis_one,
+        analysis_two,
+        analysis_three
         ) VALUES (%L)  RETURNING *`, values),
       [],
       callback
@@ -1505,10 +1470,6 @@ module.exports = {
         'soil' as entry_type,
         fcas.pk,
         fcas.src_desc,
-        fcas.n_lbs_acre,
-        fcas.p_lbs_acre,
-        fcas.k_lbs_acre,
-        fcas.salt_lbs_acre,
 
         f.title as fieldtitle,
         f.pk as field_id,
@@ -1516,7 +1477,26 @@ module.exports = {
         fc.plant_date,
         fc.acres_planted,
         fca.app_date,
-        fca.pk as field_crop_app_id
+        fca.pk as field_crop_app_id,
+
+        fcasa_one.n_con as n_con_0,
+        fcasa_one.p_con as p_con_0,
+        fcasa_one.k_con as k_con_0,
+        fcasa_one.ec as ec_0,
+        fcasa_one.org_matter as org_matter_0,
+
+        fcasa_two.n_con as n_con_1,
+        fcasa_two.p_con as p_con_1,
+        fcasa_two.k_con as k_con_1,
+        fcasa_two.ec as ec_1,
+        fcasa_two.org_matter as org_matter_1,
+
+        fcasa_three.n_con as n_con_2,
+        fcasa_three.p_con as p_con_2,
+        fcasa_three.k_con as k_con_2,
+        fcasa_three.ec as ec_2,
+        fcasa_three.org_matter as org_matter_2
+
 
         FROM field_crop_app_soil fcas
 
@@ -1532,7 +1512,15 @@ module.exports = {
         JOIN crops c
         ON c.pk = fc.crop_id
 
-
+        JOIN field_crop_app_soil_analysis fcasa_one
+        ON fcasa_one.pk = fcas.analysis_one
+        
+        JOIN field_crop_app_soil_analysis fcasa_two
+        ON fcasa_two.pk = fcas.analysis_two
+        
+        JOIN field_crop_app_soil_analysis fcasa_three
+        ON fcasa_three.pk = fcas.analysis_three
+        
         WHERE 
         fcas.dairy_id = %L
         `, dairy_id),

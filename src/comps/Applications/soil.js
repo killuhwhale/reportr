@@ -200,7 +200,14 @@ class Soil extends Component {
   getFieldCropAppSoils() {
     get(`${this.props.BASE_URL}/api/field_crop_app_soil/${this.state.dairy_id}`)
       .then(field_crop_app_soil => {
+        if (field_crop_app_soil.error) {
+          console.log(field_crop_app_soil.error)
+          return
+        }
         this.setState({ field_crop_app_soil: groupByKeys(field_crop_app_soil, ['field_id']) })
+      })
+      .catch(err => {
+        console.log(err)
       })
   }
 

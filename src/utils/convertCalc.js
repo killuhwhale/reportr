@@ -49,12 +49,21 @@ const opArrayByPos = (a, b, op = "+") => {
 }
 
 const percentToDecimal = (num) => {
-  return toFloat(num) * 1e-2
+  return toFloat(num) * 0.01
 }
 
 
-// Given a concentration and method of reporting, return the product 
+const calcLbs = (con, moisture, amount, method_of_reporting) => {
+  con = toFloat(con)
+  moisture = toFloat(moisture)
+  amount = toFloat(amount)
+  moisture = Math.max(Math.min(1, moisture), 0.1)
+  moisture *= 0.01
+  moisture = method_of_reporting === "dry-weight" ? (1 - moisture) : 1
+  return con * moisture * amount
+}
 
+// Given a concentration and method of reporting, return the product 
 const calcAmountLbsFromTons = (con, moisture, amount, method_of_reporting) => {
   /* 
     
@@ -63,31 +72,23 @@ const calcAmountLbsFromTons = (con, moisture, amount, method_of_reporting) => {
      amount: float, unit is tons
      method_of_reporting: if dry_weight, must take into account the moisture and only calculate the dry portion.
   */
-
-  con = toFloat(con)
-  moisture = toFloat(moisture)
   amount = toFloat(amount)
-
   amount *= 2000 // tons to lbs
-  moisture *= 0.01
-  moisture = Math.max(Math.min(1, moisture), 0.001) // mositure must be between 0.1% and 100%
-  moisture = method_of_reporting === "dry-weight" ? (1 - moisture) : 1 // if reported as dry-weight, account for moisture
-  return con * moisture * amount
+  return calcLbs(con, moisture, amount, method_of_reporting)
 }
 
-const calcAmountLbsFromTonsPercent = (con, moisture, amount, method_of_reporting) => {
-  /* 
+const calcLbsFromTonsAsPercent = (con, moisture, amount, method_of_reporting) => {
+  /* Sheets: Harvests(Production Records)
   con: float, percentage
   moisture: float percentage
   amount: float, unit is tons
   method_of_reporting: if dry_weight, must take into account the moisture and only calculate the dry portion.
   */
-
   con = percentToDecimal(con)
   return calcAmountLbsFromTons(con, moisture, amount, method_of_reporting)
 }
 
-const mgKgToLbsFromTons = (con, moisture, amount, method_of_reporting) => {
+const calcLbsFromTonsAsMGKG = (con, moisture, amount, method_of_reporting) => {
   /* 
     
      con: float, percentage
@@ -100,6 +101,7 @@ const mgKgToLbsFromTons = (con, moisture, amount, method_of_reporting) => {
   con *= 10e-7 // mg in a kg 1000 * 1000 = 1,000,000.0
   return calcAmountLbsFromTons(con, moisture, amount, method_of_reporting)
 }
+
 
 
 const displayPercentageAsMGKG = (num) => {
@@ -131,6 +133,6 @@ const percentToLBS = (con, amt) => {
 
 export {
   TO_MG_KG, TO_KG_MG, toFloat, zeroTimeDate, daysBetween, MG_KG, KG_MG,
-  opArrayByPos, percentToDecimal, calcAmountLbsFromTons, calcAmountLbsFromTonsPercent,
-  mgKgToLbsFromTons, displayPercentageAsMGKG, MGMLToLBS, percentToLBSForGals, percentToLBS
+  opArrayByPos, percentToDecimal, calcAmountLbsFromTons, calcLbsFromTonsAsPercent,
+  calcLbsFromTonsAsMGKG, displayPercentageAsMGKG, MGMLToLBS, percentToLBSForGals, percentToLBS
 }

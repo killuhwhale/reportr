@@ -191,10 +191,6 @@ CREATE TABLE IF NOT EXISTS field_crop_harvest(
   p_dl NUMERIC(8,2) DEFAULT 100,
   k_dl NUMERIC(8,2) DEFAULT 100,
   tfs_dl NUMERIC(5,2) DEFAULT 0.01, -- DL % - 0.01 -> 100.00 
-  n_lbs_acre NUMERIC(17,2) DEFAULT 0.0, -- 1 trilliom with .00
-  p_lbs_acre NUMERIC(17,2) DEFAULT 0.0,
-  k_lbs_acre NUMERIC(17,2) DEFAULT 0.0,
-  salt_lbs_acre NUMERIC(12,2) DEFAULT 0.0,
   UNIQUE(dairy_id, field_crop_id, harvest_date),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
@@ -285,9 +281,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater(
   material_type VARCHAR(150),
   app_desc VARCHAR(150),
   amount_applied INT,
-  totalN NUMERIC(9,3), -- lbs/ acre
-  totalP NUMERIC(9,3),
-  totalK NUMERIC(9,3),
   UNIQUE(dairy_id, field_crop_app_id, amount_applied),
   -- From sheet, precalcualted, and is used in Annual Report Table.
 
@@ -372,7 +365,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_freshwater(
   run_time NUMERIC(9,3),
   amount_applied NUMERIC(15,3) NOT NULL,
   amt_applied_per_acre NUMERIC(12,3),
-  totalN NUMERIC(9,3) NOT NULL,
 
   UNIQUE(dairy_id, field_crop_app_id, field_crop_app_freshwater_analysis_id),
 
@@ -436,10 +428,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure(
   src_desc VARCHAR(100) NOT NULL,
   amount_applied NUMERIC(20,2) NOT NULL,
   amt_applied_per_acre NUMERIC(15,2),
-  n_lbs_acre NUMERIC(10,2),
-  p_lbs_acre NUMERIC(10,2),
-  k_lbs_acre NUMERIC(10,2),
-  salt_lbs_acre NUMERIC(10,2), 
 
   UNIQUE(dairy_id, field_crop_app_id, field_crop_app_solidmanure_analysis_id),
   CONSTRAINT fk_dairy
@@ -503,11 +491,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_fertilizer(
   nutrient_import_id INT NOT NULL,
 
   amount_applied  NUMERIC(10,2), -- not current used in annual report be information is here.
-
-  n_lbs_acre NUMERIC(10,2),
-  p_lbs_acre NUMERIC(10,2),
-  k_lbs_acre NUMERIC(10,2),
-  salt_lbs_acre NUMERIC(10,2),
   
 
   UNIQUE(dairy_id, field_crop_app_id),
@@ -561,13 +544,12 @@ CREATE TABLE IF NOT EXISTS field_crop_app_soil(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
   field_crop_app_id INT NOT NULL,
+  analysis_one INT NOT NULL,
+  analysis_two INT NOT NULL,
+  analysis_three INT NOT NULL,
   src_desc VARCHAR(50) NOT NULL,
   -- Spreadsheet will have 3 analyses, possibly same one, but we will use them to calculate the totals.
-  n_lbs_acre NUMERIC(5,0), -- 0 -> 10,000
-  p_lbs_acre NUMERIC(5,0),
-  k_lbs_acre NUMERIC(5,0),
-  salt_lbs_acre NUMERIC(5,0),
-  UNIQUE(dairy_id, field_crop_app_id, src_desc),
+  UNIQUE(dairy_id, field_crop_app_id, src_desc, analysis_one, analysis_two, analysis_three),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
     REFERENCES dairies(pk)
