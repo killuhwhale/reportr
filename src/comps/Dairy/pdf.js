@@ -3071,7 +3071,7 @@ const applicationAreaBFieldHarvestTable = (props) => {
       widths: ['8%', '90%'],
       body: body
     }
-  }  
+  }
 }
 const applicationAreaB = (props) => {
 
@@ -3835,7 +3835,7 @@ const nutrientBudgetA = (props) => {
       let headerInfo = {}
       let rows = []
 
-      Object.keys(fieldAppsByPlantDate[plantDatekey]).forEach(appKey => {
+      Object.keys(fieldAppsByPlantDate[plantDatekey]).map(appKey => {
         let app = fieldAppsByPlantDate[plantDatekey][appKey]
         let appEventHeader = app && app.appDatesObjList && app.appDatesObjList.length > 0 ? app.appDatesObjList[0] : {}
         headerInfo = appEventHeader
@@ -3843,10 +3843,16 @@ const nutrientBudgetA = (props) => {
         const innerRows = app.appDatesObjList.map(ev => {
 
           let unit = ev.tds ? 'gals' : 'tons'
-          if (!ev.tds && !ev.tfs) {
+          if (!ev.tds && !ev.tfs && ev.material_type) {
             // commerical fertilizer
             //Check if it container the word liquid
             unit = ev.material_type.toLowerCase().includes('solid') || ev.material_type.toLowerCase().includes('dry') ? 'tons' : 'gals'
+          }
+
+          if (!ev.material_type) {
+            ev.material_type = ev.entry_type === 'soil' ? 'Existing soil nutrient content' :
+              ev.entry_type === 'plowdown' ? 'Plowdown credit' :
+                ev.entry_type === 'freshwater' ? 'Freshwater' : ''
           }
 
           return [
@@ -4595,7 +4601,7 @@ const nutrientAnalysisA = (props) => {
         }
       },
       {
-        
+
         table: {
           widths: ['100%'],
           body: [
@@ -5031,7 +5037,7 @@ const nutrientAnalysisB = (props) => {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
       {
-        
+
         table: {
           widths: ['100%'],
           body: [
@@ -5055,7 +5061,7 @@ const nutrientAnalysisC = (props) => {
   const subTable = (props, i) => {
     return [
       {
-        
+
         border: [true, false, true, false],
         table: {
           headlineLevel: `freshWaterAnalyses${i}`,
@@ -5346,7 +5352,7 @@ const nutrientAnalysisC = (props) => {
                         }
                       },
                       {
-                       
+
                         text: {
                           text: props.tds_dl, fontSize: 7,
                         }
@@ -7609,7 +7615,7 @@ export default function dd(props, images) {
 
 
   // DEPENDS ON COMPANY -- CHANGEABLE -- SWAPPABLE
- 
+
   const footerImg = image(B64_LOGO, 100, 30)
 
   const body = [

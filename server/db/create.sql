@@ -394,24 +394,24 @@ CREATE TABLE IF NOT EXISTS field_crop_app_solidmanure_analysis(
   src_of_analysis VARCHAR(50) NOT NULL,
   moisture NUMERIC(5,2) NOT NULL,
   method_of_reporting VARCHAR(50) NOT NULL,
-  n_con NUMERIC(8,2) DEFAULT 0.0, -- 999,999.99
-  p_con NUMERIC(8,2) DEFAULT 0.0,
-  k_con NUMERIC(8,2) DEFAULT 0.0,
-  ca_con NUMERIC(8,2) DEFAULT 0.0,
-  mg_con NUMERIC(8,2) DEFAULT 0.0,
-  na_con NUMERIC(8,2) DEFAULT 0.0,
-  s_con NUMERIC(8,2) DEFAULT 0.0, -- sulfur
-  cl_con NUMERIC(8,2) DEFAULT 0.0,
-  tfs NUMERIC(5,2) DEFAULT 0.0, -- total fixed solids
-  n_dl NUMERIC(8,2) DEFAULT 100,
-  p_dl NUMERIC(8,2) DEFAULT 100,
-  k_dl NUMERIC(8,2) DEFAULT 100,
-  ca_dl NUMERIC(8,2) DEFAULT 100,
-  mg_dl NUMERIC(8,2) DEFAULT 100,
-  na_dl NUMERIC(8,2) DEFAULT 100,
-  s_dl NUMERIC(8,2) DEFAULT 100, -- sulfur
-  cl_dl NUMERIC(8,2) DEFAULT 100,
-  tfs_dl NUMERIC(5,2) DEFAULT 0.01, -- %
+  n_con NUMERIC(10,4) DEFAULT 0.0, -- 999,999.99
+  p_con NUMERIC(10,4) DEFAULT 0.0,
+  k_con NUMERIC(10,4) DEFAULT 0.0,
+  ca_con NUMERIC(10,4) DEFAULT 0.0,
+  mg_con NUMERIC(10,4) DEFAULT 0.0,
+  na_con NUMERIC(10,4) DEFAULT 0.0,
+  s_con NUMERIC(10,4) DEFAULT 0.0, -- sulfur
+  cl_con NUMERIC(10,4) DEFAULT 0.0,
+  tfs NUMERIC(10,4) DEFAULT 0.0, -- total fixed solids
+  n_dl NUMERIC(10,4) DEFAULT 100,
+  p_dl NUMERIC(10,4) DEFAULT 100,
+  k_dl NUMERIC(10,4) DEFAULT 100,
+  ca_dl NUMERIC(10,4) DEFAULT 100,
+  mg_dl NUMERIC(10,4) DEFAULT 100,
+  na_dl NUMERIC(10,4) DEFAULT 100,
+  s_dl NUMERIC(10,4) DEFAULT 100, -- sulfur
+  cl_dl NUMERIC(10,4) DEFAULT 100,
+  tfs_dl NUMERIC(10,4) DEFAULT 0.01, -- %
   UNIQUE(dairy_id, sample_date, sample_desc, src_of_analysis),
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
@@ -732,23 +732,23 @@ CREATE TABLE IF NOT EXISTS export_manifest(
   -- For Dry manure
   reporting_method VARCHAR(100), 
   moisture NUMERIC(5,2),
-  n_con_mg_kg NUMERIC(8,2),
-  p_con_mg_kg NUMERIC(8,2),
-  k_con_mg_kg NUMERIC(8,2),
+  n_con_mg_kg NUMERIC(10,4),
+  p_con_mg_kg NUMERIC(10,4),
+  k_con_mg_kg NUMERIC(10,4),
 
   
-  tfs NUMERIC(5,2),
+  tfs NUMERIC(7,4),
 
   salt_lbs_rm NUMERIC(10,2),  --New
   
   -- For Process wastewater
-  kn_con_mg_l NUMERIC(8,2),
-  nh4_con_mg_l NUMERIC(8,2),
-  nh3_con_mg_l NUMERIC(8,2),
-  no3_con_mg_l NUMERIC(8,2),
-  p_con_mg_l NUMERIC(8,2),
-  k_con_mg_l NUMERIC(8,2),
-  ec_umhos_cm NUMERIC(7,2), -- New
+  kn_con_mg_l NUMERIC(10,4),
+  nh4_con_mg_l NUMERIC(10,4),
+  nh3_con_mg_l NUMERIC(10,4),
+  no3_con_mg_l NUMERIC(10,4),
+  p_con_mg_l NUMERIC(10,4),
+  k_con_mg_l NUMERIC(10,4),
+  ec_umhos_cm NUMERIC(10,4), -- New
   tds NUMERIC(5,0),
   
   

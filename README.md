@@ -46,12 +46,57 @@ Github is private, the only passwords visible in code is for the DB and that is 
     - i.e. it will render all items and not using a scrolled section. Will look bad with a lot of
 
 
-Problems:  
+Problems:   
 
-  - PDF - Chart Field 17 Anticipated Nutrient Removal is 0, not sure if it should be.
-  - Finish removing n_lbs_acre from db and everywhere.
-  - Nutrient import calculations are very different based on material type. This needs to be handled better.
-  - Undo Fertilizer in TSV.js
+  Commerical Fertilizers: FIGURE OUT HOW TO CALCULATE DRY MANURE AND STUFF...
+    - Exports:
+      - Merced app reporsts _lbs_acre from user
+      -     
+
+
+  -PDF Report
+    - Date format (2019-11-01) -> 11/01/2019
+    - C. PROCESS WASTEWATER GENERATED
+      - Total salt generated: (382,344.53) -> 379,540.61                            # Wastewater bad calc
+    - F. Nutrient Imports
+      - Add material type and Description
+        - Current only 1 is being used but actual report uses both
+          - Solid commercial fertilizer/ UN32
+    - G. NUTRIENT EXPORTS:
+      - Quantity header/ column add unit tons/ gals
+      - Header should be Total N (lbs) not N (%)
+      Dry manure - Total P - (32,538.59) -> 32,505.19                               # Dry Manure bad calc
+      Wastewater - Total Salt - (61,686.24) -> 58,882.32                            # Wastewater bad calc
+    - A. LAND APPLICATIONS:
+      - Missing Applications for Existing Soil and Plowdown Credits
+      - Remove Amount from Commerical Fertilizer apps
+    
+    - A. B. NUTRIENT ANALYSES
+      - Formatting
+        - Table info Material Type needs better formatting
+          - Weird spacing, 
+        - Empty values not shown ca,mg,sodium
+
+    - A. SUMMARY OF NUTRIENT APPLICATIONS, POTENTIAL REMOVAL, AND BALANCE
+      - Total sections
+        - Anticipated crop nutrient removal
+          - Completely off, Merced app adds Field 17 while Mine doesn't 
+          - Field 17 doesnt have a harvest and not anti data  is calculated, so this makes it way off
+       
+
+  - Need to ensure calculations are using the values need from Merced app and not precalcualted values in Sheet
+    - WW Applications
+      - Application Rate per acre (Gallons/ acre) 
+        - is a calculated field and should not be used.
+        - Check with Merced app and see which values it requires to be entered and use those for calculations as well.
+
+  - Setup Testing with Docker Containers.
+
+
+  - Need Data Summaries in ea view similar to Merced Site
+    - Need to Caclulate lbs_acre there too as well as pdfDB.js 
+    - Can most likely resure same functions.
+
 
   - Upload TSV process 
     - Ensure there are rows of data bfore uploading.
@@ -66,13 +111,6 @@ Problems:
 
   - Remove amount_applied & Lbs/acre salt on Commercial fertilizer TSV
     - Remove from upload process and DB schema
-
-  - Decided to NOT use spreadsheet calculated columns
-    - Freshwater App uses precalculated totalN from spreadsheet
-    - For each sheet, calculate totals to store in DB, they are needed for totals in views
-  
-  - Need Data Summaries in ea view similar to Merced Site
-
     
   - (BUG) No validation checks
     - All Spreadsheets need Numeric Data Validation. Could add to Spreadsheet but should also be in the code.

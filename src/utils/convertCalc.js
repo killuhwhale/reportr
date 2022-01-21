@@ -44,7 +44,11 @@ const KG_MG = (num) => {
 const opArrayByPos = (a, b, op = "+") => {
   // Given two arrays of same length and an operator, apply the operation between the two values in each array by index
   return a.map((el, i) => {
-    return op === '+' ? el + b[i] : op === '-' ? el - b[i] : op === '*' ? el * b[i] : op === '/' ? el / (b[i] != 0 ? b[i] : 1) : null
+    return op === '+' ? el + b[i] :
+      op === '-' ? el - b[i] :
+        op === '*' ? el * b[i] :
+          op === '/' ? (b[i] != 0 ? el / b[i] : 0) :
+            null
   })
 }
 
@@ -52,14 +56,14 @@ const percentToDecimal = (num) => {
   return toFloat(num) * 0.01
 }
 
-
 const calcLbs = (con, moisture, amount, method_of_reporting) => {
   con = toFloat(con)
   moisture = toFloat(moisture)
   amount = toFloat(amount)
-  moisture = Math.max(Math.min(1, moisture), 0.1)
   moisture *= 0.01
+  moisture = Math.max(Math.min(1, moisture), 0.001)
   moisture = method_of_reporting === "dry-weight" ? (1 - moisture) : 1
+
   return con * moisture * amount
 }
 
@@ -77,6 +81,11 @@ const calcAmountLbsFromTons = (con, moisture, amount, method_of_reporting) => {
   return calcLbs(con, moisture, amount, method_of_reporting)
 }
 
+const calcLbsAsPercent = (con, moisture, amount, method_of_reporting) => {
+  con = percentToDecimal(con)
+  return calcLbs(con, moisture, amount, method_of_reporting)
+}
+
 const calcLbsFromTonsAsPercent = (con, moisture, amount, method_of_reporting) => {
   /* Sheets: Harvests(Production Records)
   con: float, percentage
@@ -88,7 +97,7 @@ const calcLbsFromTonsAsPercent = (con, moisture, amount, method_of_reporting) =>
   return calcAmountLbsFromTons(con, moisture, amount, method_of_reporting)
 }
 
-const calcLbsFromTonsAsMGKG = (con, moisture, amount, method_of_reporting) => {
+const calcLbsAsMGKG = (con, moisture, amount, method_of_reporting) => {
   /* 
     
      con: float, percentage
@@ -99,8 +108,9 @@ const calcLbsFromTonsAsMGKG = (con, moisture, amount, method_of_reporting) => {
 
   con = toFloat(con)
   con *= 10e-7 // mg in a kg 1000 * 1000 = 1,000,000.0
-  return calcAmountLbsFromTons(con, moisture, amount, method_of_reporting)
+  return calcLbs(con, moisture, amount, method_of_reporting)
 }
+
 
 
 
@@ -134,5 +144,5 @@ const percentToLBS = (con, amt) => {
 export {
   TO_MG_KG, TO_KG_MG, toFloat, zeroTimeDate, daysBetween, MG_KG, KG_MG,
   opArrayByPos, percentToDecimal, calcAmountLbsFromTons, calcLbsFromTonsAsPercent,
-  calcLbsFromTonsAsMGKG, displayPercentageAsMGKG, MGMLToLBS, percentToLBSForGals, percentToLBS
+  displayPercentageAsMGKG, MGMLToLBS, percentToLBSForGals, percentToLBS, calcLbsAsPercent, calcLbsAsMGKG
 }

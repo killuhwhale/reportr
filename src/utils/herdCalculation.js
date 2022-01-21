@@ -2,8 +2,8 @@ import { get } from "./requests"
 import { daysBetween } from "./convertCalc"
 
 
-// const LBS_PER_KG = 2.20462262185
-const LBS_PER_KG = 2.20462262
+const LBS_PER_KG = 2.20462262185
+// const LBS_PER_KG = 2.20462262
 const KG_PER_LB = 0.45359237
 
 const KG_PER_G = 0.001;
@@ -24,26 +24,34 @@ const INORGANIC_SALT_EXCRETION_DRY_COW = 0.63;
 export const getReportingPeriodDays = (baseUrl, dairy_id) => {
   return new Promise((res, rej) => {
     get(`${baseUrl}/api/dairy/${dairy_id}`)
-    .then(([dairyInfo]) => {
-      dairyInfo = dairyInfo && dairyInfo.period_start && dairyInfo.period_end ? dairyInfo : {period_start: new Date(), period_end: new Date()}
-      res(daysBetween(dairyInfo.period_start, dairyInfo.period_end))
-    })
-    .catch(err => {
-      console.log(err)
-      rej(err)
-    })
+      .then(([dairyInfo]) => {
+        dairyInfo = dairyInfo && dairyInfo.period_start && dairyInfo.period_end ? dairyInfo : { period_start: new Date(), period_end: new Date() }
+        res(daysBetween(dairyInfo.period_start, dairyInfo.period_end))
+      })
+      .catch(err => {
+        console.log(err)
+        rej(err)
+      })
   })
 }
-// convert tons/y (x*2000)/365
-export default function calculateHerdManNKPNaCl(herdsObj, reporting_period_days){
+
+export default function calculateHerdManNKPNaCl(herdsObj, reporting_period_days) {
   let _herdCalc = {}
   let amtAvgMilkProduction = herdsObj.milk_cows[5]
-   // Documentaion says to use MaxCount but merced program is using AvgNumber
+  /**
+   * This does not include the end date, so it's accurate if
+   *  you're measuring your age in days, or the total days 
+   *  between the start and end date. But if you want the duration
+   *  of an event that includes both the starting date and the 
+   *  ending date, then it would actually be 366 days.
+   */
+  reporting_period_days += 1  // add one day to include the duration of the end day
+  // Documentaion says to use MaxCount but merced program is using AvgNumber
   let amtAvgMilkCowCount = herdsObj.milk_cows[3]
 
 
   let milk = amtAvgMilkProduction * KG_PER_LB;
-  
+
 
 
   let lblHerdManurePerYearMilkCow = ((milk * 0.647) + 43.212) * LBS_PER_KG * amtAvgMilkCowCount * reporting_period_days;
@@ -59,7 +67,7 @@ export default function calculateHerdManNKPNaCl(herdsObj, reporting_period_days)
   _herdCalc['milk_cows'] = milk_cows
 
 
- // Documentaion says to use MaxCount but merced program is using AvgNumber
+  // Documentaion says to use MaxCount but merced program is using AvgNumber
   let amtAvgDryCowCount = herdsObj.dry_cows[3]
   let amtDryCowAvgWeight = herdsObj.dry_cows[4]
   let lblHerdManurePerYearDryCow = (((amtDryCowAvgWeight / LBS_PER_KG) * 0.022) + 21.844) * LBS_PER_KG * amtAvgDryCowCount * reporting_period_days;
@@ -71,11 +79,11 @@ export default function calculateHerdManNKPNaCl(herdsObj, reporting_period_days)
   let lblHerdKPerYearDryCow = amtAvgMilkCowCount * POTASSIUM_EXCRETION_DRY_COW * reporting_period_days;
   let lblHerdSaltPerYearDryCow = amtAvgDryCowCount * INORGANIC_SALT_EXCRETION_DRY_COW * reporting_period_days;
   let dry_cows = [
-    tonsHerdManurePerYearDryCow, lblHerdNPerYearDryCow, lblHerdPPerYearDryCow, 
+    tonsHerdManurePerYearDryCow, lblHerdNPerYearDryCow, lblHerdPPerYearDryCow,
     lblHerdKPerYearDryCow, lblHerdSaltPerYearDryCow
   ]
   _herdCalc['dry_cows'] = dry_cows
-  
+
   // Documentaion says to use MaxCount but merced program is using AvgNumber
   let amtAvgHeifer15To24Count = herdsObj.bred_cows[3]
   let amtHeifer15To24AvgWeight = herdsObj.bred_cows[4]
@@ -105,7 +113,7 @@ export default function calculateHerdManNKPNaCl(herdsObj, reporting_period_days)
 
   let amtAvgCalf4To6Count = herdsObj.calf_old[3]
   let lblHerdManurePerYearCalf4To6 = 19 * amtAvgCalf4To6Count * reporting_period_days;
-  let tonsHerdManurePerYearCalf4To6 = lblHerdManurePerYearCalf4To6 /2000;
+  let tonsHerdManurePerYearCalf4To6 = lblHerdManurePerYearCalf4To6 / 2000;
   let lblHerdNPerYearCalf4To6 = amtAvgCalf4To6Count * NITROGEN_EXCRETION_CALF * reporting_period_days;
   let lblHerdPPerYearCalf4To6 = amtAvgCalf4To6Count * PHOSPHORUS_EXCRETION_CALF * reporting_period_days;
   let calf_old = [
@@ -119,7 +127,7 @@ export default function calculateHerdManNKPNaCl(herdsObj, reporting_period_days)
   let tonsHerdManurePerYearCalfTo3 = lblHerdManurePerYearCalfTo3 / 2000;
   let lblHerdNPerYearCalfTo3 = amtAvgCalfTo3Count * NITROGEN_EXCRETION_CALF * reporting_period_days;
   let lblHerdPPerYearCalfTo3 = amtAvgCalfTo3Count * PHOSPHORUS_EXCRETION_CALF * reporting_period_days;
-  let calf_young= [
+  let calf_young = [
     tonsHerdManurePerYearCalfTo3, lblHerdNPerYearCalfTo3, lblHerdPPerYearCalfTo3
   ]
   _herdCalc['calf_young'] = calf_young

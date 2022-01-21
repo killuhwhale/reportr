@@ -1,7 +1,7 @@
 
 const groupBySortBy = (list, groupBy, sortBy) => {
   let grouped = {}
-  if (!list || !groupBy || !sortBy) {
+  if (!list || !groupBy) {
     throw `Parameter null or undefined:  ${list}, ${groupBy}, ${sortBy}`
   }
 
@@ -18,10 +18,11 @@ const groupBySortBy = (list, groupBy, sortBy) => {
   })
 
   // Sort each list by sortBy 
-  if (sortBy.length > 0) {
+  if (sortBy && sortBy.length > 0) {
     Object.keys(grouped).forEach(key => {
       grouped[key].sort((a, b) => {
-        return a[sortBy] >= b[sortBy] ? 1 : -1
+        // return a[sortBy] >= b[sortBy] ? -1 : 1
+        return naturalSort(a[sortBy], b[sortBy])
       })
     })
   }
@@ -72,4 +73,13 @@ const formatFloat = (num, precision = 2) => {
   return new Intl.NumberFormat().format(num.toFixed(precision))
 }
 
-export { groupBySortBy, groupByKeys, formatFloat }
+const naturalCollator = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: 'base'
+});
+
+const naturalSort = (a, b) => {
+  return naturalCollator.compare(a, b)
+}
+
+export { groupBySortBy, groupByKeys, formatFloat, naturalSort }
