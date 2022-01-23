@@ -1,5 +1,6 @@
-import { formatFloat } from "../../utils/format"
+import { formatDate, formatFloat, formatInt, naturalSort, naturalSortBy, percentageAsMGKG } from "../../utils/format"
 import { B64_LOGO, } from "../../specific"
+import { round } from "mathjs"
 
 const gray = "#eeeeee"
 const darkGray = "#cecece"
@@ -391,7 +392,7 @@ const dairyInformationA = (props) => {
               {
                 border: [false, false, false, true],
                 text: {
-                  text: props.began ? props.began.split("T")[0] : '', fontSize: 9, lineHeight: 0.1
+                  text: props.began ? formatDate(props.began.split("T")[0]) : '', fontSize: 9, lineHeight: 0.1
                 }
               },
               {
@@ -992,7 +993,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: props.generated[0],
+                      text: formatInt(props.generated[0]),
                       fontSize: 9,
                     }
                   },
@@ -1016,7 +1017,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: props.generated[1],
+                      text: formatFloat(round(props.generated[1], 2)),
                       fontSize: 9,
                     }
                   },
@@ -1040,7 +1041,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: props.generated[2],
+                      text: formatFloat(round(props.generated[2], 2)),
                       fontSize: 9,
                     }
                   },
@@ -1064,7 +1065,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: props.generated[3],
+                      text: formatFloat(round(props.generated[3], 2)),
                       fontSize: 9,
                     }
                   },
@@ -1088,7 +1089,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: props.generated[4],
+                      text: formatFloat(round(props.generated[4], 2)),
                       fontSize: 9,
                     }
                   },
@@ -1126,7 +1127,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, true, false, false],
                     text: {
-                      text: props.applied[0],
+                      text: formatInt(props.applied[0]),
                       fontSize: 9,
                     }
                   },
@@ -1150,7 +1151,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, false],
                     text: {
-                      text: props.exported[0],
+                      text: formatInt(props.exported[0]),
                       fontSize: 9,
                     }
                   },
@@ -1174,7 +1175,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: props.imported[0],
+                      text: formatInt(props.imported[0]),
                       fontSize: 9,
                     }
                   },
@@ -1199,7 +1200,7 @@ const availableNutrientsC = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: props.generated[0],
+                      text: formatInt(props.generated[0]),
                       fontSize: 9,
                     }
                   },
@@ -1223,7 +1224,7 @@ const availableNutrientsC = (props) => {
   }
 }
 const availableNutrientsD = (props) => {
-  let sources = props.sources.map(source => {
+  let sources = props.sources.sort((a, b) => naturalSortBy(a, b, 'src_desc')).map(source => {
     return [
       {
         text: {
@@ -1297,7 +1298,7 @@ const availableNutrientsD = (props) => {
 const availableNutrientsE = (props) => {
   let sources = props && props.sources && typeof props.sources === typeof [] && props.sources.length > 0 ? props.sources : []
 
-  sources = sources.map(source => {
+  sources = sources.sort((a, b) => naturalSortBy(a, b, 'src_desc')).map(source => {
     return [
       {
         text: {
@@ -1368,7 +1369,7 @@ const availableNutrientsFTableDryManure = (props) => {
     return [
       {// row 1
         text: {
-          text: props.import_date && props.import_date.length > 0 ? props.import_date.split("T")[0] : '',
+          text: props.import_date && props.import_date.length > 0 ? formatDate(props.import_date.split("T")[0]) : '',
           fontSize: 8,
         }
       },
@@ -1394,22 +1395,22 @@ const availableNutrientsFTableDryManure = (props) => {
       },
       {// row 1
         text: {
-          text: props.n_con, fontSize: 8,
+          text: percentageAsMGKG(props.n_con), fontSize: 8,
         }
       },
       {// row 1
         text: {
-          text: props.p_con, fontSize: 8,
+          text: percentageAsMGKG(props.p_con), fontSize: 8,
         }
       },
       {// row 1
         text: {
-          text: props.k_con, fontSize: 8,
+          text: percentageAsMGKG(props.k_con), fontSize: 8,
         }
       },
       {// row 1
         text: {
-          text: '', fontSize: 8,
+          text: formatFloat(0), fontSize: 8,
         }
       },
       {// row 1
@@ -1419,7 +1420,7 @@ const availableNutrientsFTableDryManure = (props) => {
       }, { text: '' }
     ]
   }
-  let rows = props.map(n_import => {
+  let rows = props.sort((a, b) => naturalSortBy(a, b, 'import_date')).map(n_import => {
     return row(n_import)
   })
   let body = [
@@ -1494,7 +1495,7 @@ const availableNutrientsFTableDryManure = (props) => {
       body: body
     }
   }
-  return rows && rows.length > 0 ? table : { margin: [10, 5], text: { text: 'No dry manure nutrient imports entered.', fontSize: 7, italics: true } }
+  return rows && rows.length > 0 ? table : { margin: [10, 5], text: { text: 'No dry manure nutrient imports entered.', fontSize: 8, italics: true } }
 }
 const availableNutrientsFTableWastewater = (props) => {
   const row = (props) => {
@@ -1518,22 +1519,22 @@ const availableNutrientsFTableWastewater = (props) => {
 
       {// row 1
         text: {
-          text: props.n_con, fontSize: 8,
+          text: formatFloat(props.n_con * 10000), fontSize: 8,
         }
       },
       {// row 1
         text: {
-          text: props.p_con, fontSize: 8,
+          text: formatFloat(props.p_con * 10000), fontSize: 8,
         }
       },
       {// row 1
         text: {
-          text: props.k_con, fontSize: 8,
+          text: formatFloat(props.k_con * 10000), fontSize: 8,
         }
       },
       {// row 1
         text: {
-          text: props.salt_con, fontSize: 8,
+          text: formatFloat(props.salt_con * 10000), fontSize: 8,
         }
       },
       {// row 1
@@ -1543,7 +1544,7 @@ const availableNutrientsFTableWastewater = (props) => {
       }, { text: '' }
     ]
   }
-  let rows = props.map(n_import => {
+  let rows = props.sort((a, b) => naturalSortBy(a, b, 'import_date')).map(n_import => {
     return row(n_import)
   })
   let body = [
@@ -1606,7 +1607,7 @@ const availableNutrientsFTableWastewater = (props) => {
       body: body
     }
   }
-  return rows && rows.length > 0 ? table : { margin: [10, 5], text: { text: 'No process wastewater nutrient imports entered.', fontSize: 7, italics: true } }
+  return rows && rows.length > 0 ? table : { margin: [10, 5], text: { text: 'No process wastewater nutrient imports entered.', fontSize: 8, italics: true } }
 }
 const availableNutrientsFTableFertilizer = (props) => {
   const row = (props) => {
@@ -1663,7 +1664,7 @@ const availableNutrientsFTableFertilizer = (props) => {
       }, { text: '' }
     ]
   }
-  let rows = props.map(n_import => {
+  let rows = props.sort((a, b) => naturalSortBy(a, b, 'import_date')).map(n_import => {
     return row(n_import)
   })
   let body = [
@@ -1733,7 +1734,7 @@ const availableNutrientsFTableFertilizer = (props) => {
     }
   }
 
-  return rows && rows.length > 0 ? table : { margin: [10, 5], text: { text: 'No commercial fertilizer nutrient imports entered.', fontSize: 7, italics: true } }
+  return rows && rows.length > 0 ? table : { margin: [10, 5], text: { text: 'No commercial fertilizer nutrient imports entered.', fontSize: 8, italics: true } }
 }
 
 const availableNutrientsF = (props) => {
@@ -2049,56 +2050,56 @@ const availableNutrientsGLiquidTableRow = (props) => {
     },
     {// row 1
       text: {
-        text: props.amount_hauled,
+        text: formatFloat(props.amount_hauled),
         fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: props.kn_con_mg_l,
+        text: formatFloat(props.kn_con_mg_l),
         fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: props.nh4_con_mg_l,
+        text: formatFloat(props.nh4_con_mg_l),
         fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: props.nh3_con_mg_l,
+        text: formatFloat(props.nh3_con_mg_l),
         fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: props.no3_con_mg_l,
+        text: formatFloat(props.no3_con_mg_l),
         fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: props.p_con_mg_l,
+        text: formatFloat(props.p_con_mg_l),
         fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: props.k_con_mg_l,
+        text: formatFloat(props.k_con_mg_l),
         fontSize: 8,
         alignment: "right",
       }
     },
     {// row 1
       text: {
-        text: props.ec_umhos_cm,
+        text: formatFloat(props.ec_umhos_cm),
         fontSize: 8,
         alignment: "right",
       }
@@ -2115,10 +2116,10 @@ const availableNutrientsGLiquidTableRow = (props) => {
   ]
 }
 const availableNutrientsG = (props) => {
-  let exportSolidRows = props.dry.map(row => {
+  let exportSolidRows = props.dry.sort((a, b) => naturalSortBy(a, b, 'last_date_hauled')).map(row => {
     return availableNutrientsGSolidTableRow(row)
   })
-  let exportLiquidRows = props.process.map(row => {
+  let exportLiquidRows = props.process.sort((a, b) => naturalSortBy(a, b, 'last_date_hauled')).map(row => {
     return availableNutrientsGLiquidTableRow(row)
   })
 
@@ -2283,8 +2284,8 @@ const availableNutrientsG = (props) => {
   }
 
 
-  const solidTable = exportSolidRows.length > 0 ? _solidTable : { margin: [10, 5], border: [false, false], colSpan: 11, text: { text: 'No solid exports entered.', fontSize: 7, italics: true } }
-  const liquidTable = exportLiquidRows.length > 0 ? _liquidTable : { margin: [10, 5], border: [false, false], colSpan: 11, text: { text: 'No liquid exports entered.', fontSize: 7, italics: true } }
+  const solidTable = exportSolidRows.length > 0 ? _solidTable : { margin: [10, 5], border: [false, false], colSpan: 11, text: { text: 'No solid exports entered.', fontSize: 8, italics: true } }
+  const liquidTable = exportLiquidRows.length > 0 ? _liquidTable : { margin: [10, 5], border: [false, false], colSpan: 11, text: { text: 'No liquid exports entered.', fontSize: 8, italics: true } }
 
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first one
@@ -2463,11 +2464,11 @@ const applicationAreaATableRow = (props) => {
       text: props.title, fontSize: 8
     },
     { // row 1
-      text: props.acres, fontSize: 8,
+      text: formatInt(props.acres), fontSize: 8,
       alignment: 'right',
     },
     { // row 1
-      text: props.cropable, fontSize: 8,
+      text: formatInt(props.cropable), fontSize: 8,
       alignment: 'right',
     },
     { // row 1
@@ -2523,7 +2524,7 @@ const applicationAreaA = (props) => {
         [
           { // row 1
             fillColor: gray,
-            text: 'Totals for areas that were used for applications', fontSize: 7
+            text: 'Totals for areas that were used for applications', fontSize: 8
           },
           { // row 1
             fillColor: gray,
@@ -2552,7 +2553,7 @@ const applicationAreaA = (props) => {
         [
           { // row 1
             fillColor: gray,
-            text: 'Totals for areas that were not used for applications', fontSize: 7
+            text: 'Totals for areas that were not used for applications', fontSize: 8
           },
           { // row 1
             fillColor: gray,
@@ -2581,7 +2582,7 @@ const applicationAreaA = (props) => {
         [
           { // row 1
             fillColor: gray,
-            text: 'Land application area totals', fontSize: 7
+            text: 'Land application area totals', fontSize: 8
           },
           { // row 1
             fillColor: gray,
@@ -2611,7 +2612,7 @@ const applicationAreaA = (props) => {
     }
   }
 
-  const table = rows.length > 0 ? _table : { margin: [10, 5], text: { text: 'No land application areas entered.', italics: true, fontSize: 7 } }
+  const table = rows.length > 0 ? _table : { margin: [10, 5], text: { text: 'No land application areas entered.', italics: true, fontSize: 8 } }
   return {
     pageBreak: 'before', // super useful soltion just dont need on the first one
 
@@ -2656,14 +2657,15 @@ const applicationAreaBFieldHarvestTableSubTableRow = (props) => {
   return [
     {
       text: {
-        text: harvest_date,
+        text: formatDate(harvest_date),
         fontSize: 8,
       }
     },
     {
       text: {
-        text: `${props.actual_yield} tons`,
+        text: `${formatFloat(props.actual_yield)} tons`,
         fontSize: 8,
+        alignment: 'right',
       }
     },
     {
@@ -2682,24 +2684,28 @@ const applicationAreaBFieldHarvestTableSubTableRow = (props) => {
       text: {
         text: `${props.actual_moisture}%`,
         fontSize: 8,
+        alignment: 'right',
       }
     },
     {
       text: {
-        text: props.actual_n,
+        text: percentageAsMGKG(props.actual_n),
         fontSize: 8,
+        alignment: 'right',
       }
     },
     {
       text: {
-        text: props.actual_p,
+        text: percentageAsMGKG(props.actual_p),
         fontSize: 8,
+        alignment: 'right',
       }
     },
     {
       text: {
-        text: props.actual_k,
+        text: percentageAsMGKG(props.actual_k),
         fontSize: 8,
+        alignment: 'right',
       }
     },
     {
@@ -2712,6 +2718,7 @@ const applicationAreaBFieldHarvestTableSubTableRow = (props) => {
       text: {
         text: `${props.tfs}%`,
         fontSize: 8,
+        alignment: 'right',
       }
     },
   ]
@@ -2721,9 +2728,99 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
   let cropHeader = props.harvests && props.harvests.length > 0 ? props.harvests[0] : {}
   let plant_date = cropHeader.plant_date ? cropHeader.plant_date.split("T")[0] : 'No date entered'
 
-  let rows = props.harvests.map(harvestEvent => {
-    return applicationAreaBFieldHarvestTableSubTableRow(harvestEvent)
+  let rows = []
+  props.harvests.forEach(harvestEvent => {
+    if (harvestEvent.harvest_date) {
+      rows.push(applicationAreaBFieldHarvestTableSubTableRow(harvestEvent))
+    }
   })
+
+  const subTable = [
+    {
+      border: [true, false, true, false],
+      table: {
+        widths: ['10%', '10%', '10%', '12%', '9%', '9%', '10%', '10%', '10%', '9%'],
+        body: [
+          [
+            {
+              fillColor: gray,
+              text: {
+                text: 'Harvest date',
+                fontSize: 8
+              }
+            },
+            {
+              fillColor: gray,
+              text: {
+                text: 'Yield',
+                fontSize: 8
+              }
+            },
+            {
+              fillColor: gray,
+              text: {
+                text: 'Reporting Basis',
+                fontSize: 8
+              }
+            },
+            {
+              fillColor: gray,
+              text: {
+                text: 'Density (lbs/cu ft)',
+                fontSize: 8
+              }
+            },
+            {
+              fillColor: gray,
+              text: {
+                text: 'Moisture (%)',
+                fontSize: 8
+              }
+            },
+            {
+              fillColor: gray,
+              text: {
+                text: 'N (mg/kg)',
+                fontSize: 8
+              }
+            },
+            {
+              fillColor: gray,
+              text: {
+                text: 'P (mg/kg)',
+                fontSize: 8
+              }
+            },
+            {
+              fillColor: gray,
+              text: {
+                text: 'K (mg/kg)',
+                fontSize: 8
+              }
+            },
+            {
+              fillColor: gray,
+              text: {
+                text: 'Salt (mg/kg)',
+                fontSize: 8
+              }
+            },
+            {
+              fillColor: gray,
+              text: {
+                text: 'TFS (%)',
+                fontSize: 8
+              }
+            },
+          ],
+          ...rows,
+        ]
+      }
+    }
+  ]
+
+
+  const displayTable = rows.length > 0 ? subTable : [{ colSpan: 1, text: { text: 'No harvests entered for this crop.', fontSize: 10 }, border: [true, false, true, false] }]
   return [{
     margin: [5, 1, 5, 0],
     border: [true, false, true, false],
@@ -2736,7 +2833,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
           {
             fillColor: gray,
             text: {
-              text: `${plant_date} ${cropHeader.croptitle}`,
+              text: `${(formatDate(plant_date))} ${cropHeader.croptitle}`,
               fontSize: 9,
             }
           }
@@ -2774,8 +2871,9 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: cropHeader.acres_planted,
+                      text: formatInt(cropHeader.acres_planted),
                       fontSize: 8,
+                      alignment: 'right',
                     }
                   },
                   {
@@ -2788,7 +2886,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                   {
                     border: [false, false, false, true],
                     text: {
-                      text: plant_date,
+                      text: formatDate(plant_date),
                       fontSize: 8,
                     }
                   }
@@ -2798,89 +2896,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
             }
           }
         ],
-        [
-          {
-            border: [true, false, true, false],
-            table: {
-              widths: ['10%', '10%', '10%', '12%', '9%', '9%', '10%', '10%', '10%', '9%'],
-              body: [
-                [
-                  {
-                    fillColor: gray,
-                    text: {
-                      text: 'Harvest date',
-                      fontSize: 8
-                    }
-                  },
-                  {
-                    fillColor: gray,
-                    text: {
-                      text: 'Yield',
-                      fontSize: 8
-                    }
-                  },
-                  {
-                    fillColor: gray,
-                    text: {
-                      text: 'Reporting Basis',
-                      fontSize: 8
-                    }
-                  },
-                  {
-                    fillColor: gray,
-                    text: {
-                      text: 'Density (lbs/cu ft)',
-                      fontSize: 8
-                    }
-                  },
-                  {
-                    fillColor: gray,
-                    text: {
-                      text: 'Moisture (%)',
-                      fontSize: 8
-                    }
-                  },
-                  {
-                    fillColor: gray,
-                    text: {
-                      text: 'N (mg/kg)',
-                      fontSize: 8
-                    }
-                  },
-                  {
-                    fillColor: gray,
-                    text: {
-                      text: 'P (mg/kg)',
-                      fontSize: 8
-                    }
-                  },
-                  {
-                    fillColor: gray,
-                    text: {
-                      text: 'K (mg/kg)',
-                      fontSize: 8
-                    }
-                  },
-                  {
-                    fillColor: gray,
-                    text: {
-                      text: 'Salt (mg/kg)',
-                      fontSize: 8
-                    }
-                  },
-                  {
-                    fillColor: gray,
-                    text: {
-                      text: 'TFS (%)',
-                      fontSize: 8
-                    }
-                  },
-                ],
-                ...rows,
-              ]
-            }
-          }
-        ],
+        displayTable,
         [
           {
             margin: [0, 0, 138, 0],
@@ -2941,32 +2957,37 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                   },
                   {
                     text: {
-                      text: props.antiTotals[0],
+                      text: formatFloat(props.antiTotals[0]),
                       fontSize: 8,
+                      alignment: 'right',
                     },
                   },
                   {
                     text: {
-                      text: props.antiTotals[1],
+                      text: formatFloat(props.antiTotals[1]),
                       fontSize: 8,
+                      alignment: 'right',
                     },
                   },
                   {
                     text: {
-                      text: props.antiTotals[2],
+                      text: formatFloat(props.antiTotals[2]),
                       fontSize: 8,
+                      alignment: 'right',
                     },
                   },
                   {
                     text: {
-                      text: props.antiTotals[3],
+                      text: formatFloat(props.antiTotals[3]),
                       fontSize: 8,
+                      alignment: 'right',
                     },
                   },
                   {
                     text: {
-                      text: props.antiTotals[4],
+                      text: formatFloat(props.antiTotals[4]),
                       fontSize: 8,
+                      alignment: 'right',
                     },
                   },
                 ],
@@ -2981,36 +3002,41 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                   {
                     border: [true, true, true, true],
                     text: {
-                      text: props.totals[0],
+                      text: formatFloat(props.totals[0]),
                       fontSize: 8,
+                      alignment: 'right',
                     },
                   },
                   {
                     border: [true, true, true, true],
                     text: {
-                      text: props.totals[1],
+                      text: formatFloat(props.totals[1]),
                       fontSize: 8,
+                      alignment: 'right',
                     },
                   },
                   {
                     border: [true, true, true, true],
                     text: {
-                      text: props.totals[2],
+                      text: formatFloat(props.totals[2]),
                       fontSize: 8,
+                      alignment: 'right',
                     },
                   },
                   {
                     border: [true, true, true, true],
                     text: {
-                      text: props.totals[3],
+                      text: formatFloat(props.totals[3]),
                       fontSize: 8,
+                      alignment: 'right',
                     },
                   },
                   {
                     border: [true, true, true, true],
                     text: {
-                      text: props.totals[4],
+                      text: formatFloat(props.totals[4]),
                       fontSize: 8,
+                      alignment: 'right',
                     },
                   },
                 ]
@@ -3076,12 +3102,14 @@ const applicationAreaBFieldHarvestTable = (props) => {
 const applicationAreaB = (props) => {
 
   // stack of table for each field
-  let harvestTable = Object.keys(props.groupedHarvests).map(key => {
+  const harvestKeys = Object.keys(props.groupedHarvests).sort(naturalSort)
+  console.log('harvestKeys', harvestKeys)
+  let harvestTable = harvestKeys.map(key => {
     return applicationAreaBFieldHarvestTable(props.groupedHarvests[key]) // returns a table for a field with multiple field harvest events
   })
 
 
-  harvestTable = harvestTable.length > 0 ? harvestTable : [{ margin: [10, 5], border: [false, false], text: { text: 'No harvests entered.', fontSize: 7, italics: true } }]
+  harvestTable = harvestTable.length > 0 ? harvestTable : [{ margin: [10, 5], border: [false, false], text: { text: 'No harvests entered.', fontSize: 8, italics: true } }]
   return {
     pageBreak: 'before', // super useful soltion just dont need on the first one
     stack: [
@@ -3142,7 +3170,7 @@ const nutrientBudgetBTable = (props, img, i) => {
             [{// 1st row header
               fillColor: gray,
               text: {
-                text: `${props.headerInfo.fieldtitle} - ${plant_date}: ${props.headerInfo.croptitle}`,
+                text: `${props.headerInfo.fieldtitle} - ${formatDate(plant_date)}: ${props.headerInfo.croptitle}`,
                 fontSize: 9,
               }
             }],
@@ -3185,7 +3213,7 @@ const nutrientBudgetBTable = (props, img, i) => {
                     {
                       border: [false, false, false, true],
                       text: {
-                        text: plant_date, fontSize: 8,
+                        text: formatDate(plant_date), fontSize: 8,
                       }
                     },
                   ]
@@ -3249,26 +3277,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.soils[0], fontSize: 8,
+                              text: props.soils[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.soils[1], fontSize: 8,
+                              text: props.soils[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.soils[2], fontSize: 8,
+                              text: props.soils[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.soils[3], fontSize: 8,
+                              text: props.soils[3], fontSize: 8, alignment: 'right'
                             }
                           },
 
@@ -3283,26 +3311,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.plows[0], fontSize: 8,
+                              text: props.plows[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.plows[1], fontSize: 8,
+                              text: props.plows[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.plows[2], fontSize: 8,
+                              text: props.plows[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.plows[3], fontSize: 8,
+                              text: props.plows[3], fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3310,32 +3338,32 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: 'Commerical fertilizer / Other', fontSize: 7,
+                              text: 'Commerical fertilizer / Other', fontSize: 8,
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.fertilizers[0], fontSize: 8,
+                              text: props.fertilizers[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.fertilizers[1], fontSize: 8,
+                              text: props.fertilizers[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.fertilizers[2], fontSize: 8,
+                              text: props.fertilizers[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.fertilizers[3], fontSize: 8,
+                              text: props.fertilizers[3], fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3349,26 +3377,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.manures[0], fontSize: 8,
+                              text: props.manures[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.manures[1], fontSize: 8,
+                              text: props.manures[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.manures[2], fontSize: 8,
+                              text: props.manures[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.manures[3], fontSize: 8,
+                              text: props.manures[3], fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3382,26 +3410,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.wastewaters[0], fontSize: 8,
+                              text: props.wastewaters[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.wastewaters[1], fontSize: 8,
+                              text: props.wastewaters[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.wastewaters[2], fontSize: 8,
+                              text: props.wastewaters[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.wastewaters[3], fontSize: 8,
+                              text: props.wastewaters[3], fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3415,26 +3443,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.freshwaters[0], fontSize: 8,
+                              text: props.freshwaters[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.freshwaters[1], fontSize: 8,
+                              text: props.freshwaters[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.freshwaters[2], fontSize: 8,
+                              text: props.freshwaters[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.freshwaters[3], fontSize: 8,
+                              text: props.freshwaters[3], fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3448,26 +3476,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: props.atmospheric_depo, fontSize: 8,
+                              text: props.atmospheric_depo, fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: '0.00', fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: '0.00', fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: '0.00', fontSize: 8,
+                              text: '0.00', fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3481,26 +3509,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.total_app[0], fontSize: 8,
+                              text: props.total_app[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.total_app[1], fontSize: 8,
+                              text: props.total_app[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.total_app[2], fontSize: 8,
+                              text: props.total_app[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.total_app[3], fontSize: 8,
+                              text: props.total_app[3], fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3514,26 +3542,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.anti_harvests[0], fontSize: 8,
+                              text: props.anti_harvests[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.anti_harvests[1], fontSize: 8,
+                              text: props.anti_harvests[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.anti_harvests[2], fontSize: 8,
+                              text: props.anti_harvests[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.anti_harvests[3], fontSize: 8,
+                              text: props.anti_harvests[3], fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3547,26 +3575,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: props.actual_harvests[0], fontSize: 8,
+                              text: props.actual_harvests[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: props.actual_harvests[1], fontSize: 8,
+                              text: props.actual_harvests[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: props.actual_harvests[2], fontSize: 8,
+                              text: props.actual_harvests[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: props.actual_harvests[3], fontSize: 8,
+                              text: props.actual_harvests[3], fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3580,26 +3608,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.nutrient_bal[0], fontSize: 8,
+                              text: props.nutrient_bal[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.nutrient_bal[1], fontSize: 8,
+                              text: props.nutrient_bal[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.nutrient_bal[2], fontSize: 8,
+                              text: props.nutrient_bal[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, false],
                             text: {
-                              text: props.nutrient_bal[3], fontSize: 8,
+                              text: props.nutrient_bal[3], fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3613,26 +3641,26 @@ const nutrientBudgetBTable = (props, img, i) => {
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: props.nutrient_bal_ratio[0], fontSize: 8,
+                              text: props.nutrient_bal_ratio[0], fontSize: 8, alignment: 'right'
                             }
                           },
 
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: props.nutrient_bal_ratio[1], fontSize: 8,
+                              text: props.nutrient_bal_ratio[1], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: props.nutrient_bal_ratio[2], fontSize: 8,
+                              text: props.nutrient_bal_ratio[2], fontSize: 8, alignment: 'right'
                             }
                           },
                           {
                             border: [true, false, true, true],
                             text: {
-                              text: props.nutrient_bal_ratio[3], fontSize: 8,
+                              text: props.nutrient_bal_ratio[3], fontSize: 8, alignment: 'right'
                             }
                           },
                         ],
@@ -3869,27 +3897,27 @@ const nutrientBudgetA = (props) => {
             },
             {
               text: {
-                text: ev.n_lbs_acre, fontSize: 8,
+                text: formatFloat(round(parseFloat(ev.n_lbs_acre), 2)), fontSize: 8, alignment: 'right'
               }
             },
             {
               text: {
-                text: ev.p_lbs_acre, fontSize: 8,
+                text: formatFloat(round(parseFloat(ev.p_lbs_acre), 2)), fontSize: 8, alignment: 'right'
               }
             },
             {
               text: {
-                text: ev.k_lbs_acre, fontSize: 8,
+                text: formatFloat(round(parseFloat(ev.k_lbs_acre), 2)), fontSize: 8, alignment: 'right'
               }
             },
             {
               text: {
-                text: ev.salt_lbs_acre, fontSize: 8,
+                text: formatFloat(round(parseFloat(ev.salt_lbs_acre), 2)), fontSize: 8, alignment: 'right'
               }
             },
             {
               text: {
-                text: `${ev.amount_applied} ${unit}`, fontSize: 8,
+                text: ev.amount_applied === undefined ? '' : `${formatFloat(ev.amount_applied)} ${unit}`, fontSize: 8, alignment: 'center'
               }
             },
           ]
@@ -3898,7 +3926,7 @@ const nutrientBudgetA = (props) => {
         rows.push([// MainSubTable App_date/ method/ precip before during after... 
           {
             text: {
-              text: appEventHeader.app_date ? appEventHeader.app_date.split('T')[0] : '', fontSize: 8,
+              text: appEventHeader.app_date ? formatDate(appEventHeader.app_date.split('T')[0]) : '', fontSize: 8,
             }
           },
           {
@@ -3944,31 +3972,31 @@ const nutrientBudgetA = (props) => {
                   {
                     fillColor: gray,
                     text: {
-                      text: 'N  (lbs/acre)', fontSize: 8,
+                      text: 'N  (lbs/acre)', fontSize: 8, alignment: 'right'
                     }
                   },
                   {
                     fillColor: gray,
                     text: {
-                      text: 'P (lbs/acre)', fontSize: 8,
+                      text: 'P (lbs/acre)', fontSize: 8, alignment: 'right'
                     }
                   },
                   {
                     fillColor: gray,
                     text: {
-                      text: 'K (lbs/acre)', fontSize: 8,
+                      text: 'K (lbs/acre)', fontSize: 8, alignment: 'right'
                     }
                   },
                   {
                     fillColor: gray,
                     text: {
-                      text: 'Salt (lbs/acre)', fontSize: 8,
+                      text: 'Salt (lbs/acre)', fontSize: 8, alignment: 'right'
                     }
                   },
                   {
                     fillColor: gray,
                     text: {
-                      text: 'Amount', fontSize: 8,
+                      text: 'Amount', fontSize: 8, alignment: 'center'
                     }
                   },
                 ],// rows
@@ -3989,25 +4017,25 @@ const nutrientBudgetA = (props) => {
                   {
                     fillColor: gray,
                     text: {
-                      text: totals[0], fontSize: 8,
+                      text: formatFloat(round(parseFloat(totals[0]), 2)), fontSize: 8, alignment: 'right'
                     }
                   },
                   {
                     fillColor: gray,
                     text: {
-                      text: totals[1], fontSize: 8,
+                      text: formatFloat(round(parseFloat(totals[1]), 2)), fontSize: 8, alignment: 'right'
                     }
                   },
                   {
                     fillColor: gray,
                     text: {
-                      text: totals[2], fontSize: 8,
+                      text: formatFloat(round(parseFloat(totals[2]), 2)), fontSize: 8, alignment: 'right'
                     }
                   },
                   {
                     fillColor: gray,
                     text: {
-                      text: totals[3], fontSize: 8,
+                      text: formatFloat(round(parseFloat(totals[3]), 2)), fontSize: 8, alignment: 'right'
                     }
                   },
                   {
@@ -4036,7 +4064,7 @@ const nutrientBudgetA = (props) => {
                   { // row 1
                     fillColor: gray,
                     // text: 'Field 1 - 11/01/01/2019: Oats, silage-soft dough',
-                    text: `${headerInfo.fieldtitle} - ${headerInfo.plant_date ? headerInfo.plant_date.split('T')[0] : ''}: ${headerInfo.croptitle}`,
+                    text: `${headerInfo.fieldtitle} - ${headerInfo.plant_date ? formatDate(headerInfo.plant_date.split('T')[0]) : ''}: ${headerInfo.croptitle}`,
                     fontSize: 8
                   },
                 ],
@@ -4087,7 +4115,7 @@ const nutrientBudgetA = (props) => {
                                   {
                                     border: [false, false, false, true],
                                     text: {
-                                      text: headerInfo.plant_date ? headerInfo.plant_date.split('T')[0] : '', fontSize: 8,
+                                      text: headerInfo.plant_date ? formatDate(headerInfo.plant_date.split('T')[0]) : '', fontSize: 8,
                                     }
                                   }
 
@@ -4160,7 +4188,7 @@ const nutrientBudgetA = (props) => {
     stack: [
       ...tables
     ]
-  } : { margin: [10, 5], text: { text: 'No land application areas entered.', fontSize: 7, italics: true } }
+  } : { margin: [10, 5], text: { text: 'No land application areas entered.', fontSize: 8, italics: true } }
 
   return {
     pageBreak: 'before', // super useful soltion just dont need on the first on
@@ -4212,7 +4240,7 @@ const nutrientBudgetB = (props, images) => {
     return nutrientBudgetBTable(allEvents[key], images[key], i)
   })
 
-  tables = tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No applications entered.' }, italics: true, fontSize: 7 }]
+  tables = tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No applications entered.' }, italics: true, fontSize: 8 }]
 
   return {
     pageBreak: 'before',
@@ -4297,7 +4325,7 @@ const nutrientAnalysisA = (props) => {
                     {
                       border: [false, false, false, true],
                       text: {
-                        text: analysis.sample_date ? analysis.sample_date.split('T')[0] : '', fontSize: 8,
+                        text: analysis.sample_date ? formatDate(analysis.sample_date.split('T')[0]) : '', fontSize: 8,
                       }
                     },
                     {
@@ -4384,61 +4412,61 @@ const nutrientAnalysisA = (props) => {
                     {
                       fillColor: gray,
                       text: {
-                        text: "Total N (mg/kg)", fontSize: 7,
+                        text: "Total N (mg/kg)", fontSize: 8, alignment: 'right'
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Total P (mg/kg)", fontSize: 7,
+                        text: "Total P (mg/kg)", fontSize: 8, alignment: 'right'
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Total K (mg/kg)", fontSize: 7,
+                        text: "Total K (mg/kg)", fontSize: 8, alignment: 'right'
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Calcium (mg/kg)", fontSize: 7,
+                        text: "Calcium (mg/kg)", fontSize: 8, alignment: 'right'
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Magnesium (mg/kg)", fontSize: 7,
+                        text: "Magnesium (mg/kg)", fontSize: 8, alignment: 'right'
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Sodium (mg/kg)", fontSize: 7,
+                        text: "Sodium (mg/kg)", fontSize: 8, alignment: 'right'
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Sulfur (mg/kg)", fontSize: 7,
+                        text: "Sulfur (mg/kg)", fontSize: 8, alignment: 'right'
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Chloride (mg/kg)", fontSize: 7,
+                        text: "Chloride (mg/kg)", fontSize: 8, alignment: 'right'
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Total Salt (mg/kg)", fontSize: 7,
+                        text: "Total Salt (mg/kg)", fontSize: 8, alignment: 'right'
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "TFS(%)", fontSize: 7,
+                        text: "TFS(%)", fontSize: 8, alignment: 'right'
                       }
                     }
                   ],
@@ -4450,60 +4478,60 @@ const nutrientAnalysisA = (props) => {
                     },
                     {
                       text: {
-                        text: analysis.n_con, fontSize: 7,
+                        text: formatFloat(percentageAsMGKG(parseFloat(analysis.n_con), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.p_con, fontSize: 7,
+                        text: formatFloat(percentageAsMGKG(parseFloat(analysis.p_con), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.k_con, fontSize: 7,
+                        text: formatFloat(percentageAsMGKG(parseFloat(analysis.k_con), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.ca_con, fontSize: 7,
+                        text: formatFloat(percentageAsMGKG(parseFloat(analysis.ca_con), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.mg_con, fontSize: 7,
+                        text: formatFloat(percentageAsMGKG(parseFloat(analysis.mg_con), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.na_con, fontSize: 7,
+                        text: formatFloat(percentageAsMGKG(parseFloat(analysis.na_con), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.s_con, fontSize: 7,
+                        text: formatFloat(percentageAsMGKG(parseFloat(analysis.s_con), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.cl_con, fontSize: 7,
+                        text: formatFloat(percentageAsMGKG(parseFloat(analysis.cl_con), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: " ", fontSize: 7,
+                        text: '', fontSize: 8,
                       }
                     },
                     {
                       text: {
-                        text: analysis.tfs, fontSize: 7,
+                        text: formatFloat(round(parseFloat(analysis.tfs), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     }
@@ -4516,60 +4544,60 @@ const nutrientAnalysisA = (props) => {
                     },
                     {
                       text: {
-                        text: analysis.n_dl, fontSize: 7,
+                        text: formatFloat(round(formatFloat(analysis.n_dl), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.p_dl, fontSize: 7,
+                        text: formatFloat(round(formatFloat(analysis.p_dl), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.k_dl, fontSize: 7,
+                        text: formatFloat(round(formatFloat(analysis.k_dl), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.ca_dl, fontSize: 7,
+                        text: formatFloat(round(formatFloat(analysis.ca_dl), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.mg_dl, fontSize: 7,
+                        text: formatFloat(round(formatFloat(analysis.mg_dl), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.na_dl, fontSize: 7,
+                        text: formatFloat(round(formatFloat(analysis.na_dl), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.s_dl, fontSize: 7,
+                        text: formatFloat(round(formatFloat(analysis.s_dl), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.cl_dl, fontSize: 7,
+                        text: formatFloat(round(formatFloat(analysis.cl_dl), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: " ", fontSize: 7,
+                        text: " ", fontSize: 8,
                       }
                     },
                     {
                       text: {
-                        text: analysis.tfs_dl, fontSize: 7,
+                        text: formatFloat(round(formatFloat(analysis.tfs_dl), 2)), fontSize: 8,
                         alignment: 'right',
                       }
                     }
@@ -4584,7 +4612,7 @@ const nutrientAnalysisA = (props) => {
     }
   })
 
-  tables = tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No manure analyses entered.', fontSize: 7, italics: true } }]
+  tables = tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No manure analyses entered.', fontSize: 8, italics: true } }]
   return {
     pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -4665,7 +4693,7 @@ const nutrientAnalysisB = (props) => {
             {
               border: [true, false, true, false],
               table: {
-                widths: ['8%', '10%', '8%', '10%', '13%', '15%', '8%', '8%'],
+                widths: ['8%', '10%', '8%', '20%', '13%', '15%', '8%', '8%'],
                 body: [
                   [
                     {
@@ -4677,7 +4705,7 @@ const nutrientAnalysisB = (props) => {
                     {
                       border: [false, false, false, true],
                       text: {
-                        text: analysis.sample_date ? analysis.sample_date.split('T')[0] : '', fontSize: 8,
+                        text: analysis.sample_date ? formatDate(analysis.sample_date.split('T')[0]) : '', fontSize: 8,
                       }
                     },
                     {
@@ -4739,91 +4767,91 @@ const nutrientAnalysisB = (props) => {
                     {
                       fillColor: gray,
                       text: {
-                        text: "Kjeldahl-N (mg/L)", fontSize: 7,
+                        text: "Kjeldahl-N (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "NH4-N (mg/L)", fontSize: 7,
+                        text: "NH4-N (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "NH3-N (mg/L)", fontSize: 7,
+                        text: "NH3-N (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Nitrate-N (mg/L)", fontSize: 7,
+                        text: "Nitrate-N (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Total P (mg/L)", fontSize: 7,
+                        text: "Total P (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Total K (mg/L)", fontSize: 7,
+                        text: "Total K (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Calcium (mg/L)", fontSize: 7,
+                        text: "Calcium (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Magnes. (mg/L)", fontSize: 7,
+                        text: "Magnes. (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Sodium (mg/L)", fontSize: 7,
+                        text: "Sodium (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Bicarb. (mg/L)", fontSize: 7,
+                        text: "Bicarb. (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Carb, (mg/L)", fontSize: 7,
+                        text: "Carb, (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Sulfate (mg/L)", fontSize: 7,
+                        text: "Sulfate (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "Chloride (mg/L)", fontSize: 7,
+                        text: "Chloride (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "EC (µmhos/cm)", fontSize: 7,
+                        text: "EC (µmhos/cm)", fontSize: 8, alignment: 'right',
                       }
                     },
                     {
                       fillColor: gray,
                       text: {
-                        text: "TDS (mg/L)", fontSize: 7,
+                        text: "TDS (mg/L)", fontSize: 8, alignment: 'right',
                       }
                     },
 
@@ -4836,91 +4864,91 @@ const nutrientAnalysisB = (props) => {
                     },
                     {
                       text: {
-                        text: analysis.kn_con, fontSize: 7,
+                        text: formatFloat(analysis.kn_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.nh4_con, fontSize: 7,
+                        text: formatFloat(analysis.nh4_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.nh3_con, fontSize: 7,
+                        text: formatFloat(analysis.nh3_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.no3_con, fontSize: 7,
+                        text: formatFloat(analysis.no3_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.p_con, fontSize: 7,
+                        text: formatFloat(analysis.p_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.k_con, fontSize: 7,
+                        text: formatFloat(analysis.k_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.ca_con, fontSize: 7,
+                        text: formatFloat(analysis.ca_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.mg_con, fontSize: 7,
+                        text: formatFloat(analysis.mg_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.na_con, fontSize: 7,
+                        text: formatFloat(analysis.na_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.hco3_con, fontSize: 7,
+                        text: formatFloat(analysis.hco3_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.co3_con, fontSize: 7,
+                        text: formatFloat(analysis.co3_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.so4_con, fontSize: 7,
+                        text: formatFloat(analysis.so4_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.cl_con, fontSize: 7,
+                        text: formatFloat(analysis.cl_con), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.ec, fontSize: 7,
+                        text: formatFloat(analysis.ec), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.tds, fontSize: 7,
+                        text: formatFloat(analysis.tds), fontSize: 8,
                         alignment: 'right',
                       }
                     },
@@ -4933,92 +4961,92 @@ const nutrientAnalysisB = (props) => {
                     },
                     {
                       text: {
-                        text: analysis.kn_dl, fontSize: 7,
+                        text: formatFloat(analysis.kn_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.nh4_dl, fontSize: 7,
+                        text: formatFloat(analysis.nh4_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.nh3_dl, fontSize: 7,
+                        text: formatFloat(analysis.nh3_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.no3_dl, fontSize: 7,
+                        text: formatFloat(analysis.no3_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.p_dl, fontSize: 7,
+                        text: formatFloat(analysis.p_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.k_dl, fontSize: 7,
+                        text: formatFloat(analysis.k_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.ca_dl, fontSize: 7,
+                        text: formatFloat(analysis.ca_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.mg_dl, fontSize: 7,
+                        text: formatFloat(analysis.mg_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.na_dl, fontSize: 7,
+                        text: formatFloat(analysis.na_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.hco3_dl, fontSize: 7,
+                        text: formatFloat(analysis.hco3_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.co3_dl, fontSize: 7,
+                        text: formatFloat(analysis.co3_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.so4_dl, fontSize: 7,
+                        text: formatFloat(analysis.so4_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.cl_dl, fontSize: 7,
+                        text: formatFloat(analysis.cl_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       text: {
-                        text: analysis.ec_dl, fontSize: 7,
+                        text: formatFloat(analysis.ec_dl), fontSize: 8,
                         alignment: 'right',
                       }
                     },
                     {
                       headlineLevel: `processWastewaterAnalyses${i}`,
                       text: {
-                        text: analysis.tds_dl, fontSize: 7,
+                        text: analysis.tds_dl, fontSize: 8,
                         alignment: 'right',
                       }
                     },
@@ -5032,7 +5060,7 @@ const nutrientAnalysisB = (props) => {
       }
     }
   })
-  tables = tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No process wastewater analyses entered.', fontSize: 7, italics: true } }]
+  tables = tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No process wastewater analyses entered.', fontSize: 8, italics: true } }]
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -5115,7 +5143,7 @@ const nutrientAnalysisC = (props) => {
                       {
                         border: [false, false, false, true],
                         text: {
-                          text: props.sample_date ? props.sample_date.split('T')[0] : '', fontSize: 8,
+                          text: props.sample_date ? formatDate(props.sample_date.split('T')[0]) : '', fontSize: 8,
                         }
                       },
                       {
@@ -5141,7 +5169,7 @@ const nutrientAnalysisC = (props) => {
                 colSpan: 2,
                 border: [true, false, true, true],
                 table: {
-                  widths: ['4%', '8%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '5%', '6%'],
+                  widths: ['4%', '10%', '10%', '11%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '8%', '8%'],
                   body: [
                     [
                       {
@@ -5152,73 +5180,73 @@ const nutrientAnalysisC = (props) => {
                       {
                         fillColor: gray,
                         text: {
-                          text: "Total N (mg/L)", fontSize: 7,
+                          text: "Total N (mg/L)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "NH4-N (mg/L)", fontSize: 7,
+                          text: "NH4-N (mg/L)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Nitrate-N (mg/L)", fontSize: 7,
+                          text: "Nitrate-N (mg/L)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Calcium (mg/L)", fontSize: 7,
+                          text: "Calcium (mg/L)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Magnes. (mg/L)", fontSize: 7,
+                          text: "Magnes. (mg/L)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Sodium (mg/L)", fontSize: 7,
+                          text: "Sodium (mg/L)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Bicarb. (mg/L)", fontSize: 7,
+                          text: "Bicarb. (mg/L)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Carb, (mg/L)", fontSize: 7,
+                          text: "Carb, (mg/L)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Sulfate (mg/L)", fontSize: 7,
+                          text: "Sulfate (mg/L)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Chloride (mg/L)", fontSize: 7,
+                          text: "Chloride (mg/L)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "EC (µmhos/cm)", fontSize: 7,
+                          text: "EC (µmhos/cm)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "TDS (mg/L)", fontSize: 7,
+                          text: "TDS (mg/L)", fontSize: 8,
                         }
                       },
 
@@ -5231,62 +5259,62 @@ const nutrientAnalysisC = (props) => {
                       },
                       {
                         text: {
-                          text: props.n_con, fontSize: 7,
+                          text: formatFloat(props.n_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.nh4_con, fontSize: 7,
+                          text: formatFloat(props.nh4_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.no2_con, fontSize: 7,
+                          text: formatFloat(props.no2_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.ca_con, fontSize: 7,
+                          text: formatFloat(props.ca_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.mg_con, fontSize: 7,
+                          text: formatFloat(props.mg_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.na_con, fontSize: 7,
+                          text: formatFloat(props.na_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.hco3_con, fontSize: 7,
+                          text: formatFloat(props.hco3_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.co3_con, fontSize: 7,
+                          text: formatFloat(props.co3_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.so4_con, fontSize: 7,
+                          text: formatFloat(props.so4_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.cl_con, fontSize: 7,
+                          text: formatFloat(props.cl_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.ec, fontSize: 7,
+                          text: formatFloat(props.ec), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.tds, fontSize: 7,
+                          text: formatFloat(props.tds), fontSize: 8, alignment: 'right'
                         }
                       },
                     ],
@@ -5298,63 +5326,63 @@ const nutrientAnalysisC = (props) => {
                       },
                       {
                         text: {
-                          text: props.n_dl, fontSize: 7,
+                          text: formatFloat(props.n_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.nh4_dl, fontSize: 7,
+                          text: formatFloat(props.nh4_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.no2_dl, fontSize: 7,
+                          text: formatFloat(props.no2_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.ca_dl, fontSize: 7,
+                          text: formatFloat(props.ca_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.mg_dl, fontSize: 7,
+                          text: formatFloat(props.mg_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.na_dl, fontSize: 7,
+                          text: formatFloat(props.na_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.hco3_dl, fontSize: 7,
+                          text: formatFloat(props.hco3_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.co3_dl, fontSize: 7,
+                          text: formatFloat(props.co3_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.so4_dl, fontSize: 7,
+                          text: formatFloat(props.so4_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.cl_dl, fontSize: 7,
+                          text: formatFloat(props.cl_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.ec_dl, fontSize: 7,
+                          text: formatFloat(props.ec_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
 
                         text: {
-                          text: props.tds_dl, fontSize: 7,
+                          text: formatFloat(props.tds_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                     ],
@@ -5368,10 +5396,10 @@ const nutrientAnalysisC = (props) => {
     ]
   }
 
-  let tables = Object.keys(props).map((key, i) => {
+  let tables = Object.keys(props).sort(naturalSort).map((key, i) => {
     let analyses = props[key]
     let headerInfo = analyses && analyses[0] ? analyses[0] : {}
-    const subTables = analyses.map((analysis) => {
+    const subTables = analyses.sort((a, b) => naturalSortBy(a, b, 'sample_date')).map((analysis) => {
       return subTable(analysis, i)
     })
 
@@ -5405,7 +5433,7 @@ const nutrientAnalysisC = (props) => {
 
 
 
-  tables = tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No fresh water analyses entered.', fontSize: 7, italics: true } }]
+  tables = tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No fresh water analyses entered.', fontSize: 8, italics: true } }]
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -5481,7 +5509,7 @@ const nutrientAnalysisD = (props) => {
                       {
                         border: [false, false, false, true],
                         text: {
-                          text: props.sample_date ? props.sample_date.split('T')[0] : '', fontSize: 8,
+                          text: props.sample_date ? formatDate(props.sample_date.split('T')[0]) : '', fontSize: 8,
                         }
                       },
                       {
@@ -5507,7 +5535,7 @@ const nutrientAnalysisD = (props) => {
                 colSpan: 2,
                 border: [true, false, true, true],
                 table: {
-                  widths: ['8%', '16%', '12%', '12%', '12%', '12%', '12%', '12%'],
+                  widths: ['8%', '14%', '12%', '12%', '12%', '12%', '12%', '12%'],
                   body: [
                     [
                       {
@@ -5518,43 +5546,43 @@ const nutrientAnalysisD = (props) => {
                       {
                         fillColor: gray,
                         text: {
-                          text: "Nitrate-N (mg/kg)", fontSize: 7,
+                          text: "Nitrate-N (mg/kg)", fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Total P (mg/kg)", fontSize: 7,
+                          text: "Total P (mg/kg)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Soluable P (mg/kg)", fontSize: 7,
+                          text: "Soluable P (mg/kg)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "K (mg/kg)", fontSize: 7,
+                          text: "K (mg/kg)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "EC (μmhos/cm)", fontSize: 7,
+                          text: "EC (μmhos/cm)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Organic matter (%)", fontSize: 7,
+                          text: "Organic matter (%)", fontSize: 8,
                         }
                       },
                       {
                         fillColor: gray,
                         text: {
-                          text: "Total salt (mg/kg)", fontSize: 7,
+                          text: "Total salt (mg/kg)", fontSize: 8,
                         }
                       }
 
@@ -5567,37 +5595,37 @@ const nutrientAnalysisD = (props) => {
                       },
                       {
                         text: {
-                          text: props.n_con, fontSize: 7,
+                          text: formatFloat(props.n_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.total_p_con, fontSize: 7,
+                          text: formatFloat(props.total_p_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.p_con, fontSize: 7,
+                          text: formatFloat(props.p_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.k_con, fontSize: 7,
+                          text: formatFloat(props.k_con), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.ec, fontSize: 7,
+                          text: formatFloat(props.ec), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.org_matter, fontSize: 7,
+                          text: formatFloat(props.org_matter), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: '', fontSize: 7,
+                          text: '', fontSize: 8,
                         }
                       },
 
@@ -5611,39 +5639,39 @@ const nutrientAnalysisD = (props) => {
                       },
                       {
                         text: {
-                          text: props.n_dl, fontSize: 7,
+                          text: formatFloat(props.n_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.total_p_dl, fontSize: 7,
+                          text: formatFloat(props.total_p_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.p_dl, fontSize: 7,
+                          text: formatFloat(props.p_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.k_dl, fontSize: 7,
+                          text: formatFloat(props.k_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.ec_dl, fontSize: 7,
+                          text: formatFloat(props.ec_dl), fontSize: 8, alignment: 'right'
                         }
                       },
                       {
                         text: {
-                          text: props.org_matter_dl, fontSize: 7,
+                          text: formatFloat(props.org_matter_dl), fontSize: 8, alignment: 'right'
                         }
                       },
 
                       {
                         headlineLevel: `soilAnalyses${i}`,
                         text: {
-                          text: '', fontSize: 7,
+                          text: '', fontSize: 8,
                         }
                       },
                     ],
@@ -5659,11 +5687,11 @@ const nutrientAnalysisD = (props) => {
 
   props = props && typeof props === typeof {} ? props : {}
 
-  const tables = Object.keys(props).map((key, i) => {
+  const tables = Object.keys(props).sort(naturalSort).map((key, i) => {
     let analyses = props[key]
     let headerInfo = analyses && analyses[0] ? analyses[0] : {}
 
-    const subTables = analyses.map((analysis) => {
+    const subTables = analyses.sort((a, b) => naturalSortBy(a, b, 'sample_date')).map((analysis) => {
       return subTable(analysis, i)
     })
 
@@ -5696,7 +5724,7 @@ const nutrientAnalysisD = (props) => {
   })
 
 
-  const content = tables && tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No Soil analyses entered.', italics: true, fontSize: 7 } }]
+  const content = tables && tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No Soil analyses entered.', italics: true, fontSize: 8 } }]
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -5719,7 +5747,7 @@ const nutrientAnalysisD = (props) => {
 }
 const nutrientAnalysisE = (props) => {
   props = props && typeof props === typeof {} ? props : {}
-  const tables = Object.keys(props).map((key, i) => {
+  const tables = Object.keys(props).sort(naturalSort).map((key, i) => {
     let harvests = props[key]
     let headerInfo = harvests && harvests[0] ? harvests[0] : {}
 
@@ -5778,7 +5806,7 @@ const nutrientAnalysisE = (props) => {
                         {
                           border: [false, false, false, true],
                           text: {
-                            text: props.sample_date ? props.sample_date.split('T')[0] : '', fontSize: 8,
+                            text: props.sample_date ? formatDate(props.sample_date.split('T')[0]) : '', fontSize: 8,
                           }
                         },
                         {
@@ -5861,31 +5889,31 @@ const nutrientAnalysisE = (props) => {
                         {
                           fillColor: gray,
                           text: {
-                            text: "Total N (mg/kg)", fontSize: 7,
+                            text: "Total N (mg/kg)", fontSize: 8,
                           }
                         },
                         {
                           fillColor: gray,
                           text: {
-                            text: "Total P (mg/kg)", fontSize: 7,
+                            text: "Total P (mg/kg)", fontSize: 8,
                           }
                         },
                         {
                           fillColor: gray,
                           text: {
-                            text: "Total K (mg/kg)", fontSize: 7,
+                            text: "Total K (mg/kg)", fontSize: 8,
                           }
                         },
                         {
                           fillColor: gray,
                           text: {
-                            text: "Total salt (mg/kg)", fontSize: 7,
+                            text: "Total salt (mg/kg)", fontSize: 8,
                           }
                         },
                         {
                           fillColor: gray,
                           text: {
-                            text: "TFS (%)", fontSize: 7,
+                            text: "TFS (%)", fontSize: 8, alignment: 'right'
                           }
                         },
 
@@ -5899,27 +5927,27 @@ const nutrientAnalysisE = (props) => {
                         },
                         {
                           text: {
-                            text: props.actual_n, fontSize: 7,
+                            text: formatFloat(percentageAsMGKG(props.actual_n)), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.actual_p, fontSize: 7,
+                            text: formatFloat(percentageAsMGKG(props.actual_p)), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.actual_k, fontSize: 7,
+                            text: formatFloat(percentageAsMGKG(props.actual_k)), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: '', fontSize: 7,
+                            text: '', fontSize: 8,
                           }
                         },
                         {
                           text: {
-                            text: props.tfs, fontSize: 7,
+                            text: formatFloat(props.tfs), fontSize: 8, alignment: 'right'
                           }
                         },
 
@@ -5932,28 +5960,28 @@ const nutrientAnalysisE = (props) => {
                         },
                         {
                           text: {
-                            text: props.n_dl, fontSize: 7,
+                            text: formatFloat(props.n_dl), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.p_dl, fontSize: 7,
+                            text: formatFloat(props.p_dl), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.k_dl, fontSize: 7,
+                            text: formatFloat(props.k_dl), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: '', fontSize: 7,
+                            text: '', fontSize: 8,
                           }
                         },
                         {
                           headlineLevel: `ptAnalyses${i}`,
                           text: {
-                            text: props.tfs_dl, fontSize: 7,
+                            text: formatFloat(props.tfs_dl), fontSize: 8, alignment: 'right'
                           }
                         },
                       ],
@@ -5967,7 +5995,7 @@ const nutrientAnalysisE = (props) => {
       ]
     }
 
-    const subTables = harvests.map(harvest => subTable(harvest))
+    const subTables = harvests.sort((a, b) => naturalSortBy(a, b, 'sample_date')).map(harvest => subTable(harvest))
 
     return {
       headlineLevel: `ptAnalyses${i}`,
@@ -5996,7 +6024,7 @@ const nutrientAnalysisE = (props) => {
       }
     }
   })
-  const content = tables && tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No plant tissue analyses entered.', italics: true, fontSize: 7 } }]
+  const content = tables && tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No plant tissue analyses entered.', italics: true, fontSize: 8 } }]
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -6019,7 +6047,7 @@ const nutrientAnalysisE = (props) => {
 const nutrientAnalysisF = (props) => {
 
 
-  let tables = Object.keys(props).map((key, i) => {
+  let tables = Object.keys(props).sort(naturalSort).map((key, i) => {
     let analyses = props[key]
 
     let headerInfo = analyses && analyses[0] ? analyses[0] : {}
@@ -6079,7 +6107,7 @@ const nutrientAnalysisF = (props) => {
                         {
                           border: [false, false, false, true],
                           text: {
-                            text: props.sample_date ? props.sample_date.split('T')[0] : '', fontSize: 8,
+                            text: props.sample_date ? formatDate(props.sample_date.split('T')[0]) : '', fontSize: 8,
                           }
                         },
                         {
@@ -6117,31 +6145,31 @@ const nutrientAnalysisF = (props) => {
                         {
                           fillColor: gray,
                           text: {
-                            text: "NH4-N (mg/L)", fontSize: 7,
+                            text: "NH4-N (mg/L)", fontSize: 8,
                           }
                         },
                         {
                           fillColor: gray,
                           text: {
-                            text: "Nitrate-N (mg/L)", fontSize: 7,
+                            text: "Nitrate-N (mg/L)", fontSize: 8,
                           }
                         },
                         {
                           fillColor: gray,
                           text: {
-                            text: "Total P (mg/L)", fontSize: 7,
+                            text: "Total P (mg/L)", fontSize: 8,
                           }
                         },
                         {
                           fillColor: gray,
                           text: {
-                            text: "EC (μmhos/cm)", fontSize: 7,
+                            text: "EC (μmhos/cm)", fontSize: 8,
                           }
                         },
                         {
                           fillColor: gray,
                           text: {
-                            text: "TDS (mg/L)", fontSize: 7,
+                            text: "TDS (mg/L)", fontSize: 8, alignment: 'right'
                           }
                         },
                       ],
@@ -6153,27 +6181,27 @@ const nutrientAnalysisF = (props) => {
                         },
                         {
                           text: {
-                            text: props.nh4_con, fontSize: 7,
+                            text: formatFloat(props.nh4_con), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.no2_con, fontSize: 7,
+                            text: formatFloat(props.no2_con), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.p_con, fontSize: 7,
+                            text: formatFloat(props.p_con), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.ec, fontSize: 7,
+                            text: formatFloat(props.ec), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.tds, fontSize: 7,
+                            text: formatInt(props.tds), fontSize: 8, alignment: 'right'
                           }
                         },
 
@@ -6186,28 +6214,28 @@ const nutrientAnalysisF = (props) => {
                         },
                         {
                           text: {
-                            text: props.nh4_dl, fontSize: 7,
+                            text: formatFloat(props.nh4_dl), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.no2_dl, fontSize: 7,
+                            text: formatFloat(props.no2_dl), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.p_dl, fontSize: 7,
+                            text: formatFloat(props.p_dl), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           text: {
-                            text: props.ec_dl, fontSize: 7,
+                            text: formatFloat(props.ec_dl), fontSize: 8, alignment: 'right'
                           }
                         },
                         {
                           headlineLevel: `drainAnalyses${i}`,
                           text: {
-                            text: props.tds_dl, fontSize: 7,
+                            text: formatInt(props.tds_dl), fontSize: 8, alignment: 'right'
                           }
                         },
                       ],
@@ -6221,7 +6249,7 @@ const nutrientAnalysisF = (props) => {
       ]
     }
 
-    const subTables = analyses.map(analysis => subTable(analysis))
+    const subTables = analyses.sort((a, b) => naturalSortBy(a, b, 'sample_date')).map(analysis => subTable(analysis))
 
     return {
       headlineLevel: `drainAnalyses${i}`,
@@ -6252,7 +6280,7 @@ const nutrientAnalysisF = (props) => {
   })
 
 
-  tables = tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No subsurface (tile) drainage analyses entered.', fontSize: 7, italics: true } }]
+  tables = tables.length > 0 ? tables : [{ margin: [10, 5], text: { text: 'No subsurface (tile) drainage analyses entered.', fontSize: 8, italics: true } }]
   return {
     // pageBreak: 'before', // super useful soltion just dont need on the first on
     stack: [
@@ -6829,35 +6857,38 @@ const naprbalC = (props, images) => {
 const exceptionReportingATable = (props) => {
   props = props && typeof props === typeof [] ? props : []
   let rows = props.map((row, i) => {
+    const _disDate = row.discharge_datetime.split('T')
+    const disDate = _disDate[0]
+    const disTime = _disDate[1].slice(0, -1)
     return [
       {
         text: {
-          text: row.discharge_datetime, fontSize: 7,
+          text: `${disDate} ${disTime}`, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.discharge_loc, fontSize: 7,
+          text: row.discharge_loc, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.ref_number, fontSize: 7,
+          text: row.ref_number, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.method_of_measuring, fontSize: 7,
+          text: row.method_of_measuring, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.sample_location_reason, fontSize: 7,
+          text: row.sample_location_reason, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.vol, fontSize: 7,
+          text: row.vol, fontSize: 8,
         }
       },
     ]
@@ -6868,37 +6899,37 @@ const exceptionReportingATable = (props) => {
       {
         fillColor: gray,
         text: {
-          text: 'Discharge date', fontSize: 7,
+          text: 'Discharge date', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Location', fontSize: 7,
+          text: 'Location', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Map reference #', fontSize: 7,
+          text: 'Map reference #', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Method of measuring discharge', fontSize: 7,
+          text: 'Method of measuring discharge', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Rationale for sample locations', fontSize: 7,
+          text: 'Rationale for sample locations', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Volume', fontSize: 7,
+          text: 'Volume', fontSize: 8,
         }
       },
     ],
@@ -6915,7 +6946,7 @@ const exceptionReportingATable = (props) => {
   let noTable = {
     margin: [10, 10, 0, 10],
     text: {
-      text: 'No manure or process wastewater discharges occurred during the reporting period.', italics: true, fontSize: 7
+      text: 'No manure or process wastewater discharges occurred during the reporting period.', italics: true, fontSize: 8
     }
   }
 
@@ -6924,40 +6955,43 @@ const exceptionReportingATable = (props) => {
 const exceptionReportingBTable = (props) => {
   props = props && typeof props === typeof [] ? props : []
   let rows = props.map((row, i) => {
+    const _disDate = row.discharge_datetime.split('T')
+    const disDate = _disDate[0]
+    const disTime = _disDate[1].slice(0, -1)
     return [
       {
         text: {
-          text: row.discharge_datetime, fontSize: 7,
+          text: `${disDate} ${disTime}`, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.discharge_loc, fontSize: 7,
+          text: row.discharge_loc, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.ref_number, fontSize: 7,
+          text: row.ref_number, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.method_of_measuring, fontSize: 7,
+          text: row.method_of_measuring, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.sample_location_reason, fontSize: 7,
+          text: row.sample_location_reason, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.duration_of_discharge, fontSize: 7,
+          text: row.duration_of_discharge, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.vol, fontSize: 7,
+          text: row.vol, fontSize: 8,
         }
       },
     ]
@@ -6968,43 +7002,43 @@ const exceptionReportingBTable = (props) => {
       {
         fillColor: gray,
         text: {
-          text: 'Discharge date', fontSize: 7,
+          text: 'Discharge date', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Location', fontSize: 7,
+          text: 'Location', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Map reference #', fontSize: 7,
+          text: 'Map reference #', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Method of measuring discharge', fontSize: 7,
+          text: 'Method of measuring discharge', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Rationale for sample locations', fontSize: 7,
+          text: 'Rationale for sample locations', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Duration (min)', fontSize: 7,
+          text: 'Duration (min)', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Volume', fontSize: 7,
+          text: 'Volume', fontSize: 8,
         }
       },
     ],
@@ -7021,7 +7055,7 @@ const exceptionReportingBTable = (props) => {
   let noTable = {
     margin: [10, 10, 0, 10],
     text: {
-      text: 'No stormwater discharges occurred during the reporting period.', italics: true, fontSize: 7
+      text: 'No stormwater discharges occurred during the reporting period.', italics: true, fontSize: 8
     }
   }
 
@@ -7031,40 +7065,44 @@ const exceptionReportingCTable = (props) => {
   props = props && typeof props === typeof [] ? props : []
   // Generate rows for Report, simple table :)
   let rows = props.map((row, i) => {
+    const _disDate = row.discharge_datetime.split('T')
+    const disDate = _disDate[0]
+    const disTime = _disDate[1].slice(0, -1)
     return [
       {
         text: {
-          text: row.discharge_datetime, fontSize: 7,
+          text: row.discharge_datetime ? `${formatDate(disDate)} ${disTime}` : '',
+          fontSize: 8,
         }
       },
       {
         text: {
-          text: row.discharge_loc, fontSize: 7,
+          text: row.discharge_loc, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.ref_number, fontSize: 7,
+          text: row.ref_number, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.method_of_measuring, fontSize: 7,
+          text: row.method_of_measuring, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.sample_location_reason, fontSize: 7,
+          text: row.sample_location_reason, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.discharge_src, fontSize: 7,
+          text: row.discharge_src, fontSize: 8,
         }
       },
       {
         text: {
-          text: row.vol, fontSize: 7,
+          text: row.vol, fontSize: 8,
         }
       },
     ]
@@ -7075,43 +7113,43 @@ const exceptionReportingCTable = (props) => {
       {
         fillColor: gray,
         text: {
-          text: 'Discharge date', fontSize: 7,
+          text: 'Discharge date', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Location', fontSize: 7,
+          text: 'Location', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Map reference #', fontSize: 7,
+          text: 'Map reference #', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Method of measuring discharge', fontSize: 7,
+          text: 'Method of measuring discharge', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Rationale for sample locations', fontSize: 7,
+          text: 'Rationale for sample locations', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Source of discharge', fontSize: 7,
+          text: 'Source of discharge', fontSize: 8,
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Volume', fontSize: 7,
+          text: 'Volume', fontSize: 8,
         }
       },
     ],
@@ -7129,7 +7167,7 @@ const exceptionReportingCTable = (props) => {
   let noTable = {
     margin: [10, 5, 0, 5],
     text: {
-      text: 'No manure or process wastewater discharges occurred during the reporting period.', italics: true, fontSize: 7
+      text: 'No manure or process wastewater discharges occurred during the reporting period.', italics: true, fontSize: 8
     }
   }
 
@@ -7405,13 +7443,13 @@ const certificationA = (props) => {
             {
               width: "50%",
               text: {
-                text: 'SIGNATURE OF OWNER OF FACILITY ', fontSize: 7,
+                text: 'SIGNATURE OF OWNER OF FACILITY ', fontSize: 8,
               }
             },
             {
               width: "50%",
               text: {
-                text: 'SIGNATURE OF OPERATOR OF FACILITY', fontSize: 7,
+                text: 'SIGNATURE OF OPERATOR OF FACILITY', fontSize: 8,
               }
             },
           ],
@@ -7447,13 +7485,13 @@ const certificationA = (props) => {
             {
               width: "50%",
               text: {
-                text: 'PRINT OR TYPE NAME ', fontSize: 7,
+                text: 'PRINT OR TYPE NAME ', fontSize: 8,
               }
             },
             {
               width: "50%",
               text: {
-                text: 'PRINT OR TYPE NAME', fontSize: 7,
+                text: 'PRINT OR TYPE NAME', fontSize: 8,
               }
             },
           ],
@@ -7471,13 +7509,13 @@ const certificationA = (props) => {
             {
               width: "50%",
               text: {
-                text: 'DATE ', fontSize: 7,
+                text: 'DATE ', fontSize: 8,
               }
             },
             {
               width: "50%",
               text: {
-                text: 'DATE', fontSize: 7,
+                text: 'DATE', fontSize: 8,
               }
             },
           ],

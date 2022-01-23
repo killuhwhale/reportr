@@ -1,8 +1,7 @@
 import XLSX from 'xlsx'
 import { get, post } from './requests'
 import {
-  toFloat, opArrayByPos, calcAmountLbsFromTonsPercent, mgKgToLbsFromTons,
-  displayPercentageAsMGKG, MGMLToLBS, percentToLBSForGals, percentToLBS
+  toFloat
 } from './convertCalc'
 import { NUTRIENT_IMPORT_MATERIAL_TYPES } from './constants'
 import { BASE_URL } from "./environment"

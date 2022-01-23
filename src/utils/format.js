@@ -1,3 +1,5 @@
+import { round } from "mathjs"
+import { toFloat } from "./convertCalc"
 
 const groupBySortBy = (list, groupBy, sortBy) => {
   let grouped = {}
@@ -21,7 +23,6 @@ const groupBySortBy = (list, groupBy, sortBy) => {
   if (sortBy && sortBy.length > 0) {
     Object.keys(grouped).forEach(key => {
       grouped[key].sort((a, b) => {
-        // return a[sortBy] >= b[sortBy] ? -1 : 1
         return naturalSort(a[sortBy], b[sortBy])
       })
     })
@@ -60,26 +61,56 @@ const groupByKeys = (list, groupKeys) => {
   return grouped
 }
 
+const percentageAsMGKG = (num) => {
+  // Used for harvest and manures as their concentrations are percentages of mg/ kg
+  num = toFloat(num)
+  return formatFloat(num * 1e4)
+}
+
 // Formats a number accorind to precision as a string with commas
 const formatFloat = (num, precision = 2) => {
   if (num === null || num === undefined) {
     console.warn("Null or undefined received.")
-    return new Intl.NumberFormat().format(parseFloat('0').toFixed(precision))
+    return 0.00
   }
   if (precision < 0 || precision > 4) {
     precision = 2
   }
+
   num = typeof (num) === typeof ('') ? parseFloat(num.replaceAll(',', '')) : num
-  return new Intl.NumberFormat().format(num.toFixed(precision))
+  let val = new Intl.NumberFormat().format(num.toFixed(precision))
+  return num.toLocaleString("en-US", { maximumFractionDigits: precision, minimumFractionDigits: precision });
+}
+
+const formatInt = (num) => {
+  if (num === null || num === undefined) {
+    console.warn("Null or undefined received.")
+    return 0
+  }
+  num = typeof (num) === typeof ('') ? parseInt(num.replaceAll(',', '')) : parseInt(num)
+  return new Intl.NumberFormat().format(num)
 }
 
 const naturalCollator = new Intl.Collator(undefined, {
   numeric: true,
   sensitivity: 'base'
-});
+})
+
+const formatDate = (date) => {
+  const _date = new Date(`${date}T00:00`)
+  const day = _date.getDate()
+  const month = _date.getMonth()
+  const year = _date.getFullYear()
+  return `${month + 1}/${day}/${year}`
+}
 
 const naturalSort = (a, b) => {
   return naturalCollator.compare(a, b)
 }
 
-export { groupBySortBy, groupByKeys, formatFloat, naturalSort }
+const naturalSortBy = (a, b, s) => {
+  return naturalSort(a[s], b[s])
+}
+
+
+export { groupBySortBy, groupByKeys, formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, percentageAsMGKG }

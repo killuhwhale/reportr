@@ -1,9 +1,9 @@
 import { get, post } from '../../utils/requests'
 import {
   toFloat, opArrayByPos, calcLbsFromTonsAsPercent,
-  displayPercentageAsMGKG, MGMLToLBS, percentToLBSForGals, percentToLBS, calcLbsAsMGKG, calcLbsAsPercent
+  MGMLToLBS, percentToLBSForGals, percentToLBS, calcLbsAsMGKG, calcLbsAsPercent
 } from '../../utils/convertCalc'
-import { formatFloat, groupBySortBy, groupByKeys, naturalSort } from '../../utils/format'
+import { groupBySortBy, groupByKeys, naturalSort, naturalSortBy } from '../../utils/format'
 import calculateHerdManNKPNaCl, { getReportingPeriodDays } from "../../utils/herdCalculation"
 import { NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES, WASTEWATER_MATERIAL_TYPES, FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
 import { BASE_URL } from "../../utils/environment"
@@ -210,13 +210,13 @@ const getAvailableNutrientsC = (dairy_id) => {
             .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0, 0]
 
-        let generated = opArrayByPos(opArrayByPos(applied, exported), imported, '-') // can be given true to do subtraction instead
+        let generated = opArrayByPos(opArrayByPos(applied, exported), imported, '-')
         resolve({
           'availableNutrientsC': {
-            applied: applied.map(el => formatFloat(el)),
-            exported: exported.map(el => formatFloat(el)),
-            imported: imported.map(el => formatFloat(el)),
-            generated: generated.map(el => formatFloat(el)),
+            applied: applied,
+            exported: exported,
+            imported: imported,
+            generated: generated,
           }
         })
       })
@@ -473,7 +473,7 @@ const getApplicationAreaA = (dairy_id) => {
 
           return { ...el, harvest_count, waste_type, parcels }
         })
-
+        fields = fields.sort((a, b) => naturalSortBy(a, b, 'title'))
         resolve({
           'applicationAreaA': {
             fields, total_for_apps, total_NOT_for_apps, total_app_area
@@ -490,8 +490,11 @@ const getApplicationAreaA = (dairy_id) => {
 
 const getApplicationAreaB = (dairy_id) => {
   return new Promise((resolve, rej) => {
-    get(`${BASE_URL}/api/field_crop_harvest/${dairy_id}`)
-      .then((harvests) => {
+    Promise.all([
+      get(`${BASE_URL}/api/field_crop_harvest/${dairy_id}`),
+      get(`${BASE_URL}/api/field_crop/${dairy_id}`)
+    ])
+      .then(([harvests, cropsPlanted]) => {
         /** Final Object:
          * groupedHarvests : {
          *    field_pk: {
@@ -502,8 +505,10 @@ const getApplicationAreaB = (dairy_id) => {
          *    }
          * }
          */
+        const harvestPks = Object.fromEntries(harvests.map(item => [item.field_crop_id, 1]))
+        cropsPlanted = cropsPlanted.filter(item => !harvestPks[item.pk])
 
-        let groupedHarvests = groupBySortBy(harvests, 'field_id', 'harvest_date')
+        let groupedHarvests = groupBySortBy([...harvests, ...cropsPlanted], 'fieldtitle', 'harvest_date')
         // Obj: grouped by fields  
         groupedHarvests = Object.fromEntries(Object.keys(groupedHarvests).map(key => {
           // Each field_id, group the harvests by plant_date
@@ -512,37 +517,41 @@ const getApplicationAreaB = (dairy_id) => {
           fieldHarvestsObj = Object.fromEntries(Object.keys(fieldHarvestsObj).map(key => {
             let totals = [0, 0, 0, 0, 0] // Holds totals of yield, n,p,k, salt for summary table
             let harvestsByPlantDate = fieldHarvestsObj[key]
-            harvestsByPlantDate.map(el => {
-              const lbs_acre = toFloat(el.actual_yield / el.acres_planted)
-              const n_lbs_acre = calcLbsFromTonsAsPercent(el.actual_n, el.actual_moisture, lbs_acre, el.method_of_reporting)
-              const p_lbs_acre = calcLbsFromTonsAsPercent(el.actual_p, el.actual_moisture, lbs_acre, el.method_of_reporting)
-              const k_lbs_acre = calcLbsFromTonsAsPercent(el.actual_k, el.actual_moisture, lbs_acre, el.method_of_reporting)
-              const salt_lbs_acre = calcLbsFromTonsAsPercent(el.tfs, el.actual_moisture, lbs_acre, 'dry-weight')
 
-              totals[0] += lbs_acre
-              totals[1] += toFloat(n_lbs_acre)
-              totals[2] += toFloat(p_lbs_acre)
-              totals[3] += toFloat(k_lbs_acre)
-              totals[4] += toFloat(salt_lbs_acre)
 
-              // Format values
-              el.actual_yield = toFloat(el.actual_yield)
-              el.actual_n = formatFloat(displayPercentageAsMGKG(el.actual_n))
-              el.actual_p = formatFloat(displayPercentageAsMGKG(el.actual_p)) // For display only
-              el.actual_k = formatFloat(displayPercentageAsMGKG(el.actual_k)) // For display only
-              el.tfs = toFloat(el.tfs)
-              el.acres_planted = toFloat(el.acres_planted)
-              el.actual_moisture = toFloat(el.actual_moisture)
-              return
+            harvestsByPlantDate.forEach(el => {
+              if (el.actual_yield) {
+                const lbs_acre = toFloat(el.actual_yield / el.acres_planted)
+                const n_lbs_acre = calcLbsFromTonsAsPercent(el.actual_n, el.actual_moisture, lbs_acre, el.method_of_reporting)
+                const p_lbs_acre = calcLbsFromTonsAsPercent(el.actual_p, el.actual_moisture, lbs_acre, el.method_of_reporting)
+                const k_lbs_acre = calcLbsFromTonsAsPercent(el.actual_k, el.actual_moisture, lbs_acre, el.method_of_reporting)
+                const salt_lbs_acre = calcLbsFromTonsAsPercent(el.tfs, el.actual_moisture, lbs_acre, 'dry-weight')
+
+                totals[0] += lbs_acre
+                totals[1] += toFloat(n_lbs_acre)
+                totals[2] += toFloat(p_lbs_acre)
+                totals[3] += toFloat(k_lbs_acre)
+                totals[4] += toFloat(salt_lbs_acre)
+              }
             })
 
-            totals = totals.map(el => formatFloat(el))
             // Calculate anticipated totals, it is not dependent on the number of harvest events, it is a report on the anticipated yield.
             let harvestObj = harvestsByPlantDate && harvestsByPlantDate.length > 0 ? harvestsByPlantDate[0] : {}
             // typical_ yield, n, p, k, salt
             let antiTotals = [0, 0, 0, 0, 0]
             if (Object.keys(harvestObj).length > 0) {
               let { acres_planted, typical_yield, typical_moisture, typical_n, typical_p, typical_k, typical_salt } = harvestObj
+
+
+              if (typical_n === undefined) {
+                let { moisture, n, p, k, salt } = harvestObj
+                typical_moisture = moisture
+                typical_n = n
+                typical_p = p
+                typical_k = k
+                typical_salt = salt
+              }
+
               acres_planted = toFloat(acres_planted)
               typical_yield = toFloat(typical_yield)
               typical_moisture = toFloat(typical_moisture)
@@ -551,11 +560,11 @@ const getApplicationAreaB = (dairy_id) => {
               typical_k = toFloat(typical_k)
               typical_salt = toFloat(typical_salt)
 
-              antiTotals[0] = formatFloat(typical_yield)
-              antiTotals[1] = formatFloat((typical_n * typical_yield))
-              antiTotals[2] = formatFloat((typical_p * typical_yield))
-              antiTotals[3] = formatFloat((typical_k * typical_yield))
-              antiTotals[4] = formatFloat((typical_salt * typical_yield))
+              antiTotals[0] = typical_yield
+              antiTotals[1] = (typical_n * typical_yield)
+              antiTotals[2] = (typical_p * typical_yield)
+              antiTotals[3] = (typical_k * typical_yield)
+              antiTotals[4] = (typical_salt * typical_yield)
             }
 
             // Recreate Object w/ extra info
@@ -624,10 +633,10 @@ const getNutrientBudgetA = (dairy_id) => {
                   totals[3] += salt_lbs_acre
 
                   // Update for easy display in PDF
-                  el.n_lbs_acre = formatFloat(n_lbs_acre)
+                  el.n_lbs_acre = n_lbs_acre
                   el.p_lbs_acre = 0
                   el.k_lbs_acre = 0
-                  el.salt_lbs_acre = formatFloat(salt_lbs_acre)
+                  el.salt_lbs_acre = salt_lbs_acre
                 } else if (el.entry_type === "wastewater") {
                   let amt_applied_per_acre = toFloat(el.amount_applied) / toFloat(el.acres_planted)
 
@@ -637,10 +646,10 @@ const getNutrientBudgetA = (dairy_id) => {
                   totals[2] += MGMLToLBS(el.k_con, amt_applied_per_acre)
                   totals[3] += MGMLToLBS(el.tds, amt_applied_per_acre)
                   // Update vals
-                  el.n_lbs_acre = formatFloat(MGMLToLBS(el.kn_con, amt_applied_per_acre))
-                  el.p_lbs_acre = formatFloat(MGMLToLBS(el.p_con, amt_applied_per_acre))
-                  el.k_lbs_acre = formatFloat(MGMLToLBS(el.k_con, amt_applied_per_acre))
-                  el.salt_lbs_acre = formatFloat(MGMLToLBS(el.tds, amt_applied_per_acre))
+                  el.n_lbs_acre = MGMLToLBS(el.kn_con, amt_applied_per_acre)
+                  el.p_lbs_acre = MGMLToLBS(el.p_con, amt_applied_per_acre)
+                  el.k_lbs_acre = MGMLToLBS(el.k_con, amt_applied_per_acre)
+                  el.salt_lbs_acre = MGMLToLBS(el.tds, amt_applied_per_acre)
 
                 }
                 else if (el.entry_type === "fertilizer") {
@@ -651,10 +660,10 @@ const getNutrientBudgetA = (dairy_id) => {
                   totals[2] += toFloat(k_lbs_acre)
                   totals[3] += toFloat(salt_lbs_acre)
 
-                  el.n_lbs_acre = formatFloat(toFloat(n_lbs_acre))
-                  el.p_lbs_acre = formatFloat(toFloat(p_lbs_acre))
-                  el.k_lbs_acre = formatFloat(toFloat(k_lbs_acre))
-                  el.salt_lbs_acre = formatFloat(toFloat(salt_lbs_acre))
+                  el.n_lbs_acre = n_lbs_acre
+                  el.p_lbs_acre = p_lbs_acre
+                  el.k_lbs_acre = k_lbs_acre
+                  el.salt_lbs_acre = salt_lbs_acre
                 }
                 else if (el.entry_type === "manure") {
                   const lbs_acre = toFloat(el.amount_applied) / toFloat(el.acres_planted)
@@ -667,10 +676,11 @@ const getNutrientBudgetA = (dairy_id) => {
                   totals[2] += toFloat(k_lbs_acre)
                   totals[3] += toFloat(salt_lbs_acre)
 
-                  el.n_lbs_acre = formatFloat(toFloat(n_lbs_acre))
-                  el.p_lbs_acre = formatFloat(toFloat(p_lbs_acre))
-                  el.k_lbs_acre = formatFloat(toFloat(k_lbs_acre))
-                  el.salt_lbs_acre = formatFloat(toFloat(salt_lbs_acre))
+                  el.n_lbs_acre = n_lbs_acre
+                  el.p_lbs_acre = p_lbs_acre
+                  el.k_lbs_acre = k_lbs_acre
+                  el.salt_lbs_acre = salt_lbs_acre
+
                 }
                 else if (el.entry_type === "soil") {
                   const nCons = [el.n_con_0, el.n_con_1, el.n_con_2]
@@ -694,12 +704,10 @@ const getNutrientBudgetA = (dairy_id) => {
                   totals[2] += toFloat(el.k_lbs_acre)
                   totals[3] += toFloat(el.salt_lbs_acre)
                 }
-
-                el.amount_applied = formatFloat(el.amount_applied)
                 return el
               })
 
-              return [key, { appDatesObjList, totals: totals.map(t => formatFloat(t)) }]
+              return [key, { appDatesObjList, totals }]
             }))
 
             return [key, appDatesObj]
@@ -888,33 +896,6 @@ const getNutrientBudgetInfo = async (dairy_id) => {
             infoLBS.fertilizers[2] += k_lbs_acre * acres_planted
             infoLBS.fertilizers[3] += salt_lbs_acre * acres_planted
 
-            // if (ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[1] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[3]) {
-            //   // == Commercial Solid
-            //   infoLBS.fertilizers[0] += percentToLBS(ev.n_con, ev.amount_applied)
-            //   infoLBS.fertilizers[1] += percentToLBS(ev.p_con, ev.amount_applied)
-            //   infoLBS.fertilizers[2] += percentToLBS(ev.k_con, ev.amount_applied)
-            //   infoLBS.fertilizers[3] += percentToLBS(ev.salt_con, ev.amount_applied)
-
-            // } else if (ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[0] || ev.material_type === NUTRIENT_IMPORT_MATERIAL_TYPES[2]) {  // === Commer Liquid
-            //   infoLBS.fertilizers[0] += percentToLBSForGals(ev.n_con, ev.amount_applied)
-            //   infoLBS.fertilizers[1] += percentToLBSForGals(ev.p_con, ev.amount_applied)
-            //   infoLBS.fertilizers[2] += percentToLBSForGals(ev.k_con, ev.amount_applied)
-            //   infoLBS.fertilizers[3] += percentToLBSForGals(ev.salt_con, ev.amount_applied)
-            // }
-            // else if (NUTRIENT_IMPORT_MATERIAL_TYPES.slice(4, 8).indexOf(ev.material_type) >= 0) {
-            //   // === dry manure
-            //   infoLBS.fertilizers[0] += calcLbsFromTonsAsPercent(ev.n_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
-            //   infoLBS.fertilizers[1] += calcLbsFromTonsAsPercent(ev.p_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
-            //   infoLBS.fertilizers[2] += calcLbsFromTonsAsPercent(ev.k_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
-            //   infoLBS.fertilizers[3] += calcLbsFromTonsAsPercent(ev.salt_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
-            // } else if (NUTRIENT_IMPORT_MATERIAL_TYPES.slice(9, 10).indexOf(ev.material_type) >= 0) {
-            //   // === process wastewater
-            //   infoLBS.fertilizers[0] += MGMLToLBS(ev.n_con, ev.amount_applied)
-            //   infoLBS.fertilizers[1] += MGMLToLBS(ev.p_con, ev.amount_applied)
-            //   infoLBS.fertilizers[2] += MGMLToLBS(ev.k_con, ev.amount_applied)
-            //   infoLBS.fertilizers[3] += MGMLToLBS(ev.salt_con, ev.amount_applied)
-            // }
-
 
           } else if (ev.entry_type === 'manure') {
             const lbs_acre = toFloat(ev.amount_applied) / toFloat(ev.acres_planted)
@@ -1087,116 +1068,18 @@ const getNutrientAnalysisA = (dairy_id) => {
       .then(([manures, wastewaters, freshwaters, soils, harvests, drains]) => {
         // Fresh water grouped by src_desc
         freshwaters = groupByKeys(freshwaters, ['src_desc'])
-
         // Format values 
-        manures = manures.map(el => {
-          el.n_con = formatFloat(displayPercentageAsMGKG(el.n_con))
-          el.p_con = formatFloat(displayPercentageAsMGKG(el.p_con))
-          el.k_con = formatFloat(displayPercentageAsMGKG(el.k_con))
-          el.ca_con = formatFloat(displayPercentageAsMGKG(el.ca_con))
-          el.mg_con = formatFloat(displayPercentageAsMGKG(el.mg_con))
-          el.na_con = formatFloat(displayPercentageAsMGKG(el.na_con))
-          el.s_con = formatFloat(displayPercentageAsMGKG(el.s_con))
-          el.cl_con = formatFloat(displayPercentageAsMGKG(el.cl_con))
-          el.n_dl = formatFloat(el.n_dl)
-          el.p_dl = formatFloat(el.p_dl)
-          el.k_dl = formatFloat(el.k_dl)
-          el.ca_dl = formatFloat(el.ca_dl)
-          el.mg_dl = formatFloat(el.mg_dl)
-          el.na_dl = formatFloat(el.na_dl)
-          el.s_dl = formatFloat(el.s_dl)
-          el.cl_dl = formatFloat(el.cl_dl)
-          el.tfs_dl = formatFloat(el.tfs_dl)
-
-          return el
-        })
-        // Format values 
-        wastewaters = wastewaters.map(el => {
-          el.kn_con = formatFloat(el.kn_con)
-          el.nh4_con = formatFloat(el.nh4_con)
-          el.nh3_con = formatFloat(el.nh3_con)
-          el.no3_con = formatFloat(el.no3_con)
-          el.p_con = formatFloat(el.p_con)
-          el.k_con = formatFloat(el.k_con)
-          el.ca_con = formatFloat(el.ca_con)
-          el.mg_con = formatFloat(el.mg_con)
-          el.na_con = formatFloat(el.na_con)
-          el.hco3_con = formatFloat(el.hco3_con)
-          el.co3_con = formatFloat(el.co3_con)
-          el.so4_con = formatFloat(el.so4_con)
-          el.cl_con = formatFloat(el.cl_con)
-          el.ec = formatFloat(el.ec)
-          el.tds = formatFloat(el.tds)
-
-          el.kn_dl = formatFloat(el.kn_dl)
-          el.nh4_dl = formatFloat(el.nh4_dl)
-          el.nh3_dl = formatFloat(el.nh3_dl)
-          el.no3_dl = formatFloat(el.no3_dl)
-          el.p_dl = formatFloat(el.p_dl)
-          el.k_dl = formatFloat(el.k_dl)
-          el.ca_dl = formatFloat(el.ca_dl)
-          el.mg_dl = formatFloat(el.mg_dl)
-          el.na_dl = formatFloat(el.na_dl)
-          el.hco3_dl = formatFloat(el.hco3_dl)
-          el.co3_dl = formatFloat(el.co3_dl)
-          el.so4_dl = formatFloat(el.so4_dl)
-          el.cl_dl = formatFloat(el.cl_dl)
-          el.ec_dl = formatFloat(el.ec_dl)
-          el.tds_dl = formatFloat(el.tds_dl)
-
-          return el
-        })
-        // Format values 
-        harvests = harvests.map(el => {
-          el.actual_n = formatFloat(displayPercentageAsMGKG(el.actual_n))
-          el.actual_p = formatFloat(displayPercentageAsMGKG(el.actual_p))
-          el.actual_k = formatFloat(displayPercentageAsMGKG(el.actual_k))
-          el.tfs = formatFloat(el.tfs)
-
-          el.n_dl = formatFloat(el.n_dl)
-          el.p_dl = formatFloat(el.p_dl)
-          el.k_dl = formatFloat(el.k_dl)
-          el.tfs_dl = formatFloat(el.tfs_dl)
-
-          return el
-        })
         harvests = groupByKeys(harvests, ['field_id', 'plant_date', 'croptitle'])
-
-        drains = drains.map(el => {
-          el.nh4_con = formatFloat(el.nh4_con)
-          el.no2_con = formatFloat(el.no2_con)
-          el.p_con = formatFloat(el.p_con)
-          el.ec = formatFloat(el.ec)
-          el.tds = formatFloat(el.tds)
-          el.nh4_dl = formatFloat(el.nh4_dl)
-          el.no2_dl = formatFloat(el.no2_dl)
-          el.p_dl = formatFloat(el.p_dl)
-          el.ec_dl = formatFloat(el.ec_dl)
-          el.tds_dl = formatFloat(el.tds_dl)
-          return el
-        })
         drains = groupByKeys(drains, ['drain_source_id'])
-
-        soils = soils.map(el => {
-          el.n_con = formatFloat(el.n_con)
-          el.total_p_con = formatFloat(el.total_p_con)
-          el.p_con = formatFloat(el.p_con)
-          el.k_con = formatFloat(el.k_con)
-          el.ec = formatFloat(el.ec)
-          el.org_matter = formatFloat(el.org_matter)
-          el.n_dl = formatFloat(el.n_dl)
-          el.total_p_dl = formatFloat(el.total_p_dl)
-          el.p_dl = formatFloat(el.p_dl)
-          el.k_dl = formatFloat(el.k_dl)
-          el.ec_dl = formatFloat(el.ec_dl)
-          el.org_matter_dl = formatFloat(el.org_matter_dl)
-          return el
-        })
         soils = groupByKeys(soils, ['field_id'])
-
         resolve({
           'nutrientAnalysis': {
-            manures, wastewaters, freshwaters, soils, harvests, drains
+            manures: manures.sort((a, b) => naturalSortBy(a, b, 'sample_date')),
+            wastewaters: wastewaters.sort((a, b) => naturalSortBy(a, b, 'sample_date')),
+            freshwaters,
+            soils,
+            harvests,
+            drains
           }
         })
       })
@@ -1298,4 +1181,7 @@ const getCertificationA = (dairy_id) => {
 
 
 
-export { getAvailableNutrientsAB, getAvailableNutrientsC, getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA };
+export {
+  getApplicationAreaA, getApplicationAreaB, getAvailableNutrientsAB, getAvailableNutrientsC,
+  getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA
+};

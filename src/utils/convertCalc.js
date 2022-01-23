@@ -114,11 +114,7 @@ const calcLbsAsMGKG = (con, moisture, amount, method_of_reporting) => {
 
 
 
-const displayPercentageAsMGKG = (num) => {
-  // Used for harvest and manures as their concentrations are percentages of mg/ kg
-  num = toFloat(num)
-  return num * 1e4
-}
+
 
 const MGMLToLBS = (con_mg_ml, amt) => {
   // Gals to lbs
@@ -144,5 +140,5 @@ const percentToLBS = (con, amt) => {
 export {
   TO_MG_KG, TO_KG_MG, toFloat, zeroTimeDate, daysBetween, MG_KG, KG_MG,
   opArrayByPos, percentToDecimal, calcAmountLbsFromTons, calcLbsFromTonsAsPercent,
-  displayPercentageAsMGKG, MGMLToLBS, percentToLBSForGals, percentToLBS, calcLbsAsPercent, calcLbsAsMGKG
+  MGMLToLBS, percentToLBSForGals, percentToLBS, calcLbsAsPercent, calcLbsAsMGKG
 }

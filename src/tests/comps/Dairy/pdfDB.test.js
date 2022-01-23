@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
-import { getAvailableNutrientsAB, getAvailableNutrientsC, getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA } from '../../../comps/Dairy/pdfDB'
+import { getApplicationAreaA, getApplicationAreaB, getAvailableNutrientsAB, getAvailableNutrientsC, getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA } from '../../../comps/Dairy/pdfDB'
+import { naturalSort, naturalSortBy } from '../../../utils/format';
 
 const dairy_id = 1
 
@@ -25,6 +26,390 @@ describe('Test pdfDB', () => {
 
     })
 
+    test('A. LIST OF LAND APPLICATION AREAS.', async () => {
+        const { applicationAreaA } = await getApplicationAreaA(dairy_id)
+        applicationAreaA.fields.forEach(field => {
+            Object.keys(field).forEach(key => {
+                if (isIDPK(key)) {
+                    delete field[key]
+                }
+            })
+        })
+
+
+        const expectedResult = {
+            fields: [
+                {
+                    title: 'Field 1',
+                    acres: '22.00',
+                    cropable: '22.00',
+                    harvest_count: 2,
+                    waste_type: 'process wastewater',
+                    parcels: ['0000000000000001', '0000000000000002']
+                },
+                {
+                    title: 'Field 17',
+                    acres: '290.00',
+                    cropable: '290.00',
+                    harvest_count: 0,
+                    waste_type: 'manure',
+                    parcels: []
+                },
+                {
+                    title: 'Field 2',
+                    acres: '17.00',
+                    cropable: '17.00',
+                    harvest_count: 2,
+                    waste_type: 'process wastewater',
+                    parcels: []
+                }
+            ].sort((a, b) => naturalSortBy(a, b, 'title')),
+            total_for_apps: [329, 329, 4],
+            total_NOT_for_apps: [0, 0, 0],
+            total_app_area: [329, 329, 4]
+        }
+
+        expect(applicationAreaA).toEqual(expectedResult)
+    })
+
+    test('B. APPLICATION AREAS Crops and Harvests.', async () => {
+        const { applicationAreaB } = await getApplicationAreaB(dairy_id)
+        // console.log(applicationAreaB)
+
+        applicationAreaB.harvests.forEach(obj => {
+            Object.keys(obj).forEach(key => {
+                if (isIDPK(key)) {
+                    delete obj[key]
+                }
+            })
+        })
+
+        Object.keys(applicationAreaB.groupedHarvests).forEach(key => {
+            const field = applicationAreaB.groupedHarvests[key]
+            Object.keys(field).forEach(key => {
+                const ev = field[key]
+                ev.harvests.forEach(obj => {
+                    Object.keys(obj).forEach(key => {
+                        if (isIDPK(key)) {
+                            delete obj[key]
+                        }
+                    })
+                })
+            })
+        })
+
+
+
+
+
+        const expectedResult = {
+            harvests: [
+                {
+                    entry_type: 'harvest',
+                    harvest_date: '2020-08-29T07:00:00.000Z',
+                    actual_yield: '569.00',
+                    method_of_reporting: 'As Is',
+                    actual_moisture: '65.00',
+                    actual_n: '0.664',
+                    actual_p: '0.095',
+                    actual_k: '0.910',
+                    n_dl: '100.00',
+                    p_dl: '100.00',
+                    k_dl: '100.00',
+                    tfs_dl: '0.01',
+                    tfs: '6.71',
+                    sample_date: '2020-08-28T07:00:00.000Z',
+                    src_of_analysis: 'Lab Analysis',
+                    expected_yield_tons_acre: '28.00',
+                    croptitle: 'Corn silage',
+                    fieldtitle: 'Field 1',
+                    plant_date: '2020-05-07T07:00:00.000Z',
+                    acres_planted: '22.00',
+                    typical_yield: '30.00',
+                    typical_moisture: '70.00',
+                    typical_n: '8.000',
+                    typical_p: '1.500',
+                    typical_k: '6.600',
+                    typical_salt: '0.000'
+                },
+                {
+                    entry_type: 'harvest',
+                    harvest_date: '2020-08-29T07:00:00.000Z',
+                    actual_yield: '440.00',
+                    method_of_reporting: 'As Is',
+                    actual_moisture: '71.00',
+                    actual_n: '0.545',
+                    actual_p: '0.104',
+                    actual_k: '1.220',
+                    n_dl: '100.00',
+                    p_dl: '100.00',
+                    k_dl: '100.00',
+                    tfs_dl: '0.01',
+                    tfs: '9.52',
+                    sample_date: '2020-08-28T07:00:00.000Z',
+                    src_of_analysis: 'Lab Analysis',
+                    expected_yield_tons_acre: '28.00',
+                    croptitle: 'Corn silage',
+                    fieldtitle: 'Field 2',
+                    plant_date: '2020-05-07T07:00:00.000Z',
+                    acres_planted: '17.00',
+                    typical_yield: '30.00',
+                    typical_moisture: '70.00',
+                    typical_n: '8.000',
+                    typical_p: '1.500',
+                    typical_k: '6.600',
+                    typical_salt: '0.000'
+                },
+                {
+                    entry_type: 'harvest',
+                    harvest_date: '2020-04-20T07:00:00.000Z',
+                    actual_yield: '391.00',
+                    method_of_reporting: 'As Is',
+                    actual_moisture: '72.20',
+                    actual_n: '0.500',
+                    actual_p: '0.139',
+                    actual_k: '1.360',
+                    n_dl: '100.00',
+                    p_dl: '100.00',
+                    k_dl: '100.00',
+                    tfs_dl: '0.01',
+                    tfs: '12.50',
+                    sample_date: '2020-05-05T07:00:00.000Z',
+                    src_of_analysis: 'Lab Analysis',
+                    expected_yield_tons_acre: '14.00',
+                    croptitle: 'Oats silage-soft dough',
+                    fieldtitle: 'Field 1',
+                    plant_date: '2019-11-01T07:00:00.000Z',
+                    acres_planted: '22.00',
+                    typical_yield: '16.00',
+                    typical_moisture: '70.00',
+                    typical_n: '10.000',
+                    typical_p: '1.600',
+                    typical_k: '8.300',
+                    typical_salt: '0.000'
+                },
+                {
+                    entry_type: 'harvest',
+                    harvest_date: '2020-04-20T07:00:00.000Z',
+                    actual_yield: '275.00',
+                    method_of_reporting: 'As Is',
+                    actual_moisture: '66.80',
+                    actual_n: '0.597',
+                    actual_p: '0.093',
+                    actual_k: '0.930',
+                    n_dl: '100.00',
+                    p_dl: '100.00',
+                    k_dl: '100.00',
+                    tfs_dl: '0.01',
+                    tfs: '8.28',
+                    sample_date: '2020-05-05T07:00:00.000Z',
+                    src_of_analysis: 'Lab Analysis',
+                    expected_yield_tons_acre: '14.00',
+                    croptitle: 'Oats silage-soft dough',
+                    fieldtitle: 'Field 2',
+                    plant_date: '2019-11-01T07:00:00.000Z',
+                    acres_planted: '17.00',
+                    typical_yield: '16.00',
+                    typical_moisture: '70.00',
+                    typical_n: '10.000',
+                    typical_p: '1.600',
+                    typical_k: '8.300',
+                    typical_salt: '0.000'
+                }
+            ],
+            groupedHarvests: {
+                'Field 1': {
+                    '2019-11-01T07:00:00.000Z': {
+                        harvests: [
+                            {
+                                entry_type: 'harvest',
+                                harvest_date: '2020-04-20T07:00:00.000Z',
+                                actual_yield: '391.00',
+                                method_of_reporting: 'As Is',
+                                actual_moisture: '72.20',
+                                actual_n: '0.500',
+                                actual_p: '0.139',
+                                actual_k: '1.360',
+                                n_dl: '100.00',
+                                p_dl: '100.00',
+                                k_dl: '100.00',
+                                tfs_dl: '0.01',
+                                tfs: '12.50',
+                                sample_date: '2020-05-05T07:00:00.000Z',
+                                src_of_analysis: 'Lab Analysis',
+                                expected_yield_tons_acre: '14.00',
+                                croptitle: 'Oats silage-soft dough',
+                                fieldtitle: 'Field 1',
+                                plant_date: '2019-11-01T07:00:00.000Z',
+                                acres_planted: '22.00',
+                                typical_yield: '16.00',
+                                typical_moisture: '70.00',
+                                typical_n: '10.000',
+                                typical_p: '1.600',
+                                typical_k: '8.300',
+                                typical_salt: '0.000'
+                            }
+                        ],
+                        totals: [
+                            17.772727272727273,
+                            177.72727272727272,
+                            49.40818181818182,
+                            483.41818181818184,
+                            1235.204545454545
+                        ],
+                        antiTotals: [16, 160, 25.6, 132.8, 0]
+                    },
+                    '2020-05-07T07:00:00.000Z': {
+                        harvests: [
+                            {
+                                entry_type: 'harvest',
+                                harvest_date: '2020-08-29T07:00:00.000Z',
+                                actual_yield: '569.00',
+                                method_of_reporting: 'As Is',
+                                actual_moisture: '65.00',
+                                actual_n: '0.664',
+                                actual_p: '0.095',
+                                actual_k: '0.910',
+                                n_dl: '100.00',
+                                p_dl: '100.00',
+                                k_dl: '100.00',
+                                tfs_dl: '0.01',
+                                tfs: '6.71',
+                                sample_date: '2020-08-28T07:00:00.000Z',
+                                src_of_analysis: 'Lab Analysis',
+                                expected_yield_tons_acre: '28.00',
+                                croptitle: 'Corn silage',
+                                fieldtitle: 'Field 1',
+                                plant_date: '2020-05-07T07:00:00.000Z',
+                                acres_planted: '22.00',
+                                typical_yield: '30.00',
+                                typical_moisture: '70.00',
+                                typical_n: '8.000',
+                                typical_p: '1.500',
+                                typical_k: '6.600',
+                                typical_salt: '0.000'
+                            }
+                        ],
+                        totals: [
+                            25.863636363636363,
+                            343.46909090909094,
+                            49.14090909090909,
+                            470.71818181818185,
+                            1214.815
+                        ],
+                        antiTotals: [30, 240, 45, 198, 0]
+                    }
+                },
+                'Field 2': {
+                    '2019-11-01T07:00:00.000Z': {
+                        harvests: [
+                            {
+                                entry_type: 'harvest',
+                                harvest_date: '2020-04-20T07:00:00.000Z',
+                                actual_yield: '275.00',
+                                method_of_reporting: 'As Is',
+                                actual_moisture: '66.80',
+                                actual_n: '0.597',
+                                actual_p: '0.093',
+                                actual_k: '0.930',
+                                n_dl: '100.00',
+                                p_dl: '100.00',
+                                k_dl: '100.00',
+                                tfs_dl: '0.01',
+                                tfs: '8.28',
+                                sample_date: '2020-05-05T07:00:00.000Z',
+                                src_of_analysis: 'Lab Analysis',
+                                expected_yield_tons_acre: '14.00',
+                                croptitle: 'Oats silage-soft dough',
+                                fieldtitle: 'Field 2',
+                                plant_date: '2019-11-01T07:00:00.000Z',
+                                acres_planted: '17.00',
+                                typical_yield: '16.00',
+                                typical_moisture: '70.00',
+                                typical_n: '10.000',
+                                typical_p: '1.600',
+                                typical_k: '8.300',
+                                typical_salt: '0.000'
+                            }
+                        ],
+                        totals: [
+                            16.176470588235293,
+                            193.1470588235294,
+                            30.08823529411765,
+                            300.8823529411765,
+                            889.3694117647058
+                        ],
+                        antiTotals: [16, 160, 25.6, 132.8, 0]
+                    },
+                    '2020-05-07T07:00:00.000Z': {
+                        harvests: [
+                            {
+                                entry_type: 'harvest',
+                                harvest_date: '2020-08-29T07:00:00.000Z',
+                                actual_yield: '440.00',
+                                method_of_reporting: 'As Is',
+                                actual_moisture: '71.00',
+                                actual_n: '0.545',
+                                actual_p: '0.104',
+                                actual_k: '1.220',
+                                n_dl: '100.00',
+                                p_dl: '100.00',
+                                k_dl: '100.00',
+                                tfs_dl: '0.01',
+                                tfs: '9.52',
+                                sample_date: '2020-08-28T07:00:00.000Z',
+                                src_of_analysis: 'Lab Analysis',
+                                expected_yield_tons_acre: '28.00',
+                                croptitle: 'Corn silage',
+                                fieldtitle: 'Field 2',
+                                plant_date: '2020-05-07T07:00:00.000Z',
+                                acres_planted: '17.00',
+                                typical_yield: '30.00',
+                                typical_moisture: '70.00',
+                                typical_n: '8.000',
+                                typical_p: '1.500',
+                                typical_k: '6.600',
+                                typical_salt: '0.000'
+                            }
+                        ],
+                        totals: [
+                            25.88235294117647,
+                            282.1176470588236,
+                            53.83529411764706,
+                            631.529411764706,
+                            1429.1200000000001
+                        ],
+                        antiTotals: [30, 240, 45, 198, 0]
+                    }
+                },
+                'Field 17': {
+                    '2020-06-01T07:00:00.000Z': {
+                        harvests: [
+                            {
+                                plant_date: '2020-06-01T07:00:00.000Z',
+                                acres_planted: '290.00',
+                                typical_yield: '30.00',
+                                moisture: '70.00',
+                                n: '8.000',
+                                p: '1.500',
+                                k: '6.600',
+                                salt: '0.000',
+                                cropable: '290.00',
+                                acres: '290.00',
+                                fieldtitle: 'Field 17',
+                                croptitle: 'Corn silage'
+                            }
+                        ],
+                        totals: [0, 0, 0, 0, 0],
+                        antiTotals: [30, 240, 45, 198, 0]
+                    }
+                }
+            }
+        }
+
+        expect(applicationAreaB).toEqual(expectedResult)
+    })
+
     test('Nutrient Budget A. LAND APPLICATIONS are calculated and totaled correctly.', async () => {
         const { nutrientBudgetA } = await getNutrientBudgetA(dairy_id)
         const allEvents = nutrientBudgetA.allEvents
@@ -35,6 +420,7 @@ describe('Test pdfDB', () => {
                 const plantEvent = field[fieldKey]
                 Object.keys(plantEvent).map((plantEventKey, k) => {
                     const appEvent = plantEvent[plantEventKey]
+                    // console.log(appEvent)
                     Object.keys(appEvent).map(appEventKey => {
                         if (appEventKey === 'appDatesObjList') {
                             const appList = appEvent[appEventKey]
@@ -54,80 +440,83 @@ describe('Test pdfDB', () => {
             'Field 1': {
                 '2019-11-01T07:00:00.000Z': {
                     '2019-11-20T08:00:00.000Z': {
-                        appDatesObjList: [{
-                            entry_type: 'wastewater',
-                            material_type: 'Process wastewater',
-                            app_desc: 'Wastewater',
-                            amount_applied: '360,000',
-                            sample_date: '2019-11-12T08:00:00.000Z',
-                            sample_desc: 'Lagoon',
-                            sample_data_src: 'Lab Analysis',
-                            kn_con: '484.00',
-                            nh4_con: '0.00',
-                            nh3_con: '0.00',
-                            no3_con: '0.00',
-                            p_con: '71.90',
-                            k_con: '997.00',
-                            ec: '8000',
-                            tds: '8800.00',
-                            ph: '0.00',
-                            app_date: '2019-11-20T08:00:00.000Z',
-                            app_method: 'Surface (irragation)',
-                            precip_before: 'No Precipitation',
-                            precip_during: 'No Precipitation',
-                            precip_after: 'No Precipitation',
-                            croptitle: 'Oats silage-soft dough',
-                            fieldtitle: 'Field 1',
-                            plant_date: '2019-11-01T07:00:00.000Z',
-                            acres_planted: '22.00',
-                            typical_yield: '16.00',
-                            typical_moisture: '70.00',
-                            typical_n: '10.000',
-                            typical_p: '1.600',
-                            typical_k: '8.300',
-                            typical_salt: '0.000',
-                            n_lbs_acre: '66.09',
-                            p_lbs_acre: '9.82',
-                            k_lbs_acre: '136.14',
-                            salt_lbs_acre: '1,201.68'
-                        },
-                        {
-                            entry_type: 'freshwater',
-                            sample_date: '2020-08-06T07:00:00.000Z',
-                            src_desc: 'Well 6',
-                            src_type: 'Ground water',
-                            sample_desc: 'Irrigation Water',
-                            src_of_analysis: 'Lab Analysis',
-                            n_con: '49.90',
-                            nh4_con: '0.00',
-                            no2_con: '0.00',
-                            ca_con: '0.00',
-                            mg_con: '0.00',
-                            na_con: '0.00',
-                            hco3_con: '0.00',
-                            co3_con: '0.00',
-                            so4_con: '0.00',
-                            cl_con: '0.00',
-                            ec: '1730.00',
-                            tds: '0',
-                            app_rate: '2100.000',
-                            run_time: '6.000',
-                            amount_applied: '756,000',
-                            amt_applied_per_acre: '34364.000',
-                            fieldtitle: 'Field 1',
-                            croptitle: 'Oats silage-soft dough',
-                            plant_date: '2019-11-01T07:00:00.000Z',
-                            acres_planted: '22.00',
-                            app_date: '2019-11-20T08:00:00.000Z',
-                            app_method: 'Surface (irragation)',
-                            precip_before: 'No Precipitation',
-                            precip_during: 'No Precipitation',
-                            precip_after: 'No Precipitation',
-                            n_lbs_acre: '14.31',
-                            p_lbs_acre: 0,
-                            k_lbs_acre: 0,
-                            salt_lbs_acre: '0'
-                        }], totals: ['80.4', '9.82', '136.14', '1,201.68']
+                        appDatesObjList: [
+                            {
+                                entry_type: 'wastewater',
+                                material_type: 'Process wastewater',
+                                app_desc: 'Wastewater',
+                                amount_applied: 360000,
+                                sample_date: '2019-11-12T08:00:00.000Z',
+                                sample_desc: 'Lagoon',
+                                sample_data_src: 'Lab Analysis',
+                                kn_con: '484.00',
+                                nh4_con: '0.00',
+                                nh3_con: '0.00',
+                                no3_con: '0.00',
+                                p_con: '71.90',
+                                k_con: '997.00',
+                                ec: '8000',
+                                tds: '8800.00',
+                                ph: '0.00',
+                                app_date: '2019-11-20T08:00:00.000Z',
+                                app_method: 'Surface (irragation)',
+                                precip_before: 'No Precipitation',
+                                precip_during: 'No Precipitation',
+                                precip_after: 'No Precipitation',
+                                croptitle: 'Oats silage-soft dough',
+                                fieldtitle: 'Field 1',
+                                plant_date: '2019-11-01T07:00:00.000Z',
+                                acres_planted: '22.00',
+                                typical_yield: '16.00',
+                                typical_moisture: '70.00',
+                                typical_n: '10.000',
+                                typical_p: '1.600',
+                                typical_k: '8.300',
+                                typical_salt: '0.000',
+                                n_lbs_acre: 66.0924,
+                                p_lbs_acre: 9.818271818181818,
+                                k_lbs_acre: 136.14488181818183,
+                                salt_lbs_acre: 1201.68
+                            },
+                            {
+                                entry_type: 'freshwater',
+                                sample_date: '2020-08-06T07:00:00.000Z',
+                                src_desc: 'Well 6',
+                                src_type: 'Ground water',
+                                sample_desc: 'Irrigation Water',
+                                src_of_analysis: 'Lab Analysis',
+                                n_con: '49.90',
+                                nh4_con: '0.00',
+                                no2_con: '0.00',
+                                ca_con: '0.00',
+                                mg_con: '0.00',
+                                na_con: '0.00',
+                                hco3_con: '0.00',
+                                co3_con: '0.00',
+                                so4_con: '0.00',
+                                cl_con: '0.00',
+                                ec: '1730.00',
+                                tds: '0',
+                                app_rate: '2100.000',
+                                run_time: '6.000',
+                                amount_applied: '756000.000',
+                                amt_applied_per_acre: '34364.000',
+                                fieldtitle: 'Field 1',
+                                croptitle: 'Oats silage-soft dough',
+                                plant_date: '2019-11-01T07:00:00.000Z',
+                                acres_planted: '22.00',
+                                app_date: '2019-11-20T08:00:00.000Z',
+                                app_method: 'Surface (irragation)',
+                                precip_before: 'No Precipitation',
+                                precip_during: 'No Precipitation',
+                                precip_after: 'No Precipitation',
+                                n_lbs_acre: 14.309702242,
+                                p_lbs_acre: 0,
+                                k_lbs_acre: 0,
+                                salt_lbs_acre: 0
+                            }
+                        ],
+                        totals: [80.402102242, 9.818271818181818, 136.14488181818183, 1201.68]
                     },
                     '2019-10-10T07:00:00.000Z': {
                         appDatesObjList: [
@@ -139,6 +528,10 @@ describe('Test pdfDB', () => {
                                 plant_date: '2019-11-01T07:00:00.000Z',
                                 acres_planted: '22.00',
                                 app_date: '2019-10-10T07:00:00.000Z',
+                                app_method: 'Surface (irragation)',
+                                precip_before: 'No Precipitation',
+                                precip_during: 'No Precipitation',
+                                precip_after: 'No Precipitation',
                                 n_con_0: '50.00',
                                 p_con_0: '20.00',
                                 k_con_0: '50.00',
@@ -157,8 +550,7 @@ describe('Test pdfDB', () => {
                                 n_lbs_acre: 600,
                                 p_lbs_acre: 240,
                                 k_lbs_acre: 600,
-                                salt_lbs_acre: 144,
-                                amount_applied: '0'
+                                salt_lbs_acre: 144
                             },
                             {
                                 entry_type: 'plowdown',
@@ -172,7 +564,10 @@ describe('Test pdfDB', () => {
                                 plant_date: '2019-11-01T07:00:00.000Z',
                                 acres_planted: '22.00',
                                 app_date: '2019-10-10T07:00:00.000Z',
-                                amount_applied: '0'
+                                app_method: 'Surface (irragation)',
+                                precip_before: 'No Precipitation',
+                                precip_during: 'No Precipitation',
+                                precip_after: 'No Precipitation'
                             },
                             {
                                 entry_type: 'freshwater',
@@ -195,7 +590,7 @@ describe('Test pdfDB', () => {
                                 tds: '350',
                                 app_rate: '5400.000',
                                 run_time: '7.500',
-                                amount_applied: '2,430,000',
+                                amount_applied: '2430000.000',
                                 amt_applied_per_acre: '110455.000',
                                 fieldtitle: 'Field 1',
                                 croptitle: 'Oats silage-soft dough',
@@ -206,18 +601,20 @@ describe('Test pdfDB', () => {
                                 precip_before: 'No Precipitation',
                                 precip_during: 'No Precipitation',
                                 precip_after: 'No Precipitation',
-                                n_lbs_acre: '0',
+                                n_lbs_acre: 0,
                                 p_lbs_acre: 0,
                                 k_lbs_acre: 0,
-                                salt_lbs_acre: '322.61'
-                            }], totals: ['850', '490', '850', '716.61']
+                                salt_lbs_acre: 322.61144125000004
+                            }
+                        ],
+                        totals: [850, 490, 850, 716.6114412500001]
                     },
                     '2020-01-10T08:00:00.000Z': {
                         appDatesObjList: [{
                             entry_type: 'wastewater',
                             material_type: 'Process wastewater',
                             app_desc: 'Wastewater',
-                            amount_applied: '420,000',
+                            amount_applied: 420000,
                             sample_date: '2020-03-09T07:00:00.000Z',
                             sample_desc: 'Lagoon',
                             sample_data_src: 'Lab Analysis',
@@ -245,18 +642,25 @@ describe('Test pdfDB', () => {
                             typical_p: '1.600',
                             typical_k: '8.300',
                             typical_salt: '0.000',
-                            n_lbs_acre: '78.06',
-                            p_lbs_acre: '5.32',
-                            k_lbs_acre: '113.75',
-                            salt_lbs_acre: '799.75'
-                        }], totals: ['78.06', '5.32', '113.75', '799.75']
+                            n_lbs_acre: 78.06368181818183,
+                            p_lbs_acre: 5.321075454545455,
+                            k_lbs_acre: 113.74993636363638,
+                            salt_lbs_acre: 799.7544545454547
+                        }
+                        ],
+                        totals: [
+                            78.06368181818183,
+                            5.321075454545455,
+                            113.74993636363638,
+                            799.7544545454547
+                        ]
                     }
                 },
                 '2020-05-07T07:00:00.000Z': {
                     '2020-05-07T07:00:00.000Z': {
                         appDatesObjList: [{
                             entry_type: 'fertilizer',
-                            amount_applied: '50',
+                            amount_applied: '50.00',
                             import_desc: 'UN32',
                             import_date: '2020-05-09T07:00:00.000Z',
                             material_type: 'Dry manure: Separator solids',
@@ -275,12 +679,10 @@ describe('Test pdfDB', () => {
                             app_method: 'Sidedress',
                             precip_before: 'No Precipitation',
                             precip_during: 'No Precipitation',
-                            precip_after: 'No Precipitation',
-                            n_lbs_acre: '0.43',
-                            p_lbs_acre: '0.12',
-                            k_lbs_acre: '0.48',
-                            salt_lbs_acre: '0'
-                        }], totals: ['0.43', '0.12', '0.48', '0']
+                            precip_after: 'No Precipitation'
+                        }
+                        ],
+                        totals: [0.43, 0.12, 0.48, 0]
                     },
                     '2020-06-14T07:00:00.000Z': {
                         appDatesObjList: [{
@@ -304,7 +706,7 @@ describe('Test pdfDB', () => {
                             tds: '350',
                             app_rate: '5400.000',
                             run_time: '6.000',
-                            amount_applied: '1,944,000',
+                            amount_applied: '1944000.000',
                             amt_applied_per_acre: '88364.000',
                             fieldtitle: 'Field 1',
                             croptitle: 'Corn silage',
@@ -315,11 +717,13 @@ describe('Test pdfDB', () => {
                             precip_before: 'No Precipitation',
                             precip_during: 'No Precipitation',
                             precip_after: 'No Precipitation',
-                            n_lbs_acre: '0',
+                            n_lbs_acre: 0,
                             p_lbs_acre: 0,
                             k_lbs_acre: 0,
-                            salt_lbs_acre: '258.09'
-                        }], totals: ['0', '0', '0', '258.09']
+                            salt_lbs_acre: 258.089153
+                        }
+                        ],
+                        totals: [0, 0, 0, 258.089153]
                     },
                     '2020-06-04T07:00:00.000Z': {
                         appDatesObjList: [{
@@ -343,7 +747,7 @@ describe('Test pdfDB', () => {
                             tds: '350',
                             app_rate: '5400.000',
                             run_time: '8.500',
-                            amount_applied: '2,754,000',
+                            amount_applied: '2754000.000',
                             amt_applied_per_acre: '125182.000',
                             fieldtitle: 'Field 1',
                             croptitle: 'Corn silage',
@@ -354,18 +758,20 @@ describe('Test pdfDB', () => {
                             precip_before: 'No Precipitation',
                             precip_during: 'No Precipitation',
                             precip_after: 'No Precipitation',
-                            n_lbs_acre: '0',
+                            n_lbs_acre: 0,
                             p_lbs_acre: 0,
                             k_lbs_acre: 0,
-                            salt_lbs_acre: '365.63'
-                        }], totals: ['0', '0', '0', '365.63']
+                            salt_lbs_acre: 365.6253265
+                        }
+                        ],
+                        totals: [0, 0, 0, 365.6253265]
                     },
                     '2020-06-24T07:00:00.000Z': {
                         appDatesObjList: [{
                             entry_type: 'wastewater',
                             material_type: 'Process wastewater',
                             app_desc: 'Wastewater',
-                            amount_applied: '570,000',
+                            amount_applied: 570000,
                             sample_date: '2020-05-18T07:00:00.000Z',
                             sample_desc: 'Lagoon',
                             sample_data_src: 'Lab Analysis',
@@ -393,18 +799,25 @@ describe('Test pdfDB', () => {
                             typical_p: '1.500',
                             typical_k: '6.600',
                             typical_salt: '0.000',
-                            n_lbs_acre: '94.48',
-                            p_lbs_acre: '2.16',
-                            k_lbs_acre: '45.62',
-                            salt_lbs_acre: '1,963.2'
-                        }], totals: ['94.48', '2.16', '45.62', '1,963.2']
+                            n_lbs_acre: 94.48436590909091,
+                            p_lbs_acre: 2.159951522727273,
+                            k_lbs_acre: 45.62059772727273,
+                            salt_lbs_acre: 1963.1991818181818
+                        }
+                        ],
+                        totals: [
+                            94.48436590909091,
+                            2.159951522727273,
+                            45.62059772727273,
+                            1963.1991818181818
+                        ]
                     },
                     '2020-07-20T07:00:00.000Z': {
                         appDatesObjList: [{
                             entry_type: 'wastewater',
                             material_type: 'Process wastewater',
                             app_desc: 'Wastewater',
-                            amount_applied: '900,000',
+                            amount_applied: 900000,
                             sample_date: '2020-05-18T07:00:00.000Z',
                             sample_desc: 'Lagoon',
                             sample_data_src: 'Lab Analysis',
@@ -432,11 +845,18 @@ describe('Test pdfDB', () => {
                             typical_p: '1.500',
                             typical_k: '6.600',
                             typical_salt: '0.000',
-                            n_lbs_acre: '149.19',
-                            p_lbs_acre: '3.41',
-                            k_lbs_acre: '72.03',
-                            salt_lbs_acre: '3,099.79'
-                        }], totals: ['149.19', '3.41', '72.03', '3,099.79']
+                            n_lbs_acre: 149.18584090909093,
+                            p_lbs_acre: 3.4104497727272736,
+                            k_lbs_acre: 72.03252272727273,
+                            salt_lbs_acre: 3099.7881818181822
+                        }
+                        ],
+                        totals: [
+                            149.18584090909093,
+                            3.4104497727272736,
+                            72.03252272727273,
+                            3099.7881818181822
+                        ]
                     }
                 }
             },
@@ -446,7 +866,7 @@ describe('Test pdfDB', () => {
                         appDatesObjList: [{
                             entry_type: 'manure',
                             src_desc: 'Solid Manure',
-                            amount_applied: '3,309',
+                            amount_applied: '3309.00',
                             amt_applied_per_acre: '11.40',
                             sample_desc: 'Manure Caetano',
                             sample_date: '2020-03-09T07:00:00.000Z',
@@ -471,12 +891,10 @@ describe('Test pdfDB', () => {
                             app_method: 'Broadcast/incorporate',
                             precip_before: 'No Precipitation',
                             precip_during: 'No Precipitation',
-                            precip_after: 'No Precipitation',
-                            n_lbs_acre: '194.8',
-                            p_lbs_acre: '53.02',
-                            k_lbs_acre: '218.9',
-                            salt_lbs_acre: '0'
-                        }], totals: ['194.8', '53.02', '218.9', '0']
+                            precip_after: 'No Precipitation'
+                        }
+                        ],
+                        totals: [194.79740689655168, 53.017026206896546, 218.89605517241378, 0]
                     }
                 }
             },
@@ -487,7 +905,7 @@ describe('Test pdfDB', () => {
                             entry_type: 'wastewater',
                             material_type: 'Process wastewater',
                             app_desc: 'Wastewater',
-                            amount_applied: '600,000',
+                            amount_applied: 600000,
                             sample_date: '2020-03-09T07:00:00.000Z',
                             sample_desc: 'Lagoon',
                             sample_data_src: 'Lab Analysis',
@@ -515,10 +933,10 @@ describe('Test pdfDB', () => {
                             typical_p: '1.600',
                             typical_k: '8.300',
                             typical_salt: '0.000',
-                            n_lbs_acre: '144.32',
-                            p_lbs_acre: '9.84',
-                            k_lbs_acre: '210.29',
-                            salt_lbs_acre: '1,478.54'
+                            n_lbs_acre: 144.3194117647059,
+                            p_lbs_acre: 9.837282352941179,
+                            k_lbs_acre: 210.294,
+                            salt_lbs_acre: 1478.5376470588235
                         },
                         {
                             entry_type: 'freshwater',
@@ -541,7 +959,7 @@ describe('Test pdfDB', () => {
                             tds: '10',
                             app_rate: '1700.000',
                             run_time: '10.000',
-                            amount_applied: '1,020,000',
+                            amount_applied: '1020000.000',
                             amt_applied_per_acre: '60000.000',
                             fieldtitle: 'Field 2',
                             croptitle: 'Oats silage-soft dough',
@@ -552,11 +970,13 @@ describe('Test pdfDB', () => {
                             precip_before: 'No Precipitation',
                             precip_during: 'No Precipitation',
                             precip_after: 'No Precipitation',
-                            n_lbs_acre: '24.28',
+                            n_lbs_acre: 24.28395,
                             p_lbs_acre: 0,
                             k_lbs_acre: 0,
-                            salt_lbs_acre: '5.01'
-                        }], totals: ['168.6', '9.84', '210.29', '1,483.54']
+                            salt_lbs_acre: 5.007000000000001
+                        }
+                        ],
+                        totals: [168.6033617647059, 9.837282352941179, 210.294, 1483.5446470588236]
                     },
                     '2019-10-09T07:00:00.000Z': {
                         appDatesObjList: [{
@@ -580,7 +1000,7 @@ describe('Test pdfDB', () => {
                             tds: '350',
                             app_rate: '5400.000',
                             run_time: '13.330',
-                            amount_applied: '4,318,920',
+                            amount_applied: '4318920.000',
                             amt_applied_per_acre: '254054.000',
                             fieldtitle: 'Field 2',
                             croptitle: 'Oats silage-soft dough',
@@ -591,18 +1011,20 @@ describe('Test pdfDB', () => {
                             precip_before: 'No Precipitation',
                             precip_during: 'No Precipitation',
                             precip_after: 'No Precipitation',
-                            n_lbs_acre: '0',
+                            n_lbs_acre: 0,
                             p_lbs_acre: 0,
                             k_lbs_acre: 0,
-                            salt_lbs_acre: '742.03'
-                        }], totals: ['0', '0', '0', '742.03']
+                            salt_lbs_acre: 742.0282205000001
+                        }
+                        ],
+                        totals: [0, 0, 0, 742.0282205000001]
                     },
                     '2020-02-22T08:00:00.000Z': {
                         appDatesObjList: [{
                             entry_type: 'wastewater',
                             material_type: 'Process wastewater',
                             app_desc: 'Wastewater',
-                            amount_applied: '360,000',
+                            amount_applied: 360000,
                             sample_date: '2020-03-09T07:00:00.000Z',
                             sample_desc: 'Lagoon',
                             sample_data_src: 'Lab Analysis',
@@ -630,18 +1052,25 @@ describe('Test pdfDB', () => {
                             typical_p: '1.600',
                             typical_k: '8.300',
                             typical_salt: '0.000',
-                            n_lbs_acre: '86.59',
-                            p_lbs_acre: '5.9',
-                            k_lbs_acre: '126.18',
-                            salt_lbs_acre: '887.12'
-                        }], totals: ['86.59', '5.9', '126.18', '887.12']
+                            n_lbs_acre: 86.59164705882354,
+                            p_lbs_acre: 5.902369411764706,
+                            k_lbs_acre: 126.17640000000002,
+                            salt_lbs_acre: 887.1225882352941
+                        }
+                        ],
+                        totals: [
+                            86.59164705882354,
+                            5.902369411764706,
+                            126.17640000000002,
+                            887.1225882352941
+                        ]
                     }
                 },
                 '2020-05-07T07:00:00.000Z': {
                     '2020-05-07T07:00:00.000Z': {
                         appDatesObjList: [{
                             entry_type: 'fertilizer',
-                            amount_applied: '50',
+                            amount_applied: '50.00',
                             import_desc: 'UN32',
                             import_date: '2020-05-09T07:00:00.000Z',
                             material_type: 'Commercial fertilizer/ Other: Solid commercial fertilizer',
@@ -660,19 +1089,17 @@ describe('Test pdfDB', () => {
                             app_method: 'Sidedress',
                             precip_before: 'No Precipitation',
                             precip_during: 'No Precipitation',
-                            precip_after: 'No Precipitation',
-                            n_lbs_acre: '16',
-                            p_lbs_acre: '0',
-                            k_lbs_acre: '0',
-                            salt_lbs_acre: '0'
-                        }], totals: ['16', '0', '0', '0']
+                            precip_after: 'No Precipitation'
+                        }
+                        ],
+                        totals: [16, 0, 0, 0]
                     },
                     '2020-06-04T07:00:00.000Z': {
                         appDatesObjList: [{
                             entry_type: 'wastewater',
                             material_type: 'Process wastewater',
                             app_desc: 'Wastewater',
-                            amount_applied: '1,200,000',
+                            amount_applied: 1200000,
                             sample_date: '2020-05-18T07:00:00.000Z',
                             sample_desc: 'Lagoon',
                             sample_data_src: 'Lab Analysis',
@@ -700,10 +1127,10 @@ describe('Test pdfDB', () => {
                             typical_p: '1.500',
                             typical_k: '6.600',
                             typical_salt: '0.000',
-                            n_lbs_acre: '257.42',
-                            p_lbs_acre: '5.88',
-                            k_lbs_acre: '124.29',
-                            salt_lbs_acre: '5,348.65'
+                            n_lbs_acre: 257.418705882353,
+                            p_lbs_acre: 5.884697647058824,
+                            k_lbs_acre: 124.2914117647059,
+                            salt_lbs_acre: 5348.654117647059
                         },
                         {
                             entry_type: 'freshwater',
@@ -726,7 +1153,7 @@ describe('Test pdfDB', () => {
                             tds: '350',
                             app_rate: '5400.000',
                             run_time: '20.000',
-                            amount_applied: '6,480,000',
+                            amount_applied: '6480000.000',
                             amt_applied_per_acre: '381176.000',
                             fieldtitle: 'Field 2',
                             croptitle: 'Corn silage',
@@ -737,11 +1164,18 @@ describe('Test pdfDB', () => {
                             precip_before: 'No Precipitation',
                             precip_during: 'No Precipitation',
                             precip_after: 'No Precipitation',
-                            n_lbs_acre: '0',
+                            n_lbs_acre: 0,
                             p_lbs_acre: 0,
                             k_lbs_acre: 0,
-                            salt_lbs_acre: '1,113.32'
-                        }], totals: ['257.42', '5.88', '124.29', '6,461.97']
+                            salt_lbs_acre: 1113.319802
+                        }
+                        ],
+                        totals: [
+                            257.418705882353,
+                            5.884697647058824,
+                            124.2914117647059,
+                            6461.973919647059
+                        ]
                     },
                     '2020-04-26T07:00:00.000Z': {
                         appDatesObjList: [{
@@ -765,7 +1199,7 @@ describe('Test pdfDB', () => {
                             tds: '350',
                             app_rate: '5400.000',
                             run_time: '16.000',
-                            amount_applied: '5,184,000',
+                            amount_applied: '5184000.000',
                             amt_applied_per_acre: '304941.000',
                             fieldtitle: 'Field 2',
                             croptitle: 'Corn silage',
@@ -776,18 +1210,20 @@ describe('Test pdfDB', () => {
                             precip_before: 'No Precipitation',
                             precip_during: 'No Precipitation',
                             precip_after: 'No Precipitation',
-                            n_lbs_acre: '0',
+                            n_lbs_acre: 0,
                             p_lbs_acre: 0,
                             k_lbs_acre: 0,
-                            salt_lbs_acre: '890.66'
-                        }], totals: ['0', '0', '0', '890.66']
+                            salt_lbs_acre: 890.65642575
+                        }
+                        ],
+                        totals: [0, 0, 0, 890.65642575]
                     },
                     '2020-08-06T07:00:00.000Z': {
                         appDatesObjList: [{
                             entry_type: 'wastewater',
                             material_type: 'Process wastewater',
                             app_desc: 'Wastewater',
-                            amount_applied: '450,000',
+                            amount_applied: 450000,
                             sample_date: '2020-05-18T07:00:00.000Z',
                             sample_desc: 'Lagoon',
                             sample_data_src: 'Lab Analysis',
@@ -815,11 +1251,18 @@ describe('Test pdfDB', () => {
                             typical_p: '1.500',
                             typical_k: '6.600',
                             typical_salt: '0.000',
-                            n_lbs_acre: '96.53',
-                            p_lbs_acre: '2.21',
-                            k_lbs_acre: '46.61',
-                            salt_lbs_acre: '2,005.75'
-                        }], totals: ['96.53', '2.21', '46.61', '2,005.75']
+                            n_lbs_acre: 96.53201470588236,
+                            p_lbs_acre: 2.206761617647059,
+                            k_lbs_acre: 46.60927941176471,
+                            salt_lbs_acre: 2005.7452941176473
+                        }
+                        ],
+                        totals: [
+                            96.53201470588236,
+                            2.206761617647059,
+                            46.60927941176471,
+                            2005.7452941176473
+                        ]
                     }
                 }
             }
@@ -856,7 +1299,7 @@ describe('Test pdfDB', () => {
                  }
                }
              }
-           
+
         */
 
         const budgetInfo = await getNutrientBudgetInfo(dairy_id)
@@ -917,9 +1360,6 @@ describe('Test pdfDB', () => {
                 [0, 0, 0, 0],
             ],
             'fertilizers': [
-                // Currently all values are the values given by the current state of the proramg.
-                // TODO() Find all the correct values for each field and then get code to produce correct answer.
-                // this shouldnt be zero.
                 [0, 0, 0, 0],
                 [0.43, 0.12, 0.48, 0],
                 [0, 0, 0, 0],
@@ -1004,6 +1444,7 @@ describe('Test pdfDB', () => {
                 {
                     acres_planted: "22.00",
                     app_date: "2019-10-10T07:00:00.000Z",
+                    app_method: "Surface (irragation)",
                     croptitle: "Oats silage-soft dough",
                     entry_type: "plowdown",
                     fieldtitle: "Field 1",
@@ -1011,6 +1452,9 @@ describe('Test pdfDB', () => {
                     n_lbs_acre: "250",
                     p_lbs_acre: "250",
                     plant_date: "2019-11-01T07:00:00.000Z",
+                    precip_after: "No Precipitation",
+                    precip_before: "No Precipitation",
+                    precip_during: "No Precipitation",
                     salt_lbs_acre: "250",
                     src_desc: "Plowdown Ex1",
                 },
@@ -1173,10 +1617,10 @@ describe('Test pdfDB', () => {
         const { availableNutrientsC } = await getAvailableNutrientsC(dairy_id)
 
         const expectedResult = {
-            applied: ['4,860,000', '18,474.83', '860.74', '16,711.36', '320,658.29'],
-            exported: ['840,000', '3,392.74', '504', '6,988.77', '61,686.24'],
-            imported: ['0', '0', '0', '0', '0'],
-            generated: ['5,700,000', '21,867.57', '1,364.75', '23,700.13', '382,344.53']
+            applied: [4860000, 18474.8286, 860.7433560000002, 16711.363200000003, 320658.29400000005],
+            exported: [840000, 3392.7432000000003, 504.0046200000001, 6988.770600000001, 61686.240000000005],
+            imported: [0, 0, 0, 0, 0],
+            generated: [5700000, 21867.5718, 1364.7479760000003, 23700.133800000003, 382344.53400000004]
         }
 
         expect(availableNutrientsC).toEqual(expectedResult)

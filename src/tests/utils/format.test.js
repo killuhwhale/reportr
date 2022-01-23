@@ -1,15 +1,15 @@
 
 import { jest } from '@jest/globals';
 
-const { formatFloat, groupByKeys, groupBySortBy } = require('../../utils/format')
+const { round, formatFloat, groupByKeys, groupBySortBy } = require('../../utils/format')
 
 test('Format string or number to string w/ commas', () => {
-    expect(formatFloat("123,000", 2)).toEqual("123,000")
-    expect(formatFloat(123000, 1)).toEqual("123,000")
+    expect(formatFloat("123,000", 2)).toEqual("123,000.00")
+    expect(formatFloat(123000, 1)).toEqual("123,000.0")
     expect(formatFloat("123,000", 0)).toEqual("123,000")
-    expect(formatFloat("123,000", -1)).toEqual("123,000")
+    expect(formatFloat("123,000", -1)).toEqual("123,000.00")
     expect(formatFloat("123000.0123", 2)).toEqual("123,000.01")
-    expect(formatFloat("123000.0123", 1)).toEqual("123,000")
+    expect(formatFloat("123000.0123", 1)).toEqual("123,000.0")
     expect(formatFloat("123000.123", 1)).toEqual("123,000.1")
     expect(formatFloat(123000.123, 1)).toEqual("123,000.1")
 })

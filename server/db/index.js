@@ -512,6 +512,7 @@ module.exports = {
            fch.sample_date,
            fch.src_of_analysis,
            fch.expected_yield_tons_acre,
+           fch.field_crop_id,
 
            c.title as croptitle,
            f.title as fieldtitle,
@@ -1478,6 +1479,12 @@ module.exports = {
         fc.acres_planted,
         fca.app_date,
         fca.pk as field_crop_app_id,
+        fca.app_date,
+        fca.app_method,
+        fca.precip_before,
+        fca.precip_during,
+        fca.precip_after,
+ 
 
         fcasa_one.n_con as n_con_0,
         fcasa_one.p_con as p_con_0,
@@ -1570,7 +1577,13 @@ module.exports = {
         fc.plant_date,
         fc.acres_planted,
         fca.app_date,
-        fca.pk as field_crop_app_id
+        fca.pk as field_crop_app_id,
+        fca.app_date,
+        fca.app_method,
+        fca.precip_before,
+        fca.precip_during,
+        fca.precip_after
+
 
         FROM field_crop_app_plowdown_credit fcapc
 
