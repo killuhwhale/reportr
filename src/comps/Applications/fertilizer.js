@@ -3,27 +3,22 @@ import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 
-import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
-import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
-import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import { CloudUpload } from '@material-ui/icons' // uploadTSV
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import formats from "../../utils/format"
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
-
+import { naturalSort, nestedGroupBy } from "../../utils/format"
+import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
 import AddNutrientImportModal from "../Modals/addNutrientImportModal"
 import AddFertilizerModal from "../Modals/addFertilizerModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
 import { VariableSizeList as List } from "react-window";
@@ -118,7 +113,7 @@ const FertilizerAppEvent = (props) => {
               </Grid>
               <Grid item container xs={2} justifyContent="center" >
                 <Tooltip title="Delete Fertilizer Event">
-                  <IconButton onClick={() => props.onConfirmFertilizerDelete(fertilizer)}>
+                  <IconButton onClick={() => props.onDelete(fertilizer)}>
                     <DeleteIcon color="error" />
                   </IconButton>
                 </Tooltip>
@@ -134,24 +129,24 @@ const FertilizerAppEvent = (props) => {
 
 const NutrientImport = (props) => {
   return (
-    <Grid item container xs={6} alignItems='center'>
+    <Grid item container xs={3} alignItems='center'>
       <Grid item container xs={10} >
         <Grid item container xs={12}>
-          <Grid item xs={4}>
+          <Grid item xs={12}>
             <DatePicker
               fullWidth
               value={props.nutrientImport.import_date}
               label="Import date"
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
               value={props.nutrientImport.import_desc}
               label="Type"
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12}>
             <TextField
               value={props.nutrientImport.amount_imported}
               label="Amount"
@@ -173,21 +168,21 @@ const NutrientImport = (props) => {
           <Grid item xs={3}>
             <TextField
               value={props.nutrientImport.n_con}
-              label="Nitrogen"
+              label="N"
               style={{ width: "100%" }}
             />
           </Grid>
           <Grid item xs={3}>
             <TextField
               value={props.nutrientImport.p_con}
-              label="Phosphorus"
+              label="P"
               style={{ width: "100%" }}
             />
           </Grid>
           <Grid item xs={3}>
             <TextField
               value={props.nutrientImport.k_con}
-              label="Potassium"
+              label="K"
               style={{ width: "100%" }}
             />
           </Grid>
@@ -251,6 +246,8 @@ class Fertilizer extends Component {
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       toggleShowDeleteAllModal: false,
+      viewFieldKey: '',
+      viewPlantDateKey: '',
       createNutrientImportObj: {
         dairy_id: '',
         import_desc: '',
@@ -316,8 +313,13 @@ class Fertilizer extends Component {
   getFieldCropAppFertilizer() {
     get(`${this.props.BASE_URL}/api/field_crop_app_fertilizer/${this.state.dairy_id}`)
       .then(res => {
-        let fieldCropAppSolidmanures = groupBySortBy(res, 'fieldtitle', 'app_date')
-        this.setState({ fieldCropAppFertilizers: fieldCropAppSolidmanures })
+        let fieldCropAppFertilizers = nestedGroupBy(res, ['fieldtitle', 'plant_date'])
+        const keys = Object.keys(fieldCropAppFertilizers).sort(naturalSort)
+        if (keys.length > 0) {
+          this.setState({ fieldCropAppFertilizers: fieldCropAppFertilizers, viewFieldKey: keys[0] })
+        } else {
+          this.setState({ fieldCropAppFertilizers: {}, viewFieldKey: '' })
+        }
       })
       .catch(err => {
         console.log(err)
@@ -332,6 +334,15 @@ class Fertilizer extends Component {
       .catch(err => {
         console.log(err)
       })
+  }
+
+  getAppEventsByViewKeys() {
+    // Returns a list of objects for the selected viewFieldKey && viewPlantDateKey
+    if (this.state.viewFieldKey && this.state.viewPlantDateKey && this.state.fieldCropAppFertilizers[this.state.viewFieldKey] &&
+      this.state.fieldCropAppFertilizers[this.state.viewFieldKey][this.state.viewPlantDateKey]) {
+      return this.state.fieldCropAppFertilizers[this.state.viewFieldKey][this.state.viewPlantDateKey]
+    }
+    return []
   }
 
   /** Manually add Process Wastewater */
@@ -612,7 +623,7 @@ class Fertilizer extends Component {
           {this.state.nutrientImports.length > 0 ?
             <React.Fragment>
               <Typography variant="h5">Nutrient Imports (Fertilizer)</Typography>
-              <Grid item container xs={12}>
+              <Grid item container xs={12} spacing={4}>
                 {
                   this.state.nutrientImports.map((nutrientImport, i) => {
                     return (
@@ -633,7 +644,20 @@ class Fertilizer extends Component {
         </Grid>
 
 
-        {this.getSortedKeys().length > 0 ?
+        <Grid item container xs={12}>
+          {renderFieldButtons(this.state.fieldCropAppFertilizers, this)}
+          {renderCropButtons(this.state.fieldCropAppFertilizers, this.state.viewFieldKey, this)}
+          {this.getAppEventsByViewKeys().length > 0 ?
+            <FertilizerAppEvent
+              fertilizers={this.getAppEventsByViewKeys()}
+              onDelete={this.onConfirmFertilizerDelete.bind(this)}
+            />
+            :
+            <div>No events to show</div>
+          }
+        </Grid>
+
+        {/* {this.getSortedKeys().length > 0 ?
           <Grid item xs={12} style={{ marginTop: "32px" }}>
             <List
               height={Math.max(this.state.windowHeight - this.getStartPos(), 100)}
@@ -646,7 +670,7 @@ class Fertilizer extends Component {
           </Grid>
           :
           <React.Fragment></React.Fragment>
-        }
+        } */}
 
 
         <ActionCancelModal

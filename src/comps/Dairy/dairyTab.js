@@ -11,25 +11,23 @@ import { CloudUpload } from '@material-ui/icons'
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import Chart from 'chart.js/auto';
 import { get, post } from '../../utils/requests'
 import ParcelAndFieldView from "../Parcel/parcelAndFieldView"
 import OperatorView from "../Operators/operatorView"
 
 import pdfMake from "pdfmake/build/pdfmake"
 import pdfFonts from "pdfmake/build/vfs_fonts"
-import dd from "./pdf"
-import { getAnnualReportData } from "./pdfDB"
+import { generatePDF } from './pdfCharts';
 import ActionCancelModal from "../Modals/actionCancelModal"
 import UploadTSVModal from "../Modals/uploadTSVModal"
 
-import { formatFloat } from "../../utils/format"
-import { toFloat, zeroTimeDate } from "../../utils/convertCalc"
+import { zeroTimeDate } from "../../utils/convertCalc"
 import { ImportExport } from '@material-ui/icons'
 
 import { getReportingPeriodDays } from "../../utils/herdCalculation"
-import { onUploadXLSX, TSV_INFO, SHEET_NAMES, uploadXLSX } from '../../utils/TSV'
+import { uploadXLSX } from '../../utils/TSV'
 import XLSX from 'xlsx'
+
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
 
@@ -117,9 +115,6 @@ class DairyTab extends Component {
       uploadedFilename: '',
       showUploadXLSX: false
     }
-    this.canvas = React.createRef()
-    this.chart = null
-    this.charts = {}
   }
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
@@ -164,403 +159,19 @@ class DairyTab extends Component {
       .catch(err => { console.log(err) })
   }
 
-
-
-  // Annual Report Section 
-  createCharts(props) {
-    let nutrientLabels = ["N", "P", "K", "Salt"]
-
-    let nutrientBudgetB = props[0]
-    let summary = props[1]
-
-    let nutrientData = Object.keys(nutrientBudgetB).map(key => {
-      const ev = nutrientBudgetB[key]
-      return { key: key, data: [ev.total_app, ev.anti_harvests, ev.actual_harvests] }
-    })
-
-    let totalNutrientAppAntiHarvestData = [summary.total_app, summary.anti_harvests, summary.actual_harvests]
-    // console.log("Creating Overall Summary Chart:", totalNutrientAppAntiHarvestData, summary)
-
-    let materialLabels = [
-      'Existing soil nutrient content',
-      'Plowdown credit',
-      'Commercial fertilizer / Other',
-      'Dry Manure',
-      'Process wastewater',
-      'Fresh water',
-      'Atmospheric deposition',
-    ]
-
-    //              n,p,k,salt from each source plus the label
-    let materialData = [0, 0, 0, 0].map((_, i) => {
-      return [
-        summary.soils[i], // Existing soil content
-        summary.plows[i], // Plowdown credit
-        summary.fertilizers[i],
-        summary.manures[i],
-        summary.wastewaters[i],
-        summary.freshwaters[i],
-        i === 0 ? summary.atmospheric_depo : 0, // Atmoshperic depo is only for nitrogen.
-        i === 0 ? 'Nitrogen' : i === 1 ? 'Phosphorus' : i === 2 ? 'Potassium' : 'Salt'
-      ]
-    })
-
-
-    return new Promise((resolve, rej) => {
-      // for fields and a single summery in report
-      let nutrientPromises = nutrientData.map((row, i) => {
-        return this._createBarChart(row.key, nutrientLabels, row.data)
-      })
-      let totalNutrientAppAntiHarvestDataPromise = this._createBarChart('totalNutrientAppAntiHarvestData', nutrientLabels, totalNutrientAppAntiHarvestData)
-
-
-      // Summarys in report
-      let materialPromises = materialData.map((row, i) => {
-        let key = row && row.length === 8 ? row[row.length - 1] : ''
-        return this._createHoriBarChart(key, materialLabels, row.slice(0, -1), row.slice(-1))
-      })
-
-      Promise.all([...nutrientPromises, totalNutrientAppAntiHarvestDataPromise, ...materialPromises])
-        .then((res) => {
-          resolve(Object.fromEntries(res))
-        })
-        .catch(err => {
-          console.log(err)
-        })
-
-    })
-
-  }
-  onLoadBase64() {
-    return this.chart.toBase64Image()
-  }
-
-  _createHoriBarChart(key, labels, data, title) {
-
-    let canvas = document.createElement('canvas')
-    canvas.style.width = HORIBAR_WIDTH
-    canvas.style.height = HORIBAR_HEIGHT
-    let area = document.getElementById('chartArea')
-    area.appendChild(canvas)
-    return new Promise((res, rej) => {
-      if (key.length <= 0) {
-        rej('Error: invalid key for horizontal bar chart. Data:', data)
-        return
-      }
-      let chart = null
-      chart = new Chart(canvas, {
-        type: 'bar',
-
-        data: {
-          labels: labels, // [x, y, z]
-          datasets: [{
-            label: title,
-            minBarLength: 1,
-            backgroundColor: ['#f00', "#0f0", "#5656fb", "#af0", "#0fa", "#afa", "#f0f"],
-            data: data
-          }
-          ]
-        },
-        options: {
-          showDatapoints: true,
-          indexAxis: 'y',
-          plugins: {
-            legend: {
-              display: false
-            },
-            title: {
-              display: true,
-              text: title,
-              font: {
-                size: 20,
-              },
-              // PADding: {
-              //   top: 10,
-              //   bottom: 30
-              // }
-            },
-            subtitle: {
-              display: true,
-              text: `lbs of ${title} applied`,
-              font: {
-                size: 16,
-              },
-              // PADding: {
-              //   top: 10,
-              //   bottom: 30
-              // }
-            },
-            tooltip: {
-              enabled: false
-            },
-          },
-
-          scales: {
-            x: {
-              type: 'logarithmic',
-              color: "#0f0",
-              // position: 'left', // `axis` is determined by the position as `'y'`
-              title: {
-                text: "lbs",
-                display: true,
-                font: {
-                  size: 14
-                }
-              },
-              // ticks: {
-              //   // Include a dollar sign in the ticks
-              //   callback: function (value, index, values) {
-              //     return `${value} lbs/ton`
-              //   }
-              // }
-            }
-          },
-          animation: {
-            onComplete: () => {
-              const img = chart.toBase64Image('image/png', 1)
-              area.removeChild(canvas)
-              res([
-                key, img
-              ])
-            }
-          },
-        },
-        plugins: [
-          {
-            id: 'custom_canvas_background_color',
-            beforeDraw: (chart) => {
-              const ctx = chart.canvas.getContext('2d');
-              ctx.save();
-              ctx.globalCompositeOperation = 'destination-over';
-              ctx.fillStyle = CHART_BACKGROUND_COLOR
-
-              // Top line and top right corner
-              ctx.lineTo(PAD, 0, chart.width - PAD, 0)
-              ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)
-
-              // Right wall and bottom right corner
-              ctx.lineTo(chart.width, PAD, chart.width, chart.height - PAD)
-              ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)
-
-              // Bottom line and bottom left corner
-              ctx.lineTo(chart.width - PAD, chart.height, PAD, chart.height) // right wall
-              ctx.arcTo(0, chart.height, 0, chart.height - PAD, RADIUS)
-
-              // Left wall and top left corner
-              ctx.lineTo(0, chart.height - PAD, 0, PAD) // right wall
-              ctx.arcTo(0, 0, PAD, 0, RADIUS)
-
-              // Close the rectangle....
-              ctx.lineTo(PAD, 0, PAD + 2, 0)
-
-              ctx.fill()
-              ctx.restore();
-            }
-          }
-        ]
-      })
-
-    })
-  }
-  _createBarChart(key, labels, data) {
-    let canvas = document.createElement('canvas')
-    canvas.style.width = BAR_WIDTH
-    canvas.style.height = BAR_HEIGHT
-    canvas.style.borderRADIUS = "25px"
-    let area = document.getElementById('chartArea')
-    area.appendChild(canvas)
-    return new Promise((res, rej) => {
-      let chart = null
-      chart = new Chart(canvas, {
-        type: 'bar',
-
-        data: {
-          labels: labels, // [x, y, z]
-          datasets: [{
-            label: "Applied",
-            minBarLength: 1,
-            backgroundColor: ['#f00'],
-            data: data[0]
-          },
-          {
-            label: "Anticipated",
-            minBarLength: 1,
-            backgroundColor: ['#0f0'],
-            data: data[1]
-          },
-          {
-            label: "Harvest",
-            minBarLength: 1,
-            backgroundColor: ['#00f'],
-            data: data[2]
-          }
-          ]
-        },
-        options: {
-          showDatapoints: true,
-          plugins: {
-            title: {
-              display: true,
-              text: 'Nutrient Budget',
-              font: {
-                size: 20,
-              },
-              // PADding: {
-              //   top: 10,
-              //   bottom: 30
-              // }
-            },
-            subtitle: {
-              display: true,
-              text: 'lbs/ acre',
-              font: {
-                size: 16,
-              },
-              // PADding: {
-              //   top: 10,
-              //   bottom: 30
-              // }
-            },
-            tooltip: {
-              enabled: false
-            },
-          },
-
-          scales: {
-            y: {
-              type: 'logarithmic',
-              color: "#0f0",
-              position: 'left', // `axis` is determined by the position as `'y'`
-              title: {
-                text: "lbs / acre",
-                display: true,
-              },
-              // ticks: {
-              //   // Include a dollar sign in the ticks
-              //   callback: function (value, index, values) {
-              //     return `${value} lbs/ton`
-              //   }
-              // }
-            }
-          },
-          animation: {
-            onComplete: () => {
-              const img = chart.toBase64Image('image/png', 1)
-              area.removeChild(canvas)
-              res([
-                key, img
-              ])
-            }
-          },
-        },
-        plugins: [
-          {
-            id: 'custom_canvas_background_color',
-            beforeDraw: (chart) => {
-              const ctx = chart.canvas.getContext('2d');
-              ctx.save();
-              ctx.globalCompositeOperation = 'destination-over';
-              ctx.fillStyle = CHART_BACKGROUND_COLOR;
-
-              // Top line and top right corner
-              ctx.lineTo(PAD, 0, chart.width - PAD, 0)
-              ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)
-
-              // Right wall and bottom right corner
-              ctx.lineTo(chart.width, PAD, chart.width, chart.height - PAD)
-              ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)
-
-              // Bottom line and bottom left corner
-              ctx.lineTo(chart.width - PAD, chart.height, PAD, chart.height) // right wall
-              ctx.arcTo(0, chart.height, 0, chart.height - PAD, RADIUS)
-
-              // Left wall and top left corner
-              ctx.lineTo(0, chart.height - PAD, 0, PAD) // right wall
-              ctx.arcTo(0, 0, PAD, 0, RADIUS)
-
-              // Close the rectangle....
-              ctx.lineTo(PAD, 0, PAD + 2, 0)
-
-              ctx.fill()
-              ctx.restore();
-            }
-          }
-        ]
-      })
-
-    })
-  }
-
   generatePDF() {
-    pdfMake.fonts = {
-      // download default Roboto font from cdnjs.com
-      Roboto: {
-        normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
-        bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf',
-        italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
-        bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf'
-      }
-    }
-    pdfMake.tableLayouts = {
-      formLayout: {
-        PADdingBottom: function (i, node) { return 0; },
-      }
-    }
-
-    Chart.register({
-      id: 'testyplugzzz',
-      afterDraw: (chartInstance) => {
-        var ctx = chartInstance.ctx;
-        // render the value of the chart above the bar
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'bottom';
-
-        chartInstance.data.datasets.forEach((dataset, di) => {
-          for (var i = 0; i < dataset.data.length; i++) {
-            // rewrite text if it is too close to edge for hoizontal bar chart
-            if (isNaN(dataset.data[i])) {
-              console.log("Error num?", dataset.data[i])
-              console.log(dataset.data)
-              return
-            }
-            let bar = chartInstance._metasets[di].data[i]
-            let maxX = chartInstance.scales.x.maxWidth
-            // let maxY = chartInstance.scales.y.maxHeight
-            let numChars = dataset.data[i].toString().length
-            let singleCharLen = 4
-            var xOffset = (500 - bar.x) / 500 < 0.03 ? ((numChars * -singleCharLen) - 10) : 0;
-
-            let num = Math.round(toFloat(dataset.data[i]))
-            num = num && num >= 1e4 ? `${formatFloat(Math.round(num / 1000))}K` : formatFloat(num)
-            if (chartInstance.scales.x.type === "logarithmic") {
-              ctx.fillText(num, bar.x + xOffset + 10, bar.y);
-            } else {
-              // Vertical bars, when the numbers are too big, they overlap,
-              ctx.fillText(num, bar.x, bar.y);
-            }
-          }
-        });
-      }
-    })
-
-    getAnnualReportData(this.state.dairy.pk)
-      .then(arPDFData => {
-        const props = arPDFData
-        this.createCharts([props.nutrientBudgetB.allEvents, props.naprbalA])
-          .then(images => {
-            // pdfMake.createPdf(dd(props)).download();
-            this.props.onAlert('Generating PDF!', 'success')
-            pdfMake.createPdf(dd(props, images)).open()
-          })
-          .catch(err => {
-            console.log(err)
-          })
+    let area = document.getElementById('chartArea')
+    generatePDF(area, this.state.dairy.pk)
+      .then(res => {
+        console.log(res)
+        this.props.onAlert('Generating PDF!', 'success')
       })
       .catch(err => {
         console.log(err)
         this.props.onAlert('Information not found.', 'error')
       })
   }
+
   confirmDeleteAllFromTable(val) {
     this.setState({ toggleShowDeleteAllModal: val })
   }
@@ -591,39 +202,8 @@ class DairyTab extends Component {
     }
   }
 
-
-
   onUploadXLSX() {
-    console.log(this.state.uploadedFilename, this.state.uploadedFileData)
     const workbook = this.state.uploadedFileData
-    // const sheets = workbook && workbook.Sheets ? workbook.Sheets : null
-
-
-
-    // if (!sheets) {
-    //   console.log('Workbook not found: Filename, Data => ', this.state.uploadedFilename, this.state.uploadedFileData)
-    //   this.onAlert('Workbook not found!', 'error')
-    //   return
-    // }
-
-    // // For Each Sheet, feed to onUploadXLSX
-    // let promises = []
-    // workbook.SheetNames.forEach(sheetName => {
-    //   // const numCols = TSV_INFO[sheetName].numCols // todo sheetnames need to match the keys in TSV file 
-    //   // const tsvType = TSV_INFO[sheetName].tsvType
-    //   if (SHEET_NAMES.indexOf(sheetName) >= 0) {
-    //     const numCols = TSV_INFO[sheetName].numCols
-    //     const tsvType = TSV_INFO[sheetName].tsvType
-    //     const tsvText = XLSX.utils.sheet_to_csv(sheets[sheetName], { FS: '\t' })
-    //     console.log('Uploading: ', sheetName)
-    //     promises.push(
-    //       onUploadXLSX(this.state.dairy.pk, tsvText, numCols, tsvType, sheetName)
-    //     )
-    //   }
-    // })
-
-    // Promise.all(promises)
-
 
     uploadXLSX(workbook, this.state.dairy.pk)
       .then(res => {
@@ -631,7 +211,6 @@ class DairyTab extends Component {
         this.toggleShowUploadXLSX(false)
         this.props.refreshAfterXLSXUpload()
         this.getAllFields()
-
         this.props.onAlert('Success!', 'success')
       })
       .catch(err => {

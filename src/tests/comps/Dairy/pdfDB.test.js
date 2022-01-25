@@ -1,5 +1,9 @@
 import { jest } from '@jest/globals';
-import { getApplicationAreaA, getApplicationAreaB, getAvailableNutrientsAB, getAvailableNutrientsC, getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA } from '../../../comps/Dairy/pdfDB'
+import {
+    getApplicationAreaA, getApplicationAreaB, getAvailableNutrientsAB, getAvailableNutrientsC,
+    getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA,
+    getNutrientAnalysisA, getExceptionReportingABC
+} from '../../../comps/Dairy/pdfDB'
 import { naturalSort, naturalSortBy } from '../../../utils/format';
 
 const dairy_id = 1
@@ -671,6 +675,10 @@ describe('Test pdfDB', () => {
                             p_con: '0.53',
                             k_con: '2.18',
                             salt_con: '0.00',
+                            n_lbs_acre: 0.43,
+                            p_lbs_acre: 0.12,
+                            k_lbs_acre: 0.48,
+                            salt_lbs_acre: 0,
                             fieldtitle: 'Field 1',
                             croptitle: 'Corn silage',
                             plant_date: '2020-05-07T07:00:00.000Z',
@@ -883,6 +891,10 @@ describe('Test pdfDB', () => {
                             s_con: '0.0000',
                             cl_con: '0.0000',
                             tfs: '0.0000',
+                            n_lbs_acre: 194.79740689655168,
+                            p_lbs_acre: 53.017026206896546,
+                            k_lbs_acre: 218.89605517241378,
+                            salt_lbs_acre: 0,
                             fieldtitle: 'Field 17',
                             croptitle: 'Corn silage',
                             plant_date: '2020-06-01T07:00:00.000Z',
@@ -1081,6 +1093,10 @@ describe('Test pdfDB', () => {
                             p_con: '0.00',
                             k_con: '0.00',
                             salt_con: '0.00',
+                            n_lbs_acre: 16,
+                            p_lbs_acre: 0,
+                            k_lbs_acre: 0,
+                            salt_lbs_acre: 0,
                             fieldtitle: 'Field 2',
                             croptitle: 'Corn silage',
                             plant_date: '2020-05-07T07:00:00.000Z',
@@ -1326,7 +1342,7 @@ describe('Test pdfDB', () => {
         expect(fertilizers).toEqual([281.46, 2.6399999999999997, 10.559999999999999, 0])
         expect(manures).toEqual([56491.24799999999, 15374.937599999997, 63479.856, 0])
         expect(wastewaters).toEqual([18474.8286, 860.7433560000002, 16711.363200000003, 320658.29400000005])
-        expect(freshwaters).toEqual([727.6372680000001, 0, 0, 67586.33859])
+        expect(freshwaters).toEqual([727.6372680000001, 0, 0, 67586.33859000001])
         expect(anti_harvests).toEqual([85200.00, 15803.40, 70321.20, 0.00])
         expect(actual_harvests).toEqual([19545.82, 3594.7799999999997, 36842, 93314.75])
         expect(total_app).toEqual([99281.17386799998, 27018.320955999996, 98901.7792, 396912.63259000005])
@@ -1963,5 +1979,531 @@ describe('Test pdfDB', () => {
         }
 
         expect(availableNutrientsG).toEqual(expectedResult)
+    })
+
+    test('A. NUTRIENT ANALYSES ', async () => {
+        const { nutrientAnalysis } = await getNutrientAnalysisA(dairy_id)
+
+        nutrientAnalysis.manures.forEach(obj => {
+            Object.keys(obj).forEach(key => {
+                if (isIDPK(key)) {
+                    delete obj[key]
+                }
+            })
+        })
+
+        nutrientAnalysis.wastewaters.forEach(obj => {
+            Object.keys(obj).forEach(key => {
+                if (isIDPK(key)) {
+                    delete obj[key]
+                }
+            })
+        })
+
+        Object.keys(nutrientAnalysis.freshwaters).forEach(key => {
+            const freshwater = nutrientAnalysis.freshwaters[key]
+            freshwater.forEach(obj => {
+                Object.keys(obj).forEach(key => {
+                    if (isIDPK(key)) {
+                        delete obj[key]
+                    }
+                })
+            })
+        })
+
+
+        Object.keys(nutrientAnalysis.soils).forEach(key => {
+            const field = nutrientAnalysis.soils[key]
+            nutrientAnalysis.soils[key] = nutrientAnalysis.soils[key].sort((a, b) => naturalSortBy(a, b, ['sample_desc']))
+            field.forEach(obj => {
+                Object.keys(obj).forEach(key => {
+                    if (isIDPK(key)) {
+                        delete obj[key]
+                    }
+                })
+            })
+        })
+
+        Object.keys(nutrientAnalysis.harvests).forEach(key => {
+            const fieldPlant = nutrientAnalysis.harvests[key]
+            fieldPlant.forEach(obj => {
+                Object.keys(obj).forEach(key => {
+                    if (isIDPK(key)) {
+                        delete obj[key]
+                    }
+                })
+            })
+        })
+        Object.keys(nutrientAnalysis.drains).forEach(key => {
+            const src = nutrientAnalysis.drains[key]
+            src.forEach(obj => {
+                Object.keys(obj).forEach(key => {
+                    if (isIDPK(key)) {
+                        delete obj[key]
+                    }
+                })
+            })
+        })
+
+
+
+        const expectedResult = {
+            manures: [{
+                sample_desc: 'Manure Caetano',
+                sample_date: '2020-03-09T07:00:00.000Z',
+                material_type: 'Corral solids',
+                src_of_analysis: 'Lab Analysis',
+                moisture: '56.00',
+                method_of_reporting: 'dry-weight',
+                n_con: '1.9400',
+                p_con: '0.5280',
+                k_con: '2.1800',
+                ca_con: '0.0000',
+                mg_con: '0.0000',
+                na_con: '0.0000',
+                s_con: '0.0000',
+                cl_con: '0.0000',
+                tfs: '0.0000',
+                n_dl: '100.0000',
+                p_dl: '100.0000',
+                k_dl: '100.0000',
+                ca_dl: '100.0000',
+                mg_dl: '100.0000',
+                na_dl: '100.0000',
+                s_dl: '100.0000',
+                cl_dl: '100.0000',
+                tfs_dl: '0.0000'
+            }],
+            wastewaters: [{
+                sample_date: '2019-11-12T08:00:00.000Z',
+                sample_desc: 'Lagoon',
+                sample_data_src: 'Lab Analysis',
+                kn_con: '484.00',
+                nh4_con: '0.00',
+                nh3_con: '0.00',
+                no3_con: '0.00',
+                p_con: '71.90',
+                k_con: '997.00',
+                ca_con: '0.00',
+                mg_con: '0.00',
+                na_con: '0.00',
+                hco3_con: '0.00',
+                co3_con: '0.00',
+                so4_con: '0.00',
+                cl_con: '0.00',
+                ec: '8000',
+                tds: '8800.00',
+                kn_dl: '0.50',
+                nh4_dl: '0.50',
+                nh3_dl: '0.50',
+                no3_dl: '0.50',
+                p_dl: '0.50',
+                k_dl: '0.50',
+                ca_dl: '0.50',
+                mg_dl: '0.50',
+                na_dl: '0.50',
+                hco3_dl: '0.50',
+                co3_dl: '0.50',
+                so4_dl: '0.50',
+                cl_dl: '0.50',
+                ec_dl: '1.00',
+                tds_dl: '10',
+                ph: '0.00',
+                material_type: 'Process wastewater',
+                app_desc: 'Wastewater',
+                amount_applied: 360000,
+            },
+            {
+                sample_date: '2020-03-09T07:00:00.000Z',
+                sample_desc: 'Lagoon',
+                sample_data_src: 'Lab Analysis',
+                kn_con: '490.00',
+                nh4_con: '0.00',
+                nh3_con: '0.00',
+                no3_con: '0.00',
+                p_con: '33.40',
+                k_con: '714.00',
+                ca_con: '0.00',
+                mg_con: '0.00',
+                na_con: '0.00',
+                hco3_con: '0.00',
+                co3_con: '0.00',
+                so4_con: '0.00',
+                cl_con: '0.00',
+                ec: '6000',
+                tds: '5020.00',
+                kn_dl: '0.50',
+                nh4_dl: '0.50',
+                nh3_dl: '0.50',
+                no3_dl: '0.50',
+                p_dl: '0.50',
+                k_dl: '0.50',
+                ca_dl: '0.50',
+                mg_dl: '0.50',
+                na_dl: '0.50',
+                hco3_dl: '0.50',
+                co3_dl: '0.50',
+                so4_dl: '0.50',
+                cl_dl: '0.50',
+                ec_dl: '1.00',
+                tds_dl: '10',
+                ph: '0.00',
+                material_type: 'Process wastewater',
+                app_desc: 'Wastewater',
+                amount_applied: 420000,
+            },
+            {
+                sample_date: '2020-05-18T07:00:00.000Z',
+                sample_desc: 'Lagoon',
+                sample_data_src: 'Lab Analysis',
+                kn_con: '437.00',
+                nh4_con: '0.00',
+                nh3_con: '0.00',
+                no3_con: '0.00',
+                p_con: '9.99',
+                k_con: '211.00',
+                ca_con: '0.00',
+                mg_con: '0.00',
+                na_con: '0.00',
+                hco3_con: '0.00',
+                co3_con: '0.00',
+                so4_con: '0.00',
+                cl_con: '0.00',
+                ec: '8310',
+                tds: '9080.00',
+                kn_dl: '0.50',
+                nh4_dl: '0.50',
+                nh3_dl: '0.50',
+                no3_dl: '0.50',
+                p_dl: '0.50',
+                k_dl: '0.50',
+                ca_dl: '0.50',
+                mg_dl: '0.50',
+                na_dl: '0.50',
+                hco3_dl: '0.50',
+                co3_dl: '0.50',
+                so4_dl: '0.50',
+                cl_dl: '0.50',
+                ec_dl: '1.00',
+                tds_dl: '10',
+                ph: '0.00',
+                material_type: 'Process wastewater',
+                app_desc: 'Wastewater',
+                amount_applied: 1200000,
+            }],
+            freshwaters: {
+                Canal: [
+                    {
+                        sample_date: '2020-09-22T07:00:00.000Z',
+                        sample_desc: 'Canal Water',
+                        src_of_analysis: 'Lab Analysis',
+                        n_con: '0.00',
+                        nh4_con: '0.00',
+                        no2_con: '0.00',
+                        ca_con: '0.00',
+                        mg_con: '0.00',
+                        na_con: '0.00',
+                        hco3_con: '0.00',
+                        co3_con: '0.00',
+                        so4_con: '0.00',
+                        cl_con: '0.00',
+                        ec: '259.00',
+                        tds: '350',
+                        n_dl: '0.50',
+                        nh4_dl: '0.50',
+                        no2_dl: '0.50',
+                        ca_dl: '0.50',
+                        mg_dl: '0.50',
+                        na_dl: '0.50',
+                        hco3_dl: '0.50',
+                        co3_dl: '0.50',
+                        so4_dl: '0.50',
+                        cl_dl: '0.50',
+                        ec_dl: '1.00',
+                        tds_dl: '10',
+                        src_desc: 'Canal',
+                        src_type: 'Surface water',
+                    }
+                ],
+                'Well 6': [
+                    {
+                        sample_date: '2020-08-06T07:00:00.000Z',
+                        sample_desc: 'Irrigation Water',
+                        src_of_analysis: 'Lab Analysis',
+                        n_con: '49.90',
+                        nh4_con: '0.00',
+                        no2_con: '0.00',
+                        ca_con: '0.00',
+                        mg_con: '0.00',
+                        na_con: '0.00',
+                        hco3_con: '0.00',
+                        co3_con: '0.00',
+                        so4_con: '0.00',
+                        cl_con: '0.00',
+                        ec: '1730.00',
+                        tds: '0',
+                        n_dl: '0.50',
+                        nh4_dl: '0.50',
+                        no2_dl: '0.50',
+                        ca_dl: '0.50',
+                        mg_dl: '0.50',
+                        na_dl: '0.50',
+                        hco3_dl: '0.50',
+                        co3_dl: '0.50',
+                        so4_dl: '0.50',
+                        cl_dl: '0.50',
+                        ec_dl: '1.00',
+                        tds_dl: '10',
+                        src_desc: 'Well 6',
+                        src_type: 'Ground water',
+                    }
+                ],
+                'Well 5': [
+                    {
+                        sample_date: '2020-08-06T07:00:00.000Z',
+                        sample_desc: 'Irrigation Water',
+                        src_of_analysis: 'Lab Analysis',
+                        n_con: '48.50',
+                        nh4_con: '0.00',
+                        no2_con: '0.00',
+                        ca_con: '0.00',
+                        mg_con: '0.00',
+                        na_con: '0.00',
+                        hco3_con: '0.00',
+                        co3_con: '0.00',
+                        so4_con: '0.00',
+                        cl_con: '0.00',
+                        ec: '1660.00',
+                        tds: '10',
+                        n_dl: '0.50',
+                        nh4_dl: '0.50',
+                        no2_dl: '0.50',
+                        ca_dl: '0.50',
+                        mg_dl: '0.50',
+                        na_dl: '0.50',
+                        hco3_dl: '0.50',
+                        co3_dl: '0.50',
+                        so4_dl: '0.50',
+                        cl_dl: '0.50',
+                        ec_dl: '1.00',
+                        tds_dl: '10',
+                        src_desc: 'Well 5',
+                        src_type: 'Ground water',
+                    }
+                ]
+            },
+            soils: {
+                'Field 1': [
+                    {
+                        sample_desc: 'Soil Sample A',
+                        sample_date: '2019-11-12T08:00:00.000Z',
+                        src_of_analysis: 'Lab Analysis',
+                        n_con: '50.00',
+                        total_p_con: '50.00',
+                        p_con: '20.00',
+                        k_con: '50.00',
+                        ec: '20.00',
+                        org_matter: '20.00',
+                        n_dl: '50.00',
+                        total_p_dl: '50.00',
+                        p_dl: '50.00',
+                        k_dl: '50.00',
+                        ec_dl: '5.00',
+                        org_matter_dl: '5.00',
+                        title: 'Field 1',
+                        acres: '22.00',
+                        cropable: '22.00',
+                    },
+                    {
+                        sample_desc: 'Soil Sample B',
+                        sample_date: '2019-11-12T08:00:00.000Z',
+                        src_of_analysis: 'Lab Analysis',
+                        n_con: '50.00',
+                        total_p_con: '50.00',
+                        p_con: '20.00',
+                        k_con: '50.00',
+                        ec: '20.00',
+                        org_matter: '20.00',
+                        n_dl: '50.00',
+                        total_p_dl: '50.00',
+                        p_dl: '50.00',
+                        k_dl: '50.00',
+                        ec_dl: '5.00',
+                        org_matter_dl: '5.00',
+                        title: 'Field 1',
+                        acres: '22.00',
+                        cropable: '22.00',
+                    },
+                    {
+                        sample_desc: 'Soil Sample C',
+                        sample_date: '2019-11-12T08:00:00.000Z',
+                        src_of_analysis: 'Lab Analysis',
+                        n_con: '50.00',
+                        total_p_con: '50.00',
+                        p_con: '20.00',
+                        k_con: '50.00',
+                        ec: '20.00',
+                        org_matter: '20.00',
+                        n_dl: '50.00',
+                        total_p_dl: '50.00',
+                        p_dl: '50.00',
+                        k_dl: '50.00',
+                        ec_dl: '5.00',
+                        org_matter_dl: '5.00',
+                        title: 'Field 1',
+                        acres: '22.00',
+                        cropable: '22.00',
+                    }
+                ]
+
+            },
+            harvests: {
+                'Field 12020-05-07T07:00:00.000ZCorn silage': [
+                    {
+                        entry_type: 'harvest',
+                        harvest_date: '2020-08-29T07:00:00.000Z',
+                        actual_yield: '569.00',
+                        method_of_reporting: 'As Is',
+                        actual_moisture: '65.00',
+                        actual_n: '0.664',
+                        actual_p: '0.095',
+                        actual_k: '0.910',
+                        n_dl: '100.00',
+                        p_dl: '100.00',
+                        k_dl: '100.00',
+                        tfs_dl: '0.01',
+                        tfs: '6.71',
+                        sample_date: '2020-08-28T07:00:00.000Z',
+                        src_of_analysis: 'Lab Analysis',
+                        expected_yield_tons_acre: '28.00',
+                        croptitle: 'Corn silage',
+                        fieldtitle: 'Field 1',
+                        plant_date: '2020-05-07T07:00:00.000Z',
+                        acres_planted: '22.00',
+                        typical_yield: '30.00',
+                        typical_moisture: '70.00',
+                        typical_n: '8.000',
+                        typical_p: '1.500',
+                        typical_k: '6.600',
+                        typical_salt: '0.000'
+                    }
+                ],
+                'Field 22020-05-07T07:00:00.000ZCorn silage': [
+                    {
+                        entry_type: 'harvest',
+                        harvest_date: '2020-08-29T07:00:00.000Z',
+                        actual_yield: '440.00',
+                        method_of_reporting: 'As Is',
+                        actual_moisture: '71.00',
+                        actual_n: '0.545',
+                        actual_p: '0.104',
+                        actual_k: '1.220',
+                        n_dl: '100.00',
+                        p_dl: '100.00',
+                        k_dl: '100.00',
+                        tfs_dl: '0.01',
+                        tfs: '9.52',
+                        sample_date: '2020-08-28T07:00:00.000Z',
+                        src_of_analysis: 'Lab Analysis',
+                        expected_yield_tons_acre: '28.00',
+                        croptitle: 'Corn silage',
+                        fieldtitle: 'Field 2',
+                        plant_date: '2020-05-07T07:00:00.000Z',
+                        acres_planted: '17.00',
+                        typical_yield: '30.00',
+                        typical_moisture: '70.00',
+                        typical_n: '8.000',
+                        typical_p: '1.500',
+                        typical_k: '6.600',
+                        typical_salt: '0.000'
+                    }
+                ],
+                'Field 12019-11-01T07:00:00.000ZOats silage-soft dough': [
+                    {
+                        entry_type: 'harvest',
+                        harvest_date: '2020-04-20T07:00:00.000Z',
+                        actual_yield: '391.00',
+                        method_of_reporting: 'As Is',
+                        actual_moisture: '72.20',
+                        actual_n: '0.500',
+                        actual_p: '0.139',
+                        actual_k: '1.360',
+                        n_dl: '100.00',
+                        p_dl: '100.00',
+                        k_dl: '100.00',
+                        tfs_dl: '0.01',
+                        tfs: '12.50',
+                        sample_date: '2020-05-05T07:00:00.000Z',
+                        src_of_analysis: 'Lab Analysis',
+                        expected_yield_tons_acre: '14.00',
+                        croptitle: 'Oats silage-soft dough',
+                        fieldtitle: 'Field 1',
+                        plant_date: '2019-11-01T07:00:00.000Z',
+                        acres_planted: '22.00',
+                        typical_yield: '16.00',
+                        typical_moisture: '70.00',
+                        typical_n: '10.000',
+                        typical_p: '1.600',
+                        typical_k: '8.300',
+                        typical_salt: '0.000'
+                    }
+                ],
+                'Field 22019-11-01T07:00:00.000ZOats silage-soft dough': [
+                    {
+                        entry_type: 'harvest',
+                        harvest_date: '2020-04-20T07:00:00.000Z',
+                        actual_yield: '275.00',
+                        method_of_reporting: 'As Is',
+                        actual_moisture: '66.80',
+                        actual_n: '0.597',
+                        actual_p: '0.093',
+                        actual_k: '0.930',
+                        n_dl: '100.00',
+                        p_dl: '100.00',
+                        k_dl: '100.00',
+                        tfs_dl: '0.01',
+                        tfs: '8.28',
+                        sample_date: '2020-05-05T07:00:00.000Z',
+                        src_of_analysis: 'Lab Analysis',
+                        expected_yield_tons_acre: '14.00',
+                        croptitle: 'Oats silage-soft dough',
+                        fieldtitle: 'Field 2',
+                        plant_date: '2019-11-01T07:00:00.000Z',
+                        acres_planted: '17.00',
+                        typical_yield: '16.00',
+                        typical_moisture: '70.00',
+                        typical_n: '10.000',
+                        typical_p: '1.600',
+                        typical_k: '8.300',
+                        typical_salt: '0.000'
+                    }
+                ]
+            },
+            drains: {
+                'Tile Drain 1': [
+                    {
+                        sample_date: '2019-10-10T07:00:00.000Z',
+                        sample_desc: 'Q1',
+                        src_of_analysis: 'Lab Analysis',
+                        nh4_con: '50.00',
+                        no2_con: '20.00',
+                        p_con: '50.00',
+                        ec: '50.00',
+                        tds: '50',
+                        nh4_dl: '5.00',
+                        no2_dl: '5.00',
+                        p_dl: '5.00',
+                        ec_dl: '5.00',
+                        tds_dl: '5',
+                        src_desc: 'Tile Drain 1'
+                    }
+                ]
+            }
+        }
+        expect(nutrientAnalysis).toEqual(expectedResult)
+    })
+    test('A. NUTRIENT ANALYSES ', async () => {
+        const res = await getExceptionReportingABC(dairy_id)
+        console.log(res)
     })
 })

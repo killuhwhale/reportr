@@ -3,33 +3,28 @@ import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 
-import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
-import SpaIcon from '@material-ui/icons/Spa' //source
-import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
-import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
+
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import { CloudUpload } from '@material-ui/icons' // uploadTSV
 
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import formats from "../../utils/format"
-import { VariableSizeList as List } from "react-window";
 
+// import { VariableSizeList as List } from "react-window"
+import { naturalSort, nestedGroupBy } from "../../utils/format"
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
-
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import AddFreshwaterSourceModal from "../Modals/addFreshwaterSourceModal"
 import AddFreshwaterAnalysisModal from "../Modals/addFreshwaterAnalysisModal"
 import AddFreshwaterModal from "../Modals/addFreshwaterModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
 import { FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
-import { groupBySortBy } from "../../utils/format"
+import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
+
 import {
   readTSV, uploadTSVToDB, uploadNutrientApp
 } from "../../utils/TSV"
@@ -115,21 +110,22 @@ const FreshwaterAppEvent = (props) => {
 
 const FreshwaterSource = (props) => {
   return (
-    <Grid item container xs={6}>
+    <Grid item container xs={3}>
       <Grid item container xs={10}>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <TextField
             fullWidth
             value={props.source.src_desc}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <TextField
             fullWidth
             value={props.source.src_type}
           />
         </Grid>
       </Grid>
+
       <Grid item xs={2}>
         <Tooltip title="Delete Freshwater Source">
           <IconButton onClick={() => props.onConfirmFreshwaterSourceDelete(props.source)}>
@@ -144,18 +140,25 @@ const FreshwaterSource = (props) => {
 
 const FreshwaterAnalysis = (props) => {
   return (
-    <Grid item container xs={6}>
+    <Grid item container xs={3} >
       <Grid item container xs={10}>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <DatePicker
             fullWidth
             value={props.analysis.sample_date}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <TextField
             fullWidth
-            value={props.analysis.sample_desc}
+            value={`Source: ${props.analysis.src_desc}, ${props.analysis.sample_desc}`}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            value={`N (mg/L) ${props.analysis.n_con}`}
           />
         </Grid>
       </Grid>
@@ -210,6 +213,8 @@ class Freshwater extends Component {
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       toggleShowDeleteAllModal: false,
+      viewFieldKey: '',
+      viewPlantDateKey: '',
       createFreshwaterSourceObj: {
         dairy_id: props.dairy_id,
         src_desc: "",
@@ -304,13 +309,28 @@ class Freshwater extends Component {
   getFieldCropAppFreshwater() {
     get(`${this.props.BASE_URL}/api/field_crop_app_freshwater/${this.state.dairy_id}`)
       .then(res => {
-        let fieldCropAppFreshwaters = groupBySortBy(res, 'fieldtitle', 'app_date')
-        this.setState({ fieldCropAppFreshwaters: fieldCropAppFreshwaters })
+        let freshwastewaterByFieldtitle = nestedGroupBy(res, ['fieldtitle', 'plant_date'])
+        const keys = Object.keys(freshwastewaterByFieldtitle).sort(naturalSort)
+        if (keys.length > 0) {
+          this.setState({ fieldCropAppFreshwaters: freshwastewaterByFieldtitle, viewFieldKey: keys[0] })
+        } else {
+          this.setState({ fieldCropAppFreshwaters: {}, viewFieldKey: '' })
+        }
       })
       .catch(err => {
         console.log(err)
       })
   }
+
+  getAppEventsByViewKeys() {
+    // Returns a list of objects for the selected viewFieldKey && viewPlantDateKey
+    if (this.state.viewFieldKey && this.state.viewPlantDateKey && this.state.fieldCropAppFreshwaters[this.state.viewFieldKey] &&
+      this.state.fieldCropAppFreshwaters[this.state.viewFieldKey][this.state.viewPlantDateKey]) {
+      return this.state.fieldCropAppFreshwaters[this.state.viewFieldKey][this.state.viewPlantDateKey]
+    }
+    return []
+  }
+
 
 
   /** Manually add Process Wastewater */
@@ -343,7 +363,7 @@ class Freshwater extends Component {
     this.setState({ createFreshwaterObj: createFreshwaterObj })
   }
 
-
+  /** Create Freshwater */
   createFreshwater() {
     let createObj = this.state.createFreshwaterObj
     createObj.dairy_id = this.state.dairy_id
@@ -618,38 +638,40 @@ class Freshwater extends Component {
 
           </Grid>
 
-          {/* <Grid item xs={1} align="right">
-            <Tooltip title='Add freshwater source'>
-              <IconButton color="primary" variant="outlined"
-                onClick={() => this.toggleShowAddFreshwaterSourceModal(true)}
-              >
-                <SpaIcon />
-              </IconButton>
+          {/* 
+                <Grid item xs={1} align="right">
+                <Tooltip title='Add freshwater source'>
+                  <IconButton color="primary" variant="outlined"
+                    onClick={() => this.toggleShowAddFreshwaterSourceModal(true)}
+                  >
+                    <SpaIcon />
+                  </IconButton>
 
-            </Tooltip>
-          </Grid>
+                </Tooltip>
+              </Grid>
 
-          <Grid item xs={1} align="right">
-            <Tooltip title='Add freshwater analysis'>
-              <IconButton color="primary" variant="outlined"
-                onClick={() => this.toggleShowAddFreshwaterAnalysisModal(true)}
-              >
-                <ShowChartIcon />
-              </IconButton>
+              <Grid item xs={1} align="right">
+                <Tooltip title='Add freshwater analysis'>
+                  <IconButton color="primary" variant="outlined"
+                    onClick={() => this.toggleShowAddFreshwaterAnalysisModal(true)}
+                  >
+                    <ShowChartIcon />
+                  </IconButton>
 
-            </Tooltip>
-          </Grid>
+                </Tooltip>
+              </Grid>
 
-          <Grid item xs={1} align="right">
-            <Tooltip title='Add freshwater to application event'>
-              <IconButton color="primary" variant="outlined"
-                onClick={() => this.toggleShowAddFreshwaterModal(true)}
-              >
-                <SpeakerNotesIcon />
-              </IconButton>
+              <Grid item xs={1} align="right">
+                <Tooltip title='Add freshwater to application event'>
+                  <IconButton color="primary" variant="outlined"
+                    onClick={() => this.toggleShowAddFreshwaterModal(true)}
+                  >
+                    <SpeakerNotesIcon />
+                  </IconButton>
 
-            </Tooltip>
-          </Grid> */}
+                </Tooltip>
+              </Grid> 
+      */}
         </Grid>
 
         <ViewTSVsModal
@@ -711,7 +733,7 @@ class Freshwater extends Component {
 
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid item xs={12} style={{ marginTop: '16px' }}>
           {this.state.fieldCropAppFreshwaterAnalyses.length > 0 ?
             <React.Fragment>
               <Typography variant="h5">Analyses</Typography>
@@ -735,8 +757,23 @@ class Freshwater extends Component {
 
         </Grid>
 
-        <Grid item xs={12}>
-          {this.getSortedKeys().length > 0 ?
+        <Grid item xs={12} style={{ marginTop: '16px' }}>
+
+          <Grid item container xs={12}>
+            {renderFieldButtons(this.state.fieldCropAppFreshwaters, this)}
+            {renderCropButtons(this.state.fieldCropAppFreshwaters, this.state.viewFieldKey, this)}
+            {this.getAppEventsByViewKeys().length > 0 ?
+              <FreshwaterAppEvent
+                freshwaters={this.getAppEventsByViewKeys()}
+                onDelete={this.onConfirmFreshwaterDelete.bind(this)}
+              />
+              :
+              <div>No events to show</div>
+            }
+          </Grid>
+
+          {/* // Old ways */}
+          {/* {this.getSortedKeys().length > 0 ?
             <List
               height={Math.max(this.state.windowHeight - this.getStartPos(), 100)}
               itemCount={this.getSortedKeys().length}
@@ -748,7 +785,7 @@ class Freshwater extends Component {
 
             :
             <React.Fragment></React.Fragment>
-          }
+          } */}
 
           {/* {Object.keys(this.state.fieldCropAppFreshwaters).length > 0 ?
 

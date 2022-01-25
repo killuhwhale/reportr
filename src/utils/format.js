@@ -61,6 +61,33 @@ const groupByKeys = (list, groupKeys) => {
   return grouped
 }
 
+const nestedGroupBy = (list, groupByKeys) => {
+  let grouped = {}
+  if (!list || !groupByKeys) {
+    throw `Parameter null or undefined:  ${list}, ${groupByKeys}`
+  }
+
+  list.forEach(item => {
+    let key = item[groupByKeys[0]]
+    let nestedKey = item[groupByKeys[1]]
+    if (!key || key.length === 0) {
+      throw 'Key is empty'
+    }
+
+    if (grouped[key] && grouped[key][nestedKey]) {
+      grouped[key][nestedKey].push(item)
+
+    } else if (grouped[key]) {
+      grouped[key][nestedKey] = [item]
+    }
+    else {
+      grouped[key] = {}
+      grouped[key][nestedKey] = [item]
+    }
+  })
+  return grouped
+}
+
 const percentageAsMGKG = (num) => {
   // Used for harvest and manures as their concentrations are percentages of mg/ kg
   num = toFloat(num)
@@ -113,4 +140,4 @@ const naturalSortBy = (a, b, s) => {
 }
 
 
-export { groupBySortBy, groupByKeys, formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, percentageAsMGKG }
+export { nestedGroupBy, groupBySortBy, groupByKeys, formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, percentageAsMGKG }

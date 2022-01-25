@@ -3,26 +3,23 @@ import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 
-import AddIcon from '@material-ui/icons/Add'
+
 import DeleteIcon from '@material-ui/icons/Delete'
 import { CloudUpload } from '@material-ui/icons'
-import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import formats, { groupByKeys } from "../../utils/format"
+import { groupByKeys } from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
-
+import { naturalSort, nestedGroupBy } from "../../utils/format"
+import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
-import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import {
   PLOWDOWN_CREDIT, TSV_INFO, readTSV, uploadNutrientApp, uploadTSVToDB
 } from "../../utils/TSV"
@@ -111,6 +108,8 @@ class PlowdownCredit extends Component {
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       showViewTSVsModal: false,
+      viewFieldKey: '',
+      viewPlantDateKey: '',
     }
   }
   static getDerivedStateFromProps(props, state) {
@@ -129,9 +128,24 @@ class PlowdownCredit extends Component {
 
   getFieldCropAppPlowdownCredits() {
     get(`${this.props.BASE_URL}/api/field_crop_app_plowdown_credit/${this.state.dairy_id}`)
-      .then(field_crop_app_plowdown_credit => {
-        this.setState({ field_crop_app_plowdown_credit: groupByKeys(field_crop_app_plowdown_credit, ['field_id']) })
+      .then(res => {
+        let plowByFieldtitle = nestedGroupBy(res, ['fieldtitle', 'plant_date'])
+        const keys = Object.keys(plowByFieldtitle).sort(naturalSort)
+        if (keys.length > 0) {
+          this.setState({ field_crop_app_plowdown_credit: plowByFieldtitle, viewFieldKey: keys[0] })
+        } else {
+          this.setState({ field_crop_app_plowdown_credit: {}, viewFieldKey: '' })
+        }
       })
+  }
+
+  getAppEventsByViewKeys() {
+    // Returns a list of objects for the selected viewFieldKey && viewPlantDateKey
+    if (this.state.viewFieldKey && this.state.viewPlantDateKey && this.state.field_crop_app_plowdown_credit[this.state.viewFieldKey] &&
+      this.state.field_crop_app_plowdown_credit[this.state.viewFieldKey][this.state.viewPlantDateKey]) {
+      return this.state.field_crop_app_plowdown_credit[this.state.viewFieldKey][this.state.viewPlantDateKey]
+    }
+    return []
   }
 
   toggleShowConfirmDeletePlowdownCreditModal(val) {
@@ -265,7 +279,21 @@ class PlowdownCredit extends Component {
           </Tooltip>
         </Grid>
 
-        <Grid item xs={12}>
+
+        <Grid item container xs={12}>
+          {renderFieldButtons(this.state.field_crop_app_plowdown_credit, this)}
+          {renderCropButtons(this.state.field_crop_app_plowdown_credit, this.state.viewFieldKey, this)}
+          {this.getAppEventsByViewKeys().length > 0 ?
+            <PlowdownCreditView
+              plowdownCredits={this.getAppEventsByViewKeys()}
+              onDelete={this.onConfirmPlowdownCreditDelete.bind(this)}
+            />
+            :
+            <div>No events to show</div>
+          }
+        </Grid>
+
+        {/* <Grid item xs={12}>
           <Typography variant='h3'>Plowdown Credit Applications</Typography>
           {this.getPlowdownCreditSortedKeys().length > 0 ?
             <List
@@ -279,7 +307,7 @@ class PlowdownCredit extends Component {
             :
             <React.Fragment></React.Fragment>
           }
-        </Grid>
+        </Grid> */}
 
 
         <ActionCancelModal

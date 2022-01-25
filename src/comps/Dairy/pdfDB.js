@@ -3,7 +3,7 @@ import {
   toFloat, opArrayByPos, calcLbsFromTonsAsPercent,
   MGMLToLBS, percentToLBSForGals, percentToLBS, calcLbsAsMGKG, calcLbsAsPercent
 } from '../../utils/convertCalc'
-import { groupBySortBy, groupByKeys, naturalSort, naturalSortBy } from '../../utils/format'
+import { groupBySortBy, groupByKeys, naturalSort, naturalSortBy, nestedGroupBy } from '../../utils/format'
 import calculateHerdManNKPNaCl, { getReportingPeriodDays } from "../../utils/herdCalculation"
 import { NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES, WASTEWATER_MATERIAL_TYPES, FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
 import { BASE_URL } from "../../utils/environment"
@@ -771,36 +771,12 @@ const calculateFertilizer = (ev) => {
   ]
 }
 
-
-
-const getNutrientBudgetInfo = async (dairy_id) => {
-  const [plows, soils, fertilizers, manures, wastewaters, freshwaters, harvests] = await Promise.all([
-    get(`${BASE_URL}/api/field_crop_app_plowdown_credit/${dairy_id}`),
-    get(`${BASE_URL}/api/field_crop_app_soil/${dairy_id}`),
-    get(`${BASE_URL}/api/field_crop_app_fertilizer/${dairy_id}`),
-    get(`${BASE_URL}/api/field_crop_app_solidmanure/${dairy_id}`),
-    get(`${BASE_URL}/api/field_crop_app_process_wastewater/${dairy_id}`),
-    get(`${BASE_URL}/api/field_crop_app_freshwater/${dairy_id}`),
-    get(`${BASE_URL}/api/field_crop_harvest/${dairy_id}`),
-  ])
-
-
-  let allEvents = groupByKeys([
-    ...plows,
-    ...soils,
-    ...fertilizers,
-    ...manures,
-    ...wastewaters,
-    ...freshwaters,
-    ...harvests
-  ], ['fieldtitle', 'plant_date'])
-
-  // Sum harvests by field to help calculate atmospheric_depo
+const calcEvNutrientTotals = async (events, harvests) => {
+  let allEvents = groupByKeys(events, ['fieldtitle', 'plant_date'])
   let totalHarvestByFieldId = {}
   harvests.forEach(el => {
     totalHarvestByFieldId[el.field_id] = totalHarvestByFieldId[el.field_id] ? totalHarvestByFieldId[el.field_id] + 1 : 1
   })
-
   // Stores all total applciations for dairy in LBS
   // Used in Chart displaying Totals in Lbs
   let infoLBS = {
@@ -820,7 +796,7 @@ const getNutrientBudgetInfo = async (dairy_id) => {
     atmospheric_depo: 0
   }
 
-  allEvents = Object.fromEntries(
+  const allEventsTotals = Object.fromEntries(
     await Promise.all(
       Object.keys(allEvents).sort(naturalSort).map(async key => {
         let events = allEvents[key]
@@ -847,7 +823,7 @@ const getNutrientBudgetInfo = async (dairy_id) => {
         }
 
         // Calculate event totals for each Field/ Plant date
-        events.map(ev => {
+        allEvents[key] = events.map(ev => {
 
           if (ev.entry_type === 'soil') {
             // This is calculated by the program when created via uploading spreadsheet.
@@ -860,6 +836,12 @@ const getNutrientBudgetInfo = async (dairy_id) => {
             const saltCons = [ev.ec_0, ev.ec_1, ev.ec_2]
 
             const [n_lbs_acre, p_lbs_acre, k_lbs_acre, salt_lbs_acre] = calcSoilLbsAcre(nCons, pCons, kCons, saltCons)
+
+            ev.n_lbs_acre = toFloat(n_lbs_acre)
+            ev.p_lbs_acre = toFloat(p_lbs_acre)
+            ev.k_lbs_acre = toFloat(k_lbs_acre)
+            ev.salt_lbs_acre = toFloat(salt_lbs_acre)
+
             info.soils[0] += toFloat(n_lbs_acre)
             info.soils[1] += toFloat(p_lbs_acre)
             info.soils[2] += toFloat(k_lbs_acre)
@@ -922,9 +904,11 @@ const getNutrientBudgetInfo = async (dairy_id) => {
             infoLBS.freshwaters[3] += MGMLToLBS(ev.tds, ev.amount_applied)
 
           } else if (ev.entry_type === 'wastewater') {
+
             info.wastewater_app[0] += toFloat(ev.amount_applied)
             let acreInches = (toFloat(ev.amount_applied) / GALS_PER_ACREINCH)
             let inchesPerAcre = acreInches / toFloat(ev.acres_planted)
+
             info.wastewater_app[1] += toFloat(acreInches)
             info.wastewater_app[2] += toFloat(inchesPerAcre)
 
@@ -950,6 +934,8 @@ const getNutrientBudgetInfo = async (dairy_id) => {
             info.anti_harvests[2] = toFloat(ev.typical_k) * ev.typical_yield
             info.anti_harvests[3] = toFloat(ev.typical_salt) * ev.typical_yield
 
+            // TODO() Possible Bug If more than two harvests for  FCA, this might add more to the anticipated removal,
+            // if removal is constant and doesnt depend on multiple harvests...
             infoLBS.anti_harvests[0] += toFloat(ev.typical_n) * ev.typical_yield * ev.acres_planted
             infoLBS.anti_harvests[1] += toFloat(ev.typical_p) * ev.typical_yield * ev.acres_planted
             infoLBS.anti_harvests[2] += toFloat(ev.typical_k) * ev.typical_yield * ev.acres_planted
@@ -971,6 +957,7 @@ const getNutrientBudgetInfo = async (dairy_id) => {
             infoLBS.actual_harvests[2] += k_lbs_acre * ev.acres_planted
             infoLBS.actual_harvests[3] += salt_lbs_acre * ev.acres_planted
           }
+          return ev
         })
 
         // Sum all nutrient apps
@@ -1043,7 +1030,67 @@ const getNutrientBudgetInfo = async (dairy_id) => {
   infoLBS.nutrient_bal_ratio = opArrayByPos(total_app, infoLBS.actual_harvests, '/')
   infoLBS.total_app = total_app
 
+  return { infoLBS, allEvents: allEventsTotals, allAppEvents: allEvents }
+}
+
+const getNutrientBudgetInfo = async (dairy_id) => {
+  const [plows, soils, fertilizers, manures, wastewaters, freshwaters, harvests] = await Promise.all([
+    get(`${BASE_URL}/api/field_crop_app_plowdown_credit/${dairy_id}`),
+    get(`${BASE_URL}/api/field_crop_app_soil/${dairy_id}`),
+    get(`${BASE_URL}/api/field_crop_app_fertilizer/${dairy_id}`),
+    get(`${BASE_URL}/api/field_crop_app_solidmanure/${dairy_id}`),
+    get(`${BASE_URL}/api/field_crop_app_process_wastewater/${dairy_id}`),
+    get(`${BASE_URL}/api/field_crop_app_freshwater/${dairy_id}`),
+    get(`${BASE_URL}/api/field_crop_harvest/${dairy_id}`),
+  ])
+
+
+  // let allEvents = groupByKeys([
+  //   ...plows,
+  //   ...soils,
+  //   ...fertilizers,
+  //   ...manures,
+  //   ...wastewaters,
+  //   ...freshwaters,
+  //   ...harvests
+  // ], ['fieldtitle', 'plant_date'])
+
+  const events = [
+    ...plows,
+    ...soils,
+    ...fertilizers,
+    ...manures,
+    ...wastewaters,
+    ...freshwaters,
+    ...harvests
+  ]
+
+  const { infoLBS, allEvents, allAppEvents } = await calcEvNutrientTotals([
+    ...plows,
+    ...soils,
+    ...fertilizers,
+    ...manures,
+    ...wastewaters,
+    ...freshwaters,
+    ...harvests
+  ], harvests)
+
+  // Plan
+  // Call this funtion and store data in state.
+  // Once we have events, buttons should be generated.
+  // Then when user selects buttons, user keys to query:
+  //  - allAppEvents
+  //      - Show all events and their subtotals for *_lbs_acre
+  //  - allEvents
+  //      - Show Chartjs chart and table with data 
+  // 
+
+
   return ({
+    events: nestedGroupBy(events, ['fieldtitle', 'plant_date']), // Use to generate Field and Crop Buttons
+    allAppEvents, // Once Field and Crop Buttons are Selected, query this to get events and render table from events, 
+    // Also query allEvents once keys are selected to get totals for all events to create a chart and table
+
     'naprbalA': infoLBS,
     'nutrientBudgetB': { allEvents, totalAppsSummary: infoLBS }
   })
@@ -1068,10 +1115,11 @@ const getNutrientAnalysisA = (dairy_id) => {
       .then(([manures, wastewaters, freshwaters, soils, harvests, drains]) => {
         // Fresh water grouped by src_desc
         freshwaters = groupByKeys(freshwaters, ['src_desc'])
-        // Format values 
-        harvests = groupByKeys(harvests, ['field_id', 'plant_date', 'croptitle'])
-        drains = groupByKeys(drains, ['drain_source_id'])
-        soils = groupByKeys(soils, ['field_id'])
+
+        harvests = groupByKeys(harvests, ['fieldtitle', 'plant_date', 'croptitle'])
+        drains = groupByKeys(drains, ['src_desc'])
+        soils = groupByKeys(soils, ['title'])
+
         resolve({
           'nutrientAnalysis': {
             manures: manures.sort((a, b) => naturalSortBy(a, b, 'sample_date')),
@@ -1114,11 +1162,7 @@ const getExceptionReportingABC = (dairy_id) => {
     get(`${BASE_URL}/api/discharge/${dairy_id}`)
       .then((discharges) => {
         discharges = discharges && discharges.test === undefined ? discharges : []
-        console.log('Discharges', discharges)
-
         discharges = groupByKeys(discharges, ['discharge_type'])
-
-
         resolve({
           'exceptionReportingABC': discharges
         })
@@ -1183,5 +1227,6 @@ const getCertificationA = (dairy_id) => {
 
 export {
   getApplicationAreaA, getApplicationAreaB, getAvailableNutrientsAB, getAvailableNutrientsC,
-  getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA
+  getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA,
+  getNutrientAnalysisA, getExceptionReportingABC, calcEvNutrientTotals
 };

@@ -18,7 +18,7 @@
     "firebase": "^9.1.0",
     "firebaseui": "^5.0.0",
     "mathjs": "^10.1.0",
-    "pdfmake": "^0.2.0",
+    "pdfmake": "^0.2.4",
     "pg": "^8.7.1",
     "puppeteer": "^10.1.0",
     "react": "^17.0.2",

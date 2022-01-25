@@ -3,17 +3,14 @@ import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 
-import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { CloudUpload } from '@material-ui/icons'
-import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import formats from "../../utils/format"
+import { naturalSort, nestedGroupBy } from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
 import {
   DatePicker
@@ -23,10 +20,9 @@ import ViewTSVsModal from "../Modals/viewTSVsModal"
 
 import AddProcessWastewaterModal from "../Modals/addProcessWastewaterModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
-import { groupBySortBy } from "../../utils/format"
+import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
 import {
   readTSV, uploadNutrientApp, uploadTSVToDB
 } from "../../utils/TSV"
@@ -36,9 +32,9 @@ import {
 /** View for Process Wastewater Entry in DB */
 const ProcessWastewaterAppEvent = (props) => {
   let process_wastewaters = props.process_wastewaters
-  let { fieldtitle } = process_wastewaters[0]
+  let { fieldtitle, field_id } = process_wastewaters[0]
   return (
-    <Grid container item xs={12} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
+    <Grid container item xs={12} key={`pww${field_id}`} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
       <Grid item xs={12}>
         <Typography variant="h4">
           {fieldtitle}
@@ -213,6 +209,8 @@ class ProcessWastewater extends Component {
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       showViewTSVsModal: false,
+      viewFieldKey: '',
+      viewPlantDateKey: '',
       createProcessWastewaterObj: {
         dairy_id: 0,
         app_event_idx: 0,
@@ -253,8 +251,13 @@ class ProcessWastewater extends Component {
   getFieldCropAppProcessWastewater() {
     get(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater/${this.state.dairy_id}`)
       .then(res => {
-        let process_wastewater_by_fieldtitle = groupBySortBy(res, 'fieldtitle', 'app_date')
-        this.setState({ field_crop_app_process_wastewater: process_wastewater_by_fieldtitle })
+        let wastewaterByFieldtitle = nestedGroupBy(res, ['fieldtitle', 'plant_date'])
+        const keys = Object.keys(wastewaterByFieldtitle).sort(naturalSort)
+        if (keys.length > 0) {
+          this.setState({ field_crop_app_process_wastewater: wastewaterByFieldtitle, viewFieldKey: keys[0] })
+        } else {
+          this.setState({ field_crop_app_process_wastewater: {}, viewFieldKey: '' })
+        }
       })
       .catch(err => {
         console.log(err)
@@ -380,24 +383,29 @@ class ProcessWastewater extends Component {
     this.setState({ showViewTSVsModal: val })
   }
 
-  getSortedKeys() {
-    return Object.keys(this.state.field_crop_app_process_wastewater).sort()
+  getAppEventsByViewKeys() {
+    // Returns a list of objects for the selected viewFieldKey && viewPlantDateKey
+    if (this.state.viewFieldKey && this.state.viewPlantDateKey && this.state.field_crop_app_process_wastewater[this.state.viewFieldKey] &&
+      this.state.field_crop_app_process_wastewater[this.state.viewFieldKey][this.state.viewPlantDateKey]) {
+      return this.state.field_crop_app_process_wastewater[this.state.viewFieldKey][this.state.viewPlantDateKey]
+    }
+    return []
   }
 
   renderItem({ index, style }) {
-    let field_crop_app_id = this.getSortedKeys()[index]
-    let process_wastewaters = this.state.field_crop_app_process_wastewater[field_crop_app_id]
+    let events = this.getAppEventsByViewKeys()
     return (
       <ProcessWastewaterAppEvent key={`ppwwviewrow${index}`} style={style}
-        process_wastewaters={process_wastewaters}
+        process_wastewaters={events}
         onDelete={this.onConfirmProcessWastewaterDelete.bind(this)}
       />
     )
   }
 
   getItemSize(index) {
-    let field_crop_app_id = this.getSortedKeys()[index]
-    let numRows = this.state.field_crop_app_process_wastewater[field_crop_app_id].length
+    let numRows = this.getAppEventsByViewKeys().length
+
+    // let numRows = this.state.field_crop_app_process_wastewater[this.state.viewFieldKey][field_crop_app_id].length
     let headerSize = 55
     let itemSize = 350
 
@@ -426,6 +434,42 @@ class ProcessWastewater extends Component {
         console.log(err)
       })
   }
+
+  // renderFieldButtons(appEventObj) {
+  //   return appEventObj ?
+  //     Object.keys(appEventObj).sort(naturalSort).map(key => {
+  //       const fieldCropObj = appEventObj[key]
+  //       return (
+  //         <Grid item xs={2} style={{ marginTop: '8px' }}>
+  //           <Button variant='outlined' color='primary'
+  //             onClick={() => this.setState({ viewFieldKey: key, viewPlantDateKey: '' })}>
+  //             {key}
+  //           </Button>
+  //         </Grid>
+  //       )
+  //     })
+  //     :
+  //     <span>empty</span>
+  // }
+
+  // renderCropButtons(appEventObj) {
+  //   return this.state.viewFieldKey && appEventObj[this.state.viewFieldKey] ?
+  //     Object.keys(appEventObj[this.state.viewFieldKey]).sort(naturalSort).map(key => {
+  //       const fieldCropAppList = appEventObj[this.state.viewFieldKey][key]
+  //       const dateKey = key.indexOf("T") > 0 ? formatDate(key.split("T")[0]) : ''
+  //       return (
+  //         <Grid item xs={3} style={{ marginTop: '8px' }}>
+  //           <Button variant='outlined' color='secondary'
+  //             onClick={() => this.setState({ viewPlantDateKey: key })}>
+  //             {dateKey}
+  //           </Button>
+  //         </Grid>
+  //       )
+  //     })
+  //     :
+  //     <div> No Field Chosen </div>
+
+  // }
 
   render() {
     return (
@@ -466,19 +510,40 @@ class ProcessWastewater extends Component {
             </IconButton>
           </Tooltip>
         </Grid> */}
+        <Grid item container xs={12}>
+          {renderFieldButtons(this.state.field_crop_app_process_wastewater, this)}
+          {renderCropButtons(this.state.field_crop_app_process_wastewater, this.state.viewFieldKey, this)}
+          {this.getAppEventsByViewKeys().length > 0 ?
+            <ProcessWastewaterAppEvent
+              process_wastewaters={this.getAppEventsByViewKeys()}
+              onDelete={this.onConfirmProcessWastewaterDelete.bind(this)}
+            />
+            :
+            <div>No events to show</div>
+          }
+        </Grid>
 
-        {this.getSortedKeys().length > 0 ?
-          <List
-            height={Math.max(this.state.windowHeight - 390, 100)}
-            itemCount={this.getSortedKeys().length}
-            itemSize={this.getItemSize.bind(this)}
-            width={this.state.windowWidth * (.82)}
-          >
-            {this.renderItem.bind(this)}
-          </List>
-          :
-          <React.Fragment></React.Fragment>
-        }
+        {/* This needs to be adapted to showing each app events within the view
+        Previously, this would render all events across all fields and plant dates.
+        Now the user selects the specific field/ plant date combo to view, thus we need to adapted
+        the list renderer to the user chosen view.
+
+        { 
+          this.getAppEventsByViewKeys().length > 0 ?
+            <List
+              height={Math.max(this.state.windowHeight - 390, 100)}
+              itemCount={this.getAppEventsByViewKeys().length > 0 ? 1 : 0}
+              itemSize={this.getItemSize.bind(this)}
+              width={this.state.windowWidth * (.82)}
+            >
+              {this.renderItem.bind(this)}
+            </List>
+            :
+            <React.Fragment></React.Fragment>
+        } */}
+
+
+
 
         <ActionCancelModal
           open={this.state.showConfirmDeleteProcessWastewaterModal}
@@ -532,7 +597,7 @@ class ProcessWastewater extends Component {
           onChange={this.onUploadFieldCropAppProcessWastewaterTSVModalChange.bind(this)}
           onClose={() => this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)}
         />
-      </Grid>
+      </Grid >
     )
   }
 }

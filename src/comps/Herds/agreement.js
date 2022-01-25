@@ -43,7 +43,7 @@ class Agreement extends Component {
     }
   }
   static getDerivedStateFromProps(props, state) {
-    return state.dairy_id !== props.dairy_id? props: state 
+    return state.dairy_id !== props.dairy_id ? props : state
   }
 
   componentDidMount() {
@@ -187,11 +187,13 @@ class Agreement extends Component {
       operator_id: 0,
       responsible_id: 0
     }
+
+
     lazyGet('certification', `noSearchValueNeeded`, newCertification, this.state.dairy_id)
       .then(([certification]) => {
-        if(!certification){
+        if (!certification) {
           console.log("Certficiation not found", certification)
-        }        
+        }
         // Get Owner Oeprators
         get(`${this.props.BASE_URL}/api/operators/${this.state.dairy_id}`)
           .then(ownerOperators => {
@@ -225,12 +227,12 @@ class Agreement extends Component {
     let owner = this.state.owners[this.state.owner_idx]
     let operator = this.state.operators[this.state.operator_idx]
     let responsible = this.state.ownerOperators[this.state.responsible_idx]
-    if(!owner || !operator || !responsible){
-      let msg = `${!owner? 'Owner': !operator? 'Operator': !responsible? 'Responsible party': 'Error:'} not found.`
+    if (!owner || !operator || !responsible) {
+      let msg = `${!owner ? 'Owner' : !operator ? 'Operator' : !responsible ? 'Responsible party' : 'Error:'} not found.`
       this.props.onAlert(msg, 'error')
       return
     }
-    
+
     let certification = {
       dairy_id: this.state.dairy_id,
       owner_id: owner.pk,
@@ -254,12 +256,17 @@ class Agreement extends Component {
         post(`${this.props.BASE_URL}/api/certification/create`, certification)
           .then((res => {
             console.log("Updated", res)
+            this.props.onAlert("Updated", 'success')
           }))
           .catch(err => {
             console.log(err)
+            this.props.onAlert("Failed to update.", 'error')
           })
       }
 
+    } else {
+      console.log("Owner and operator cannot be the same")
+      this.props.onAlert("Owner and operator cannot be the same", 'error')
     }
   }
 
@@ -417,7 +424,7 @@ class Agreement extends Component {
           </Grid>
           <Grid item xs={3} align='right'>
             <Tooltip title="Update Certification">
-              <IconButton onClick={this.onUpdateCertification.bind(this)}>
+              <IconButton onClick={() => this.onUpdateCertification()}>
                 <CloudUpload color='primary' />
               </IconButton>
             </Tooltip>

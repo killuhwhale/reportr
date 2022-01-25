@@ -3,32 +3,23 @@ import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 
-import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
-import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
-import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import { CloudUpload } from '@material-ui/icons' // uploadTSV
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
-
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import formats from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
-
-
-
 import AddSolidmanureAnalysisModal from "../Modals/addSolidmanureAnalysisModal"
 import AddSolidmanureModal from "../Modals/addSolidmanureModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
-import { groupBySortBy } from "../../utils/format"
+import { naturalSort, nestedGroupBy } from "../../utils/format"
+import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
 import {
   readTSV, uploadNutrientApp, uploadTSVToDB
 } from "../../utils/TSV"
@@ -40,8 +31,6 @@ const SOURCE_OF_ANALYSES = [
   'Lab Analysis',
   'Other/ Estimated',
 ]
-
-
 
 /** View for Process Wastewater Entry in DB */
 const SolidmanureAppEvent = (props) => {
@@ -109,7 +98,7 @@ const SolidmanureAppEvent = (props) => {
               </Grid>
               <Grid item container xs={2} justifyContent="center" >
                 <Tooltip title="Delete Solidmanure Event">
-                  <IconButton onClick={() => props.onConfirmSolidmanureDelete(solidmanure)}>
+                  <IconButton onClick={() => props.onDelete(solidmanure)}>
                     <DeleteIcon color="error" />
                   </IconButton>
                 </Tooltip>
@@ -178,7 +167,8 @@ class Solidmanure extends Component {
       showViewTSVsModal: false,
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
-
+      viewFieldKey: '',
+      viewPlantDateKey: '',
 
       createSolidmanureAnalysisObj: {
         dairy_id: '',
@@ -258,12 +248,26 @@ class Solidmanure extends Component {
   getFieldCropAppSolidmanure() {
     get(`${this.props.BASE_URL}/api/field_crop_app_solidmanure/${this.state.dairy_id}`)
       .then(res => {
-        let fieldCropAppSolidmanures = groupBySortBy(res, 'fieldtitle', 'app_date')
-        this.setState({ fieldCropAppSolidmanures: fieldCropAppSolidmanures })
+        let fieldCropAppSolidmanures = nestedGroupBy(res, ['fieldtitle', 'plant_date'])
+        console.log('fca manuress', fieldCropAppSolidmanures)
+        const keys = Object.keys(fieldCropAppSolidmanures).sort(naturalSort)
+        if (keys.length > 0) {
+          this.setState({ fieldCropAppSolidmanures: fieldCropAppSolidmanures, viewFieldKey: keys[0] })
+        } else {
+          this.setState({ fieldCropAppSolidmanures: {}, viewFieldKey: '' })
+        }
       })
       .catch(err => {
         console.log(err)
       })
+  }
+  getAppEventsByViewKeys() {
+    // Returns a list of objects for the selected viewFieldKey && viewPlantDateKey
+    if (this.state.viewFieldKey && this.state.viewPlantDateKey && this.state.fieldCropAppSolidmanures[this.state.viewFieldKey] &&
+      this.state.fieldCropAppSolidmanures[this.state.viewFieldKey][this.state.viewPlantDateKey]) {
+      return this.state.fieldCropAppSolidmanures[this.state.viewFieldKey][this.state.viewPlantDateKey]
+    }
+    return []
   }
 
   /** Manually add Process Wastewater */
@@ -571,6 +575,8 @@ class Solidmanure extends Component {
 
 
 
+
+
         <Grid item xs={12}>
           {this.state.fieldCropAppSolidmanureAnalyses.length > 0 ?
             <React.Fragment>
@@ -595,7 +601,21 @@ class Solidmanure extends Component {
 
         </Grid>
 
-        <Grid item xs={12}>
+
+        <Grid item container xs={12}>
+          {renderFieldButtons(this.state.fieldCropAppSolidmanures, this)}
+          {renderCropButtons(this.state.fieldCropAppSolidmanures, this.state.viewFieldKey, this)}
+          {this.getAppEventsByViewKeys().length > 0 ?
+            <SolidmanureAppEvent
+              solidmanures={this.getAppEventsByViewKeys()}
+              onDelete={this.onConfirmSolidmanureDelete.bind(this)}
+            />
+            :
+            <div>No events to show</div>
+          }
+        </Grid>
+
+        {/* <Grid item xs={12}>
           {this.getSortedKeys().length > 0 ?
             <List
               height={Math.max(this.state.windowHeight - this.getStartPos(), 100)}
@@ -609,7 +629,7 @@ class Solidmanure extends Component {
             :
             <React.Fragment></React.Fragment>
           }
-        </Grid>
+        </Grid> */}
 
 
         <ActionCancelModal

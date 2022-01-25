@@ -27,10 +27,8 @@ const longAddressLine = (props) => {
     stack: [
       {
         table: {
-          // headerRows: 1,
           heights: 0,
           widths: ['55%', '15%', '15%', '15%'],
-          margin: 0,
           body: [
             [{
               border: [false, false, false, false],
@@ -160,8 +158,11 @@ const ownOperatorTable = (key, props, is_owner) => {
         ],
         [{
           border: [true, false, true, true],
-          text: `This ${is_owner ? 'owner' : 'operator'} is ${props.is_responsible ? '' : 'not '}responsible for paying permit fees.`,
-          fontSize: 9
+          text: {
+            text: props.is_responsible ? `This ${is_owner ? 'owner' : 'operator'} is responsible for paying permit fees.` : "",
+            fontSize: 9,
+            bold: true,
+          },
 
         }],
         [
@@ -466,6 +467,7 @@ const dairyInformationB = (props) => {
     })
     : [{ margin: [10, 5], text: { text: 'No operators entered.', fontSize: 9, italics: true } }]
 
+
   return {
     stack: [
       {
@@ -491,13 +493,23 @@ const dairyInformationC = (props) => {
     : [{ margin: [10, 5], text: { text: 'No owners entered.', fontSize: 9, italics: true } }]
 
   return {
+    pageBreak: 'before',
     stack: [
       {
         margin: [0, 5, 0, 5],
         stack: [
           {
-            text: 'C. OWNERS', bold: true, fontSize: 9
-          }
+            table: {
+              widths: ['100%'],
+              body: [
+                [
+                  {
+                    border: [false],
+                    text: 'C. OWNERS', bold: true, fontSize: 9
+                  }]
+              ]
+            }
+          },
         ]
       },
       {
@@ -3100,14 +3112,11 @@ const applicationAreaBFieldHarvestTable = (props) => {
   }
 }
 const applicationAreaB = (props) => {
-
   // stack of table for each field
   const harvestKeys = Object.keys(props.groupedHarvests).sort(naturalSort)
-  console.log('harvestKeys', harvestKeys)
   let harvestTable = harvestKeys.map(key => {
     return applicationAreaBFieldHarvestTable(props.groupedHarvests[key]) // returns a table for a field with multiple field harvest events
   })
-
 
   harvestTable = harvestTable.length > 0 ? harvestTable : [{ margin: [10, 5], border: [false, false], text: { text: 'No harvests entered.', fontSize: 8, italics: true } }]
   return {
@@ -3223,7 +3232,7 @@ const nutrientBudgetBTable = (props, img, i) => {
             [{
               border: [true, false, true, false],
               columns: [
-                image(img, 575, 180),
+                image(img, 450, 175),
               ]
             }
             ],
@@ -6888,7 +6897,7 @@ const exceptionReportingATable = (props) => {
       },
       {
         text: {
-          text: row.vol, fontSize: 8,
+          text: `${row.vol} ${row.vol_unit}`, fontSize: 8, alignment: 'right',
         }
       },
     ]
@@ -6929,7 +6938,7 @@ const exceptionReportingATable = (props) => {
       {
         fillColor: gray,
         text: {
-          text: 'Volume', fontSize: 8,
+          text: 'Volume', fontSize: 8, alignment: 'right'
         }
       },
     ],
@@ -6939,7 +6948,7 @@ const exceptionReportingATable = (props) => {
   let table = {
     margin: [10, 5, 0, 5],
     table: {
-      widths: ['16%', '16%', '16%', '16%', '16%', '16%'],
+      widths: ['14%', '20%', '12%', '20%', '20%', '12%'],
       body: body
     }
   }
@@ -6986,12 +6995,12 @@ const exceptionReportingBTable = (props) => {
       },
       {
         text: {
-          text: row.duration_of_discharge, fontSize: 8,
+          text: row.duration_of_discharge, fontSize: 8, alignment: 'right'
         }
       },
       {
         text: {
-          text: row.vol, fontSize: 8,
+          text: `${row.vol} ${row.vol_unit}`, fontSize: 8, alignment: 'right'
         }
       },
     ]
@@ -7032,13 +7041,13 @@ const exceptionReportingBTable = (props) => {
       {
         fillColor: gray,
         text: {
-          text: 'Duration (min)', fontSize: 8,
+          text: 'Duration (min)', fontSize: 8, alignment: 'right'
         }
       },
       {
         fillColor: gray,
         text: {
-          text: 'Volume', fontSize: 8,
+          text: 'Volume', fontSize: 8, alignment: 'right'
         }
       },
     ],
@@ -7048,7 +7057,7 @@ const exceptionReportingBTable = (props) => {
   let table = {
     margin: [10, 5, 0, 5],
     table: {
-      widths: ['14%', '14%', '14%', '14%', '14%', '14%', '14%'],
+      widths: ['14%', '14%', '10%', '18%', '18%', '12%', '12%'],
       body: body
     }
   }
@@ -7102,7 +7111,7 @@ const exceptionReportingCTable = (props) => {
       },
       {
         text: {
-          text: row.vol, fontSize: 8,
+          text: `${row.vol} ${row.vol_unit}`, fontSize: 8, alignment: 'right'
         }
       },
     ]
@@ -7149,7 +7158,7 @@ const exceptionReportingCTable = (props) => {
       {
         fillColor: gray,
         text: {
-          text: 'Volume', fontSize: 8,
+          text: 'Volume', fontSize: 8, alignment: 'right'
         }
       },
     ],
@@ -7159,7 +7168,7 @@ const exceptionReportingCTable = (props) => {
   let table = {
     margin: [10, 10, 0, 10],
     table: {
-      widths: ['14%', '14%', '14%', '14%', '14%', '14%', '14%'],
+      widths: ['14%', '14%', '10%', '18%', '18%', '12%', '12%'],
       body: body
     }
   }
@@ -7225,9 +7234,6 @@ const exceptionReportingABC = (props) => {
     ]
   }
 }
-
-
-
 
 //  nmpeaStatements NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS
 const nmpeaStatementsAB = (props) => {
@@ -7390,7 +7396,6 @@ const notesA = (props) => {
   }
 }
 const certificationA = (props) => {
-  console.log("Cert props", props)
   const certiText = `I certify under penalty of law that I have personally examined and am familiar with the information submitted in this document and all attachments and that, based on my inquiry
   of those individuals immediately responsible for obtaining the information, I believe that the information is true, accurate, and complete. I am aware that there are significant
   penalties for submitting false information, including the possibility of fine and imprisonment.`
@@ -7647,8 +7652,8 @@ export default function dd(props, images) {
   const curDateTime = getDateTime()
   const dairyInfo = props && props.dairyInformationA ? props.dairyInformationA : {}
   const footerTitle = `${dairyInfo.title} | ${dairyInfo.street} | ${dairyInfo.city}, ${dairyInfo.city_state} ${dairyInfo.city_zip} | ${dairyInfo.county} | ${dairyInfo.basin_plan}`
-  const periodStart = dairyInfo.period_start ? dairyInfo.period_start.split("T")[0] : ''
-  const periodEnd = dairyInfo.period_end ? dairyInfo.period_end.split("T")[0] : ''
+  const periodStart = dairyInfo.period_start ? formatDate(dairyInfo.period_start.split("T")[0]) : ''
+  const periodEnd = dairyInfo.period_end ? formatDate(dairyInfo.period_end.split("T")[0]) : ''
   const reportingPeriod = `Reporting peroid ${periodStart} to ${periodEnd}.`
 
 
