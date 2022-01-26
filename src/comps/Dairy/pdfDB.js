@@ -823,7 +823,9 @@ const calcEvNutrientTotals = async (events, harvests) => {
         }
 
         // Calculate event totals for each Field/ Plant date
-        allEvents[key] = events.map(ev => {
+
+        let _events = []
+        events.forEach(ev => {
 
           if (ev.entry_type === 'soil') {
             // This is calculated by the program when created via uploading spreadsheet.
@@ -878,18 +880,31 @@ const calcEvNutrientTotals = async (events, harvests) => {
             infoLBS.fertilizers[2] += k_lbs_acre * acres_planted
             infoLBS.fertilizers[3] += salt_lbs_acre * acres_planted
 
+            ev.n_lbs_acre = n_lbs_acre
+            ev.p_lbs_acre = p_lbs_acre
+            ev.k_lbs_acre = k_lbs_acre
+            ev.salt_lbs_acre = salt_lbs_acre
 
           } else if (ev.entry_type === 'manure') {
             const lbs_acre = toFloat(ev.amount_applied) / toFloat(ev.acres_planted)
-            info.manures[0] += calcLbsFromTonsAsPercent(ev.n_con, ev.moisture, lbs_acre, ev.method_of_reporting)
-            info.manures[1] += calcLbsFromTonsAsPercent(ev.p_con, ev.moisture, lbs_acre, ev.method_of_reporting)
-            info.manures[2] += calcLbsFromTonsAsPercent(ev.k_con, ev.moisture, lbs_acre, ev.method_of_reporting)
-            info.manures[3] += calcLbsFromTonsAsPercent(ev.salt_con, ev.moisture, lbs_acre, ev.method_of_reporting)
+            const n_lbs_acre = calcLbsFromTonsAsPercent(ev.n_con, ev.moisture, lbs_acre, ev.method_of_reporting)
+            const p_lbs_acre = calcLbsFromTonsAsPercent(ev.p_con, ev.moisture, lbs_acre, ev.method_of_reporting)
+            const k_lbs_acre = calcLbsFromTonsAsPercent(ev.k_con, ev.moisture, lbs_acre, ev.method_of_reporting)
+            const salt_lbs_acre = calcLbsFromTonsAsPercent(ev.salt_con, ev.moisture, lbs_acre, ev.method_of_reporting)
+            info.manures[0] += n_lbs_acre
+            info.manures[1] += p_lbs_acre
+            info.manures[2] += k_lbs_acre
+            info.manures[3] += salt_lbs_acre
 
             infoLBS.manures[0] += calcLbsFromTonsAsPercent(ev.n_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
             infoLBS.manures[1] += calcLbsFromTonsAsPercent(ev.p_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
             infoLBS.manures[2] += calcLbsFromTonsAsPercent(ev.k_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
             infoLBS.manures[3] += calcLbsFromTonsAsPercent(ev.salt_con, ev.moisture, ev.amount_applied, ev.method_of_reporting)
+
+            ev.n_lbs_acre = n_lbs_acre
+            ev.p_lbs_acre = p_lbs_acre
+            ev.k_lbs_acre = k_lbs_acre
+            ev.salt_lbs_acre = salt_lbs_acre
           } else if (ev.entry_type === 'freshwater') {
             info.freshwater_app[0] += toFloat(ev.amount_applied)
             let acreInches = toFloat(ev.amount_applied) / GALS_PER_ACREINCH
@@ -897,11 +912,19 @@ const calcEvNutrientTotals = async (events, harvests) => {
             info.freshwater_app[1] += toFloat(acreInches)
             info.freshwater_app[2] += toFloat(inchesPerAcre)
 
-            info.freshwaters[0] += MGMLToLBS(ev.n_con, ev.amt_applied_per_acre)
-            info.freshwaters[3] += MGMLToLBS(ev.tds, ev.amt_applied_per_acre)
+            const n_lbs_acre = MGMLToLBS(ev.n_con, ev.amt_applied_per_acre)
+            const salt_lbs_acre = MGMLToLBS(ev.tds, ev.amt_applied_per_acre)
+
+            info.freshwaters[0] += n_lbs_acre
+            info.freshwaters[3] += salt_lbs_acre
 
             infoLBS.freshwaters[0] += MGMLToLBS(ev.n_con, ev.amount_applied)
             infoLBS.freshwaters[3] += MGMLToLBS(ev.tds, ev.amount_applied)
+
+            ev.n_lbs_acre = n_lbs_acre
+            ev.p_lbs_acre = 0
+            ev.k_lbs_acre = 0
+            ev.salt_lbs_acre = salt_lbs_acre
 
           } else if (ev.entry_type === 'wastewater') {
 
@@ -912,16 +935,26 @@ const calcEvNutrientTotals = async (events, harvests) => {
             info.wastewater_app[1] += toFloat(acreInches)
             info.wastewater_app[2] += toFloat(inchesPerAcre)
 
-            info.wastewaters[0] += MGMLToLBS(ev.kn_con, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
-            info.wastewaters[1] += MGMLToLBS(ev.p_con, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
-            info.wastewaters[2] += MGMLToLBS(ev.k_con, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
-            info.wastewaters[3] += MGMLToLBS(ev.tds, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
+            const n_lbs_acre = MGMLToLBS(ev.kn_con, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
+            const p_lbs_acre = MGMLToLBS(ev.p_con, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
+            const k_lbs_acre = MGMLToLBS(ev.k_con, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
+            const salt_lbs_acre = MGMLToLBS(ev.tds, toFloat(ev.amount_applied / toFloat(ev.acres_planted)))
+
+            info.wastewaters[0] += n_lbs_acre
+            info.wastewaters[1] += p_lbs_acre
+            info.wastewaters[2] += k_lbs_acre
+            info.wastewaters[3] += salt_lbs_acre
 
 
             infoLBS.wastewaters[0] += MGMLToLBS(ev.kn_con, ev.amount_applied)
             infoLBS.wastewaters[1] += MGMLToLBS(ev.p_con, ev.amount_applied)
             infoLBS.wastewaters[2] += MGMLToLBS(ev.k_con, ev.amount_applied)
             infoLBS.wastewaters[3] += MGMLToLBS(ev.tds, ev.amount_applied)
+
+            ev.n_lbs_acre = n_lbs_acre
+            ev.p_lbs_acre = p_lbs_acre
+            ev.k_lbs_acre = k_lbs_acre
+            ev.salt_lbs_acre = salt_lbs_acre
 
           } else if (ev.entry_type === 'harvest') {
             hasHarvestEvents = true
@@ -957,9 +990,11 @@ const calcEvNutrientTotals = async (events, harvests) => {
             infoLBS.actual_harvests[2] += k_lbs_acre * ev.acres_planted
             infoLBS.actual_harvests[3] += salt_lbs_acre * ev.acres_planted
           }
-          return ev
+          if (ev.entry_type !== 'harvest') {
+            _events.push(ev)
+          }
         })
-
+        allEvents[key] = _events
         // Sum all nutrient apps
         let total_app = opArrayByPos(info.soils,
           opArrayByPos(info.plows,
@@ -1087,12 +1122,14 @@ const getNutrientBudgetInfo = async (dairy_id) => {
 
 
   return ({
-    events: nestedGroupBy(events, ['fieldtitle', 'plant_date']), // Use to generate Field and Crop Buttons
-    allAppEvents, // Once Field and Crop Buttons are Selected, query this to get events and render table from events, 
+    eventKeyObj: nestedGroupBy(events, ['fieldtitle', 'plant_date']), // Use to generate Field and Crop Buttons due to keys
+    allAppEvents, // Once Field and Crop Buttons are Selected, query this to get events and render table from events, contains calculated *_lbs_acre
     // Also query allEvents once keys are selected to get totals for all events to create a chart and table
-
     'naprbalA': infoLBS,
-    'nutrientBudgetB': { allEvents, totalAppsSummary: infoLBS }
+    'nutrientBudgetB': {
+      allEvents, // Contains nutrient app summaries for each FieldCrop
+      totalAppsSummary: infoLBS  // Contains total nutrient app summaries for all FieldCrop
+    }
   })
 
 }
