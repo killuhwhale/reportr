@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS dairies(
   city_zip VARCHAR(20) DEFAULT '',
   title VARCHAR(100) NOT NULL,
   basin_plan VARCHAR(50),
-  p_breed VARCHAR(50),
+  
   began timestamp DEFAULT NOW(),
   UNIQUE(dairy_base_id, reporting_yr),
   CONSTRAINT fk_dairy_base
@@ -110,6 +110,8 @@ CREATE TABLE IF NOT EXISTS operators(
 CREATE TABLE IF NOT EXISTS herds(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
+  p_breed VARCHAR(50) DEFAULT '',
+  p_breed_other VARCHAR(50) DEFAULT '',
   milk_cows INT[] DEFAULT '{0,0,0,0,0,0}', -- open confinement, under roof, max number, avg, number, avg wt
   dry_cows INT[] DEFAULT '{0,0,0,0,0}',
   bred_cows INT[] DEFAULT '{0,0,0,0,0}',
@@ -213,7 +215,7 @@ CREATE TABLE IF NOT EXISTS field_crop_app(
   precip_before VARCHAR(50),
   precip_during VARCHAR(50),
   precip_after VARCHAR(50),
-  UNIQUE(dairy_id, field_crop_id, app_date), -- TODO() Need to update to include app_method, affects searching for lazyget since it look searches by unique fields.
+  UNIQUE(dairy_id, field_crop_id, app_date, app_method), -- TODO() Need to update to include app_method, affects searching for lazyget since it look searches by unique fields.
   -- If a field receives a Commerical Fertilizer and Freshwater on the same day, they will have different App_methods and both should be created. CLARIFY
   CONSTRAINT fk_dairy
     FOREIGN KEY(dairy_id) 
@@ -233,6 +235,7 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater_analysis(
   sample_date TIMESTAMP NOT NULL,
   sample_desc VARCHAR(100) NOT NULL,
   sample_data_src VARCHAR(100),
+  material_type VARCHAR(150),
   kn_con NUMERIC(8,2) DEFAULT 0.0,
   nh4_con NUMERIC(8,2) DEFAULT 0.0, 
   nh3_con NUMERIC(8,2) DEFAULT 0.0, 
@@ -278,7 +281,6 @@ CREATE TABLE IF NOT EXISTS field_crop_app_process_wastewater(
   dairy_id INT NOT NULL,
   field_crop_app_id INT NOT NULL,
   field_crop_app_process_wastewater_analysis_id INT NOT NULL,
-  material_type VARCHAR(150),
   app_desc VARCHAR(150),
   amount_applied INT,
   UNIQUE(dairy_id, field_crop_app_id, amount_applied),

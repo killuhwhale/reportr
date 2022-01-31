@@ -3,22 +3,17 @@ import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 
-import AddIcon from '@material-ui/icons/Add'
-import ShowChartIcon from '@material-ui/icons/ShowChart' //Analysis
-import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
+
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import { CloudUpload } from '@material-ui/icons' // uploadTSV
 
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import HarvestView from "./harvestView"
 import AddFieldCropHarvestModal from '../Modals/addFieldCropHarvestModal'
 import UploadTSVModal from '../Modals/uploadTSVModal'
 import ViewTSVsModal from "../Modals/viewTSVsModal"
-import { get, post } from '../../utils/requests';
-import { MG_KG, KG_MG } from '../../utils/convertCalc'
-import { isEmpty } from "../../utils/valid"
+import { get, post } from '../../utils/requests'
 import { TSV_INFO } from "../../utils/TSV"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
@@ -26,6 +21,7 @@ import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import {
   readTSV, uploadHarvestTSV, uploadTSVToDB, HARVEST
 } from "../../utils/TSV"
+
 
 
 const REPORTING_METHODS = ['dry-weight', 'as-is']
@@ -44,7 +40,6 @@ class HarvestTab extends Component {
       tsvText: "",
       uploadedFilename: "",
       updateFieldCropHarvestObj: {}, // PK: {all data for field_crop harvest that is updatable...}
-      groupedFieldCropHarvests: {},
       showViewTSVsModal: false,
       toggleShowDeleteAllModal: false,
       createFieldCropHarvestObj: {
@@ -94,43 +89,6 @@ class HarvestTab extends Component {
       })
   }
 
-  /**
-   * {
-   *  field:{
-   *    plant_date:{
-   *      [field_crop_harvest events, ...]
-   *    }
-   *  }
-   * }
-   */
-  groupFieldCropHarvestByField(harvests) {
-    let grouped = {}
-    harvests.forEach(harvest => {
-      const { fieldtitle, plant_date, harvest_date } = harvest
-      let field = grouped[fieldtitle]
-
-
-      if (field) {
-        // Get list of harvest events at plant_date for field
-        let field_crop_list = field[plant_date]
-        if (field_crop_list) {
-          // if there is a harvest event on this plant_date, add this harvest event
-          field_crop_list.push(harvest)
-          field[plant_date] = field_crop_list
-        } else {
-          // If no plant_date for this field, add the plant_date to the field w/ harvest event.
-          field[plant_date] = [harvest]
-          grouped[fieldtitle] = field
-        }
-      } else {
-        // If field doesnt exist, create full entry
-        grouped[fieldtitle] = {
-          [plant_date]: [harvest]
-        }
-      }
-    })
-    return grouped
-  }
 
   toggleShowAddFieldCropHarvestModal(val) {
     this.setState({ showAddFieldCropHarvestModal: val })
@@ -173,54 +131,10 @@ class HarvestTab extends Component {
   getAllFieldCropHarvests() {
     get(`${this.props.BASE_URL}/api/field_crop_harvest/${this.state.dairy.pk}`)
       .then(res => {
-        this.groupFieldCropHarvestByField(res)
-        this.setState({ fieldCropHarvests: res, groupedFieldCropHarvests: this.groupFieldCropHarvestByField(res) })
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-  onUpdateFieldCropHarvestChange(index, data, ev) {
-    const { name, value } = ev.target
+        // this.groupFieldCropHarvestByField(res)
+        this.setState({ fieldCropHarvests: res })
 
-    // Changing structure, need to change where the value is updating, since its coming from new source/ data format.
 
-    let harvests = this.state.groupedFieldCropHarvests
-
-    let harvestObj = harvests[data.fieldtitle][data.plant_date][index]
-
-    if (['actual_n', 'actual_p', 'actual_k',].indexOf(name) >= 0) {
-      harvestObj[name] = KG_MG(parseFloat(value))                    // update the value of the object
-    } else {
-      harvestObj[name] = value
-    }
-
-    harvests[data.fieldtitle][data.plant_date][index] = harvestObj
-
-    let updates = this.state.updateFieldCropHarvestObj // get current updates, empty in the beginning
-    updates[data.pk] = data
-
-    console.log(index, name, KG_MG(parseFloat(value)))
-    this.setState({ updateFieldCropHarvestObj: updates, groupFieldCropHarvestByField: harvests })
-  }
-
-  updateFieldCropHarvest() {
-    console.log("Updates", this.state.updateFieldCropHarvestObj)
-    let promises = Object.keys(this.state.updateFieldCropHarvestObj).map(pk => {
-      let obj = this.state.updateFieldCropHarvestObj[pk]
-      // rename
-      const {
-        harvest_date, actual_yield, method_of_reporting, density, actual_moisture: moisture, actual_n: n, actual_p: p, actual_k: k, tfs
-      } = obj
-      let data = { harvest_date, actual_yield, method_of_reporting, density, moisture, n, p, k, tfs, pk }
-      return (
-        post(`${this.props.BASE_URL}/api/field_crop_harvest/update`, data)
-      )
-    })
-
-    Promise.all(promises)
-      .then(res => {
-        console.log(res)
       })
       .catch(err => {
         console.log(err)
@@ -292,10 +206,6 @@ class HarvestTab extends Component {
       <React.Fragment>
         {this.state.dairy.pk && Object.keys(this.state.dairy).length > 0 ?
           <Grid item container xs={12}>
-            {/* <Button variant="outlined"  color="secondary"
-                onClick={this.updateFieldCropHarvest.bind(this)}>
-                Update Harvests
-              </Button> */}
             <Grid item xs={10} align='right'>
               <Tooltip title='Import Harvest from TSV Production Records Tab'>
                 <IconButton variant="outlined" color="primary"
@@ -337,18 +247,16 @@ class HarvestTab extends Component {
               } */}
             </Grid>
 
-            {
-              Object.keys(this.state.groupedFieldCropHarvests).length > 0 ?
-                <HarvestView
-                  dairy={this.state.dairy}
-                  fieldCropHarvests={this.state.fieldCropHarvests}
-                  groupedFieldCropHarvests={this.state.groupedFieldCropHarvests}
-                  getAllFieldCropHarvests={this.getAllFieldCropHarvests.bind(this)}
-                  onChange={this.onUpdateFieldCropHarvestChange.bind(this)}
-                />
+            <HarvestView
+              dairy={this.state.dairy}
+              fieldCropHarvestEvents={this.state.fieldCropHarvests}
+              getAllFieldCropHarvests={this.getAllFieldCropHarvests.bind(this)}
+            />
+            {/* {
+              Object.keys(this.state.....).length > 0 ?
                 :
                 <React.Fragment></React.Fragment>
-            }
+            } */}
 
           </Grid>
           :

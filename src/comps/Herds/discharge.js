@@ -44,7 +44,7 @@ const DischargeView = (props) => {
       </Grid>
       {discharges.map((discharge, i) => {
         return (
-          <Grid item container key={`srowview${i}`} xs={12}>
+          <Grid item container key={`srowview${i}`} xs={12} className='showOnHoverParent'>
             <Grid item xs={3}>
               <DateTimePicker
                 open={false} // lol took much longer to find this solution, disables but doesnt alter display like the prop 'disabled' does
@@ -69,7 +69,9 @@ const DischargeView = (props) => {
             </Grid>
             <Grid item xs={2}>
               <Tooltip title='Delete Discharge'>
-                <IconButton onClick={() => props.onDelete(discharge)}>
+                <IconButton className='showOnHover'
+                  onClick={() => props.onDelete(discharge)}
+                >
                   <DeleteIcon color='error' />
                 </IconButton>
               </Tooltip>
@@ -265,7 +267,7 @@ class Discharge extends Component {
           <Typography variant='h3'>Discharges</Typography>
           {this.getDischargeSortedKeys().length > 0 ?
             <List
-              height={Math.max(this.state.windowHeight - 800, 100)}
+              height={Math.max(this.state.windowHeight - 300, 100)}
               itemCount={this.getDischargeSortedKeys().length}
               itemSize={this.getDischargeSize.bind(this)}
               width={this.state.windowWidth * (.82)}

@@ -727,7 +727,7 @@ const availableNutrientsA = (props) => {
             {
               border: [false, false, false, true],
               text: {
-                text: props.p_breed, fontSize: 9
+                text: `${props.herdInfo.p_breed} ${props.herdInfo.p_breed === 'Other' ? ": " + props.herdInfo.p_breed_other : ''}`, fontSize: 9
               }
             }]
           ]
@@ -1387,12 +1387,12 @@ const availableNutrientsFTableDryManure = (props) => {
       },
       {// row 
         text: {
-          text: props.import_desc, fontSize: 8,
+          text: `${props.material_type}/ ${props.import_desc}`, fontSize: 8,
         }
       },
       {// row 1
         text: {
-          text: props.amount_imported, fontSize: 8,
+          text: props.amount_imported, fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
@@ -1402,32 +1402,32 @@ const availableNutrientsFTableDryManure = (props) => {
       },
       {// row 1
         text: {
-          text: props.moisture, fontSize: 8,
+          text: props.moisture, fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: percentageAsMGKG(props.n_con), fontSize: 8,
+          text: percentageAsMGKG(props.n_con), fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: percentageAsMGKG(props.p_con), fontSize: 8,
+          text: percentageAsMGKG(props.p_con), fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: percentageAsMGKG(props.k_con), fontSize: 8,
+          text: percentageAsMGKG(props.k_con), fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: formatFloat(0), fontSize: 8,
+          text: formatFloat(0), fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: props.salt_con, fontSize: 8,
+          text: props.salt_con, fontSize: 8, alignment: 'right'
         }
       }, { text: '' }
     ]
@@ -1452,7 +1452,7 @@ const availableNutrientsFTableDryManure = (props) => {
       {// row 1
         fillColor: gray,
         text: {
-          text: 'Quantity (tons)', fontSize: 9,
+          text: 'Quantity (tons)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
@@ -1464,37 +1464,37 @@ const availableNutrientsFTableDryManure = (props) => {
       {// row 1
         fillColor: gray,
         text: {
-          text: 'Moisture (%)', fontSize: 9,
+          text: 'Moisture (%)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'N (mg/kg)', fontSize: 9,
+          text: 'N (mg/kg)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'P (mg/kg)', fontSize: 9,
+          text: 'P (mg/kg)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'K (mg/kg)', fontSize: 9,
+          text: 'K (mg/kg)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'Salt (mg/kg)', fontSize: 9,
+          text: 'Salt (mg/kg)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'TFS (%)', fontSize: 9,
+          text: 'TFS (%)', fontSize: 9, alignment: 'right'
         }
       },
     ],
@@ -1503,7 +1503,7 @@ const availableNutrientsFTableDryManure = (props) => {
   const table = {
     margin: [10, 0, 0, 5],
     table: {
-      widths: ['15%', '15%', '15%', '15%', '7%', '7%', '7%', '7%', '6%', "6%", '*'],
+      widths: ['10%', '25%', '10%', '15%', '7%', '7%', '7%', '7%', '6%', "6%", '*'],
       body: body
     }
   }
@@ -1520,38 +1520,38 @@ const availableNutrientsFTableWastewater = (props) => {
       },
       {// row 
         text: {
-          text: props.import_desc, fontSize: 8,
+          text: `${props.material_type}/ ${props.import_desc}`, fontSize: 8,
         }
       },
       {// row 1
         text: {
-          text: props.amount_imported, fontSize: 8,
+          text: props.amount_imported, fontSize: 8, alignment: 'right'
         }
       },
 
       {// row 1
         text: {
-          text: formatFloat(props.n_con * 10000), fontSize: 8,
+          text: formatFloat(props.n_con * 10000), fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: formatFloat(props.p_con * 10000), fontSize: 8,
+          text: formatFloat(props.p_con * 10000), fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: formatFloat(props.k_con * 10000), fontSize: 8,
+          text: formatFloat(props.k_con * 10000), fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: formatFloat(props.salt_con * 10000), fontSize: 8,
+          text: formatFloat(props.salt_con * 10000), fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: props.salt_con, fontSize: 8,
+          text: props.salt_con, fontSize: 8, alignment: 'right'
         }
       }, { text: '' }
     ]
@@ -1576,37 +1576,37 @@ const availableNutrientsFTableWastewater = (props) => {
       {// row 1
         fillColor: gray,
         text: {
-          text: 'Quantity (gals)', fontSize: 9,
+          text: 'Quantity (gals)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'N (mg/L)', fontSize: 9,
+          text: 'N (mg/L)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'P (mg/L)', fontSize: 9,
+          text: 'P (mg/L)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'K (mg/L)', fontSize: 9,
+          text: 'K (mg/L)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'Salt (mg/L)', fontSize: 9,
+          text: 'Salt (mg/L)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'TDS (mg/L)', fontSize: 9,
+          text: 'TDS (mg/L)', fontSize: 9, alignment: 'right'
         }
       },
     ],
@@ -1615,7 +1615,7 @@ const availableNutrientsFTableWastewater = (props) => {
   const table = {
     margin: [10, 0, 0, 5],
     table: {
-      widths: ['15%', '15%', '15%', '15%', '10%', '10%', '10%', "10%", '*'],
+      widths: ['10%', '25%', '10%', '15%', '10%', '10%', '10%', "10%", '*'],
       body: body
     }
   }
@@ -1636,12 +1636,12 @@ const availableNutrientsFTableFertilizer = (props) => {
       },
       {// row 
         text: {
-          text: props.import_desc, fontSize: 8,
+          text: `${props.material_type}/ ${props.import_desc}`, fontSize: 8,
         }
       },
       {// row 1
         text: {
-          text: `${props.amount_imported} ${unit}`, fontSize: 8,
+          text: `${props.amount_imported} ${unit}`, fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
@@ -1651,27 +1651,27 @@ const availableNutrientsFTableFertilizer = (props) => {
       },
       {// row 1
         text: {
-          text: unit === 'tons' ? props.moisture : '', fontSize: 8,
+          text: unit === 'tons' ? props.moisture : '', fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: props.n_con, fontSize: 8,
+          text: props.n_con, fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: props.p_con, fontSize: 8,
+          text: props.p_con, fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: props.k_con, fontSize: 8,
+          text: props.k_con, fontSize: 8, alignment: 'right'
         }
       },
       {// row 1
         text: {
-          text: props.salt_con, fontSize: 8,
+          text: props.salt_con, fontSize: 8, alignment: 'right'
         }
       }, { text: '' }
     ]
@@ -1696,7 +1696,7 @@ const availableNutrientsFTableFertilizer = (props) => {
       {// row 1
         fillColor: gray,
         text: {
-          text: 'Quantity', fontSize: 9,
+          text: 'Quantity', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
@@ -1708,31 +1708,31 @@ const availableNutrientsFTableFertilizer = (props) => {
       {// row 1
         fillColor: gray,
         text: {
-          text: 'Moisture (%)', fontSize: 9,
+          text: 'Moisture (%)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'N (%)', fontSize: 9,
+          text: 'N (%)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'P (%)', fontSize: 9,
+          text: 'P (%)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'K (%)', fontSize: 9,
+          text: 'K (%)', fontSize: 9, alignment: 'right'
         }
       },
       {// row 1
         fillColor: gray,
         text: {
-          text: 'Salt (%)', fontSize: 9,
+          text: 'Salt (%)', fontSize: 9, alignment: 'right'
         }
       },
     ],
@@ -1741,7 +1741,7 @@ const availableNutrientsFTableFertilizer = (props) => {
   const table = {
     margin: [10, 0, 0, 5],
     table: {
-      widths: ['15%', '15%', '15%', '15%', '8%', '8%', '8%', '8%', '8%', '*'],
+      widths: ['10%', '25%', '10%', '15%', '8%', '8%', '8%', '8%', '8%', '*'],
       body: body
     }
   }
@@ -1973,7 +1973,7 @@ const availableNutrientsGSolidTableRow = (props) => {
     {// row 1
       text: {
         // text: '1,898.00 ton',
-        text: formatFloat(props.amount_hauled),
+        text: `${formatFloat(props.amount_hauled)} tons`,
         fontSize: 8,
         alignment: "right",
       }
@@ -2062,7 +2062,7 @@ const availableNutrientsGLiquidTableRow = (props) => {
     },
     {// row 1
       text: {
-        text: formatFloat(props.amount_hauled),
+        text: `${formatFloat(props.amount_hauled)} gals`,
         fontSize: 8,
         alignment: "right",
       }
@@ -2328,34 +2328,34 @@ const availableNutrientsG = (props) => {
               {// row 
                 fillColor: gray,
                 text: {
-                  text: 'Material Type', fontSize: 9,
+                  text: 'Material Type', fontSize: 8,
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: 'N (%)', fontSize: 9,
+                  text: 'Total N (lbs)', fontSize: 8,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: 'P (%)', fontSize: 9,
+                  text: 'Total P (lbs)', fontSize: 8,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: 'K (%)', fontSize: 9,
+                  text: 'Total K (lbs)', fontSize: 8,
                   alignment: 'right',
                 }
               },
               {// row 1
                 fillColor: gray,
                 text: {
-                  text: 'Salt (%)', fontSize: 9,
+                  text: 'Total salt (lbs)', fontSize: 8,
                   alignment: 'right',
                 }
               },
@@ -3881,7 +3881,6 @@ const nutrientBudgetA = (props) => {
 
           let unit = ev.tds ? 'gals' : 'tons'
           if (!ev.tds && !ev.tfs && ev.material_type) {
-            // commerical fertilizer
             //Check if it container the word liquid
             unit = ev.material_type.toLowerCase().includes('solid') || ev.material_type.toLowerCase().includes('dry') ? 'tons' : 'gals'
           }
@@ -3891,6 +3890,8 @@ const nutrientBudgetA = (props) => {
               ev.entry_type === 'plowdown' ? 'Plowdown credit' :
                 ev.entry_type === 'freshwater' ? 'Freshwater' : ''
           }
+
+
 
           return [
             {
@@ -3926,7 +3927,7 @@ const nutrientBudgetA = (props) => {
             },
             {
               text: {
-                text: ev.amount_applied === undefined ? '' : `${formatFloat(ev.amount_applied)} ${unit}`, fontSize: 8, alignment: 'center'
+                text: ev.amount_applied === undefined || ev.entry_type === 'fertilizer' ? '' : `${formatFloat(ev.amount_applied)} ${unit}`, fontSize: 8, alignment: 'center'
               }
             },
           ]
@@ -7665,11 +7666,11 @@ export default function dd(props, images) {
     dairyInformationA(props.dairyInformationA),
     dairyInformationB(props.dairyInformationB),
     dairyInformationC(props.dairyInformationC),
-    availableNutrientsA({ ...props.availableNutrientsAB, p_breed: props.dairyInformationA.p_breed }),   // bind last two rows and last row of table together...
+    availableNutrientsA(props.availableNutrientsAB),   // bind last two rows and last row of table together...
     availableNutrientsB(props.availableNutrientsAB),  // bind this section together
-    availableNutrientsC(props.availableNutrientsC), // bind this section together
+    availableNutrientsC(props.availableNutrientsC),   // bind this section together
     availableNutrientsD(props.availableNutrientsD),
-    availableNutrientsE(props.availableNutrientsE), // subsurface tile drainage
+    availableNutrientsE(props.availableNutrientsE),   // subsurface tile drainage
     availableNutrientsF(props.availableNutrientsF),
     availableNutrientsG(props.availableNutrientsG),
     applicationAreaA(props.applicationAreaA),

@@ -20,6 +20,7 @@ import AddDairyBaseModal from "../comps/Modals/addDairyBaseModal"
 import NutrientApplicationTab from "../comps/Applications/appNutrientTab"
 import ExportTab from "../comps/Exports/exportTab"
 import ActionCancelModal from "../comps/Modals/actionCancelModal"
+import Accounts from "../comps/Accounts/accounts"
 
 import { get, post } from "../utils/requests"
 
@@ -43,6 +44,7 @@ class HomePage extends Component {
       dairy: {},
       showAddDairyModal: false,
       showAddDairyBaseModal: false,
+      showAccountsModal: false,
       createDairyTitle: "",
       updateDairyObj: {},
       toggleShowLogoutModal: false,
@@ -119,7 +121,6 @@ class HomePage extends Component {
     let dairyInfo = { ...dairy, dairy_id: dairy.pk }
 
     // IF not selected, choose default values 
-    dairyInfo.p_breed = dairyInfo.p_breed ? dairyInfo.p_breed : BREEDS[0]
     dairyInfo.county = dairyInfo.county ? dairyInfo.county : COUNTIES[0]
     dairyInfo.basin_plan = dairyInfo.basin_plan ? dairyInfo.basin_plan : BASINS[0]
 
@@ -141,6 +142,10 @@ class HomePage extends Component {
 
   toggleAddDairyBaseModal(val) {
     this.setState({ showAddDairyBaseModal: val })
+  }
+
+  toggleAccountsModal(val) {
+    this.setState({ showAccountsModal: val })
   }
 
 
@@ -320,6 +325,7 @@ class HomePage extends Component {
                 </Button>
               </Tooltip>
             </Grid>
+
             <Grid item container xs={12}>
               <Grid item xs={6} align='center'>
                 <Tooltip title="Light Theme">
@@ -338,6 +344,17 @@ class HomePage extends Component {
                 </Tooltip>
               </Grid>
             </Grid>
+            <Grid item container xs={12}>
+              <Tooltip title="Accounts">
+                <IconButton color="primary" variant="outlined" style={{ marginTop: "16px" }}
+                  onClick={() => this.toggleAccountsModal(true)}>
+                  <NightsStayIcon />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+
+
+
           </Grid>
 
 
@@ -353,7 +370,7 @@ class HomePage extends Component {
             {this.state.dairy && Object.keys(this.state.dairy).length > 0 ?
               <React.Fragment>
                 <AppBar position="static" style={{ marginBottom: "32px" }} key='homePageAppBar'>
-                  <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
+                  <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
                     onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='homePageAppBar'>
                     <Tab label="Dairy" key='homePageAppBarTab0' />
                     <Tab label="Info" key='homePageAppBarTab1' />
@@ -371,7 +388,7 @@ class HomePage extends Component {
                         dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx] : {}}
                         BASINS={BASINS}
                         COUNTIES={COUNTIES}
-                        BREEDS={BREEDS}
+
                         onDairyDeleted={this.getBaseDairies.bind(this)}
                         onChange={this.onDairyChange.bind(this)}
                         onUpdate={this.updateDairy.bind(this)}
@@ -386,6 +403,7 @@ class HomePage extends Component {
                         <HerdTab
                           dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx] : {}}
                           BASE_URL={this.props.BASE_URL}
+                          BREEDS={BREEDS}
                           onAlert={this.props.onAlert}
                         />
                       </Grid>
@@ -460,6 +478,13 @@ class HomePage extends Component {
           onClose={() => this.toggleAddDairyBaseModal(false)}
           onAlert={this.props.onAlert}
           BASE_URL={this.props.BASE_URL}
+        />
+
+
+        <Accounts
+          key={'DOESTHISWORK'}
+          open={this.state.showAccountsModal}
+          onClose={() => this.toggleAccountsModal(false)}
         />
 
         <ActionCancelModal

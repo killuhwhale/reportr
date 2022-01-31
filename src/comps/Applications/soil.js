@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Card, CardContent, CardActions
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -9,18 +10,19 @@ import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { groupByKeys } from "../../utils/format"
+import { formatDate, formatFloat, groupByKeys, naturalSortBy } from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 import { naturalSort, nestedGroupBy } from "../../utils/format"
-import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
+import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import {
   SOIL, TSV_INFO, readTSV, uploadNutrientApp, uploadTSVToDB
 } from "../../utils/TSV"
+import { DatePicker } from '@material-ui/pickers'
 
 
 
@@ -31,60 +33,64 @@ const SoilView = (props) => {
 
   return (
     <Grid container item xs={12} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
-      <Grid item xs={12}>
-        <Typography variant='h3'>
-          {headerInfo.fieldtitle}
-        </Typography>
-      </Grid>
-      {soils.map((soil, i) => {
+      {soils.sort((a, b) => naturalSortBy(a, b, 'app_date')).map((soil, i) => {
         return (
-          <Grid item container key={`srowview${i}`} xs={12}>
-            <Grid item xs={3}>
-              <TextField
-                value={soil.app_date ? soil.app_date.split('T')[0] : ''}
-                label='App date'
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                value={soil.src_desc}
-                label='Source description'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={soil.n_lbs_acre}
-                label='N lbs/ acre'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={soil.p_lbs_acre}
-                label='P lbs/ acre'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={soil.k_lbs_acre}
-                label='K lbs/ acre'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={soil.salt_lbs_acre}
-                label='Salt'
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <Tooltip title='Delete Soil'>
-                <IconButton onClick={() => props.onDelete(soil)}>
-                  <DeleteIcon color='error' />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-          </Grid>)
+          <SoilViewCard key={`pwwaer_${i}`}
+            soil={soil}
+            onDelete={props.onDelete}
+            index={i}
+          />
+        )
       })}
     </Grid>
+  )
+}
+
+const SoilViewCard = (props) => {
+  let {
+    app_method, n_con_0, p_con_0, k_con_0,
+    n_con_1, p_con_1, k_con_1, n_con_2, p_con_2, k_con_2,
+    sample_date_0, sample_date_1, sample_date_2,
+    croptitle, app_date
+  } = props.soil
+
+  return (
+    <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+      <CardContent>
+        <Typography>
+          {croptitle} - {app_method}
+        </Typography>
+        <DatePicker label="App Date"
+          value={app_date}
+          open={false}
+        />
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`Lvl 1: Sample date ${sample_date_0 ? formatDate(sample_date_0.split("T")[0]) : ' '} N ${formatFloat(n_con_0)} P ${formatFloat(p_con_0)} K ${formatFloat(k_con_0)}`}
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`Lvl 2: Sample date ${sample_date_1 ? formatDate(sample_date_1.split("T")[0]) : ' '} N ${formatFloat(n_con_1)} P ${formatFloat(p_con_1)} K ${formatFloat(k_con_1)}`}
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`Lvl 3: Sample date ${sample_date_2 ? formatDate(sample_date_2.split("T")[0]) : ' '} N ${formatFloat(n_con_2)} P ${formatFloat(p_con_2)} K ${formatFloat(k_con_2)}`}
+          </Typography>
+        </Grid>
+
+      </CardContent>
+      <CardActions>
+        <Tooltip title="Delete Soil">
+          <IconButton className='showOnHover'
+            onClick={() => props.onDelete(props.soil)}
+          >
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </CardActions>
+    </Card>
   )
 }
 
@@ -92,9 +98,9 @@ const SoilAnalysisView = (props) => {
   const analyses = props && props.analyses ? props.analyses : []
   const headerInfo = analyses && analyses.length > 0 ? analyses[0] : {}
   return (
-    <Grid container item xs={12}>
+    <Grid container item xs={12} className='showOnHoverParent'>
       <Grid item xs={12}>
-        <Typography variant='h3'>
+        <Typography variant='h6'>
           {headerInfo.title}
         </Typography>
       </Grid>
@@ -139,7 +145,9 @@ const SoilAnalysisView = (props) => {
             </Grid>
             <Grid item xs={2}>
               <Tooltip title='Delete Soil Analysis'>
-                <IconButton onClick={() => props.onDelete(analysis)}>
+                <IconButton className='showOnHover'
+                  onClick={() => props.onDelete(analysis)}
+                >
                   <DeleteIcon color='error' />
                 </IconButton>
               </Tooltip>
@@ -345,7 +353,7 @@ class Soil extends Component {
   getSoilAnalysisSize(index) {
     let key = this.getSoilAnalysisSortedKeys()[index]
     let num = this.state.field_crop_app_soil_analysis[key].length
-    return 80 + (75 * num)
+    return 90 + (75 * num)
   }
   getSoilSize(index) {
     let key = this.getSoilSortedKeys()[index]
@@ -407,7 +415,7 @@ class Soil extends Component {
           <Typography variant='h3'>Analyses</Typography>
           {this.getSoilAnalysisSortedKeys().length > 0 ?
             <List
-              height={Math.max(this.state.windowHeight - 800, 100)}
+              height={250}
               itemCount={this.getSoilAnalysisSortedKeys().length}
               itemSize={this.getSoilAnalysisSize.bind(this)}
               width={this.state.windowWidth * (.82)}
@@ -422,13 +430,17 @@ class Soil extends Component {
         <Grid item container xs={12}>
           {renderFieldButtons(this.state.field_crop_app_soil, this)}
           {renderCropButtons(this.state.field_crop_app_soil, this.state.viewFieldKey, this)}
+          <CurrentFieldCrop
+            viewFieldKey={this.state.viewFieldKey}
+            viewPlantDateKey={this.state.viewPlantDateKey}
+          />
           {this.getAppEventsByViewKeys().length > 0 ?
             <SoilView
               soils={this.getAppEventsByViewKeys()}
               onDelete={this.onConfirmSoilDelete.bind(this)}
             />
             :
-            <div>No events to show</div>
+            <React.Fragment></React.Fragment>
           }
         </Grid>
         {/* <Grid item xs={12}>

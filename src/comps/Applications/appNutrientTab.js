@@ -248,7 +248,7 @@ class NutrientApplicationTab extends Component {
         {Object.keys(this.props.dairy).length > 0 ?
           <Grid item xs={12} container alignItems="baseline">
             <Grid item xs={7}>
-              <Typography variant="h2">Nutrient Applications</Typography>
+              <Typography variant="h6">Nutrient Applications</Typography>
             </Grid>
 
             <Grid item xs={5} align="right" >
@@ -268,7 +268,8 @@ class NutrientApplicationTab extends Component {
 
 
             <AppBar position="static" style={{ marginBottom: "32px" }} key='appNutrientAppBar'>
-              <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
+
+              <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
                 onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='appNutrientAppBarTabs'>
                 <Tab label="Events" key='appNutrientAppBarTab00' />
                 <Tab label="Process Wastewater" key='appNutrientAppBarTab0' />
@@ -283,7 +284,7 @@ class NutrientApplicationTab extends Component {
             {
 
               this.state.tabs[0] === "show" ?
-                <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab0'>
+                <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab00'>
                   <AppsByField
                     dairy_id={this.state.dairy.pk}
                     parentUpdated={this.state.parentUpdated}
@@ -295,7 +296,7 @@ class NutrientApplicationTab extends Component {
                 </Grid>
 
                 :
-                this.state.tabs[0] === "show" ?
+                this.state.tabs[1] === "show" ?
                   <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab0'>
                     <ProcessWastewater
                       dairy_id={this.state.dairy.pk}
@@ -307,7 +308,7 @@ class NutrientApplicationTab extends Component {
                     />
                   </Grid>
 
-                  : this.state.tabs[1] === "show" ?
+                  : this.state.tabs[2] === "show" ?
                     <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab1'>
                       <Freshwater
                         dairy_id={this.state.dairy.pk}
@@ -320,7 +321,7 @@ class NutrientApplicationTab extends Component {
 
                     </Grid>
 
-                    : this.state.tabs[2] === "show" ?
+                    : this.state.tabs[3] === "show" ?
                       <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab2'>
 
                         <Solidmanure
@@ -337,7 +338,7 @@ class NutrientApplicationTab extends Component {
 
                       </Grid>
 
-                      : this.state.tabs[3] === "show" ?
+                      : this.state.tabs[4] === "show" ?
                         <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab3'>
                           <Fertilizer
                             dairy_id={this.state.dairy.pk}
@@ -351,7 +352,7 @@ class NutrientApplicationTab extends Component {
                           />
                         </Grid>
 
-                        : this.state.tabs[4] === "show" ?
+                        : this.state.tabs[5] === "show" ?
                           <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab4'>
                             <Soil
                               dairy_id={this.state.dairy.pk}
@@ -362,7 +363,7 @@ class NutrientApplicationTab extends Component {
                               BASE_URL={this.props.BASE_URL}
                             />
                           </Grid>
-                          : this.state.tabs[5] === 'show' ?
+                          : this.state.tabs[6] === 'show' ?
                             <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab5'>
                               <PlowdownCredit
                                 dairy_id={this.state.dairy.pk}

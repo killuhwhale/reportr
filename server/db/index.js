@@ -31,13 +31,11 @@ const prodDigitalOcean = {
   }
 
 }
-
 const isProd = PORT !== 3001
 const pool = new Pool(TESTING ? test : isProd ? prodDigitalOcean : dev)
 
-console.log("isProd, pool", isProd, pool)
-
 module.exports = {
+  pool,
   query: (text, params, callback) => {
     return pool.query(text, params, callback)
   },
@@ -107,7 +105,7 @@ module.exports = {
   },
   insertFullDairy: (values, callback) => {
     return pool.query(
-      format("INSERT INTO dairies(dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, city_zip, title, basin_plan, p_breed, began, period_start, period_end) VALUES (%L) RETURNING *", values),
+      format("INSERT INTO dairies(dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, city_zip, title, basin_plan, began, period_start, period_end) VALUES (%L) RETURNING *", values),
       [],
       callback
     )
@@ -122,11 +120,10 @@ module.exports = {
       city_zip = $6, 
       title = $7,
       basin_plan = $8,
-      p_breed = $9,
-      began = $10,
-      period_start = $11,
-      period_end = $12
-      WHERE pk=$13 RETURNING *`,
+      began = $9,
+      period_start = $10,
+      period_end = $11
+      WHERE pk=$12 RETURNING *`,
       values,
       callback
     )
@@ -359,7 +356,9 @@ module.exports = {
         bred_cows,
         cows,
         calf_young,
-        calf_old) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+        calf_old,
+        p_breed,
+        p_breed_other) RETURNING *`,
       values,
       callback
     )
@@ -379,8 +378,10 @@ module.exports = {
       bred_cows = $3,
       cows = $4,
       calf_young = $5,
-      calf_old = $6 
-      WHERE pk=$7`,
+      calf_old = $6,
+      p_breed = $7,
+      p_breed_other = $8
+      WHERE pk=$9`,
       values,
       callback
     )
@@ -692,7 +693,7 @@ module.exports = {
 
 
     return pool.query(
-      "SELECT * FROM field_crop_app where field_crop_id = $1 and app_date = $2 and dairy_id = $3",
+      "SELECT * FROM field_crop_app where field_crop_id = $1 and app_date = $2 and app_method = $3 and dairy_id = $4",
       values,
       callback
     )
@@ -704,7 +705,7 @@ module.exports = {
     return pool.query(
       format(`
         INSERT INTO field_crop_app_process_wastewater_analysis( 
-          dairy_id, sample_date, sample_desc, sample_data_src, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con,
+          dairy_id, sample_date, sample_desc, sample_data_src, material_type, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con,
           ca_con,
           mg_con,
           na_con,
@@ -739,18 +740,8 @@ module.exports = {
   getFieldCropApplicationProcessWastewaterAnalysis: (dairy_id, callback) => {
     return pool.query(
       format(
-        `SELECT  DISTINCT ON(fcapwa.pk) *,
-        fcapw.pk as wastewater_id
-
-          FROM field_crop_app_process_wastewater_analysis fcapwa
-          
-          JOIN field_crop_app_process_wastewater fcapw 
-          
-          ON fcapwa.pk = fcapw.field_crop_app_process_wastewater_analysis_id
-          
-          WHERE 
-          fcapwa.dairy_id = %L
-        `, dairy_id),
+        `SELECT * FROM field_crop_app_process_wastewater_analysis
+          WHERE dairy_id = %L`, dairy_id),
       [],
       callback
     )
@@ -781,7 +772,6 @@ module.exports = {
         dairy_id,
         field_crop_app_id,
         field_crop_app_process_wastewater_analysis_id,
-        material_type,
         app_desc,
         amount_applied
         ) VALUES (%L)  RETURNING *`, values),
@@ -798,10 +788,10 @@ module.exports = {
           fcapww.dairy_id,
           fcapww.field_crop_app_id,
           fcapww.field_crop_app_process_wastewater_analysis_id,
-          fcapww.material_type,
           fcapww.app_desc,
           fcapww.amount_applied,
-
+          
+          fcapwwa.material_type,
           fcapwwa.sample_date,
           fcapwwa.sample_desc,
           fcapwwa.sample_data_src,
@@ -1486,18 +1476,21 @@ module.exports = {
         fca.precip_after,
  
 
+        fcasa_one.sample_date as sample_date_0, 
         fcasa_one.n_con as n_con_0,
         fcasa_one.p_con as p_con_0,
         fcasa_one.k_con as k_con_0,
         fcasa_one.ec as ec_0,
         fcasa_one.org_matter as org_matter_0,
 
+        fcasa_two.sample_date as sample_date_1,
         fcasa_two.n_con as n_con_1,
         fcasa_two.p_con as p_con_1,
         fcasa_two.k_con as k_con_1,
         fcasa_two.ec as ec_1,
         fcasa_two.org_matter as org_matter_1,
 
+        fcasa_three.sample_date as sample_date_2,
         fcasa_three.n_con as n_con_2,
         fcasa_three.p_con as p_con_2,
         fcasa_three.k_con as k_con_2,

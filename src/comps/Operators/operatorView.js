@@ -172,7 +172,7 @@ class OperatorView extends Component {
         {this.state.operators.length > 0 ?
           this.state.operators.map((operator, i) => {
             return (
-              <Paper elevation={2} key={`operatorOV${i}`} style={{ padding: '15px' }}>
+              <Paper elevation={2} key={`operatorOV${i}`} style={{ padding: '15px' }} className='showOnHoverParent'>
                 <Grid item container xs={12} justifyContent="center" alignItems="center" align="center" >
                   <Grid item xs={10}>
                     <OperatorForm
@@ -184,7 +184,9 @@ class OperatorView extends Component {
                   </Grid>
                   <Grid item xs={2}>
                     <Tooltip title="Delete Owner / Operator">
-                      <IconButton onClick={() => { this.confirmDeleteOperator(operator) }}>
+                      <IconButton className='showOnHover'
+                        onClick={() => { this.confirmDeleteOperator(operator) }}
+                      >
                         <DeleteIcon color="error" />
                       </IconButton>
                     </Tooltip>

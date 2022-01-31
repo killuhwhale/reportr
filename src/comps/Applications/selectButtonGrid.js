@@ -1,8 +1,15 @@
 import {
-    Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+    Grid, Paper, Button, Typography, IconButton, Tooltip, TextField, withStyles
 } from '@material-ui/core'
 import { formatDate, groupByKeys, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
 
+
+
+const ThemedButton = withStyles(theme => ({
+    root: {
+        textTransform: 'unset !important'
+    }
+}))(Button)
 
 /** Create buttons based on appEventObj 
  * Given and Object as appEventObj = {
@@ -30,10 +37,10 @@ const renderFieldButtons = (appEventObj, that) => {
                 Object.keys(appEventObj).sort(naturalSort).map(key => {
                     return (
                         <Grid item xs={2} key={`fieldButton${key}`} style={{ marginTop: '8px' }}>
-                            <Button variant='outlined' color='primary'
+                            <ThemedButton variant='outlined' size='small' color='primary'
                                 onClick={() => that.setState({ viewFieldKey: key, viewPlantDateKey: '' })}>
                                 {key}
-                            </Button>
+                            </ThemedButton>
                         </Grid>
                     )
                 })
@@ -53,7 +60,7 @@ const renderCropButtons = (appEventObj, viewFieldKey, that) => {
                     const dateKey = key.indexOf("T") > 0 ? formatDate(key.split("T")[0]) : ''
                     return (
                         <Grid item xs={2} style={{ marginTop: '8px' }} key={`cropButton${key}`} >
-                            <Button variant='outlined' color='secondary'
+                            <Button variant='outlined' size='small' color='secondary'
                                 onClick={() => that.setState({ viewPlantDateKey: key })}>
                                 {dateKey}
                             </Button>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Card, CardContent, CardActions
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -12,7 +13,7 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 
 // import { VariableSizeList as List } from "react-window"
-import { naturalSort, nestedGroupBy } from "../../utils/format"
+import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
@@ -23,7 +24,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
 import { FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
-import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
+import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 
 import {
   readTSV, uploadTSVToDB, uploadNutrientApp
@@ -39,78 +40,124 @@ const SOURCE_OF_ANALYSES = [
 const FreshwaterAppEvent = (props) => {
   return (
     <Grid item container xs={12} style={props.style}>
-      <Grid item xs={12}>
-        <Typography variant="h4">{props.freshwaters[0].fieldtitle}</Typography>
-        <hr />
-      </Grid>
       {
-        props.freshwaters.map((freshwater, i) => {
+        props.freshwaters.sort((a, b) => naturalSortBy(a, b, 'app_date')).map((freshwater, i) => {
           return (
-            <Grid item container xs={12} key={`fwmainview${i}`}>
-              <Grid item xs={6}>
-                <Typography variant="subtitle1">{freshwater.croptitle}</Typography>
-              </Grid>
-              <Grid item xs={6} align="right">
-                <DatePicker
-                  value={freshwater.plant_date}
-                  label='Planted'
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="subtitle2">{freshwater.src_desc} | {freshwater.src_type}</Typography>
-              </Grid>
-              <Grid item xs={6} align="right">
-                <DatePicker
-                  value={freshwater.app_date}
-                  label='Applied'
-                />
-              </Grid>
-              <Grid item container xs={10}>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Amount Applied"
-                    value={freshwater.amount_applied}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="EC"
-                    value={freshwater.ec}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="TDS"
-                    value={freshwater.tds}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Nitrogen lbs / acre"
-                    value={freshwater.totaln}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item container xs={2} justifyContent="center" >
-                <Tooltip title="Delete Freshwater Event">
-                  <IconButton onClick={() => props.onDelete(freshwater)}>
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-
-            </Grid>
+            <FreshwaterAppEventCard
+              freshwater={freshwater}
+              index={i}
+              onDelete={props.onDelete}
+              key={`fwap_${i}`}
+            />
           )
+
         })
       }
     </Grid>
   )
 }
 
+const OldEventRow = (props) => {
+  const freshwater = props.freshwater
+  const i = 0
+  return (
+    <Grid item container xs={12} key={`fwmainview${i}`}>
+      <Grid item xs={6}>
+        <Typography variant="subtitle1">{freshwater.croptitle}</Typography>
+      </Grid>
+      <Grid item xs={6} align="right">
+        <DatePicker
+          value={freshwater.plant_date}
+          label='Planted'
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <Typography variant="subtitle2">{freshwater.src_desc} | {freshwater.src_type}</Typography>
+      </Grid>
+      <Grid item xs={6} align="right">
+        <DatePicker
+          value={freshwater.app_date}
+          label='Applied'
+        />
+      </Grid>
+      <Grid item container xs={10}>
+        <Grid item xs={3}>
+          <TextField
+            label="Amount Applied"
+            value={freshwater.amount_applied}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="EC"
+            value={freshwater.ec}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="TDS"
+            value={freshwater.tds}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="Nitrogen lbs / acre"
+            value={freshwater.totaln}
+          />
+        </Grid>
+      </Grid>
+      <Grid item container xs={2} justifyContent="center" >
+        <Tooltip title="Delete Freshwater Event">
+          <IconButton onClick={() => props.onDelete(freshwater)}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+
+    </Grid>
+  )
+}
+
+const FreshwaterAppEventCard = (props) => {
+  const { app_method, croptitle, plant_date, src_desc, src_type, app_date, n_con, amount_applied, ec, tds } = props.freshwater
+  return (
+    <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+      <CardContent>
+        <Typography>
+          {croptitle} - {app_method}
+        </Typography>
+        <DatePicker label="App Date"
+          value={app_date}
+          open={false}
+        />
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`N ${formatFloat(n_con)} TDS ${formatFloat(tds)} EC ${formatFloat(ec)}`}
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`Amount ${formatFloat(amount_applied)}`}
+          </Typography>
+        </Grid>
+      </CardContent>
+      <CardActions>
+        <Tooltip title="Delete Freshwastewater">
+          <IconButton className='showOnHover'
+            onClick={() => props.onDelete(props.freshwater)}
+          >
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </CardActions>
+    </Card>
+  )
+}
+
 
 const FreshwaterSource = (props) => {
   return (
-    <Grid item container xs={3}>
+    <Grid item container xs={3} className='showOnHoverParent'>
       <Grid item container xs={10}>
         <Grid item xs={12}>
           <TextField
@@ -128,7 +175,9 @@ const FreshwaterSource = (props) => {
 
       <Grid item xs={2}>
         <Tooltip title="Delete Freshwater Source">
-          <IconButton onClick={() => props.onConfirmFreshwaterSourceDelete(props.source)}>
+          <IconButton className='showOnHover'
+            onClick={() => props.onConfirmFreshwaterSourceDelete(props.source)}
+          >
             <DeleteIcon color="error" />
           </IconButton>
         </Tooltip>
@@ -140,7 +189,7 @@ const FreshwaterSource = (props) => {
 
 const FreshwaterAnalysis = (props) => {
   return (
-    <Grid item container xs={3} >
+    <Grid item container xs={3} className='showOnHoverParent'>
       <Grid item container xs={10}>
         <Grid item xs={12}>
           <DatePicker
@@ -164,7 +213,9 @@ const FreshwaterAnalysis = (props) => {
       </Grid>
       <Grid item xs={2}>
         <Tooltip title="Delete Freshwater Source">
-          <IconButton onClick={() => props.onConfirmFreshwaterAnalysisDelete(props.analysis)}>
+          <IconButton className='showOnHover'
+            onClick={() => props.onConfirmFreshwaterAnalysisDelete(props.analysis)}
+          >
             <DeleteIcon color="error" />
           </IconButton>
         </Tooltip>
@@ -762,13 +813,17 @@ class Freshwater extends Component {
           <Grid item container xs={12}>
             {renderFieldButtons(this.state.fieldCropAppFreshwaters, this)}
             {renderCropButtons(this.state.fieldCropAppFreshwaters, this.state.viewFieldKey, this)}
+            <CurrentFieldCrop
+              viewFieldKey={this.state.viewFieldKey}
+              viewPlantDateKey={this.state.viewPlantDateKey}
+            />
             {this.getAppEventsByViewKeys().length > 0 ?
               <FreshwaterAppEvent
                 freshwaters={this.getAppEventsByViewKeys()}
                 onDelete={this.onConfirmFreshwaterDelete.bind(this)}
               />
               :
-              <div>No events to show</div>
+              <React.Fragment></React.Fragment>
             }
           </Grid>
 

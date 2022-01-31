@@ -3,13 +3,7 @@ import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, AppBar, Tabs, Tab
 } from '@material-ui/core'
 
-import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
-import ContactPhoneIcon from '@material-ui/icons/ContactPhone'
-import LocalShippingIcon from '@material-ui/icons/LocalShipping'
-import CallReceivedIcon from '@material-ui/icons/CallReceived'
-import ExploreIcon from '@material-ui/icons/Explore'
-import AssessmentIcon from '@material-ui/icons/Assessment'
 import CloudUploadIcon from '@material-ui/icons/CloudUpload'
 import AirlineSeatLegroomReducedIcon from '@material-ui/icons/AirlineSeatLegroomReduced'
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
@@ -27,16 +21,15 @@ import AddExportRecipientModal from '../Modals/AddExportRecipientModal'
 import AddExportDestModal from "../Modals/addExportDestModal"
 import AddExportManifestModal from "../Modals/addExportManifestModal"
 import ViewTSVsModal from '../Modals/viewTSVsModal'
-import UploadExportTSVModal from '../Modals/uploadExportTSVModal'
 import UploadTSVModal from "../Modals/uploadTSVModal"
 
-import formats from "../../utils/format"
 import { get, post } from '../../utils/requests';
 import {
   TSV_INFO, checkEmpty, readTSV, processTSVText, lazyGet, uploadTSVToDB, MANURE, WASTEWATER,
   createDataFromManureExportTSVListRow, uploadExportTSV
 } from '../../utils/TSV'
-import { groupBySortBy } from '../../utils/format'
+import { getAvailableNutrientsG } from '../Dairy/pdfDB'
+import { formatFloat, groupBySortBy } from '../../utils/format'
 
 
 
@@ -60,15 +53,15 @@ const DEST_TYPES = ['Broker', 'Composting Facility', 'Farmer', 'Other']
 const ContactView = (props) => {
   const contact = props.contact
   return (
-    <Grid item container xs={12}>
-      <Grid item container xs={10}>
-        <Typography variant="subtitle1">
+    <Grid item container xs={12} alignItems='center' style={{ marginTop: '16px' }} className='showOnHoverParent'>
+      <Grid item xs={10} >
+        <Typography variant="caption">
           {contact.first_name} {contact.middle_name} {contact.last_name} {contact.suffix_name} {contact.primary_phone}
         </Typography>
       </Grid>
       <Grid item xs={2}>
-        <Tooltip title="Delete contact">
-          <IconButton
+        <Tooltip title="Delete contact" >
+          <IconButton className='showOnHover'
             onClick={() => props.onConfirmExportContactDelete(contact)}
           >
             <DeleteIcon color='error' />
@@ -82,22 +75,22 @@ const ContactView = (props) => {
 const HaulerView = (props) => {
   let hauler = props.hauler
   return (
-    <Grid item container xs={12} style={props.style} style={{ marginBottom: '15px' }}>
+    <Grid item container xs={12} style={props.style} style={{ marginTop: '16px' }} align='align' className='showOnHoverParent'>
       <Grid item container xs={10}>
         <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom={false}>
+          <Typography variant="caption" gutterBottom={false}>
             {hauler.title}
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="subtitle1" gutterBottom={false} style={{ marginLeft: "15px" }}>
+          <Typography variant="caption" gutterBottom={false} style={{ marginLeft: "15px" }}>
             {hauler.first_name} {hauler.primary_phone}
           </Typography>
         </Grid>
       </Grid>
       <Grid item xs={2}>
         <Tooltip title="Delete hauler">
-          <IconButton
+          <IconButton className='showOnHover'
             onClick={() => props.onConfirmExportHaulerDelete(hauler)}
           >
             <DeleteIcon color='error' />
@@ -111,15 +104,15 @@ const HaulerView = (props) => {
 const RecipientView = (props) => {
   let recipient = props.recipient
   return (
-    <Grid item container xs={12} style={props.style}>
-      <Grid item container xs={10}>
-        <Typography variant="subtitle1">
+    <Grid item container xs={12} style={props.style} style={{ marginTop: '16px' }} alignItems='center' className='showOnHoverParent'>
+      <Grid item xs={10}>
+        <Typography variant="caption">
           {recipient.title} {recipient.dest_type} {recipient.primary_phone}
         </Typography>
       </Grid>
       <Grid item xs={2}>
         <Tooltip title="Delete recipient">
-          <IconButton
+          <IconButton className='showOnHover'
             onClick={() => props.onConfirmExportRecipientDelete(recipient)}
           >
             <DeleteIcon color='error' />
@@ -133,15 +126,15 @@ const RecipientView = (props) => {
 const DestView = (props) => {
   const dest = props.dest
   return (
-    <Grid item container xs={12} style={props.style}>
-      <Grid item container xs={10}>
-        <Typography variant="subtitle1">
+    <Grid item container xs={12} style={props.style} style={{ marginTop: '16px' }} alignItems='center' className='showOnHoverParent'>
+      <Grid item xs={10}>
+        <Typography variant="caption">
           {dest.title} {dest.dest_type}: {`${dest.pnumber} ${dest.street} ${dest.cross_street} ${dest.city_zip}`}
         </Typography>
       </Grid>
       <Grid item xs={2}>
         <Tooltip title="Delete destination">
-          <IconButton
+          <IconButton className='showOnHover'
             onClick={() => props.onConfirmExportDestDelete(dest)}
           >
             <DeleteIcon color='error' />
@@ -156,36 +149,36 @@ const ManifestView = (props) => {
   const manifests = props.manifest
   const recipientTitle = manifests[0].recipient_title
   return (
-    <Grid item container xs={12} style={props.style}>
+    <Grid item container xs={12} style={props.style} style={{ marginTop: '16px' }} className='showOnHoverParent'>
       <Grid item xs={12}>
-        <Typography variant="h4">
+        <Typography variant="subtitle1">
           {recipientTitle}
         </Typography>
       </Grid>
 
       {manifests.map((manifest, i) => {
         return (
-          <Grid item container xs={12} key={`mvet${i}`}>
+          <Grid item container xs={12} key={`mvet${i}`} alignItems='center'>
             <Grid item container xs={10}>
               <Grid item xs={6}>
-                <Typography variant="subtitle1">
+                <Typography variant="caption">
                   Date last hauled: {manifest.last_date_hauled.split("T")[0]} {manifest.material_type}
                 </Typography>
               </Grid>
               <Grid item xs={2}>
-                <Typography variant="subtitle1">
+                <Typography variant="caption">
                   Amount: {manifest.amount_hauled}
                 </Typography>
               </Grid>
               <Grid item xs={4}>
-                <Typography variant="subtitle1">
+                <Typography variant="caption">
                   N: {manifest.n_con_mg_kg}{manifest.n_con_mg_l} P: {manifest.p_con_mg_kg} {manifest.p_con_mg_l} K: {manifest.k_con_mg_kg} {manifest.k_con_mg_l}
                 </Typography>
               </Grid>
             </Grid>
             <Grid item xs={2}>
               <Tooltip title="Delete manifest">
-                <IconButton
+                <IconButton className='showOnHover'
                   onClick={() => props.onConfirmExportManifestDelete(manifest)}
                 >
                   <DeleteIcon color='error' />
@@ -196,6 +189,68 @@ const ManifestView = (props) => {
         )
       })
       }
+    </Grid>
+  )
+}
+
+
+const ExportTotals = (props) => {
+  const [manureExported, wastewaterExported, nutrientsExported] = props.totals
+  const [n_lbs, p_lbs, k_lbs, salt_lbs] = nutrientsExported
+
+  return (
+    <Grid item container xs={12}>
+      <Grid item container xs={12}>
+        <Grid item xs={2} align='right'>
+          <Typography variant='caption' color='primary'>Total manure exported</Typography>
+        </Grid>
+        <Grid item xs={3} align='right'>
+          <Typography variant='caption' color='primary'>Total process wastewater exported</Typography>
+        </Grid>
+
+
+        <Grid item container xs={7} >
+          <Grid item xs={3} align='right'>
+            <Typography variant='caption' color='primary'>Total N exported</Typography>
+          </Grid>
+          <Grid item xs={3} align='right'>
+            <Typography variant='caption' color='primary'>Total P exported</Typography>
+          </Grid>
+          <Grid item xs={3} align='right'>
+            <Typography variant='caption' color='primary'>Total K exported</Typography>
+          </Grid>
+          <Grid item xs={3} align='right'>
+            <Typography variant='caption' color='primary'>Total salt exported</Typography>
+          </Grid>
+
+        </Grid>
+
+      </Grid>
+
+      <Grid item container xs={12}>
+        <Grid item xs={2} align='right'>
+          <Typography variant='caption' color='secondary'>{formatFloat(manureExported)} tons</Typography>
+        </Grid>
+        <Grid item xs={3} align='right'>
+          <Typography variant='caption' color='secondary'>{formatFloat(wastewaterExported)} gals</Typography>
+        </Grid>
+
+        <Grid item container xs={7} >
+          <Grid item xs={3} align='right'>
+            <Typography variant='caption' color='secondary'>{formatFloat(n_lbs)}</Typography>
+          </Grid>
+          <Grid item xs={3} align='right'>
+            <Typography variant='caption' color='secondary'>{formatFloat(p_lbs)}</Typography>
+          </Grid>
+          <Grid item xs={3} align='right'>
+            <Typography variant='caption' color='secondary'>{formatFloat(k_lbs)}</Typography>
+          </Grid>
+          <Grid item xs={3} align='right'>
+            <Typography variant='caption' color='secondary'>{formatFloat(salt_lbs)}</Typography>
+          </Grid>
+        </Grid>
+
+      </Grid>
     </Grid>
   )
 }
@@ -220,6 +275,9 @@ class ExportTab extends Component {
       wastewaterUploadedFilename: '',
       tsvType: MANURE,
       numCols: '',
+      manureExported: 0,
+      wastewaterExported: 0,
+      nutrientsExported: [0, 0, 0, 0],
       operators: [],
       exportContacts: [],
       exportHaulers: [],
@@ -229,6 +287,7 @@ class ExportTab extends Component {
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
       toggleShowDeleteAllModal: false,
+
 
       createExportContactObj: {
         first_name: '',
@@ -334,6 +393,7 @@ class ExportTab extends Component {
     this.getExportRecipients()
     this.getExportDests()
     this.getExportManifests()
+    this.fetchExportTotals()
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -344,6 +404,7 @@ class ExportTab extends Component {
       this.getExportRecipients()
       this.getExportDests()
       this.getExportManifests()
+      this.fetchExportTotals()
     }
   }
 
@@ -868,6 +929,15 @@ class ExportTab extends Component {
     }
   }
 
+  async fetchExportTotals() {
+    const { availableNutrientsG: { manureExported, wastewaterExported, total: nutrientsExported } } = await getAvailableNutrientsG(this.props.dairy.pk)
+    this.setState({ manureExported, wastewaterExported, nutrientsExported })
+  }
+
+  getExportTotals() {
+    return [this.state.manureExported, this.state.wastewaterExported, this.state.nutrientsExported]
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -925,6 +995,9 @@ class ExportTab extends Component {
                 </Grid> */}
 
               </Grid>
+
+
+
               <Grid item container xs={4}>
                 <Grid item xs={2}>
                   <Tooltip title="Upload Manure TSV">
@@ -972,19 +1045,31 @@ class ExportTab extends Component {
               </Grid>
             </Grid>
 
-            <Grid item container xs={6}>
+            <Grid item xs={12} style={{ marginTop: '24px' }}>
+              {
+                this.state.nutrientsExported.length > 0 ?
+                  <ExportTotals
+                    totals={this.getExportTotals()}
+                  />
+                  :
+                  <React.Fragment></React.Fragment>
+              }
+            </Grid>
+
+            <Grid item container xs={3}>
               <Grid item xs={12}>
-                <Typography variant='h3'>
+                <Typography variant='h6'>
                   Contacts
                 </Typography>
               </Grid>
               {this.state.exportContacts.length > 0 ?
                 <Grid item xs={12}>
                   <List
+                    style={{ overflowX: 'hidden' }}
                     height={this.state.windowHeight * 0.3}
                     itemCount={this.state.exportContacts.length}
                     itemSize={this.getContactSize.bind(this)}
-
+                    width={this.state.windowWidth * (.2)}
                   >
                     {this.renderContact.bind(this)}
                   </List>
@@ -997,19 +1082,20 @@ class ExportTab extends Component {
               }
             </Grid>
 
-            <Grid item container xs={6}>
+            <Grid item container xs={3}>
               <Grid item xs={12}>
-                <Typography variant='h3'>
+                <Typography variant='h6'>
                   Haulers
                 </Typography>
               </Grid>
               {this.state.exportHaulers.length > 0 ?
                 <Grid item container xs={12}>
                   <List
+                    style={{ overflowX: 'hidden' }}
                     height={this.state.windowHeight * 0.3}
                     itemCount={this.state.exportHaulers.length}
                     itemSize={this.getHaulerSize.bind(this)}
-                    width={this.state.windowWidth * (.4)}
+                    width={this.state.windowWidth * (.2)}
                   >
                     {this.renderHauler.bind(this)}
                   </List>
@@ -1023,17 +1109,18 @@ class ExportTab extends Component {
               }
             </Grid>
 
-            <Grid item xs={6}>
-              <Typography variant='h3'>
+            <Grid item xs={3}>
+              <Typography variant='h6'>
                 Recipients
               </Typography>
               {this.state.exportRecipients.length > 0 ?
                 <Grid item container xs={12}>
                   <List
+                    style={{ overflowX: 'hidden' }}
                     height={this.state.windowHeight * 0.3}
                     itemCount={this.state.exportRecipients.length}
                     itemSize={this.getRecipientSize.bind(this)}
-                    width={this.state.windowWidth * (.4)}
+                    width={this.state.windowWidth * (.2)}
                   >
                     {this.renderRecipient.bind(this)}
                   </List>
@@ -1047,16 +1134,17 @@ class ExportTab extends Component {
               }
             </Grid>
 
-            <Grid item xs={6}>
-              <Typography variant='h3'>
+            <Grid item xs={3}>
+              <Typography variant='h6'>
                 Destinations
               </Typography>
               {this.state.exportDests.length > 0 ?
                 <List
+                  style={{ overflowX: 'hidden' }}
                   height={this.state.windowHeight * 0.3}
                   itemCount={this.state.exportDests.length}
                   itemSize={this.getDestSize.bind(this)}
-                  width={this.state.windowWidth * (.4)}
+                  width={this.state.windowWidth * (.2)}
                 >
                   {this.renderDest.bind(this)}
                 </List>
@@ -1070,12 +1158,13 @@ class ExportTab extends Component {
 
             <Grid item xs={12}>
               <Grid item xs={12}>
-                <Typography variant='h3'>
+                <Typography variant='h5'>
                   Manifests
                 </Typography>
               </Grid>
               {Object.keys(this.state.exportManifests).length > 0 ?
                 <List
+                  style={{ overflowX: 'hidden' }}
                   height={this.state.windowHeight * 0.75}
                   itemCount={Object.keys(this.state.exportManifests).length}
                   itemSize={this.getManifestSize.bind(this)}

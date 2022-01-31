@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Card, CardContent, CardActions
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -18,8 +19,8 @@ import AddSolidmanureModal from "../Modals/addSolidmanureModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
-import { naturalSort, nestedGroupBy } from "../../utils/format"
-import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
+import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
+import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import {
   readTSV, uploadNutrientApp, uploadTSVToDB
 } from "../../utils/TSV"
@@ -36,75 +37,15 @@ const SOURCE_OF_ANALYSES = [
 const SolidmanureAppEvent = (props) => {
   return (
     <Grid item container xs={12} style={props.style}>
-      <Grid item xs={12}>
-        <Typography variant="h4">{props.solidmanures[0].fieldtitle}</Typography>
-        <hr />
-      </Grid>
       {
-        props.solidmanures.map((solidmanure, i) => {
+        props.solidmanures.sort((a, b) => naturalSortBy(a, b, 'app_date')).map((manure, i) => {
           return (
-            <Grid item container xs={12} key={`fwmainview${i}`}>
-              <Grid item xs={6}>
-                <Typography variant="subtitle1">{solidmanure.croptitle}</Typography>
-              </Grid>
-              <Grid item xs={6} align="center">
-                <DatePicker
-                  value={solidmanure.plant_date}
-                  label='Planted'
-                />
-
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="subtitle2">{solidmanure.sample_desc} | {solidmanure.src_desc}</Typography>
-              </Grid>
-              <Grid item xs={6} align="center">
-                <DatePicker
-                  value={solidmanure.app_date}
-                  label='applied'
-                />
-
-              </Grid>
-              <Grid item container xs={10}>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Amount Applied"
-                    value={solidmanure.amount_applied}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    label="Nitrogen lbs / acre"
-                    value={solidmanure.n_lbs_acre}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Phosphorus lbs / acre"
-                    value={solidmanure.p_lbs_acre}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    label="Potassium lbs / acre"
-                    value={solidmanure.k_lbs_acre}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    label="Salt lbs / acre"
-                    value={solidmanure.salt_lbs_acre}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item container xs={2} justifyContent="center" >
-                <Tooltip title="Delete Solidmanure Event">
-                  <IconButton onClick={() => props.onDelete(solidmanure)}>
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-
-            </Grid>
+            <SolidmanureAppEventCard
+              manure={manure}
+              onDelete={props.onDelete}
+              index={i}
+              key={`smape_${i}`}
+            />
           )
         })
       }
@@ -112,10 +53,119 @@ const SolidmanureAppEvent = (props) => {
   )
 }
 
+const OldEvent = (props) => {
+  const solidmanure = props.solidmanure
+  const i = 0
+  return (
+    <Grid item container xs={12} key={`fwmainview${i}`}>
+      <Grid item xs={6}>
+        <Typography variant="subtitle1">{solidmanure.croptitle}</Typography>
+      </Grid>
+      <Grid item xs={6} align="center">
+        <DatePicker
+          value={solidmanure.plant_date}
+          label='Planted'
+        />
+
+      </Grid>
+      <Grid item xs={6}>
+        <Typography variant="subtitle2">{solidmanure.sample_desc} | {solidmanure.src_desc}</Typography>
+      </Grid>
+      <Grid item xs={6} align="center">
+        <DatePicker
+          value={solidmanure.app_date}
+          label='applied'
+        />
+
+      </Grid>
+      <Grid item container xs={10}>
+        <Grid item xs={3}>
+          <TextField
+            label="Amount Applied"
+            value={solidmanure.amount_applied}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            label="Nitrogen lbs / acre"
+            value={solidmanure.n_lbs_acre}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="Phosphorus lbs / acre"
+            value={solidmanure.p_lbs_acre}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            label="Potassium lbs / acre"
+            value={solidmanure.k_lbs_acre}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            label="Salt lbs / acre"
+            value={solidmanure.salt_lbs_acre}
+          />
+        </Grid>
+      </Grid>
+      <Grid item container xs={2} justifyContent="center" >
+        <Tooltip title="Delete Solidmanure Event">
+          <IconButton onClick={() => props.onDelete(solidmanure)}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+
+    </Grid>
+  )
+}
+
+
+const SolidmanureAppEventCard = (props) => {
+  let {
+    app_method, material_type, n_con, p_con,
+    k_con, amount_applied, app_date, croptitle, plant_date
+  } = props.manure
+  return (
+    <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+      <CardContent>
+        <Typography>
+          {croptitle} - {app_method}
+        </Typography>
+        <DatePicker label="App Date"
+          value={app_date}
+          open={false}
+        />
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`N ${formatFloat(n_con)} P ${formatFloat(p_con)} K ${formatFloat(k_con)}`}
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`Amount ${formatFloat(amount_applied)}`}
+          </Typography>
+        </Grid>
+      </CardContent>
+      <CardActions>
+        <Tooltip title="Delete Solid Manure">
+          <IconButton className='showOnHover'
+            onClick={() => props.onDelete(props.manure)}
+          >
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </CardActions>
+    </Card>
+  )
+}
+
 const SolidmanureAnalysis = (props) => {
 
   return (
-    <Grid item container xs={6}>
+    <Grid item container xs={6} className='showOnHoverParent'>
       <Grid item container xs={10}>
         <Grid item xs={6}>
           <DatePicker
@@ -132,7 +182,9 @@ const SolidmanureAnalysis = (props) => {
       </Grid>
       <Grid item xs={2}>
         <Tooltip title="Delete Solidmanure Source">
-          <IconButton onClick={() => props.onConfirmSolidmanureAnalysisDelete(props.analysis)}>
+          <IconButton className='showOnHover'
+            onClick={() => props.onConfirmSolidmanureAnalysisDelete(props.analysis)}
+          >
             <DeleteIcon color="error" />
           </IconButton>
         </Tooltip>
@@ -141,6 +193,7 @@ const SolidmanureAnalysis = (props) => {
   )
 
 }
+
 
 class Solidmanure extends Component {
   constructor(props) {
@@ -249,7 +302,6 @@ class Solidmanure extends Component {
     get(`${this.props.BASE_URL}/api/field_crop_app_solidmanure/${this.state.dairy_id}`)
       .then(res => {
         let fieldCropAppSolidmanures = nestedGroupBy(res, ['fieldtitle', 'plant_date'])
-        console.log('fca manuress', fieldCropAppSolidmanures)
         const keys = Object.keys(fieldCropAppSolidmanures).sort(naturalSort)
         if (keys.length > 0) {
           this.setState({ fieldCropAppSolidmanures: fieldCropAppSolidmanures, viewFieldKey: keys[0] })
@@ -605,13 +657,17 @@ class Solidmanure extends Component {
         <Grid item container xs={12}>
           {renderFieldButtons(this.state.fieldCropAppSolidmanures, this)}
           {renderCropButtons(this.state.fieldCropAppSolidmanures, this.state.viewFieldKey, this)}
+          <CurrentFieldCrop
+            viewFieldKey={this.state.viewFieldKey}
+            viewPlantDateKey={this.state.viewPlantDateKey}
+          />
           {this.getAppEventsByViewKeys().length > 0 ?
             <SolidmanureAppEvent
               solidmanures={this.getAppEventsByViewKeys()}
               onDelete={this.onConfirmSolidmanureDelete.bind(this)}
             />
             :
-            <div>No events to show</div>
+            <React.Fragment></React.Fragment>
           }
         </Grid>
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Card, CardContent, CardActions
 } from '@material-ui/core'
 
 
@@ -11,18 +12,19 @@ import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { groupByKeys } from "../../utils/format"
+import { formatFloat, groupByKeys, naturalSortBy } from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 import { naturalSort, nestedGroupBy } from "../../utils/format"
-import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
+import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import {
   PLOWDOWN_CREDIT, TSV_INFO, readTSV, uploadNutrientApp, uploadTSVToDB
 } from "../../utils/TSV"
+import { DatePicker } from '@material-ui/pickers'
 
 
 
@@ -33,60 +35,54 @@ const PlowdownCreditView = (props) => {
 
   return (
     <Grid container item xs={12} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
-      <Grid item xs={12}>
-        <Typography variant='h3'>
-          {headerInfo.fieldtitle}
-        </Typography>
-      </Grid>
-      {plowdownCredits.map((plowdownCredit, i) => {
+      {plowdownCredits.sort((a, b) => naturalSortBy(a, b, 'app_date')).map((plowdownCredit, i) => {
         return (
-          <Grid item container key={`srowview${i}`} xs={12}>
-            <Grid item xs={3}>
-              <TextField
-                value={plowdownCredit.app_date ? plowdownCredit.app_date.split('T')[0] : ''}
-                label='App date'
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                value={plowdownCredit.src_desc}
-                label='Source description'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={plowdownCredit.n_lbs_acre}
-                label='N lbs/ acre'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={plowdownCredit.p_lbs_acre}
-                label='P lbs/ acre'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={plowdownCredit.k_lbs_acre}
-                label='K lbs/ acre'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={plowdownCredit.salt_lbs_acre}
-                label='Salt'
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <Tooltip title='Delete PlowdownCredit'>
-                <IconButton onClick={() => props.onDelete(plowdownCredit)}>
-                  <DeleteIcon color='error' />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-          </Grid>)
+          <PlowdownCreditViewCard
+            plowdownCredit={plowdownCredit}
+            onDelete={props.onDelete}
+            key={`pdcv${i}`}
+          />
+        )
       })}
     </Grid>
+  )
+}
+
+
+const PlowdownCreditViewCard = (props) => {
+  let {
+    app_method, n_lbs_acre, p_lbs_acre, k_lbs_acre,
+    croptitle, app_date
+  } = props.plowdownCredit
+
+  return (
+    <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+      <CardContent>
+        <Typography>
+          {croptitle} - {app_method}
+        </Typography>
+        <DatePicker label="App Date"
+          value={app_date}
+          open={false}
+        />
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`Lbs per Acre:  N ${formatFloat(n_lbs_acre)} P ${formatFloat(p_lbs_acre)} K ${formatFloat(k_lbs_acre)}`}
+          </Typography>
+        </Grid>
+
+
+      </CardContent>
+      <CardActions>
+        <Tooltip title="Delete PlowdownCredit">
+          <IconButton className='showOnHover'
+            onClick={() => props.onDelete(props.plowdownCredit)}
+          >
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </CardActions>
+    </Card>
   )
 }
 
@@ -152,7 +148,6 @@ class PlowdownCredit extends Component {
     this.setState({ showConfirmDeletePlowdownCreditModal: val })
   }
   onConfirmPlowdownCreditDelete(deletePlowdownCreditObj) {
-    console.log(deletePlowdownCreditObj)
     this.setState({ showConfirmDeletePlowdownCreditModal: true, deletePlowdownCreditObj })
   }
   onPlowdownCreditDelete() {
@@ -283,13 +278,17 @@ class PlowdownCredit extends Component {
         <Grid item container xs={12}>
           {renderFieldButtons(this.state.field_crop_app_plowdown_credit, this)}
           {renderCropButtons(this.state.field_crop_app_plowdown_credit, this.state.viewFieldKey, this)}
+          <CurrentFieldCrop
+            viewFieldKey={this.state.viewFieldKey}
+            viewPlantDateKey={this.state.viewPlantDateKey}
+          />
           {this.getAppEventsByViewKeys().length > 0 ?
             <PlowdownCreditView
               plowdownCredits={this.getAppEventsByViewKeys()}
               onDelete={this.onConfirmPlowdownCreditDelete.bind(this)}
             />
             :
-            <div>No events to show</div>
+            <React.Fragment></React.Fragment>
           }
         </Grid>
 

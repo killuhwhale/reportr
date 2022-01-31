@@ -37,7 +37,7 @@ class JoinedView extends Component {
   }
 
   deleteJoinedFieldParcel() {
-    if(Object.keys(this.state.curDeleteFieldParcel).length > 0) {
+    if (Object.keys(this.state.curDeleteFieldParcel).length > 0) {
       let pk = this.state.curDeleteFieldParcel.pk
       post(`${this.props.BASE_URL}/api/field_parcel/delete`, { data: pk })
         .then(res => {
@@ -56,14 +56,16 @@ class JoinedView extends Component {
         {this.state.field_parcels.length > 0 ?
           this.state.field_parcels.map((fieldParcel, i) => {
             return (
-              <Grid key={`fieldParcel1337${i}`} item container xs={6} justifyContent="center" alignItems="center">
-                <Grid item xs={10} style={{display: 'flex'}}>
-                  <Typography variant="subtitle1" style={{marginRight: '12px'}}> {`${fieldParcel.title}`} </Typography>
+              <Grid key={`fieldParcel1337${i}`} item container xs={6} justifyContent="center" alignItems="center" className='showOnHoverParent'>
+                <Grid item xs={10} style={{ display: 'flex' }}>
+                  <Typography variant="subtitle1" style={{ marginRight: '12px' }}> {`${fieldParcel.title}`} </Typography>
                   <Typography variant="subtitle1" color='secondary'>{`${this.props.fmtPNumber(fieldParcel.pnumber)}`}</Typography>
                 </Grid>
                 <Grid item xs={2}>
                   <Tooltip title="Delete join">
-                    <IconButton onClick={() => this.confirmJoinedFieldParcel(fieldParcel)}>
+                    <IconButton className='showOnHover'
+                      onClick={() => this.confirmJoinedFieldParcel(fieldParcel)}
+                    >
                       <Delete color="error" />
                     </IconButton>
                   </Tooltip>

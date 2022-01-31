@@ -121,6 +121,7 @@ const getAvailableNutrientsAB = (dairy_id) => {
         // Return herdInfo & calculations
         getReportingPeriodDays(BASE_URL, dairy_id)
           .then(rpDays => {
+            console.log("PDFDB")
             let totals = calculateHerdManNKPNaCl(herdInfo[0], rpDays)
               .totals.map(total => new Intl.NumberFormat().format(total.toFixed(2)))
 
@@ -348,8 +349,12 @@ const getAvailableNutrientsG = (dairy_id) => {
       get(`${BASE_URL}/api/export_manifest/material_type/${encodeURIComponent('Process%')}/${dairy_id}`)
     ])
       .then(([dry, process]) => {
+
+        let manureExported = 0
+        let wastewaterExported = 0
         let dryTotal = dry && dry.length > 0 ?
           dry.map(el => {
+            manureExported += el.amount_hauled
             return [
               calcLbsFromTonsAsPercent(el.n_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
               calcLbsFromTonsAsPercent(el.p_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
@@ -362,6 +367,7 @@ const getAvailableNutrientsG = (dairy_id) => {
 
         let processTotal = process && process.length > 0 ?
           process.map(el => {
+            wastewaterExported += el.amount_hauled
             return [
               MGMLToLBS(el.kn_con_mg_l, el.amount_hauled),
               MGMLToLBS(el.p_con_mg_l, el.amount_hauled),
@@ -387,6 +393,8 @@ const getAvailableNutrientsG = (dairy_id) => {
             process,
             dryTotal,
             processTotal,
+            manureExported,
+            wastewaterExported,
             total: opArrayByPos(dryTotal, processTotal)
           }
         })
@@ -616,7 +624,7 @@ const getNutrientBudgetA = (dairy_id) => {
           let plantDateEventObj = groupBySortBy(allEvents[key], 'plant_date', 'harvest_date')
           plantDateEventObj = Object.fromEntries(Object.keys(plantDateEventObj).map(key => {
             let plantDateEvents = plantDateEventObj[key]
-            let appDatesObj = groupBySortBy(plantDateEvents, 'app_date', 'material_type')
+            let appDatesObj = groupByKeys(plantDateEvents, ['app_date', 'app_method'])
 
             appDatesObj = Object.fromEntries(Object.keys(appDatesObj).sort(naturalSort).map(key => {
               let appDatesObjList = appDatesObj[key]

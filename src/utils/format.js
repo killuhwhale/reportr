@@ -140,4 +140,15 @@ const naturalSortBy = (a, b, s) => {
 }
 
 
-export { nestedGroupBy, groupBySortBy, groupByKeys, formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, percentageAsMGKG }
+const sortByKeys = (a, b, keys) => {
+  let keyA = ''
+  let keyB = ''
+  keys.forEach(key => {
+    keyA += a[key]
+    keyB += b[key]
+  })
+  return naturalSort(keyA, keyB)
+}
+
+
+export { sortByKeys, nestedGroupBy, groupBySortBy, groupByKeys, formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, percentageAsMGKG }

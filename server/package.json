@@ -11,9 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
+    "firebase-admin": "^10.0.2",
+    "firebase-functions": "^3.16.0",
     "install": "^0.13.0",
+    "jsonwebtoken": "^8.5.1",
     "knex": "^0.95.11",
     "nodemon": "^2.0.4",
     "pg": "^8.6.0",

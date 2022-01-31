@@ -191,18 +191,22 @@ export const processTSVText = (tsvText, numCols) => {
   return rows
 }
 
-const createHeaderMap = (headerRow) => {
+export const createHeaderMap = (headerRow, indexAsKey = true) => {
   const header = {}
   const invalidChars = ['\b', '\f', '\n', '\r', '\t', '\v']
   headerRow.forEach((item, i) => {
     item = item.trim()
     if (item.length > 0 && invalidChars.indexOf(item) < 0) {
-      header[i] = item
+      if (indexAsKey) {
+        header[i] = item
+      } else {
+        header[item] = i
+      }
     }
   })
   return header
 }
-const mapsColToTemplate = (cols, headerMap, template) => {
+export const mapsColToTemplate = (cols, headerMap, template) => {
   const rowTemplate = { ...template }
   cols.forEach((item, i) => {
     const key = headerMap[i]
@@ -213,6 +217,7 @@ const mapsColToTemplate = (cols, headerMap, template) => {
   })
   return rowTemplate
 }
+
 export const processTSVTextAsMap = (tsvText, tsvType) => {
   let lines = tsvText.split("\n")
   let started = false
@@ -479,7 +484,7 @@ const getFieldCropAppFromMap = (commonRowData, dairy_id, tsvType) => {
   return new Promise((resolve, reject) => {
     getFieldCropFromMap(commonRowData, dairy_id, tsvType)
       .then(field_crop_res => {
-        const field_crop_app_search_url = `${field_crop_res.pk}/${encodeURIComponent(app_date)}`
+        const field_crop_app_search_url = `${field_crop_res.pk}/${encodeURIComponent(app_date)}/${encodeURIComponent(app_method)}`
         const field_crop_app_data = {
           dairy_id: dairy_id,
           field_crop_id: field_crop_res.pk,
@@ -1044,6 +1049,7 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id
     sample_date,
     sample_desc,
     sample_data_src,
+    material_type,
     kn_con: checkEmpty(kn_con),
     nh4_con: checkEmpty(nh4_con),
     nh3_con: checkEmpty(nh3_con),
@@ -1092,7 +1098,6 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id
           field_crop_app_id: field_crop_app.pk,
           field_crop_app_process_wastewater_analysis_id: res[0].pk,
           app_desc,
-          material_type,
           amount_applied: amount_applied.replaceAll(',', ''),
         }
         resolve(post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data))
@@ -1988,7 +1993,6 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_id) => {
           ec_dl: ec_dl_2,
           org_matter_dl: org_matter_dl_2
         }
-
         Promise.all([
           lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_0)}/${encodeURIComponent(sample_desc_0)}`, sampleData0, dairy_id),
           lazyGet('field_crop_app_soil_analysis', `${encodeURIComponent(field.pk)}/${encodeURIComponent(sample_date_1)}/${encodeURIComponent(sample_desc_1)}`, sampleData1, dairy_id),
@@ -2193,6 +2197,7 @@ export const createDataFromTSVListRowMap = (row, i, dairy_id, tsvType) => {
   return new Promise((resolve, rej) => {
     getFieldCropAppFromMap(row, dairy_id, tsvType)
       .then(field_crop_app => {
+
         /**
          * #######################################################################
          *  Create any nutrient applications here....

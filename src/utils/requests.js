@@ -1,6 +1,16 @@
+
+
+
+
 const get = (url) => {
+  const token = localStorage.getItem('jwtToken')
   return new Promise((resolve, reject) => {
-    fetch(url)
+    fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+    })
       .then(res => {
         resolve(res.json())
       })
@@ -12,13 +22,15 @@ const get = (url) => {
 }
 
 const post = (url, data) => {
+  const token = localStorage.getItem('jwtToken')
   return fetch(url, {
     method: "POST",
     mode: "cors",
     cache: "no-cache",
     credentials: "same-origin",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
     },
     redirect: "follow",
     refferrerPolicy: "no-referrer",

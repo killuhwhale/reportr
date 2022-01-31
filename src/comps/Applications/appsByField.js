@@ -7,14 +7,22 @@ import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selec
 import { formatDate, formatFloat, groupByKeys, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
 import { createBarChart, barChartConfig } from '../Dairy/pdfCharts'
 import { opArrayByPos, toFloat } from '../../utils/convertCalc';
+import { withStyles } from '@material-ui/styles'
 
+
+const HeaderRowGrid = withStyles(theme => ({
+    root: {
+        border: `1px solid ${theme.palette.text.primary}`
+
+    }
+}))(Grid)
 
 const HeaderRow = (props) => {
     const headerInfo = props.headerInfo
     return (
-        <Grid item container xs={12}>
+        <HeaderRowGrid item container xs={12}>
             <Grid item xs={2}>
-                <Typography variant='caption' color='primary' > Applied: {headerInfo['app_date']}</Typography>
+                <Typography variant='caption' color='primary' > Applied: {formatDate(headerInfo['app_date'].split('T')[0])}</Typography>
             </Grid>
             <Grid item xs={2}>
                 <Typography variant='caption' color='primary' > Method: {headerInfo['app_method']}</Typography>
@@ -28,7 +36,7 @@ const HeaderRow = (props) => {
             <Grid item xs={3}>
                 <Typography variant='caption' color='primary' > Rain After: {headerInfo['precip_after']}</Typography>
             </Grid>
-        </Grid>
+        </HeaderRowGrid>
     )
 
 }
@@ -128,7 +136,7 @@ const AppEventTotalRow = (props) => {
 }
 
 const AppEvent = (props) => {
-    const appEvents = groupByKeys(props.events, ['app_date'])
+    const appEvents = groupByKeys(props.events, ['app_date', 'app_method'])
     return (
         <Grid item xs={12}>
             {Object.keys(appEvents).sort(naturalSort).map((key, i) => {
@@ -136,13 +144,13 @@ const AppEvent = (props) => {
                 let appDateEventSubTotals = [0, 0, 0, 0] // NPKSalt
                 let headerInfo = appDateEvents.length > 0 ? appDateEvents[0] : {}
                 return (
-                    <Grid item xs={12}>
+                    <Grid item xs={12} key={`${key + i}`}>
                         <HeaderRow headerInfo={headerInfo} />
                         <AppEventHeaderRow />
                         {
                             appDateEvents.sort((a, b) => naturalSortBy(a, b, 'entry_type')).map((ev, j) => {
                                 appDateEventSubTotals = opArrayByPos(appDateEventSubTotals, [toFloat(ev.n_lbs_acre), toFloat(ev.p_lbs_acre), toFloat(ev.k_lbs_acre), toFloat(ev.salt_lbs_acre)])
-                                return <AppEventRow event={ev} />
+                                return <AppEventRow key={`appDateEventRow${i}-${j}`} event={ev} />
                             })
                         }
                         <AppEventTotalRow totals={appDateEventSubTotals} />
@@ -155,10 +163,15 @@ const AppEvent = (props) => {
     )
 }
 
+const TotalsRowUnderLineGrid = withStyles(theme => ({
+    root: {
+        borderBottom: `1px solid ${theme.palette.text.primary}`
+    }
+}))(Grid)
+
 
 const FieldTotals = (props) => {
     const totals = props.totals
-    console.log(totals)
     return (
         <Grid item container xs={12}>
             <Grid item container xs={12}>
@@ -168,48 +181,48 @@ const FieldTotals = (props) => {
                 <Grid item xs={2}><Typography variant='caption' color='secondary'>Total K (lbs/ acre)</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='secondary'>Total Salt (lbs/ acre)</Typography></Grid>
             </Grid>
-            <Grid item container xs={12}>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Exisiting Soil Nutrient Content</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.soils[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.soils[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.soils[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.soils[3])}</Typography></Grid>
-            </Grid>
-            <Grid item container xs={12}>
+            </TotalsRowUnderLineGrid>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Plowdown credit</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.plows[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.plows[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.plows[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.plows[3])}</Typography></Grid>
-            </Grid>
-            <Grid item container xs={12}>
+            </TotalsRowUnderLineGrid>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Commercial Fertilizer/ Other</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.fertilizers[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.fertilizers[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.fertilizers[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.fertilizers[3])}</Typography></Grid>
-            </Grid>
-            <Grid item container xs={12}>
+            </TotalsRowUnderLineGrid>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Dry manure</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.manures[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.manures[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.manures[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.manures[3])}</Typography></Grid>
-            </Grid>
-            <Grid item container xs={12}>
+            </TotalsRowUnderLineGrid>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Process wastewater</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.wastewaters[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.wastewaters[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.wastewaters[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.wastewaters[3])}</Typography></Grid>
-            </Grid>
-            <Grid item container xs={12}>
+            </TotalsRowUnderLineGrid>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Fresh water</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.freshwaters[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.freshwaters[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.freshwaters[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.freshwaters[3])}</Typography></Grid>
-            </Grid>
+            </TotalsRowUnderLineGrid>
 
             {/* <Grid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Plant Tissue</Typography></Grid>
@@ -218,13 +231,13 @@ const FieldTotals = (props) => {
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(0)}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(0)}</Typography></Grid>
             </Grid> */}
-            <Grid item container xs={12}>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Atmoshperic deposition</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.atmospheric_depo)}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(0)}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(0)}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(0)}</Typography></Grid>
-            </Grid>
+            </TotalsRowUnderLineGrid>
             {/* <Grid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Subsurface (tile) drainage</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(0)}</Typography></Grid>
@@ -232,60 +245,60 @@ const FieldTotals = (props) => {
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(0)}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(0)}</Typography></Grid>
             </Grid> */}
-            <Grid item container xs={12}>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Nutrients applied</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.total_app[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.total_app[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.total_app[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.total_app[3])}</Typography></Grid>
-            </Grid>
-            <Grid item container xs={12}>
+            </TotalsRowUnderLineGrid>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Anticipated crop nutrient removal</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.anti_harvests[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.anti_harvests[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.anti_harvests[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.anti_harvests[3])}</Typography></Grid>
-            </Grid>
-            <Grid item container xs={12}>
+            </TotalsRowUnderLineGrid>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Actual crop nutrient removal</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.actual_harvests[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.actual_harvests[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.actual_harvests[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.actual_harvests[3])}</Typography></Grid>
-            </Grid>
-            <Grid item container xs={12}>
+            </TotalsRowUnderLineGrid>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Nutrient balance</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.nutrient_bal[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.nutrient_bal[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.nutrient_bal[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.nutrient_bal[3])}</Typography></Grid>
-            </Grid>
-            <Grid item container xs={12}>
+            </TotalsRowUnderLineGrid>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={4}><Typography variant='caption' color='secondary'>Nutrient balance ratio</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.nutrient_bal_ratio[0])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.nutrient_bal_ratio[1])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.nutrient_bal_ratio[2])}</Typography></Grid>
                 <Grid item xs={2}><Typography variant='caption' color='primary'>{formatFloat(totals.nutrient_bal_ratio[3])}</Typography></Grid>
-            </Grid>
+            </TotalsRowUnderLineGrid>
 
             <Grid item container xs={12}>
                 <Grid item xs={6}><Typography variant='caption' color='secondary'></Typography></Grid>
-                <Grid item xs={2} align='right'><Typography variant='caption' color='primary'>gallons</Typography></Grid>
-                <Grid item xs={2} align='right'><Typography variant='caption' color='primary'>acre-inches</Typography></Grid>
-                <Grid item xs={2} align='right'><Typography variant='caption' color='primary'>inches/acre</Typography></Grid>
+                <Grid item xs={2} align='right'><Typography variant='caption' color='secondary'>gallons</Typography></Grid>
+                <Grid item xs={2} align='right'><Typography variant='caption' color='secondary'>acre-inches</Typography></Grid>
+                <Grid item xs={2} align='right'><Typography variant='caption' color='secondary'>inches/acre</Typography></Grid>
             </Grid>
-            <Grid item container xs={12}>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={6}><Typography variant='caption' color='secondary'>Fresh water applied</Typography></Grid>
                 <Grid item xs={2} align='right'><Typography variant='caption' color='primary'>{formatFloat(totals.freshwater_app[0])}</Typography></Grid>
                 <Grid item xs={2} align='right'><Typography variant='caption' color='primary'>{formatFloat(totals.freshwater_app[1])}</Typography></Grid>
                 <Grid item xs={2} align='right'><Typography variant='caption' color='primary'>{formatFloat(totals.freshwater_app[2])}</Typography></Grid>
-            </Grid>
-            <Grid item container xs={12}>
+            </TotalsRowUnderLineGrid>
+            <TotalsRowUnderLineGrid item container xs={12}>
                 <Grid item xs={6}><Typography variant='caption' color='secondary'>Process wastewater applied</Typography></Grid>
                 <Grid item xs={2} align='right'><Typography variant='caption' color='primary'>{formatFloat(totals.wastewater_app[0])}</Typography></Grid>
                 <Grid item xs={2} align='right'><Typography variant='caption' color='primary'>{formatFloat(totals.wastewater_app[1])}</Typography></Grid>
                 <Grid item xs={2} align='right'><Typography variant='caption' color='primary'>{formatFloat(totals.wastewater_app[2])}</Typography></Grid>
-            </Grid>
+            </TotalsRowUnderLineGrid>
         </Grid>
     )
 }
@@ -312,13 +325,11 @@ class AppsByField extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.dairy_id !== this.props.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated) {
-            console.log("Dairy Changed!!!!")
             this.getNutrientBudget().then(res => this.updateChart())
         }
         else if (this.state.viewFieldKey !== prevState.viewFieldKey ||
             this.state.viewPlantDateKey !== prevState.viewPlantDateKey) {
             this.updateChart()
-            console.log("Field or Plant Date Change, update Chart!")
         }
 
     }

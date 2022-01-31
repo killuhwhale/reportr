@@ -21,7 +21,7 @@ class HerdTab extends Component {
     this.state = {
       dairy: props.dairy,
       initHerdLoad: false,
-    
+
       tabs: {
         0: "show",
         1: "hide",
@@ -41,26 +41,26 @@ class HerdTab extends Component {
     tabs[index] = "show"
     this.setState({ tabIndex: index, tabs: tabs })
   }
-  
+
 
   onChange(ev) {
 
   }
 
-  
+
 
   render() {
     return (
       <React.Fragment>
         {Object.keys(this.state.dairy).length > 0 ?
           <Grid item xs={12}>
-            <AppBar position="static" style={{ marginBottom: "32px"}} key='herdAppBar'>
-              <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus
+            <AppBar position="static" style={{ marginBottom: "32px" }} key='herdAppBar'>
+              <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
                 onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='herdTabs'>
-                <Tab label="Herds"  key='herdTab0' />
-                <Tab label="Tile Drainage"  key='herdTab1' />
+                <Tab label="Herds" key='herdTab0' />
+                <Tab label="Tile Drainage" key='herdTab1' />
                 <Tab label="Discharges" key='herdTab2' />
-                <Tab label="NMP and Export Agreements"  key='herdTab3' />
+                <Tab label="NMP and Export Agreements" key='herdTab3' />
               </Tabs>
             </AppBar>
 
@@ -70,6 +70,7 @@ class HerdTab extends Component {
                   <HerdTable
                     dairy={this.state.dairy}
                     herds={this.state.herds}
+                    BREEDS={this.props.BREEDS}
                     onAlert={this.props.onAlert}
                     BASE_URL={this.props.BASE_URL}
                   />

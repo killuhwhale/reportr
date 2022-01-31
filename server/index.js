@@ -4,9 +4,10 @@ const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const app = express(); // create express app
 const process = require('process');
-
+const dot = require('dotenv').config();
 var http = require('http').createServer(app);
 const db = require('./db/index')
+
 const allowedOrigins = [
   'http://localhost',
   'http://localhost:3000',
@@ -36,7 +37,7 @@ app.use(cors({
     return callback(null, true);
   }
 }));
-
+require('./accounts/account.js')(app);
 app.post("/api/tsv/create", (req, res) => {
 
   const { dairy_id, title, data, tsvType } = req.body
@@ -212,13 +213,13 @@ app.post("/api/dairies/create", (req, res) => {
 app.post("/api/dairies/full/create", (req, res) => {
   const {
     dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, title, city_zip,
-    basin_plan, p_breed, began, period_start, period_end,
+    basin_plan, began, period_start, period_end,
 
   } = req.body
   console.log("Inserting full dairy info:", req.body)
   db.insertFullDairy([
     dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, city_zip,
-    title, basin_plan, p_breed, began, period_start, period_end,
+    title, basin_plan, began, period_start, period_end,
   ], (err, result) => {
 
     if (!err) {
@@ -233,11 +234,11 @@ app.post("/api/dairies/update", (req, res) => {
   console.log("Updating....", req.body)
   // req.body.data is a list of values in order to match DB Table
   const {
-    street, cross_street, county, city, city_state, title, city_zip, basin_plan, p_breed, began, period_start, period_end, dairy_id
+    street, cross_street, county, city, city_state, title, city_zip, basin_plan, began, period_start, period_end, dairy_id
   } = req.body
 
   db.updateDairy([
-    street, cross_street, county, city, city_state, city_zip, title, basin_plan, p_breed, began, period_start, period_end, dairy_id
+    street, cross_street, county, city, city_state, city_zip, title, basin_plan, began, period_start, period_end, dairy_id
   ], (err, result) => {
 
     if (!err) {
@@ -528,7 +529,9 @@ app.post("/api/herds/full/create", (req, res) => {
     bred_cows,
     cows,
     calf_young,
-    calf_old } = req.body
+    calf_old,
+    p_breed,
+    p_breed_other } = req.body
   db.insertFullHerd(
     [
       dairy_id,
@@ -537,7 +540,9 @@ app.post("/api/herds/full/create", (req, res) => {
       bred_cows,
       cows,
       calf_young,
-      calf_old
+      calf_old,
+      p_breed,
+      p_breed_other
     ],
     (err, result) => {
 
@@ -563,9 +568,9 @@ app.get("/api/herds/:dairy_id", (req, res) => {
 });
 app.post("/api/herds/update", (req, res) => {
   console.log("Updating....", req.body)
-  const { milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, pk } = req.body
+  const { milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, p_breed, p_breed_other, pk } = req.body
   db.updateHerd([
-    milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, pk
+    milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, p_breed, p_breed_other, pk
   ], (err, result) => {
 
     if (!err) {
@@ -864,6 +869,7 @@ app.post("/api/field_crop_app_process_wastewater_analysis/create", (req, res) =>
     sample_date,
     sample_desc,
     sample_data_src,
+    material_type,
     kn_con,
     nh4_con,
     nh3_con,
@@ -902,6 +908,7 @@ app.post("/api/field_crop_app_process_wastewater_analysis/create", (req, res) =>
       sample_date,
       sample_desc,
       sample_data_src,
+      material_type,
       kn_con,
       nh4_con,
       nh3_con,
@@ -976,7 +983,6 @@ app.post("/api/field_crop_app_process_wastewater/create", (req, res) => {
     dairy_id,
     field_crop_app_id,
     field_crop_app_process_wastewater_analysis_id,
-    material_type,
     app_desc,
     amount_applied
   } = req.body
@@ -985,7 +991,6 @@ app.post("/api/field_crop_app_process_wastewater/create", (req, res) => {
       dairy_id,
       field_crop_app_id,
       field_crop_app_process_wastewater_analysis_id,
-      material_type,
       app_desc,
       amount_applied
     ],
@@ -2637,11 +2642,12 @@ app.get("/api/search/field_crop/:field_id/:crop_id/:plant_date/:dairy_id", (req,
       res.json({ "error": "Get all searchFieldCropsByFieldCropPlantdate unsuccessful" });
     })
 });
-app.get("/api/search/field_crop_app/:field_crop_id/:app_date/:dairy_pk", (req, res) => {
+app.get("/api/search/field_crop_app/:field_crop_id/:app_date/:app_method/:dairy_pk", (req, res) => {
   db.searchFieldCropApplicationsByFieldCropIDAppDate(
     [
       req.params.field_crop_id,
       req.params.app_date,
+      req.params.app_method,
       req.params.dairy_pk,
     ],
     (err, result) => {

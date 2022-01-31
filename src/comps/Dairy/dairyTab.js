@@ -129,9 +129,8 @@ class DairyTab extends Component {
     if (prevState.dairy.pk !== this.state.dairy.pk) {
       this.getAllFields()
       this.getAllParcels()
+      this.getDaysInPeriod()
     }
-    // TODO() this is called when unmounting and produces a warning error
-    this.getDaysInPeriod()
   }
 
 
@@ -336,7 +335,7 @@ class DairyTab extends Component {
                   />
                 </Grid>
                 <Grid item xs={4}>
-                  <TextField select
+                  {/* <TextField select
                     label="Primary Breed"
                     value={
                       Math.max(0, this.props.BREEDS.indexOf(this.state.dairy.p_breed))
@@ -354,7 +353,7 @@ class DairyTab extends Component {
                         <option key={`breeds${i}`} value={i}>{el}</option>
                       )
                     })}
-                  </TextField>
+                  </TextField> */}
                 </Grid>
               </Grid>
               <Grid item container xs={12} style={{ marginTop: "16px" }}>
@@ -477,7 +476,7 @@ class DairyTab extends Component {
               />
             </Grid>
 
-            <div id="chartArea" style={{ maxHeight: '1px', overflow: 'none' }}></div>
+            <div id="chartArea" style={{ maxHeight: '1px', overflow: 'hidden' }}></div>
 
             <ActionCancelModal
               open={this.state.toggleShowDeleteAllModal}

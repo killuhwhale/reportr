@@ -162,8 +162,7 @@ class CropTab extends Component {
                 <Grid item xs={12}>
                   <CropView
                     dairy={this.state.dairy}
-                    field_crops={this.state.field_crops}
-                    convertedFieldCrops={this.state.convertedFieldCrops}
+                    field_crops_list={this.state.field_crops}
                     onDeleteFieldCrop={this.deleteFieldCrop.bind(this)}
                     addNewCrop={this.toggleShowAddFieldCropModal.bind(this)}
                   />

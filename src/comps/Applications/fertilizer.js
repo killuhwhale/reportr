@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Card, CardContent, CardActions
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -14,8 +15,8 @@ import { withTheme } from '@material-ui/core/styles'
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
-import { naturalSort, nestedGroupBy } from "../../utils/format"
-import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
+import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
+import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import AddNutrientImportModal from "../Modals/addNutrientImportModal"
 import AddFertilizerModal from "../Modals/addFertilizerModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
@@ -43,83 +44,16 @@ const SOURCE_OF_ANALYSES = [
 const FertilizerAppEvent = (props) => {
   return (
     <Grid item container xs={12} style={props.style}>
-      <Grid item xs={12}>
-        <Typography variant="h4">{props.fertilizers[0].fieldtitle}</Typography>
-        <hr />
-      </Grid>
+
       {
-        props.fertilizers.map((fertilizer, i) => {
+        props.fertilizers.sort((a, b) => naturalSortBy(a, b, 'app_date')).map((fertilizer, i) => {
           return (
-            <Grid item container xs={12} key={`fwmainview${i}`}>
-              <Grid item xs={6}>
-                <Typography variant="subtitle1">{fertilizer.croptitle}</Typography>
-              </Grid>
-              <Grid item xs={6} align="right">
-                <DatePicker
-                  value={fertilizer.plant_date}
-                  label='Planted'
-                />
-              </Grid>
-
-              <div style={{ display: 'flex', alignItems: 'center' }} >
-                <DatePicker
-                  label='Applied'
-                  value={fertilizer.app_date}
-                />
-                <TextField label='Type' value={fertilizer.import_desc}
-                />
-
-
-              </div>
-
-
-              <Grid item container xs={10}>
-                <Grid item xs={2}>
-                  <TextField
-                    label="Applied (tons)"
-                    value={fertilizer.amount_applied}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    label="Moisture"
-                    value={fertilizer.moisture}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    label="N lbs / acre"
-                    value={fertilizer.n_lbs_acre}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    label="P lbs / acre"
-                    value={fertilizer.p_lbs_acre}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    label="K lbs / acre"
-                    value={fertilizer.k_lbs_acre}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    label="Salt lbs / acre"
-                    value={fertilizer.salt_lbs_acre}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item container xs={2} justifyContent="center" >
-                <Tooltip title="Delete Fertilizer Event">
-                  <IconButton onClick={() => props.onDelete(fertilizer)}>
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-
-            </Grid>
+            <FertilizerAppEventCard
+              fertilizer={fertilizer}
+              onDelete={props.onDelete}
+              index={i}
+              key={`fap_${i}`}
+            />
           )
         })
       }
@@ -127,9 +61,122 @@ const FertilizerAppEvent = (props) => {
   )
 }
 
+const OldEvent = (props) => {
+  const fertilizer = props.fertilizer
+  return (
+    <Grid item container xs={12} key={`fwmainview${1}`}>
+      <Grid item xs={6}>
+        <Typography variant="subtitle1">{fertilizer.croptitle}</Typography>
+      </Grid>
+      <Grid item xs={6} align="right">
+        <DatePicker
+          value={fertilizer.plant_date}
+          label='Planted'
+        />
+      </Grid>
+
+      <div style={{ display: 'flex', alignItems: 'center' }} >
+        <DatePicker
+          label='Applied'
+          value={fertilizer.app_date}
+        />
+        <TextField label='Type' value={fertilizer.import_desc}
+        />
+
+
+      </div>
+
+
+      <Grid item container xs={10}>
+        <Grid item xs={2}>
+          <TextField
+            label="Applied (tons)"
+            value={fertilizer.amount_applied}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            label="Moisture"
+            value={fertilizer.moisture}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            label="N lbs / acre"
+            value={fertilizer.n_lbs_acre}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            label="P lbs / acre"
+            value={fertilizer.p_lbs_acre}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            label="K lbs / acre"
+            value={fertilizer.k_lbs_acre}
+          />
+        </Grid>
+        <Grid item xs={2}>
+          <TextField
+            label="Salt lbs / acre"
+            value={fertilizer.salt_lbs_acre}
+          />
+        </Grid>
+      </Grid>
+      <Grid item container xs={2} justifyContent="center" >
+        <Tooltip title="Delete Fertilizer Event">
+          <IconButton onClick={() => props.onDelete(fertilizer)}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+
+    </Grid>
+  )
+}
+
+const FertilizerAppEventCard = (props) => {
+  const { app_method, croptitle, app_date, import_desc, amount_applied, moisture, n_con, p_con, k_con
+  } = props.fertilizer
+  return (
+    <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+      <CardContent>
+        <Typography>
+          {croptitle} - {app_method}
+        </Typography>
+        <DatePicker label="App Date"
+          value={app_date}
+          open={false}
+        />
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`N ${formatFloat(n_con)} P ${formatFloat(p_con)} K ${formatFloat(k_con)} Mositure ${moisture} `}
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`Amount ${formatFloat(amount_applied)}`}
+          </Typography>
+        </Grid>
+      </CardContent>
+      <CardActions>
+        <Tooltip title="Delete Fertilizer">
+          <IconButton className='showOnHover'
+            onClick={() => props.onDelete(props.fertilizer)}
+          >
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </CardActions>
+    </Card>
+  )
+}
+
 const NutrientImport = (props) => {
   return (
-    <Grid item container xs={3} alignItems='center'>
+    <Grid item container xs={3} alignItems='center' style={{ marginTop: '8px' }} className='showOnHoverParent'>
       <Grid item container xs={10} >
         <Grid item container xs={12}>
           <Grid item xs={12}>
@@ -140,19 +187,31 @@ const NutrientImport = (props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              fullWidth
-              value={props.nutrientImport.import_desc}
-              label="Type"
-            />
+            <Typography variant='caption'>
+              {`${props.nutrientImport.import_desc} Amount: ${props.nutrientImport.amount_imported}`}
+            </Typography>
+
           </Grid>
           <Grid item xs={12}>
-            <TextField
-              value={props.nutrientImport.amount_imported}
-              label="Amount"
-              fullWidth
-            />
+            <Typography variant='caption'>
+              {`
+              N ${formatFloat(props.nutrientImport.n_con)}
+              P ${formatFloat(props.nutrientImport.p_con)}
+              `}
+            </Typography>
+
           </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              {`
+              K ${formatFloat(props.nutrientImport.k_con)}
+              Salt ${formatFloat(props.nutrientImport.salt_con)}
+              `}
+            </Typography>
+
+          </Grid>
+
         </Grid>
         {/* <Grid item container xs={12}>
           <Grid item xs={6}>
@@ -164,7 +223,7 @@ const NutrientImport = (props) => {
           </Grid>
         </Grid> */}
 
-        <Grid item container xs={12} style={{ marginTop: '8px' }}>
+        {/* <Grid item container xs={12} style={{ marginTop: '8px' }}>
           <Grid item xs={3}>
             <TextField
               value={props.nutrientImport.n_con}
@@ -193,12 +252,14 @@ const NutrientImport = (props) => {
               style={{ width: "100%" }}
             />
           </Grid>
-        </Grid>
+        </Grid> */}
 
       </Grid>
       <Grid item xs={2} align='center'>
         <Tooltip title="Delete Fertilizer Source">
-          <IconButton onClick={() => props.onConfirmNutrientImportDelete(props.nutrientImport)}>
+          <IconButton className='showOnHover'
+            onClick={() => props.onConfirmNutrientImportDelete(props.nutrientImport)}
+          >
             <DeleteIcon color="error" />
           </IconButton>
         </Tooltip>
@@ -644,16 +705,23 @@ class Fertilizer extends Component {
         </Grid>
 
 
-        <Grid item container xs={12}>
+        <Grid item container xs={12} style={{ marginTop: '16px' }}>
           {renderFieldButtons(this.state.fieldCropAppFertilizers, this)}
           {renderCropButtons(this.state.fieldCropAppFertilizers, this.state.viewFieldKey, this)}
+          <Grid item xs={12} style={{ marginTop: '16px' }}>
+            <CurrentFieldCrop
+              viewFieldKey={this.state.viewFieldKey}
+              viewPlantDateKey={this.state.viewPlantDateKey}
+            />
+
+          </Grid>
           {this.getAppEventsByViewKeys().length > 0 ?
             <FertilizerAppEvent
               fertilizers={this.getAppEventsByViewKeys()}
               onDelete={this.onConfirmFertilizerDelete.bind(this)}
             />
             :
-            <div>No events to show</div>
+            <React.Fragment></React.Fragment>
           }
         </Grid>
 

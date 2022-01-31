@@ -235,11 +235,11 @@ class ParcelView extends Component {
       })
   }
 
-  fmtPNumber(num){
+  fmtPNumber(num) {
     let L = num.length
     let ans = []
-    for(let i=0; i<L; i++){
-      if(i % 4 === 0 && i !== 0){
+    for (let i = 0; i < L; i++) {
+      if (i % 4 === 0 && i !== 0) {
         ans.push("-")
       }
       ans.push(num[i])
@@ -309,7 +309,7 @@ class ParcelView extends Component {
               this.state.parcels.map((parcel, i) => {
                 return (
                   <Grid item container xs={6} key={`parcelViewPV${i}`} justifyContent="center" alignItems="center"
-                    style={{ marginBottom: '8px' }}>
+                    style={{ marginBottom: '8px' }} className='showOnHoverParent'>
                     <Grid item xs={10}>
                       <TextField
                         value={this.fmtPNumber(parcel.pnumber)}
@@ -319,7 +319,9 @@ class ParcelView extends Component {
                     </Grid>
                     <Grid item xs={2} container justifyContent='center' alignContent='center'>
                       <Tooltip title="Delete Parcel">
-                        <IconButton size="small" onClick={() => { this.confirmDeleteParcel(parcel) }}>
+                        <IconButton size="small" className='showOnHover'
+                          onClick={() => { this.confirmDeleteParcel(parcel) }}
+                        >
                           <DeleteIcon color="error" />
                         </IconButton>
                       </Tooltip>
@@ -342,12 +344,12 @@ class ParcelView extends Component {
             </Tooltip>
           </Grid>*/}
         </Grid>
-        
+
         <Grid item key="PVfield" xs={6}>
           {this.state.fields.length > 0 ?
             this.state.fields.map((field, i) => {
               return (
-                <Grid container item xs={12} key={`parcelViewFieldsPV${i}`}>
+                <Grid container item xs={12} key={`parcelViewFieldsPV${i}`} className='showOnHoverParent'>
                   <Grid item xs={11}>
                     <FieldForm
                       field={field}
@@ -357,7 +359,9 @@ class ParcelView extends Component {
                   </Grid>
                   <Grid item xs={1} container justifyContent='center' alignItems='center'>
                     <Tooltip title="Delete Field">
-                      <IconButton onClick={() => { this.confirmDeleteField(field) }}>
+                      <IconButton className='showOnHover'
+                        onClick={() => { this.confirmDeleteField(field) }}
+                      >
                         <DeleteIcon color="error" />
                       </IconButton>
                     </Tooltip>

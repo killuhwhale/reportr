@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Card, CardContent, CardActions
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -15,8 +16,8 @@ import {
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { MG_KG, KG_MG } from '../../utils/convertCalc'
-
-
+import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from '../Applications/selectButtonGrid'
+import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy, percentageAsMGKG } from '../../utils/format'
 
 /** Displays field_crop_harvest entries
  *      -includes fields and field_crop information
@@ -24,27 +25,102 @@ import { MG_KG, KG_MG } from '../../utils/convertCalc'
  *  - Delete field_crop_harvest
  *
  */
+const HarvestEventCard = (props) => {
+  const { croptitle, harvest_date, actual_n, actual_p, actual_k, tfs } = props.harvest
+  return (
+    <Grid item xs={3} className='showOnHoverParent'>
+      <Card variant="outlined" key={`pwwaer${props.index}`}>
+        <CardContent>
+          <Typography>
+            {croptitle}
+          </Typography>
+          <DatePicker label="Harvest Date"
+            value={harvest_date}
+            open={false}
+          />
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              {`N ${formatFloat(percentageAsMGKG(actual_n))} P ${formatFloat(percentageAsMGKG(actual_p))}`}
+            </Typography><br />
+            <Typography variant='caption'>
+              {` K ${formatFloat(percentageAsMGKG(actual_k))} TFS ${formatFloat(tfs)} `}
+            </Typography>
+          </Grid>
+        </CardContent>
+        <CardActions>
+          <Tooltip title="Delete Process wastewater">
+            <IconButton className='showOnHover'
+              onClick={() => props.onDelete(props.harvest)}
+            >
+              <DeleteIcon color="error" />
+            </IconButton>
+          </Tooltip>
+        </CardActions>
+      </Card>
+    </Grid>
+  )
+}
+
+const HarvestEvent = (props) => {
+  return (
+    <Grid item container xs={12}>
+      {
+        props.harvests.sort((a, b) => naturalSortBy(a, b, 'harvest_date')).map((harvest, i) => {
+          return (
+            <HarvestEventCard
+              harvest={harvest}
+              onDelete={props.onDelete}
+              key={`harvestevent${i}`}
+            />
+          )
+        })
+      }
+    </Grid>
+  )
+}
 
 class HarvestView extends Component {
   constructor(props) {
     super(props)
     this.state = {
       dairy: props.dairy,
-      fieldCropHarvests: props.fieldCropHarvests,
-      groupedFieldCropHarvests: props.groupedFieldCropHarvests,
-      groupedFieldCropHarvestsKeys: Object.keys(props.groupedFieldCropHarvests)
-        .sort(new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare),
+      fieldCropHarvests: {},
       delFieldCropHarvestObj: {},
       showDeleteFieldCropHarvestModal: false,
-      windowWidth: window.innerWidth,
-      windowHeight: window.innerHeight
+      viewFieldKey: '',
+      viewPlantDateKey: '',
     }
   }
   static getDerivedStateFromProps(props, state) {
     return props
   }
-  componentDidMount(){
-    this.setWindowListener()
+  componentDidMount() {
+    this.formatHarvests()
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevState.dairy.pk !== this.state.dairy.pk || prevProps.fieldCropHarvestEvents !== this.props.fieldCropHarvestEvents) {
+      this.formatHarvests()
+    }
+  }
+
+
+  formatHarvests() {
+    let harvestByFieldtitle = nestedGroupBy(this.props.fieldCropHarvestEvents, ['fieldtitle', 'plant_date'])
+    const keys = Object.keys(harvestByFieldtitle).sort(naturalSort)
+    if (keys.length > 0) {
+      this.setState({ fieldCropHarvests: harvestByFieldtitle, viewFieldKey: keys[0] })
+    } else {
+      this.setState({ fieldCropHarvests: {}, viewFieldKey: '' })
+    }
+  }
+  getAppEventsByViewKeys() {
+    // Returns a list of objects for the selected viewFieldKey && viewPlantDateKey
+    if (this.state.viewFieldKey && this.state.viewPlantDateKey && this.state.fieldCropHarvests[this.state.viewFieldKey] &&
+      this.state.fieldCropHarvests[this.state.viewFieldKey][this.state.viewPlantDateKey]) {
+      return this.state.fieldCropHarvests[this.state.viewFieldKey][this.state.viewPlantDateKey]
+    }
+    return []
   }
 
   toggleShowDeleteFieldCropHarvestModal(val) {
@@ -67,162 +143,30 @@ class HarvestView extends Component {
       })
   }
 
-  setWindowListener(){
-    window.addEventListener('resize', (ev) => {
-      this.setState({windowHeight: window.innerHeight, windowWidth: window.innerWidth})
-    })
-  }
-
-  renderItem({ index, style }) {
-    let fieldKey = this.state.groupedFieldCropHarvestsKeys[index]
-    let plant_dates_obj = this.state.groupedFieldCropHarvests[fieldKey]
-    if (plant_dates_obj) {
-      return (
-        <Grid item xs={12} key={`hv${fieldKey}`} style={{ marginBottom: "32px", ...style }}>
-          <Typography variant="h3">{fieldKey}</Typography>
-          {
-            Object.keys(plant_dates_obj).map(plant_dateKey => {
-              return (
-                <Grid item container xs={12} style={{ marginBottom: "16px" }} key={`hv${plant_dateKey}`}>
-                  <Grid item align="right" xs={12}>
-                    <DatePicker
-                      value={new Date(plant_dateKey)}
-                      label="Planted"
-                      open={false}
-                    />
-                  </Grid>
-                  {
-                    plant_dates_obj[plant_dateKey].map((harvest, i) => {
-                      return (
-                        <React.Fragment key={`hvh${harvest.pk}`}>
-                          <Grid item xs={12}>
-                            <Typography variant="h6">
-                              {harvest.croptitle}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={11} container>
-                            <Grid item xs={2}>
-                              <DatePicker
-                                value={new Date(harvest.harvest_date)}
-                                label="Harvest Date"
-                                open={false}
-                                fullWidth
-                              />
-                            </Grid>
-                            <Grid item xs={2}>
-                              <TextField
-                                label="Yield (total tons)"
-                                name="actual_yield"
-                                value={harvest.actual_yield}
-                                onChange={(ev) => this.props.onChange(i, harvest, ev)}
-                                style={{ width: "100%" }}
-                              />
-                            </Grid>
-                            <Grid item xs={2}>
-                              <TextField
-                                label="Reporting Basis"
-                                value={harvest.method_of_reporting}
-                                style={{ width: "100%" }}
-                              />
-                            </Grid>
-                            <Grid item xs={2}>
-                              <TextField
-                                label="Moisture %"
-                                name="actual_moisture"
-                                value={harvest.actual_moisture}
-                                // onChange={(ev) => this.props.onChange(i, harvest, ev)}
-                                style={{ width: "100%" }}
-                              />
-                            </Grid>
-                            <Grid item xs={2}>
-                              <TextField
-                                label="Nitrogen (mg/ kg)"
-                                name="actual_n"
-                                value={MG_KG(harvest.actual_n)}
-                                // onChange={(ev) => this.props.onChange(i, harvest, ev)}
-                                style={{ width: "100%" }}
-                              />
-                            </Grid>
-                            <Grid item xs={2}>
-                              <TextField
-                                label="Phosphorus"
-                                name="actual_p"
-                                value={MG_KG(harvest.actual_p)}
-                                // onChange={(ev) => this.props.onChange(i, harvest, ev)}
-                                style={{ width: "100%" }}
-                              />
-                            </Grid>
-                            <Grid item xs={2}>
-                              <TextField
-                                label="Potassium"
-                                name="actual_k"
-                                value={MG_KG(harvest.actual_k)}
-                                // onChange={(ev) => this.props.onChange(i, harvest, ev)}
-                                style={{ width: "100%" }}
-                              />
-                            </Grid>
-
-                            <Grid item xs={2}>
-                              <TextField
-                                label="TFS (%)"
-                                name="tfs"
-                                value={parseFloat(harvest.tfs).toFixed(2)}
-                                // onChange={(ev) => this.props.onChange(i, harvest, ev)}
-                                style={{ width: "100%" }}
-                              />
-                            </Grid>
-                          </Grid>
-                          <Grid item xs={1} align="center">
-                            <Tooltip title="Delete Harvest event">
-                              <IconButton onClick={() => this.onDeleteFieldCropHarvest(harvest)}>
-                                <DeleteIcon color="error" />
-                              </IconButton>
-                            </Tooltip>
-                          </Grid>
-
-                        </React.Fragment>)
-                    })
-                  }
-                </Grid>
-              )
-            })
-          }
-        </Grid>
-      )
-    } else {
-      return (<React.Fragment style={style} />)
-    }
-  }
-
-  getItemSize(index) {
-    let offset = 5
-    let fixedHeaderSize = 55 + offset
-    let subHeaderSize = 80 + offset
-    let subRowSize = 125 + offset
-
-    let fieldKey = this.state.groupedFieldCropHarvestsKeys[index]
-    let plantDateObj  = this.state.groupedFieldCropHarvests[fieldKey]
-    let numPlantDates = Object.keys(plantDateObj).length
-
-    let numRows = 0
-    Object.keys(plantDateObj).forEach(key => {
-      numRows += plantDateObj[key].length
-    })
-    return fixedHeaderSize + (subHeaderSize * numPlantDates) + (subRowSize * numRows)
-  }
 
   render() {
     return (
       <React.Fragment>
+        <Grid item container xs={12}>
+          {renderFieldButtons(this.state.fieldCropHarvests, this)}
+          {renderCropButtons(this.state.fieldCropHarvests, this.state.viewFieldKey, this)}
+          <Grid item xs={12} style={{ marginTop: '16px' }}>
+            <CurrentFieldCrop
+              viewFieldKey={this.state.viewFieldKey}
+              viewPlantDateKey={this.state.viewPlantDateKey}
+            />
+          </Grid>
 
-        <List
-          height={Math.max(this.state.windowHeight - 260, 100)}
-          itemCount={this.state.groupedFieldCropHarvestsKeys.length}
-          itemSize={this.getItemSize.bind(this)}
-          width={this.state.windowWidth * (.82)}
-        >
-          {this.renderItem.bind(this)}
-        </List>
+          {this.getAppEventsByViewKeys().length > 0 ?
+            <HarvestEvent
+              harvests={this.getAppEventsByViewKeys()}
+              onDelete={this.onDeleteFieldCropHarvest.bind(this)}
+            />
+            :
+            <React.Fragment></React.Fragment>
+          }
+        </Grid>
+
 
         <ActionCancelModal
           open={this.state.showDeleteFieldCropHarvestModal}

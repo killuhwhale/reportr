@@ -36,7 +36,7 @@ const DrainView = (props) => {
     <Grid container item xs={12} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
       {drains.map((drain, i) => {
         return (
-          <Grid item container key={`srowview${i}`} xs={12}>
+          <Grid item container key={`srowview${i}`} xs={12} className='showOnHoverParent'>
             <Grid item xs={3}>
               <TextField
                 value={drain.src_desc}
@@ -45,7 +45,9 @@ const DrainView = (props) => {
             </Grid>
             <Grid item xs={2}>
               <Tooltip title='Delete Drain'>
-                <IconButton onClick={() => props.onDelete(drain)}>
+                <IconButton className='showOnHover'
+                  onClick={() => props.onDelete(drain)}
+                >
                   <DeleteIcon color='error' />
                 </IconButton>
               </Tooltip>
@@ -68,7 +70,7 @@ const DrainAnalysisView = (props) => {
       </Grid>
       {analyses.map((analysis, i) => {
         return (
-          <Grid item container key={`savrowview${i}`} xs={12}>
+          <Grid item container key={`savrowview${i}`} xs={12} className='showOnHoverParent'>
             <Grid item xs={2}>
               <TextField
                 value={analysis.sample_date ? analysis.sample_date.split('T')[0] : ''}
@@ -113,7 +115,9 @@ const DrainAnalysisView = (props) => {
             </Grid>
             <Grid item xs={2}>
               <Tooltip title='Delete Drain Analysis'>
-                <IconButton onClick={() => props.onDelete(analysis)}>
+                <IconButton className='showOnHover'
+                  onClick={() => props.onDelete(analysis)}
+                >
                   <DeleteIcon color='error' />
                 </IconButton>
               </Tooltip>

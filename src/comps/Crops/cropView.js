@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Card, CardContent, CardActions
 } from '@material-ui/core'
 import {
   DatePicker
@@ -13,9 +14,10 @@ import { withTheme } from '@material-ui/core/styles';
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { VariableSizeList as List } from "react-window";
 import { zeroTimeDate } from "../../utils/convertCalc"
-
+import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from '../Applications/selectButtonGrid'
 import { get, post } from '../../utils/requests';
 import { PollTwoTone, SpeakerGroup } from '@material-ui/icons';
+import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from '../../utils/format';
 
 
 const CropViewTable = withTheme((props) => {
@@ -128,15 +130,58 @@ const CropViewTable = withTheme((props) => {
 })
 
 
+const FieldCrop = (props) => {
+  return (
+
+
+    props.fieldCrops && props.fieldCrops.sort((a, b) => naturalSortBy(a, b, 'plant_date')).map((fieldCrop, i) => {
+      const { croptitle, acres, cropable, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt,
+      } = fieldCrop
+      return (
+        <Card variant="outlined" key={`fieldCrop${props.index}`} className='showOnHoverParent'>
+          <CardContent>
+            <Typography>
+              {croptitle}
+            </Typography>
+            <DatePicker label="App Date"
+              value={plant_date}
+              open={false}
+            />
+            <Grid item xs={12}>
+              <Typography variant='caption'>
+                {`N ${formatFloat(n)} P ${formatFloat(p)} K ${formatFloat(k)} TFS ${formatFloat(salt)} `}
+              </Typography>
+            </Grid>
+          </CardContent>
+          <CardActions>
+            <Tooltip title="Delete Field Crop">
+              <IconButton className='showOnHover'
+                onClick={() => props.onDelete(fieldCrop)}
+              >
+                <DeleteIcon color="error" />
+              </IconButton>
+            </Tooltip>
+          </CardActions>
+        </Card>
+      )
+    })
+
+
+
+  )
+}
+
+
 class CropView extends Component {
   constructor(props) {
     super(props)
     this.state = {
       dairy: props.dairy,
       field_crops: props.field_crops,
-      convertedFieldCrops: props.convertedFieldCrops,
       delFieldCropObj: {},
       showDeleteFieldCropModal: false,
+      viewFieldKey: '',
+      viewPlantDateKey: '',
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight
     }
@@ -146,11 +191,41 @@ class CropView extends Component {
   }
   componentDidMount() {
     this.setWindowListener()
+    this.formatFieldCrops()
   }
+
   getConvertedFieldCropKeys(fc) {
     return Object.keys(fc)
       .sort(new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare)
   }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevState.dairy.pk !== this.state.dairy.pk || prevProps.field_crops !== this.props.field_crops) {
+      this.formatFieldCrops()
+    }
+  }
+
+
+
+  formatFieldCrops() {
+    let fieldCropsByFieldtitle = nestedGroupBy(this.props.field_crops_list, ['fieldtitle', 'plant_date'])
+    const keys = Object.keys(fieldCropsByFieldtitle).sort(naturalSort)
+    if (keys.length > 0) {
+      this.setState({ field_crops: fieldCropsByFieldtitle, viewFieldKey: keys[0] })
+    } else {
+      this.setState({ field_crops: {}, viewFieldKey: '' })
+    }
+  }
+
+  getFieldCropsByViewKeys() {
+    // Returns a list of objects for the selected viewFieldKey && viewPlantDateKey
+    if (this.state.viewFieldKey && this.state.viewPlantDateKey && this.state.field_crops[this.state.viewFieldKey] &&
+      this.state.field_crops[this.state.viewFieldKey][this.state.viewPlantDateKey]) {
+      return this.state.field_crops[this.state.viewFieldKey][this.state.viewPlantDateKey]
+    }
+    return []
+  }
+
   componentDidUpdate(prevProps, prevState) {
   }
   onFieldCropChange(ev, key, index) {
@@ -189,7 +264,6 @@ class CropView extends Component {
       field_list.forEach(field_crop => {
         const { pk, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt } = field_crop
         const data = { pk, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt }
-        console.log("Updating field_crop", data)
         promises.push(post(`${this.props.BASE_URL}/api/field_crop/update`, data))
       })
 
@@ -203,10 +277,13 @@ class CropView extends Component {
         console.log(err)
       })
   }
+
+
   toggleShowDeleteFieldCropModal(val) {
     this.setState({ showDeleteFieldCropModal: val })
   }
   onFieldCropDelete(fieldCrop) {
+
     this.setState({ delFieldCropObj: fieldCrop })
     this.toggleShowDeleteFieldCropModal(true)
   }
@@ -252,7 +329,27 @@ class CropView extends Component {
               </Tooltip> */}
             </Grid>
 
-            <Grid item xs={12}>
+
+
+            <Grid item container xs={12}>
+              {renderFieldButtons(this.state.field_crops, this)}
+              {renderCropButtons(this.state.field_crops, this.state.viewFieldKey, this)}
+              <Grid item xs={12}>
+                <CurrentFieldCrop
+                  viewFieldKey={this.state.viewFieldKey}
+                  viewPlantDateKey={this.state.viewPlantDateKey}
+                />
+              </Grid>
+              {this.getFieldCropsByViewKeys().length > 0 ?
+                <FieldCrop
+                  fieldCrops={this.getFieldCropsByViewKeys()}
+                  onDelete={this.onFieldCropDelete.bind(this)}
+                />
+                :
+                <React.Fragment></React.Fragment>
+              }
+            </Grid>
+            {/* <Grid item xs={12}>
               {this.getConvertedFieldCropKeys(this.state.convertedFieldCrops).length > 0 ?
                 <List
                   height={Math.max(this.state.windowHeight - 265, 100)}
@@ -266,7 +363,7 @@ class CropView extends Component {
                 <React.Fragment></React.Fragment>
               }
 
-            </Grid>
+            </Grid> */}
           </Grid>
           :
           <React.Fragment>Loading....</React.Fragment>

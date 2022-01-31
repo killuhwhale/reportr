@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Card, CardContent, CardActions
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -10,7 +11,7 @@ import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { naturalSort, nestedGroupBy } from "../../utils/format"
+import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
 import {
   DatePicker
@@ -22,158 +23,202 @@ import AddProcessWastewaterModal from "../Modals/addProcessWastewaterModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
-import { renderFieldButtons, renderCropButtons } from './selectButtonGrid'
+import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import {
   readTSV, uploadNutrientApp, uploadTSVToDB
 } from "../../utils/TSV"
 
 
 
+const OldAppEvent = (props) => {
+  let {
+    app_method, material_type, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con, tds, ec, ph, totaln, totalp, totalk, amount_applied, app_date, croptitle, plant_date
+  } = props.wastewater
+  return (
+    <Grid item container xs={12} key={`pwwviews${1}`} component={Paper} elevation={6} style={{ marginBottom: "30px" }}>
+      <Grid item container xs={12}>
+        <Grid item xs={6}>
+          <Typography variant="h6">
+            {croptitle}
+          </Typography>
+        </Grid>
+        <Grid item xs={6} align="right">
+          <DatePicker label="Plant Date"
+            value={plant_date}
+            open={false}
+          />
+        </Grid>
+
+
+        <Grid item container xs={12}>
+          <Grid item xs={6}>
+            <Typography variant="subtitle2">
+              {app_method}
+            </Typography>
+          </Grid>
+
+          <Grid item xs={6} align="right">
+            <DatePicker label="Date Applied"
+              value={app_date}
+              open={false}
+            />
+
+          </Grid>
+          <Grid item xs={12} align="right">
+            <TextField
+              label="Amount Applied"
+              value={`${amount_applied} gals`}
+            />
+          </Grid>
+
+        </Grid>
+
+      </Grid>
+
+      <Grid item container xs={10}>
+
+        <Grid item xs={3}>
+          <TextField
+            label="Kjeldahl-nitrogen"
+            value={kn_con}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="Ammonium-nitrogen"
+            value={nh4_con}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="NH3-N"
+            value={nh3_con}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="Nitrate-nitrogen"
+            value={no3_con}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="Total phosphorus"
+            value={p_con}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="Total potassium "
+            value={k_con}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="TDS"
+            value={tds}
+          />
+        </Grid>
+
+
+
+        <Grid item xs={3}>
+          <TextField
+            label="EC"
+            value={ec}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="N lbs/acre"
+            value={totaln}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="P lbs / acre"
+            value={totalp}
+          />
+        </Grid>
+        <Grid item xs={3}>
+          <TextField
+            label="K lbs / acre"
+            value={totalk}
+          />
+        </Grid>
+      </Grid>
+
+      <Grid item container xs={2} justifyContent="center" alignItems="center">
+        <Tooltip title="Delete Process wastewater">
+          <IconButton onClick={() => props.onDelete(props.wastewater)}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </Grid>
+
+    </Grid>
+
+  )
+}
+
+const ProcessWastewaterAppEventCard = (props) => {
+  let {
+    app_method, material_type, kn_con, nh4_con, nh3_con, no3_con, p_con,
+    k_con, tds, ec, ph, totaln, totalp, totalk, amount_applied, app_date,
+    croptitle, plant_date
+  } = props.wastewater
+  return (
+    <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+      <CardContent>
+        <Typography>
+          {croptitle} - {app_method}
+        </Typography>
+        <DatePicker label="App Date"
+          value={app_date}
+          open={false}
+        />
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`N ${formatFloat(kn_con)} P ${formatFloat(p_con)} K ${formatFloat(k_con)} TDS ${formatFloat(tds)} EC ${formatFloat(ec)} pH ${formatFloat(ph)}`}
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant='caption'>
+            {`Amount ${formatFloat(amount_applied)}`}
+          </Typography>
+        </Grid>
+      </CardContent>
+      <CardActions>
+        <Tooltip title="Delete Process wastewater">
+          <IconButton className='showOnHover'
+            onClick={() => props.onDelete(props.wastewater)}
+          >
+            <DeleteIcon color="error" />
+          </IconButton>
+        </Tooltip>
+      </CardActions>
+    </Card>
+  )
+}
+
+
 /** View for Process Wastewater Entry in DB */
 const ProcessWastewaterAppEvent = (props) => {
   let process_wastewaters = props.process_wastewaters
-  let { fieldtitle, field_id } = process_wastewaters[0]
   return (
-    <Grid container item xs={12} key={`pww${field_id}`} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
-      <Grid item xs={12}>
-        <Typography variant="h4">
-          {fieldtitle}
-        </Typography>
-      </Grid>
-
+    <Grid container item xs={12} key='pwae' style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
       {
-        process_wastewaters.map((wastewater, i) => {
-          let {
-            app_desc, material_type, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con, tds, ec, ph, totaln, totalp, totalk, amount_applied, app_date, croptitle, plant_date
-          } = wastewater
+        process_wastewaters.sort((a, b) => naturalSortBy(a, b, 'app_date')).map((wastewater, i) => {
           return (
-            <Grid item container xs={12} key={`pwwviews${i}`} component={Paper} elevation={6} style={{ marginBottom: "30px" }}>
-              <Grid item container xs={12}>
-                <Grid item xs={6}>
-                  <Typography variant="h6">
-                    {croptitle}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6} align="right">
-                  <DatePicker label="Plant Date"
-                    value={plant_date}
-                    open={false}
-                  />
-                </Grid>
-
-
-                <Grid item container xs={12}>
-                  <Grid item xs={6}>
-                    <Typography variant="subtitle2">
-                      {app_desc} | Material Type: {material_type}
-                    </Typography>
-                  </Grid>
-
-                  <Grid item xs={6} align="right">
-                    <DatePicker label="Date Applied"
-                      value={app_date}
-                      open={false}
-                    />
-
-                  </Grid>
-                  <Grid item xs={12} align="right">
-                    <TextField
-                      label="Amount Applied"
-                      value={`${amount_applied} gals`}
-                    />
-                  </Grid>
-
-                </Grid>
-
-              </Grid>
-
-              <Grid item container xs={10}>
-
-                <Grid item xs={3}>
-                  <TextField
-                    label="Kjeldahl-nitrogen"
-                    value={kn_con}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Ammonium-nitrogen"
-                    value={nh4_con}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="NH3-N"
-                    value={nh3_con}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Nitrate-nitrogen"
-                    value={no3_con}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Total phosphorus"
-                    value={p_con}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="Total potassium "
-                    value={k_con}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="TDS"
-                    value={tds}
-                  />
-                </Grid>
-
-
-
-                <Grid item xs={3}>
-                  <TextField
-                    label="EC"
-                    value={ec}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="N lbs/acre"
-                    value={totaln}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="P lbs / acre"
-                    value={totalp}
-                  />
-                </Grid>
-                <Grid item xs={3}>
-                  <TextField
-                    label="K lbs / acre"
-                    value={totalk}
-                  />
-                </Grid>
-              </Grid>
-
-              <Grid item container xs={2} justifyContent="center" alignItems="center">
-                <Tooltip title="Delete Process wastewater">
-                  <IconButton onClick={() => props.onDelete(wastewater)}>
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-
-            </Grid>
-
+            <ProcessWastewaterAppEventCard
+              wastewater={wastewater}
+              onDelete={props.onDelete}
+              index={i}
+              key={`pwap_${i}`}
+            />
           )
         })
       }
-
     </Grid>
   )
 }
@@ -513,13 +558,17 @@ class ProcessWastewater extends Component {
         <Grid item container xs={12}>
           {renderFieldButtons(this.state.field_crop_app_process_wastewater, this)}
           {renderCropButtons(this.state.field_crop_app_process_wastewater, this.state.viewFieldKey, this)}
+          <CurrentFieldCrop
+            viewFieldKey={this.state.viewFieldKey}
+            viewPlantDateKey={this.state.viewPlantDateKey}
+          />
           {this.getAppEventsByViewKeys().length > 0 ?
             <ProcessWastewaterAppEvent
               process_wastewaters={this.getAppEventsByViewKeys()}
               onDelete={this.onConfirmProcessWastewaterDelete.bind(this)}
             />
             :
-            <div>No events to show</div>
+            <React.Fragment></React.Fragment>
           }
         </Grid>
 
