@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField, InputAdornment
+  Grid, Button, Typography, IconButton, Tooltip, TextField, InputAdornment
 } from '@material-ui/core'
-import NightsStayIcon from '@material-ui/icons/NightsStay'
 import CancelIcon from '@material-ui/icons/Cancel';
 import { getReportingPeriodDays } from "../../utils/herdCalculation"
 import calculateHerdManNKPNaCl from "../../utils/herdCalculation"

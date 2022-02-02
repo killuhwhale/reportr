@@ -24,6 +24,7 @@ import HomePage from "./pages/homePage"
 import TSVPrint from "./pages/tsvPrint"
 import { BASE_URL } from "./utils/environment"
 import { TSV_INFO } from "./utils/TSV"
+import { auth, UserAuth } from './utils/users'
 import "./App.css"
 
 const AlertGrid = withStyles(theme => ({
@@ -35,6 +36,7 @@ const AlertGrid = withStyles(theme => ({
     justifyContent: 'center', // horizontally centers single line items
     textAlign: 'center',
     width: '98vw',
+    zIndex: '10000 !important'
 
   }
 }))(Grid)
@@ -119,7 +121,7 @@ let DarkTheme = responsiveFontSizes(createTheme(darkTheme), breakPoints)
 let PdfTheme = responsiveFontSizes(createTheme(pdftheme), breakPoints)
 let LightTheme = responsiveFontSizes(createTheme(lightTheme), breakPoints)
 
-const auth = getAuth();
+// const auth = getAuth();
 
 
 export default class App extends React.Component {
@@ -146,7 +148,9 @@ export default class App extends React.Component {
 
 
   listenUser() {
-    onAuthStateChanged(auth, (user) => {
+
+    auth.onAuthStateChange((user) => {
+      console.log("Auth state change", user)
       if (user) {
         this.setState({ user })
       } else {
@@ -157,6 +161,7 @@ export default class App extends React.Component {
   }
 
   onAlert(alertMsg, alertSeverity) {
+    console.log("Alert: msg/severity", alertMsg, alertSeverity)
     this.setState({ alertMsg: alertMsg, alertSeverity: alertSeverity, showAlert: true })
     // this.delayedClose()
   }
@@ -183,10 +188,20 @@ export default class App extends React.Component {
 
   render() {
     return (
-      this.state.user && this.state.user.uid ?
-        <FirebaseAuthContext.Provider value={app}>
-          <BrowserRouter >
-            <ThemeProvider theme={this.state.theme}>
+      <FirebaseAuthContext.Provider value={app}>
+        <BrowserRouter >
+          <ThemeProvider theme={this.state.theme}>
+            {
+              this.state.showAlert ?
+                <SeverityAlert
+                  onClose={this.onCloseAlert.bind(this)}
+                  severity={this.state.alertSeverity}
+                  msg={this.state.alertMsg} />
+                :
+                <React.Fragment></React.Fragment>
+
+            }
+            {this.state.user && this.state.user.pk ?
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Switch>
                   <Route exact path="/">
@@ -205,16 +220,7 @@ export default class App extends React.Component {
                           toggleTheme={this.toggleTheme.bind(this)}
                           onAlert={this.onAlert.bind(this)}
                         />
-                        {
-                          this.state.showAlert ?
-                            <SeverityAlert
-                              onClose={this.onCloseAlert.bind(this)}
-                              severity={this.state.alertSeverity}
-                              msg={this.state.alertMsg} />
-                            :
-                            <React.Fragment></React.Fragment>
 
-                        }
                       </Grid>
                     </BackgroundGrid>
                   </Route>
@@ -239,15 +245,22 @@ export default class App extends React.Component {
 
 
               </MuiPickersUtilsProvider>
-            </ThemeProvider>
-          </BrowserRouter>
-        </FirebaseAuthContext.Provider>
-        :
-        <ThemeProvider theme={this.state.theme}>
-          <Login
-            onLogin={this.onLogin.bind(this)}
-          />
-        </ThemeProvider>
+              :
+              <Login
+                onLogin={this.onLogin.bind(this)}
+                onAlert={this.onAlert.bind(this)}
+              />
+            }
+          </ThemeProvider>
+        </BrowserRouter>
+      </FirebaseAuthContext.Provider>
+      // :
+      // <ThemeProvider theme={this.state.theme}>
+      //   <Login
+      //     onLogin={this.onLogin.bind(this)}
+      //     onAlert={this.onAlert.bind(this)}
+      //   />
+      // </ThemeProvider>
     )
   }
 }

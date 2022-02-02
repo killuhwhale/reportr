@@ -3,7 +3,7 @@
 
 
 const get = (url) => {
-  const token = localStorage.getItem('jwtToken')
+  const token = localStorage.getItem('UserAuth_jwtToken')
   return new Promise((resolve, reject) => {
     fetch(url, {
       headers: {
@@ -22,7 +22,7 @@ const get = (url) => {
 }
 
 const post = (url, data) => {
-  const token = localStorage.getItem('jwtToken')
+  const token = localStorage.getItem('UserAuth_jwtToken')
   return fetch(url, {
     method: "POST",
     mode: "cors",

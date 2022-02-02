@@ -1,15 +1,13 @@
-import { getAuth, sendPasswordResetEmail } from "firebase/auth"
-
 import React, { Component } from 'react'
 import {
   Grid, Button, Typography, IconButton, Tooltip, TextField, AppBar, Tabs, Tab
 } from '@material-ui/core'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import RotateLeftIcon from '@material-ui/icons/RotateLeft'
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew'
 import FlareIcon from '@material-ui/icons/Flare'
 import NightsStayIcon from '@material-ui/icons/NightsStay'
+import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount'
 
 import DairyTab from "../comps/Dairy/dairyTab"
 import HerdTab from "../comps/Herds/herdTab"
@@ -21,7 +19,7 @@ import NutrientApplicationTab from "../comps/Applications/appNutrientTab"
 import ExportTab from "../comps/Exports/exportTab"
 import ActionCancelModal from "../comps/Modals/actionCancelModal"
 import Accounts from "../comps/Accounts/accounts"
-
+import { auth, UserAuth } from '../utils/users'
 import { get, post } from "../utils/requests"
 
 import { B64_LOGO } from "../specific"
@@ -48,7 +46,6 @@ class HomePage extends Component {
       createDairyTitle: "",
       updateDairyObj: {},
       toggleShowLogoutModal: false,
-      showResetPasswordModal: false,
       tabs: {
         0: "show",
         1: "hide",
@@ -192,35 +189,13 @@ class HomePage extends Component {
 
   logout() {
     console.log("Loggin user out!")
-    const auth = getAuth()
-    auth.signOut()
-      .then(() => {
-        console.log("After user logout")
-        this.confirmLogout(false)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    auth.logout()
+    console.log("After user logout")
+    this.confirmLogout(false)
   }
 
-  confirmResetPassword(val) {
-    this.setState({ showResetPasswordModal: val })
-  }
 
-  resetPassword() {
-    const auth = getAuth()
 
-    sendPasswordResetEmail(auth, auth.currentUser.email)
-      .then(() => {
-        console.log("Email sent")
-        this.props.onAlert('Email sent!', 'success')
-        this.confirmResetPassword(false)
-      })
-      .catch(err => {
-        this.props.onAlert('Failed sending email.', 'error')
-        console.log(err)
-      })
-  }
 
 
   refreshAfterXLSXUpload() {
@@ -237,7 +212,7 @@ class HomePage extends Component {
               <img src={'/fr_logo_alpha.png'} width="100%" height='65px' />
             </Grid>
             <Grid item container justifyContent='center' alignItems='center' xs={12}>
-              <Grid item xs={8} style={{ marginBottom: '16px' }}>
+              <Grid item xs={10} style={{ marginBottom: '16px' }}>
                 <Typography variant='subtitle1'>
                   <TextField
                     label='Email'
@@ -245,16 +220,11 @@ class HomePage extends Component {
                   />
                 </Typography>
               </Grid>
-              <Grid item xs={2}>
-                <Tooltip title='Reset Password'>
-                  <IconButton onClick={this.confirmResetPassword.bind(this)} size='small'>
-                    <RotateLeftIcon color='secondary' />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
+
+
               <Grid item xs={2}>
                 <Tooltip title='Logout'>
-                  <IconButton onClick={this.confirmLogout.bind(this)} size='small'>
+                  <IconButton onClick={() => this.confirmLogout(true)} size='small'>
                     <PowerSettingsNewIcon color='error' />
                   </IconButton>
                 </Tooltip>
@@ -345,15 +315,15 @@ class HomePage extends Component {
               </Grid>
             </Grid>
             <Grid item container xs={12}>
-              <Tooltip title="Accounts">
-                <IconButton color="primary" variant="outlined" style={{ marginTop: "16px" }}
-                  onClick={() => this.toggleAccountsModal(true)}>
-                  <NightsStayIcon />
-                </IconButton>
-              </Tooltip>
+              <Grid item xs={12} align='center'>
+                <Tooltip title="Accounts">
+                  <IconButton color="primary" variant="outlined" style={{ marginTop: "16px" }}
+                    onClick={() => this.toggleAccountsModal(true)}>
+                    <SupervisorAccountIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
             </Grid>
-
-
 
           </Grid>
 
@@ -484,6 +454,7 @@ class HomePage extends Component {
         <Accounts
           key={'DOESTHISWORK'}
           open={this.state.showAccountsModal}
+          onAlert={this.props.onAlert}
           onClose={() => this.toggleAccountsModal(false)}
         />
 
@@ -495,14 +466,7 @@ class HomePage extends Component {
           onAction={this.logout.bind(this)}
           onClose={() => this.confirmLogout(false)}
         />
-        <ActionCancelModal
-          open={this.state.showResetPasswordModal}
-          actionText="Reset Password"
-          cancelText="Cancel"
-          modalText={`Are you sure you want to reset password via email?`}
-          onAction={this.resetPassword.bind(this)}
-          onClose={() => this.confirmResetPassword(false)}
-        />
+
       </Grid>
     )
   }

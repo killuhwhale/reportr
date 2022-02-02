@@ -15,6 +15,7 @@ PSQL
   pass: mostdope
 
 HARCODED VARS:  TODO() Move these to src/sepcific.js
+  - server/accounts/accounts.js - whiteList for owner emails
   - utils/TSV.js
     - isTesting // For testing TSV Uploads
     - Also Creates Vars that correspond to Sheet Names, sheet names must match in order for Upload XLSX workbook to work.
@@ -37,8 +38,30 @@ ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
 
 TODO
 
+
+
 Account Management for Owners
-- Account Types Owner, User
+ - Login
+ - Logout
+ - GetUserFromToken
+  - When user is logged in and opens app, get user info.
+ - RegisterUser
+  - Create owner accounts if email on whitelist
+ - CreateUser
+  - Allows Owner accounts to create user accounts
+
+  - Update
+    - Password, email, username
+  - Delete 
+
+
+
+
+  - TODO()
+    - Login UI needs to show errors
+    - Send Emails for confirmation and passwords
+
+
 
 Owner and User
   - Change Password

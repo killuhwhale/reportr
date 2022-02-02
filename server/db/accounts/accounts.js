@@ -12,28 +12,35 @@ module.exports = {
 
     getAccounts: (callback) => {
         return pool.query(
-            "SELECT username, email, account_type FROM accounts",
+            "SELECT pk, username, email, account_type FROM accounts",
             [],
             callback
         )
     },
     getAccount: (account_id, callback) => {
         return pool.query(
-            "SELECT * FROM accounts where pk = $1",
+            "SELECT pk, username, email, account_type FROM accounts where pk = $1 LIMIT 1",
             [account_id],
             callback
         )
     },
-    insertAccount: (email, password, callback) => {
+    getAccountWithPassword: (account_id, callback) => {
         return pool.query(
-            "INSERT INTO accounts(email, password) VALUES ($1, $2)",
-            [email, password],
+            "SELECT pk, username, email, account_type, password FROM accounts where pk = $1 LIMIT 1",
+            [account_id],
+            callback
+        )
+    },
+    insertAccount: (email, password, username, callback) => {
+        return pool.query(
+            "INSERT INTO accounts(email, password, username) VALUES ($1, $2, $3) RETURNING pk, username, email, account_type",
+            [email, password, username],
             callback
         )
     },
     insertOwnerAccount: (email, password, callback) => {
         return pool.query(
-            "INSERT INTO accounts(email, password, account_type) VALUES ($1, $2, $3)",
+            "INSERT INTO accounts(email, password, account_type) VALUES ($1, $2, $3) RETURNING pk, username, email, account_type",
             [email, password, 0],
             callback
         )
@@ -41,9 +48,17 @@ module.exports = {
     updateAccount: (values, callback) => {
 
         return pool.query(`UPDATE accounts SET
-        username = $1,
-        email = $2
-        WHERE pk=$3 RETURNING *`,
+        username = $1, email = $2
+        WHERE pk=$3 RETURNING pk, username, email, account_type`,
+            values,
+            callback
+        )
+    },
+    changePassword: (values, callback) => {
+
+        return pool.query(`UPDATE accounts SET
+        password = $1
+        WHERE pk=$2 RETURNING pk, username, email, account_type`,
             values,
             callback
         )
