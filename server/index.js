@@ -2,10 +2,13 @@ const path = require("path");
 const express = require("express");
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
-const app = express(); // create express app
 const process = require('process');
+var bodyParser = require('body-parser')
+const app = express(); // create express app
+
 var http = require('http').createServer(app);
 const db = require('./db/index')
+
 
 const allowedOrigins = [
   'http://localhost',
@@ -19,10 +22,12 @@ const REQUEST_LIMIT = 1024 * 1024 * 10 // 10MB
 
 // Setup
 app.use(express.json({ limit: REQUEST_LIMIT }))
+
 // Below will serve the app on :3001 as well....
 // app.use(express.static(path.join(__dirname, "..", "build")));
 // app.use(express.static(path.join(__dirname, "../public")));
 app.use(fileUpload());
+app.use(bodyParser.raw())
 app.use(cors({
   origin: function (origin, callback) {
     // allow requests with no origin 
@@ -36,7 +41,9 @@ app.use(cors({
     return callback(null, true);
   }
 }));
-require('./accounts/account.js')(app);
+require(`./accounts/account.js`)(app);
+require(`./tsv/serverTsv.js`)(app);
+
 app.post("/api/tsv/create", (req, res) => {
 
   const { dairy_id, title, data, tsvType } = req.body

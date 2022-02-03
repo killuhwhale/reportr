@@ -31,6 +31,9 @@ class Login extends Component {
   static getDerivedStateFromProps(props, state) {
     return props
   }
+  componentDidMount() {
+
+  }
   toggleLoggingIn(val) {
     this.setState({ loggingIn: val })
   }
@@ -46,6 +49,7 @@ class Login extends Component {
 
       })
       .catch((error) => {
+        console.log("error", error)
         if (error.code === 'auth/wrong-password') {
           console.log("Wrong password")
           this.setState({
@@ -62,7 +66,7 @@ class Login extends Component {
             usernameError: true, usernameHelperTxt: 'Invalid email.',
             passwordError: false, passwordHelperTxt: ''
           })
-        } else if (error.code === '') {
+        } else {
           console.log(error)
           this.setState({
             passwordError: true, passwordHelperTxt: 'Error signing in.',
@@ -107,6 +111,7 @@ class Login extends Component {
 
 
   render() {
+
     return (
       <Grid item container xs={12} id="login" align="center" justifyContent="center">
 
@@ -153,7 +158,7 @@ class Login extends Component {
 
 
 
-                <Grid item container xs={12} align="center" spacing={4} style={{ marginTop: '32px' }}>
+                <Grid item container xs={12} align="center" spacing={4} style={{ marginTop: '96px' }}>
                   <Grid item align='right' xs={6}>
                     <Button
                       variant="outlined"
@@ -162,7 +167,7 @@ class Login extends Component {
                       Register
                     </Button>
                   </Grid>
-                  <Grid item align='center' xs={12}>
+                  <Grid item align='left' xs={6}>
                     <Button style={{ marginLeft: '4px' }}
                       variant="outlined"
                       color="primary"
@@ -179,16 +184,16 @@ class Login extends Component {
             <Grid item xs={12} >
               <Paper style={{ height: '100vh', width: '100vw' }}>
 
-                <Grid item container xs={12} align="center">
+                <Grid item container xs={12} align="center" style={{ marginTop: '25vh' }}>
                   <Grid item xs={12}>
-                    <Typography variant="h4">
+                    <Typography variant="h2">
                       Register
                     </Typography>
                   </Grid>
 
 
-
-                  <Grid item xs={12}>
+                  <Grid item xs={4}></Grid>
+                  <Grid item xs={4}>
                     <TextField
                       id='email'
                       name="email"
@@ -196,23 +201,25 @@ class Login extends Component {
                       style={{ margin: 8 }}
                       label="Email"
                       margin="normal"
-
+                      fullWidth
                     />
                   </Grid>
-
-                  <Grid item xs={12}>
+                  <Grid item xs={4}></Grid>
+                  <Grid item xs={4}></Grid>
+                  <Grid item xs={4}>
                     <TextField
                       id='password'
                       name="password"
                       type="password"
-
                       style={{ margin: 8 }}
                       label="Password"
                       margin="normal"
+                      fullWidth
                     />
                   </Grid>
-
-                  <Grid item xs={12}>
+                  <Grid item xs={4}></Grid>
+                  <Grid item xs={4}></Grid>
+                  <Grid item xs={4}>
                     <TextField
                       id='passwordConfirm'
                       name="passwordConfirm"
@@ -220,9 +227,10 @@ class Login extends Component {
                       style={{ margin: 8 }}
                       label="Confirm Password"
                       margin="normal"
+                      fullWidth
                     />
                   </Grid>
-
+                  <Grid item xs={4}></Grid>
 
 
                   <Grid item container xs={12} spacing={4} style={{ marginTop: '32px' }}>

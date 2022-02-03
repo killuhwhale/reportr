@@ -234,8 +234,6 @@ class TSVPrint extends Component {
         let dataRows = []
         if (res[0] && res[0].data) {
           [aboveHeader, header, dataRows] = this.tsvTextToRows(res[0].data)
-          console.log(aboveHeader)
-
 
           this.setState({
             tsv: res[0],
@@ -262,7 +260,6 @@ class TSVPrint extends Component {
     newRow[3] = firstRow[1]
     newRow[newRow.length - 2] = firstRow[2]
     newRow[newRow.length - 1] = firstRow[3]
-    console.log("New row", newRow)
     return newRow
   }
 
@@ -302,7 +299,6 @@ class TSVPrint extends Component {
       if (dataStarted) {
         const cols = printCols.map(key => _cols[headerMap[key]]) // For each print col index, get the data from the row 
         dataRows.push(cols)
-        console.log(cols)
       } else {
         if (_cols[0] === "Start" && !dataStarted) {
           // We only know the row w/ header info is just before the start row.

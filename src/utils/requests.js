@@ -39,4 +39,23 @@ const post = (url, data) => {
     .then(res => res.json())
 }
 
-export { get, post }
+const postXLSX = (url, data) => {
+  const token = localStorage.getItem('UserAuth_jwtToken')
+  console.log(data)
+  return fetch(url, {
+    method: "POST",
+    mode: "cors",
+    cache: "no-cache",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/octet-stream",
+      "Authorization": `Bearer ${token}`
+    },
+    redirect: "follow",
+    refferrerPolicy: "no-referrer",
+    body: data
+  })
+    .then(res => res.json())
+}
+
+export { get, post, postXLSX }

@@ -65,6 +65,8 @@ class UserAuth {
                         this.setUserAndToken(user, token)
                         this.authStateChanged()
                         resolve(user)
+                    } else {
+                        reject(res.error)
                     }
                 })
                 .catch(err => {

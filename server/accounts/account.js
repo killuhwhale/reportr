@@ -4,11 +4,14 @@ var crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
-const { resolve } = require('path');
 
 
 const api = 'accounts'
 const SECRET_KEY = '133742069'
+const JWT_OPTIONS = {
+    expiresIn: "10h"
+}
+
 const WHITE_LIST = ['t@g.com'].map(email => email.toLocaleLowerCase()) // White list of emails for owner accounts
 
 const verfiyToken = (req, res, next) => {
@@ -26,31 +29,35 @@ const verfiyToken = (req, res, next) => {
 module.exports = (app) => {
     app.post(`/${api}/login`, (req, res) => {
         const { email, password } = req.body
-        console.log(email, password)
         db.login(email, (err, response) => {
             if (!err) {
                 const { rows } = response
-                console.log(response)
                 const user = rows[0] ?? {}
                 const hash = user.password
                 if (user && hash) {
                     bcrypt.compare(password, hash, function (err, valid) {
+                        console.log(err, email, password, hash, valid)
                         if (valid) {
                             delete user['password']
 
-                            jwt.sign({ user }, SECRET_KEY, (err, token) => {
-                                res.json({ "data": { token, user } })
+                            jwt.sign({ user }, SECRET_KEY, JWT_OPTIONS, (err, token) => {
+                                if (!err) {
+                                    res.json({ "data": { token, user } })
+                                } else {
+                                    res.json({ "error": { msg: "Invalid password", code: 'auth/token-error' } })
+                                }
+
                             })
 
                         } else {
-                            res.json({ "error": "Invalid password" })
+                            res.json({ "error": { msg: "Invalid password", code: 'auth/wrong-password' } })
                         }
                     });
                 } else {
-                    res.json({ "error": "Error loggin in." })
+                    res.json({ "error": { msg: "Error logging in, info not found.", code: 'auth/user-not-found' } })
                 }
             } else {
-                res.json({ "error": err })
+                res.json({ "error": `auth/db-error ${err.code}` })
             }
         })
     })
@@ -93,7 +100,7 @@ module.exports = (app) => {
                     db.insertOwnerAccount(email, hash, (dbErr, result) => {
                         if (!dbErr) {
                             const user = result && result.rows.length > 0 ? result.rows[0] : {}
-                            jwt.sign({ user }, SECRET_KEY, (err, token) => {
+                            jwt.sign({ user }, SECRET_KEY, JWT_OPTIONS, (err, token) => {
                                 res.json({ "data": { token, user } })
                             })
 

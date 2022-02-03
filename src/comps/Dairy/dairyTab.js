@@ -11,7 +11,7 @@ import { CloudUpload } from '@material-ui/icons'
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { get, post } from '../../utils/requests'
+import { get, post, postXLSX } from '../../utils/requests'
 import ParcelAndFieldView from "../Parcel/parcelAndFieldView"
 import OperatorView from "../Operators/operatorView"
 
@@ -27,6 +27,7 @@ import { ImportExport } from '@material-ui/icons'
 import { getReportingPeriodDays } from "../../utils/herdCalculation"
 import { uploadXLSX } from '../../utils/TSV'
 import XLSX from 'xlsx'
+import { BASE_URL } from '../../utils/environment';
 
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs
@@ -113,7 +114,8 @@ class DairyTab extends Component {
       parcels: [],
       uploadedFileData: null,
       uploadedFilename: '',
-      showUploadXLSX: false
+      showUploadXLSX: false,
+      rawFileForServer: null
     }
   }
   static getDerivedStateFromProps(props, state) {
@@ -196,26 +198,36 @@ class DairyTab extends Component {
 
       file.arrayBuffer().then(data => {
         const workbook = XLSX.read(data);
-        this.setState({ uploadedFileData: workbook, uploadedFilename: file.name })
+        console.log(data)
+        this.setState({ uploadedFileData: workbook, uploadedFilename: file.name, rawFileForServer: data })
       })
     }
   }
 
   onUploadXLSX() {
     const workbook = this.state.uploadedFileData
-
-    uploadXLSX(workbook, this.state.dairy.pk)
+    const file = this.state.rawFileForServer
+    console.log(file)
+    postXLSX(`${BASE_URL}/tsv/uploadXLSX/${this.state.dairy.pk}`, file)
       .then(res => {
-        console.log("Completed! C-engineer voice")
-        this.toggleShowUploadXLSX(false)
-        this.props.refreshAfterXLSXUpload()
-        this.getAllFields()
-        this.props.onAlert('Success!', 'success')
+        console.log(res)
       })
       .catch(err => {
-        console.log('Failure! SSBM Voice', err)
-        this.props.onAlert('Failed to Upload Workbook', 'error')
+        console.log(err)
       })
+
+    // uploadXLSX(workbook, this.state.dairy.pk)
+    //   .then(res => {
+    //     console.log("Completed! C-engineer voice")
+    //     this.toggleShowUploadXLSX(false)
+    //     this.props.refreshAfterXLSXUpload()
+    //     this.getAllFields()
+    //     this.props.onAlert('Success!', 'success')
+    //   })
+    //   .catch(err => {
+    //     console.log('Failure! SSBM Voice', err)
+    //     this.props.onAlert('Failed to Upload Workbook', 'error')
+    //   })
 
   }
 
