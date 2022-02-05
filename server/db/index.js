@@ -617,7 +617,7 @@ module.exports = {
     return pool.query(`UPDATE TSVs SET
       title = $1, 
       data = $2
-      WHERE pk=$3 RETURNING *`,
+      WHERE tsvType=$3 and dairy_id=$4 RETURNING *`,
       values,
       callback
     )

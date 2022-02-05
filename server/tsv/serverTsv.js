@@ -4,8 +4,8 @@ const {
     harvestTemplate, wwTemplate, fwTemplate, smTemplate, cfTemplate, smExportTemplate,
     wwExportTemplate, soilTemplate, plowdownTemplate, tiledrainageTemplate, dischargeTemplate
 } = require('./serverTsvTemplates')
-
-
+const parseurl = require('parseurl')
+const db = require('../db/index')
 
 const isTesting = false
 
@@ -112,29 +112,666 @@ const TSV_INFO = {
 
 
 // For each post, the api with have the correct db fn call, just call the function where post is
-const lazyGet = (endpoint, value, data, dairy_id) => {
+// Get & return or create & return
+// Move all db calls from /search api here 
+
+// Switch on Endpoint
+// using correct db.get*, use hte values from value
+// if not found in get, create with db.insert* with data
+// Return once data is found.
+
+/*
+const a = () => {
     return new Promise((resolve, rej) => {
-        // Get & return or create & return
-        // Move all db calls from /search api here 
 
+    })
+}
+*/
 
-        // Switch on Endpoint
-        // using correct db.get*, use hte values from value
-        // if not found in get, create with db.insert* with data
-        // Return once data is found.
+const searchField = (value, dairy_id) => {
+    return new Promise((resolve, rej) => {
+        db.searchFieldsByTitle([value[0], dairy_id],
+            (err, result) => {
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        resolve(null)
+                    }
+                } else {
+                    console.log(err)
+                    rej(err)
+                }
+            })
+    })
+}
+
+const insertField = (data, dairy_id) => {
+    const { title, cropable, acres } = data
+    return new Promise((resolve, rej) => {
+        db.insertField([title, acres, cropable, dairy_id],
+            (err, result) => {
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        rej({ error: "Error getting data after Field insert" })
+                    }
+                } else if (err.code === '23505') {
+                    resolve(null)
+                } else {
+                    console.log(err)
+                    rej(err)
+                }
+            })
 
     })
 }
 
-const readTSV = (file, callback) => {
-    const reader = new FileReader()
-    reader.addEventListener('load', callback);
-    reader.readAsText(file)
+const searchFieldCrop = (value) => {
+    return new Promise((resolve, rej) => {
+        const { fieldPK, cropPK, plant_date } = value
+        db.searchFieldCropsByFieldCropPlantdate([fieldPK, cropPK, plant_date],
+            (err, result) => {
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        resolve(null)
+                    }
+                } else {
+                    rej(err)
+                }
+            }
+        )
+    })
+}
+
+
+const insertFieldCrop = (data, dairy_id) => {
+    return new Promise((resolve, rej) => {
+        const { field_id, crop_id, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt } = data
+        db.insertFieldCrop(
+            [
+                dairy_id, field_id, crop_id, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt
+            ],
+            (err, result) => {
+                if (!err && (result.rows[0] ?? false)) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+
+                    } else {
+                        rej({ error: "Error getting data after Field Crop insert" })
+                    }
+
+                } else if (err.code === '23505') {
+                    resolve(null)
+                } else {
+                    console.log(err)
+                    rej({ "error": "Created field_crop unsuccessful" });
+                }
+            }
+        )
+    })
+}
+
+
+const searchFieldCropApp = (value, dairy_id) => {
+    return new Promise((resolve, rej) => {
+        const { fieldCropID, app_date, app_method } = value
+        db.searchFieldCropApplicationsByFieldCropIDAppDate(
+            [fieldCropID, app_date, app_method, dairy_id],
+            (err, result) => {
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        resolve(null)
+                    }
+                } else {
+                    rej({ error: "Error searching field crop app: " })
+                }
+            }
+        )
+    })
+}
+
+const insertFieldCropApp = (data, dairy_id) => {
+    return new Promise((resolve, rej) => {
+        const { field_crop_id, app_date, app_method, precip_before, precip_during, precip_after } = data
+        db.insertFieldCropApplication(
+            [
+                dairy_id, field_crop_id, app_date, app_method, precip_before, precip_during, precip_after
+            ],
+            (err, result) => {
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        rej({ error: "Error inserting field crop app, no info returned from DB." })
+                    }
+                } else if (err.code === "23505") {
+                    // Duplicate entry, resolve null to search again
+                    resolve(null)
+                } else {
+                    rej({ error: "Error creating field crop app: " })
+                }
+            }
+        )
+    })
+}
+
+const searchWasterWaterAnalysis = (value, dairy_id) => {
+
+    return new Promise((resolve, rej) => {
+        const { sample_date, sample_desc } = value
+        db.searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc([sample_date, sample_desc, dairy_id],
+            (err, result) => {
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        resolve(null)
+                    }
+                } else {
+                    console.log(err)
+                    rej({ error: "Search all searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc unsuccessful" })
+                }
+            }
+        )
+    })
+}
+const insertWasterWaterAnalysis = (data, dairy_id) => {
+    return new Promise((resolve, rej) => {
+        const {
+            sample_date,
+            sample_desc,
+            sample_data_src,
+            material_type,
+            kn_con,
+            nh4_con,
+            nh3_con,
+            no3_con,
+            p_con,
+            k_con,
+            ca_con,
+            mg_con,
+            na_con,
+            hco3_con,
+            co3_con,
+            so4_con,
+            cl_con,
+            ec,
+            tds,
+            kn_dl,
+            nh4_dl,
+            nh3_dl,
+            no3_dl,
+            p_dl,
+            k_dl,
+            ca_dl,
+            mg_dl,
+            na_dl,
+            hco3_dl,
+            co3_dl,
+            so4_dl,
+            cl_dl,
+            ec_dl,
+            tds_dl,
+            ph,
+        } = data
+
+        db.insertFieldCropApplicationProcessWastewaterAnalysis(
+            [
+                dairy_id,
+                sample_date,
+                sample_desc,
+                sample_data_src,
+                material_type,
+                kn_con,
+                nh4_con,
+                nh3_con,
+                no3_con,
+                p_con,
+                k_con,
+                ca_con,
+                mg_con,
+                na_con,
+                hco3_con,
+                co3_con,
+                so4_con,
+                cl_con,
+                ec,
+                tds,
+                kn_dl,
+                nh4_dl,
+                nh3_dl,
+                no3_dl,
+                p_dl,
+                k_dl,
+                ca_dl,
+                mg_dl,
+                na_dl,
+                hco3_dl,
+                co3_dl,
+                so4_dl,
+                cl_dl,
+                ec_dl,
+                tds_dl,
+                ph,
+            ],
+            (err, result) => {
+
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        rej({ error: "Insert field_crop_app_process_wastewater_analysis rows empty" });
+                    }
+                } else if (err.code === '23505') {
+                    // Duplicate entry, resolve null to search again
+                    resolve(null)
+                } else {
+                    console.log(err)
+                    rej({ error: "Created field_crop_app_process_wastewater_analysis unsuccessful" });
+                }
+            }
+        )
+    })
+}
+const searchFreshwaterSource = (value, dairy_id) => {
+    const { src_desc, src_type } = value
+    return new Promise((resolve, rej) => {
+        db.searchFieldCropAppFreshwaterSource(
+            [
+                src_desc,
+                src_type,
+                dairy_id,
+            ],
+            (err, result) => {
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        resolve(null)
+                    }
+                } else {
+                    console.log(err)
+                    rej({ "error": "Search all searchFieldCropAppFreshwaterSource unsuccessful" });
+                }
+            })
+    })
+}
+
+const insertFreshwaterSource = (data, dairy_id) => {
+    const {
+        src_desc,
+        src_type,
+    } = data
+    return new Promise((resolve, rej) => {
+        db.insertFieldCropApplicationFreshwaterSource(
+            [
+                dairy_id,
+                src_desc,
+                src_type
+            ],
+            (err, result) => {
+
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows)
+                    }
+                } else if (err.code === '23505') {
+                    resolve(null)
+                } else {
+                    console.log(err)
+                    rej({ "error": "Created field_crop_app_freshwater_source unsuccessful" });
+
+                }
+            }
+        )
+    })
+}
+
+const searchFreshwaterAnalysis = (value, dairy_id) => {
+    const {
+        sample_date, sample_desc, src_of_analysis, fresh_water_source_id
+    } = value
+    return new Promise((resolve, rej) => {
+        db.searchFieldCropAppFreshwaterAnalysis(
+            [
+                sample_date,
+                sample_desc,
+                src_of_analysis,
+                fresh_water_source_id,
+                dairy_id,
+            ],
+            (err, result) => {
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        resolve(null)
+                    }
+                } else {
+                    console.log(err)
+                    rej({ "error": "Search all searchFieldCropAppFreshwaterAnalysis unsuccessful" });
+                }
+            })
+    })
+}
+
+const insertFreshwaterAnalysis = (data, dairy_id) => {
+
+    return new Promise((resolve, rej) => {
+        const {
+            fresh_water_source_id,
+            sample_date,
+            sample_desc,
+            src_of_analysis,
+            n_con,
+            nh4_con,
+            no2_con,
+            ca_con,
+            mg_con,
+            na_con,
+            hco3_con,
+            co3_con,
+            so4_con,
+            cl_con,
+            ec,
+            tds,
+            n_dl,
+            nh4_dl,
+            no2_dl,
+            ca_dl,
+            mg_dl,
+            na_dl,
+            hco3_dl,
+            co3_dl,
+            so4_dl,
+            cl_dl,
+            ec_dl,
+            tds_dl
+        } = data
+        db.insertFieldCropApplicationFreshwaterAnalysis(
+            [
+                dairy_id,
+                fresh_water_source_id,
+                sample_date,
+                sample_desc,
+                src_of_analysis,
+                n_con,
+                nh4_con,
+                no2_con,
+                ca_con,
+                mg_con,
+                na_con,
+                hco3_con,
+                co3_con,
+                so4_con,
+                cl_con,
+                ec,
+                tds,
+                n_dl,
+                nh4_dl,
+                no2_dl,
+                ca_dl,
+                mg_dl,
+                na_dl,
+                hco3_dl,
+                co3_dl,
+                so4_dl,
+                cl_dl,
+                ec_dl,
+                tds_dl
+            ],
+            (err, result) => {
+
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        rej({ "error": "Insert field_crop_app_freshwater_analysis unsuccessful" });
+                    }
+                } else if (err.code === '23505') {
+                    resolve(null)
+                } else {
+                    console.log(err)
+                    rej({ "error": "Create field_crop_app_freshwater_analysis unsuccessful" });
+                }
+            }
+        )
+    })
+}
+
+const searchManureAnalysis = (value, dairy_id) => {
+    const { sample_date, sample_desc, src_of_analysis
+    } = value
+    return new Promise((resolve, rej) => {
+        db.searchFieldCropAppSolidmanureAnalysis(
+            [
+                sample_date,
+                sample_desc,
+                src_of_analysis,
+                dairy_id,
+            ],
+            (err, result) => {
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        resolve(null)
+                    }
+                } else {
+                    console.log(err)
+                    res.json({ "error": "Search all searchFieldCropAppSolidmanureAnalysis unsuccessful" });
+                }
+            })
+    })
+}
+
+const insertManureAnalysis = (data, dairy_id) => {
+
+    return new Promise((resolve, rej) => {
+        const {
+            sample_desc,
+            sample_date,
+            material_type,
+            src_of_analysis,
+            moisture,
+            method_of_reporting,
+            n_con,
+            p_con,
+            k_con,
+            ca_con,
+            mg_con,
+            na_con,
+            s_con,
+            cl_con,
+            tfs,
+            n_dl,
+            p_dl,
+            k_dl,
+            ca_dl,
+            mg_dl,
+            na_dl,
+            s_dl,
+            cl_dl,
+            tfs_dl,
+        } = data
+        db.insertFieldCropApplicationSolidmanureAnalysis(
+            [
+                dairy_id,
+                sample_desc,
+                sample_date,
+                material_type,
+                src_of_analysis,
+                moisture,
+                method_of_reporting,
+                n_con,
+                p_con,
+                k_con,
+                ca_con,
+                mg_con,
+                na_con,
+                s_con,
+                cl_con,
+                tfs,
+                n_dl,
+                p_dl,
+                k_dl,
+                ca_dl,
+                mg_dl,
+                na_dl,
+                s_dl,
+                cl_dl,
+                tfs_dl,
+            ],
+            (err, result) => {
+                if (!err) {
+                    if (result.rows[0] ?? false) {
+                        resolve(result.rows[0])
+                    } else {
+                        rej({ "error": "Insert field_crop_app_solidmanure_analysis unsuccessful" });
+                    }
+                } else if (err.code === '23505') {
+                    resolve(null)
+                } else {
+                    console.log(err)
+                    rej({ "error": "Created field_crop_app_solidmanure_analysis unsuccessful" });
+
+                }
+            }
+        )
+    })
+}
+
+
+const lazyGet = (endpoint, value, data, dairy_id) => {
+    console.log("LazyGet", endpoint, value)
+
+    return new Promise(async (resolve, rej) => {
+
+        switch (endpoint) {
+            case 'fields':
+                const fResult = await searchField(value, dairy_id) ??
+                    await insertField(data, dairy_id) ??
+                    await searchField(value, dairy_id)
+                if (!fResult.error) {
+                    resolve(fResult)
+                } else {
+                    reject(fResult)
+                }
+
+                break
+            case 'field_crop':
+
+
+                const fcResult = await searchFieldCrop(value, dairy_id) ??
+                    await insertFieldCrop(data, dairy_id) ??
+                    await searchFieldCrop(value, dairy_id)
+                if (!fcResult.error) {
+                    resolve(fcResult)
+                } else {
+                    reject(fcResult)
+                }
+                break
+
+            case 'field_crop_app':
+                const fcaResult = await searchFieldCropApp(value, dairy_id) ??
+                    await insertFieldCropApp(data, dairy_id) ??
+                    await searchFieldCropApp(value, dairy_id)
+                if (!fcaResult.error) {
+                    resolve(fcaResult)
+                } else {
+                    reject(fcaResult)
+                }
+                break
+            case 'field_crop_app_process_wastewater_analysis':
+                const waResult = await searchWasterWaterAnalysis(value, dairy_id) ??
+                    await insertWasterWaterAnalysis(data, dairy_id) ??
+                    await searchWasterWaterAnalysis(value, dairy_id)
+                if (!waResult.error) {
+                    resolve(waResult)
+                } else {
+                    reject(waResult)
+                }
+                break
+
+            case 'field_crop_app_freshwater_source':
+                const fwsResult = await searchFreshwaterSource(value, dairy_id) ??
+                    await insertFreshwaterSource(data, dairy_id) ??
+                    await searchFreshwaterSource(value, dairy_id)
+                if (!fwsResult.error) {
+                    resolve(fwsResult)
+                } else {
+                    reject(fwsResult)
+                }
+                break
+
+            case 'field_crop_app_freshwater_analysis':
+                const fwaResult = await searchFreshwaterAnalysis(value, dairy_id) ??
+                    await insertFreshwaterAnalysis(data, dairy_id) ??
+                    await searchFreshwaterAnalysis(value, dairy_id)
+                if (!fwaResult.error) {
+                    resolve(fwaResult)
+                } else {
+                    reject(fwaResult)
+                }
+                break
+            case 'field_crop_app_solidmanure_analysis':
+
+
+                const smResult = await searchManureAnalysis(value, dairy_id) ??
+                    await insertManureAnalysis(data, dairy_id) ??
+                    await searchManureAnalysis(value, dairy_id)
+                if (!smResult.error) {
+                    resolve(smResult)
+                } else {
+                    reject(smResult)
+                }
+                break
+            default:
+                break
+
+        }
+
+    })
 }
 /** Uploads TSV file to DB by dairy_id and TSV type
  *  Updates TSV text
  *  - Each Dairy per reporting year, will have a TSV file for Production Records(Harvests), Nutrient Applications, Imports/Exports
  */
+
+const insertTSV = (tsvData) => {
+    const { dairy_id, title, data, tsvType } = tsvData
+    return new Promise((res, rej) => {
+        db.insertTSV([dairy_id, title, data, tsvType], (err, result) => {
+            if (!err) {
+                res("Inserted TSV successfully");
+            } else if (err.code === '23505') {
+                res(null)
+            } else {
+                rej(err);
+            }
+        })
+    })
+}
+
+const updateTSV = (tsvData) => {
+    const { dairy_id, title, data, tsvType } = tsvData
+    return new Promise((res, rej) => {
+        db.updateTSV([title, data, tsvType, dairy_id], (err, result) => {
+            if (!err) {
+                res("Updated tsv successfully");
+            } else {
+                console.log(err)
+                rej({ "error": "Updated tsv unsuccessful" });
+            }
+        })
+    })
+}
 
 const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
     const tsvData = {
@@ -143,26 +780,16 @@ const uploadTSVToDB = (uploadedFilename, tsvText, dairy_id, tsvType) => {
         tsvType: tsvType,
         dairy_id: dairy_id
     }
-    return new Promise((res, rej) => {
-        post(`${BASE_URL}/api/tsv/create`, tsvData)
-            .then(result => {
-                if (result.existsErr) {
-                    post(`${BASE_URL}/api/tsv/update`, tsvData)
-                        .then(result1 => {
-                            res(result1)
-                        })
-                        .catch(err => {
-                            console.log(err)
-                            rej(err)
-                        })
-                } else {
-                    res(result)
-                }
-            })
-            .catch(err => {
-                console.log(err)
-                rej(err)
-            })
+    return new Promise(async (res, rej) => {
+        const result = await insertTSV(tsvData) ??
+            await updateTSV(tsvText)
+
+        if (result) {
+            res(result)
+        } else {
+            rej(result)
+        }
+
     })
 }
 /**
@@ -238,7 +865,7 @@ const createFieldSetFromMap = (rows) => {
         const cropable = row['Cropable']
 
         if (!fieldSet.has(title)) {
-            fields.push([title, acres, cropable])
+            fields.push({ title, acres, cropable })
             fieldSet.add(title)
         }
     })
@@ -265,18 +892,46 @@ const createFieldsFromTSV = (fields, dairy_id) => {
                 cropable: field[2]
             }
         }
+        const title = field[0]
+        const acres = field[1]
+        const cropable = field[2]
         return new Promise((res, rej) => {
-            post(`${BASE_URL}/api/fields/create`, data)
-                .then(result => {
-                    res(result)
-                })
-                .catch(error => {
-                    console.log(error)
-                    rej(error)
-                })
+            console.log("Inserting Field", title, acres, cropable)
+            db.insertField([title, acres, cropable, dairy_id], (err, result) => {
+                if (!err) {
+                    console.log(result.rows)
+                    res(result.rows[0] ?? {})
+                    return;
+                }
+                console.log(err)
+                rej(err)
+            })
+
+            // post(`${BASE_URL}/api/fields/create`, data)
+            //     .then(result => {
+            //         res(result)
+            //     })
+            //     .catch(error => {
+            //         console.log(error)
+            //         rej(error)
+            //     })
         })
     })
     return Promise.all(promises)
+}
+
+
+const getCropByTitle = (title) => {
+    return new Promise((resolve, reject) => {
+        db.getCropsByTitle(title,
+            (err, result) => {
+                if (!err) {
+                    resolve(result.rows[0] ?? {})
+                    return;
+                }
+                reject({ "error": "Get crops by Title unsuccessful" });
+            })
+    })
 }
 
 /** Following three methods help create or find data for rows associated with nutrient applications.
@@ -292,10 +947,11 @@ const prepareFieldCrop = (field_title, crop_title, cropable, acres, dairy_id) =>
         }
     }
 
+
     return new Promise((resolve, rej) => {
         Promise.all([
-            lazyGet('fields', field_title, fieldData, dairy_id),
-            get(`${BASE_URL}/api/crops/${crop_title}`) // list of crops in DB are predefined based on spreadsheet. HARDCODED
+            lazyGet('fields', [field_title], fieldData, dairy_id),
+            getCropByTitle(crop_title) // list of crops in DB are predefined based on spreadsheet. HARDCODED
         ])
             .then(res => {
                 resolve(res)
@@ -321,13 +977,15 @@ const getFieldCropFromMap = (commonRowData, dairy_id, tsvType) => {
 
         prepareFieldCrop(field_title, crop_title, cropable, acres, dairy_id)
             .then(res => {
-                let fieldObj = res[0][0]
-                let cropObj = res[1][0]
+                let fieldObj = res[0]
+                let cropObj = res[1]
                 if (fieldObj) {
                     if (cropObj) {
                         const { typical_yield, moisture: typical_moisture, n: typical_n, p: typical_p, k: typical_k, salt } = cropObj
-                        let field_crop_search_url = `${fieldObj.pk}/${cropObj.pk}/${encodeURIComponent(plant_date)}`
-                        let field_crop_data = {
+                        let searchValues = {
+                            fieldPK: fieldObj.pk, cropPK: cropObj.pk, plant_date
+                        }
+                        let fieldCropData = {
                             dairy_id: dairy_id,
                             field_id: fieldObj.pk,
                             crop_id: cropObj.pk,
@@ -343,9 +1001,9 @@ const getFieldCropFromMap = (commonRowData, dairy_id, tsvType) => {
 
 
 
-                        lazyGet('field_crop', field_crop_search_url, field_crop_data, dairy_id)
+                        lazyGet('field_crop', searchValues, fieldCropData, dairy_id)
                             .then(field_crop_res => {
-                                resolve(field_crop_res[0])
+                                resolve(field_crop_res)
                             })
                             .catch(err => {
                                 console.log(err)
@@ -355,7 +1013,8 @@ const getFieldCropFromMap = (commonRowData, dairy_id, tsvType) => {
                         console.log("Crop not valid.", crop_title)
                     }
                 } else {
-                    console.log("Field not valid.")
+                    console.log("Prepare Field Crop: Field not valid.", res)
+                    console.log(fieldObj, cropObj)
                 }
             })
     })
@@ -371,8 +1030,8 @@ const getFieldCropAppFromMap = (commonRowData, dairy_id, tsvType) => {
     return new Promise((resolve, reject) => {
         getFieldCropFromMap(commonRowData, dairy_id, tsvType)
             .then(field_crop_res => {
-                const field_crop_app_search_url = `${field_crop_res.pk}/${encodeURIComponent(app_date)}/${encodeURIComponent(app_method)}`
-                const field_crop_app_data = {
+                const searchValue = { fieldCropID: field_crop_res.pk, app_date, app_method }
+                const fieldCropAppData = {
                     dairy_id: dairy_id,
                     field_crop_id: field_crop_res.pk,
                     app_date: app_date,
@@ -382,13 +1041,16 @@ const getFieldCropAppFromMap = (commonRowData, dairy_id, tsvType) => {
                     precip_after: precip_after,
                 }
 
-                lazyGet('field_crop_app', field_crop_app_search_url, field_crop_app_data, dairy_id)
+                // Add case to Lazy Get for this
+                lazyGet('field_crop_app', searchValue, fieldCropAppData, dairy_id)
                     .then((field_crop_app_res) => {
-                        if (field_crop_app_res.error) {
-                            console.log("Error", commonRowData)
-                        } else {
-                            resolve(field_crop_app_res[0])
-                        }
+
+                        resolve(field_crop_app_res)
+
+                    })
+                    .catch(err => {
+                        console.log(err, commonRowData)
+
                     })
             })
     })
@@ -452,7 +1114,7 @@ const uploadXLSX = (workbook, dairy_id) => {
         workbook.SheetNames.forEach(sheetName => {
             // const numCols = TSV_INFO[sheetName].numCols // todo sheetnames need to match the keys in TSV file 
             // const tsvType = TSV_INFO[sheetName].tsvType
-            if (SHEET_NAMES.indexOf(sheetName) >= 0) {
+            if (SHEET_NAMES.indexOf(sheetName) >= 0 && sheetName === SOLIDMANURE) {
                 const numCols = TSV_INFO[sheetName].numCols
                 const tsvType = TSV_INFO[sheetName].tsvType
                 const tsvText = XLSX.utils.sheet_to_csv(sheets[sheetName], { FS: '\t' })
@@ -719,23 +1381,42 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id
     }
 
     // dairy_id, sample_date, sample_desc
-    const field_crop_app_process_wastewater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}`
+
+    const searchValue = { sample_date, sample_desc }
     return new Promise((resolve, rej) => {
         // Need to lazyget process_wastewater_analysis
         lazyGet('field_crop_app_process_wastewater_analysis',
-            field_crop_app_process_wastewater_analysis_search_url,
+            searchValue,
             process_wastewater_analysis_data,
             dairy_id
         )
             .then(res => {
-                const process_wastewater_data = {
-                    dairy_id: dairy_id,
-                    field_crop_app_id: field_crop_app.pk,
-                    field_crop_app_process_wastewater_analysis_id: res[0].pk,
-                    app_desc,
-                    amount_applied: amount_applied.replaceAll(',', ''),
-                }
-                resolve(post(`${BASE_URL}/api/field_crop_app_process_wastewater/create`, process_wastewater_data))
+                const field_crop_app_id = field_crop_app.pk
+                const field_crop_app_process_wastewater_analysis_id = res.pk
+                // insert field_crop_app_process_wastewater instread of post
+
+                db.insertFieldCropApplicationProcessWastewater(
+                    [
+                        dairy_id,
+                        field_crop_app_id,
+                        field_crop_app_process_wastewater_analysis_id,
+                        app_desc,
+                        amount_applied.replaceAll(',', '')
+                    ],
+                    (err, result) => {
+
+                        if (!err) {
+                            resolve(result.rows)
+                        } else if (err.code === '23505') {
+                            resolve('FCAPW already exists')
+                        }
+
+                        else {
+                            console.log(err)
+                            rej({ "error": "Created field_crop_app_process_wastewater unsuccessful" });
+                        }
+                    }
+                )
             })
             .catch(err => {
                 console.log(err)
@@ -784,7 +1465,7 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
 
     // dairy_id, sample_date, sample_desc
-    const field_crop_app_freshwater_source_search_url = `${encodeURIComponent(src_desc)}/${encodeURIComponent(src_type)}`
+    const searchValue = { src_desc, src_type }
     const freshwater_source_data = {
         dairy_id: dairy_id,
         src_desc,
@@ -794,15 +1475,15 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
     // Get Source
     return new Promise((resolve, rej) => {
         // lazyget freshwater_source
-        lazyGet('field_crop_app_freshwater_source', field_crop_app_freshwater_source_search_url, freshwater_source_data, dairy_id)
+        lazyGet('field_crop_app_freshwater_source', searchValue, freshwater_source_data, dairy_id)
             .then(field_crop_app_freshwater_source_res => {
-                if (field_crop_app_freshwater_source_res.length > 0) {
-                    let fresh_water_source_obj = field_crop_app_freshwater_source_res[0]
+                if (field_crop_app_freshwater_source_res) {
+                    let fresh_water_source_obj = field_crop_app_freshwater_source_res
                     let fresh_water_source_id = fresh_water_source_obj.pk
 
 
                     // lazyget freshwater_analysis , sample_date, sample_desc, src_of_analysis, fresh_water_source_id
-                    const field_crop_app_freshwater_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${src_of_analysis}/${fresh_water_source_id}`
+                    const searchValue = { sample_date, sample_desc, src_of_analysis, fresh_water_source_id }
                     const freshwater_analysis_data = {
                         dairy_id: dairy_id,
                         fresh_water_source_id: fresh_water_source_obj.pk,
@@ -837,20 +1518,31 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
                         tds_dl: checkEmpty(tds_dl)
                     }
 
-                    lazyGet('field_crop_app_freshwater_analysis', field_crop_app_freshwater_analysis_search_url, freshwater_analysis_data, dairy_id)
-                        .then(freshwater_analysis_res => {
-                            let freshwater_analysis_obj = freshwater_analysis_res[0]
-                            const freshwater_data = {
-                                dairy_id: dairy_id,
-                                field_crop_app_id: field_crop_app.pk,
-                                field_crop_app_freshwater_analysis_id: freshwater_analysis_obj.pk,
-                                app_rate: checkEmpty(app_rate),
-                                run_time: checkEmpty(run_time),
-                                amount_applied: checkEmpty(amount_applied),
-                                amt_applied_per_acre: checkEmpty(amt_applied_per_acre)
-                            }
+                    lazyGet('field_crop_app_freshwater_analysis', searchValue, freshwater_analysis_data, dairy_id)
+                        .then(freshwater_analysis => {
+                            db.insertFieldCropApplicationFreshwater(
+                                [
+                                    dairy_id,
+                                    field_crop_app.pk,
+                                    freshwater_analysis.pk,
+                                    checkEmpty(app_rate),
+                                    checkEmpty(run_time),
+                                    checkEmpty(amount_applied),
+                                    checkEmpty(amt_applied_per_acre)
+                                ],
+                                (err, result) => {
 
-                            resolve(post(`${BASE_URL}/api/field_crop_app_freshwater/create`, freshwater_data))
+                                    if (!err) {
+                                        if (result.rows[0] ?? false) {
+                                            resolve(result.rows[0])
+                                        }
+                                    } else {
+                                        console.log(err)
+                                        rej({ "error": "Created field_crop_app_freshwater unsuccessful" });
+
+                                    }
+                                }
+                            )
                         })
 
                 } else {
@@ -901,7 +1593,7 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_id) => {
     const tfs_dl = row['TFS DL']
 
     // dairy_id, sample_date, sample_desc
-    const field_crop_app_solidmanure_analysis_search_url = `${encodeURIComponent(sample_date)}/${encodeURIComponent(sample_desc)}/${encodeURIComponent(src_of_analysis)}`
+    const searchValue = { sample_date, sample_desc, src_of_analysis }
     const solidmanure_analysis_data = {
         dairy_id: dairy_id,
         sample_desc,
@@ -933,17 +1625,13 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_id) => {
     // Get Source
     return new Promise((resolve, rej) => {
         // lazyget freshwater_source
-        lazyGet('field_crop_app_solidmanure_analysis', field_crop_app_solidmanure_analysis_search_url, solidmanure_analysis_data, dairy_id)
-            .then(field_crop_app_solidmanure_analysis_res => {
-                if (field_crop_app_solidmanure_analysis_res.length > 0) {
-                    let solidmanure_analysis_obj = field_crop_app_solidmanure_analysis_res[0]
-                    let solidmanure_analysis_id = solidmanure_analysis_obj.pk
-
-
+        lazyGet('field_crop_app_solidmanure_analysis', searchValue, solidmanure_analysis_data, dairy_id)
+            .then(field_crop_app_solidmanure_analysis => {
+                if (field_crop_app_solidmanure_analysis) {
                     const solidmanure_data = {
                         dairy_id: dairy_id,
                         field_crop_app_id: field_crop_app.pk,
-                        field_crop_app_solidmanure_analysis_id: solidmanure_analysis_id,
+                        field_crop_app_solidmanure_analysis_id: field_crop_app_solidmanure_analysis.pk,
                         src_desc,
                         amount_applied: checkEmpty(amount_applied),
                         amt_applied_per_acre: checkEmpty(amt_applied_per_acre),
@@ -1266,7 +1954,7 @@ const createDataFromTSVListRowMap = (row, i, dairy_id, tsvType) => {
     */
     return new Promise((resolve, rej) => {
         getFieldCropAppFromMap(row, dairy_id, tsvType)
-            .then(field_crop_app => {
+            .then(async field_crop_app => {
 
                 /**
                  * #######################################################################
@@ -1281,7 +1969,12 @@ const createDataFromTSVListRowMap = (row, i, dairy_id, tsvType) => {
 
                 if (tsvType === PROCESS_WASTEWATER) {
                     // resolve(createProcessWastewaterApplication(row, field_crop_app, dairy_id)) // Creates analysis and application_event
-                    resolve(createProcessWastewaterApplicationFromMap(row, field_crop_app, dairy_id)) // Creates analysis and application_event
+                    const result = await createProcessWastewaterApplicationFromMap(row, field_crop_app, dairy_id)
+                    if (result.error) {
+                        reject(result)
+                    } else {
+                        resolve(result)
+                    }
 
                 } else if (tsvType === FRESHWATER) {
                     // Creates source, analysis and event
@@ -1324,11 +2017,12 @@ const uploadNutrientApp = (tsvText, tsvType, dairy_id) => {
     // Create a set of fields to ensure duplicates are not attempted.
     let fields = createFieldSetFromMap(rows)
 
+    console.log(fields)
 
     return new Promise((resolve, reject) => {
-        createFieldsFromTSV(fields, dairy_id)      // Create fields before proceeding
+        // Create fields before proceeding
+        Promise.all(fields.map(field => lazyGet('fields', [field.title], field, dairy_id)))
             .then(createFieldRes => {
-
                 let promises = rows.map((row, i) => {
                     // return createDataFromTSVListRow(row, i, dairy_id, tsvType)    // Create entries for ea row in TSV file
                     return createDataFromTSVListRowMap(row, i, dairy_id, tsvType)

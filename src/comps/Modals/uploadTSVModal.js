@@ -25,9 +25,9 @@ class UploadTSVModal extends Component {
     return props
   }
 
-  componentDidUpdate(prevProps, prevState){
-    if(prevState.open != this.state.open){
-      this.setState({loading: false})
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.open != this.state.open) {
+      this.setState({ loading: false })
     }
   }
 
@@ -67,7 +67,7 @@ class UploadTSVModal extends Component {
                     type="file"
                   />
                   <Button htmlFor="raised-button-file" variant="outlined" color="primary" component="label">
-                      Select TSV
+                    Select TSV
                   </Button>
                 </Grid>
 
@@ -84,17 +84,17 @@ class UploadTSVModal extends Component {
                   </Button>
                 </Grid>
                 <Grid item xs={6}>
-                {this.state.loading? <CircularProgress /> :
-                  <Button disabled={disabled}
-                    color="secondary"
-                    variant="outlined"
-                    onClick={() => { 
-                      this.setState({loading: true})  
-                      this.props.onAction() 
-                    }}>
-                    {this.props.actionText}
-                  </Button>
-                }
+                  {this.state.loading ? <CircularProgress /> :
+                    <Button disabled={disabled}
+                      color="secondary"
+                      variant="outlined"
+                      onClick={() => {
+                        // this.setState({loading: true})  
+                        this.props.onAction()
+                      }}>
+                      {this.props.actionText}
+                    </Button>
+                  }
                 </Grid>
               </Grid>
             </Paper>

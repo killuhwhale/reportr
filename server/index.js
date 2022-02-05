@@ -10,6 +10,7 @@ var http = require('http').createServer(app);
 const db = require('./db/index')
 
 
+
 const allowedOrigins = [
   'http://localhost',
   'http://localhost:3000',
@@ -91,8 +92,8 @@ app.post("/api/tsv/type/delete", (req, res) => {
 });
 app.post("/api/tsv/update", (req, res) => {
   console.log("Updating.... tsv", req.body)
-  const { title, data, pk } = req.body
-  db.updateTSV([title, data, pk], (err, result) => {
+  const { title, data, tsvType, dairy_id } = req.body
+  db.updateTSV([title, data, tsvType, dairy_id], (err, result) => {
     if (!err) {
       res.json({ "error": "Updated tsv successfully" });
       return;
