@@ -281,8 +281,6 @@ app.get("/api/fields/:dairy_id", (req, res) => {
     })
 });
 app.post("/api/fields/create", (req, res) => {
-  console.log("Server:: acres, cropable")
-  console.log(req.body)
   const { title, acres, cropable, dairy_id } = req.body.data
   db.insertField([title, acres, cropable, dairy_id], (err, result) => {
     if (!err) {
@@ -2208,7 +2206,7 @@ app.post("/api/export_manifest/create", (req, res) => {
     p_con_mg_kg,
     k_con_mg_kg,
     tfs,
-    salt_lbs_rm,
+
 
     n_con_mg_l,
     kn_con_mg_l,
@@ -2219,10 +2217,6 @@ app.post("/api/export_manifest/create", (req, res) => {
     k_con_mg_l,
     ec_umhos_cm,
     tds,
-
-    n_lbs_rm,
-    p_lbs_rm,
-    k_lbs_rm
   } = req.body
   db.insertExportManifest(
     [
@@ -2243,7 +2237,6 @@ app.post("/api/export_manifest/create", (req, res) => {
       k_con_mg_kg,
 
       tfs,
-      salt_lbs_rm,
 
       n_con_mg_l,
       nh4_con_mg_l,
@@ -2253,10 +2246,6 @@ app.post("/api/export_manifest/create", (req, res) => {
       k_con_mg_l,
       ec_umhos_cm,
       tds,
-
-      n_lbs_rm,
-      p_lbs_rm,
-      k_lbs_rm
     ],
     (err, result) => {
       if (!err) {

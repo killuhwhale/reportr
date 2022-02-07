@@ -259,8 +259,6 @@ module.exports = {
   },
 
   insertOperator: (values, callback) => {
-
-
     return pool.query(
       format(`INSERT INTO operators(
         dairy_id,
@@ -274,7 +272,7 @@ module.exports = {
         is_owner, 
         is_operator,
         is_responsible
-        ) VALUES (%L)`, values),
+        ) VALUES (%L) RETURNING *`, values),
       [],
       callback
     )
@@ -1894,7 +1892,6 @@ module.exports = {
     )
   },
   searchExportDest: (values, callback) => {
-    console.log("Searching export_dest", values)
     return pool.query(
       `SELECT * FROM export_dest
       where export_recipient_id = $1 and pnumber = $2 and street = $3 and city_zip=$4 and dairy_id = $5`,
@@ -1926,8 +1923,6 @@ module.exports = {
         k_con_mg_kg,
     
         tfs,
-       
-        salt_lbs_rm,
 
         kn_con_mg_l,
         nh4_con_mg_l,
@@ -1936,11 +1931,7 @@ module.exports = {
         p_con_mg_l,
         k_con_mg_l,
         ec_umhos_cm,
-        tds,
-        
-        n_lbs_rm,
-        p_lbs_rm,
-        k_lbs_rm 
+        tds
       
         ) VALUES (%L)  RETURNING *`, values),
       [],
@@ -2436,7 +2427,6 @@ module.exports = {
     )
   },
   searchCertification: (values, callback) => {
-    console.log("Searching export_dest", values)
     return pool.query(
       `SELECT 
       c.pk,

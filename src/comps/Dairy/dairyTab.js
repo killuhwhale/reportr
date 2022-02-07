@@ -207,10 +207,14 @@ class DairyTab extends Component {
   onUploadXLSX() {
     const workbook = this.state.uploadedFileData
     const file = this.state.rawFileForServer
-    console.log(file)
     postXLSX(`${BASE_URL}/tsv/uploadXLSX/${this.state.dairy.pk}`, file)
       .then(res => {
         console.log(res)
+        console.log("Completed! C-engineer voice")
+        this.toggleShowUploadXLSX(false)
+        this.props.refreshAfterXLSXUpload()
+        this.getAllFields()
+        this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log(err)
