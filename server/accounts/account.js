@@ -14,7 +14,7 @@ const JWT_OPTIONS = {
 
 const WHITE_LIST = ['t@g.com'].map(email => email.toLocaleLowerCase()) // White list of emails for owner accounts
 
-const verfiyToken = (req, res, next) => {
+const verifyToken = (req, res, next) => {
     const bearerToken = req.headers['authorization']
     if (bearerToken) {
         const token = bearerToken.split(" ")[1]
@@ -63,7 +63,7 @@ module.exports = (app) => {
     })
 
 
-    app.post(`/${api}/create`, verfiyToken, (req, res) => {
+    app.post(`/${api}/create`, verifyToken, (req, res) => {
 
         jwt.verify(req.token, SECRET_KEY, (err, decoded) => {
             if (!err) {
@@ -123,7 +123,7 @@ module.exports = (app) => {
 
     })
 
-    app.post(`/${api}/currentUser`, verfiyToken, (req, res) => {
+    app.post(`/${api}/currentUser`, verifyToken, (req, res) => {
         const { token } = req
         jwt.verify(token, SECRET_KEY, (err, decoded) => {
             if (!err) {
@@ -147,7 +147,7 @@ module.exports = (app) => {
     })
 
 
-    app.post(`/${api}/update`, verfiyToken, (req, res) => {
+    app.post(`/${api}/update`, verifyToken, (req, res) => {
         const { token } = req
         const updatedUserInfo = req.body.user
         console.log("Update ", updatedUserInfo)
@@ -219,7 +219,7 @@ module.exports = (app) => {
         })
     }
 
-    app.post(`/${api}/changePassword`, verfiyToken, (req, res) => {
+    app.post(`/${api}/changePassword`, verifyToken, (req, res) => {
         const { token } = req
         const { currentPassword, newPassword, pk } = req.body.userPassword // account data to update password
 
@@ -280,7 +280,7 @@ module.exports = (app) => {
     })
 
 
-    app.get(`/${api}/all`, verfiyToken, (req, res) => {
+    app.get(`/${api}/all`, verifyToken, (req, res) => {
         // Check authN first
         const token = req.token
         jwt.verify(token, SECRET_KEY, (err, decoded) => {
@@ -304,7 +304,7 @@ module.exports = (app) => {
         })
     })
 
-    app.post(`/${api}/delete`, verfiyToken, (req, res) => {
+    app.post(`/${api}/delete`, verifyToken, (req, res) => {
         const { token } = req
         const pk = req.body.pk
         console.log("pk ", pk)

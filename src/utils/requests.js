@@ -1,7 +1,3 @@
-
-
-
-
 const get = (url) => {
   const token = localStorage.getItem('UserAuth_jwtToken')
   return new Promise((resolve, reject) => {
@@ -41,7 +37,6 @@ const post = (url, data) => {
 
 const postXLSX = (url, data) => {
   const token = localStorage.getItem('UserAuth_jwtToken')
-  console.log(data)
   return fetch(url, {
     method: "POST",
     mode: "cors",

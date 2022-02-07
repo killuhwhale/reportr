@@ -6,7 +6,6 @@ const {
 } = require('./serverTsvTemplates')
 const parseurl = require('parseurl')
 const db = require('../db/index')
-
 const isTesting = false
 
 const HARVEST = isTesting ? 'Test - Production Records' : 'Production Records'
@@ -23,10 +22,19 @@ const WASTEWATER = isTesting ? 'Test - WW Exports' : 'WW Exports'
 
 
 const api = 'tsv'
+const verifyToken = (req, res, next) => {
+    const bearerToken = req.headers['authorization']
+    if (bearerToken) {
+        const token = bearerToken.split(" ")[1]
+        req.token = token
+        next()
+    } else {
+        res.sendStatus(403)
+    }
 
-
+}
 module.exports = (app) => {
-    app.post(`/${api}/uploadXLSX/:dairy_id`, (req, res) => {
+    app.post(`/${api}/uploadXLSX/:dairy_id`, verifyToken, (req, res) => {
         const { file } = req.body
         const { dairy_id } = req.params
         const workbook = XLSX.read(req.body)
@@ -412,7 +420,7 @@ const insertFreshwaterSource = (data, dairy_id) => {
 
                 if (!err) {
                     if (result.rows[0] ?? false) {
-                        resolve(result.rows)
+                        resolve(result.rows[0])
                     }
                 } else if (err.code === '23505') {
                     resolve(null)
@@ -530,7 +538,7 @@ const insertFreshwaterAnalysis = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    console.log("FWA: err", err)
                     rej({ "error": "Create field_crop_app_freshwater_analysis unsuccessful" });
                 }
             }
@@ -1764,17 +1772,17 @@ const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
                                         harvest_date,
                                         expected_yield_tons_acre,
                                         method_of_reporting,
-                                        actual_yield,
+                                        toFloat(actual_yield),
                                         src_of_analysis,
                                         moisture,
-                                        n,
-                                        p,
-                                        k,
-                                        tfs,
-                                        n_dl,
-                                        p_dl,
-                                        k_dl,
-                                        tfs_dl
+                                        toFloat(n),
+                                        toFloat(p),
+                                        toFloat(k),
+                                        toFloat(tfs),
+                                        toFloat(n_dl),
+                                        toFloat(p_dl),
+                                        toFloat(k_dl),
+                                        toFloat(tfs_dl)
                                     ],
                                     (err, result) => {
 
@@ -2041,8 +2049,6 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
             .then(field_crop_app_freshwater_source => {
                 if (field_crop_app_freshwater_source) {
                     let fresh_water_source_id = field_crop_app_freshwater_source.pk
-
-
                     // lazyget freshwater_analysis , sample_date, sample_desc, src_of_analysis, fresh_water_source_id
                     const searchValue = { sample_date, sample_desc, src_of_analysis, fresh_water_source_id }
                     const freshwater_analysis_data = {
@@ -3115,7 +3121,7 @@ const ceateDischargeTSVFromMap = (tsvText, tsvType, dairy_id) => {
                 (err, result) => {
                     if (!err) {
                         if (result.rows[0] ?? false) {
-                            resovle(result.rows[0])
+                            resolve(result.rows[0])
                         }
                     } else if (err.code === '23505') {
                         resolve(null)

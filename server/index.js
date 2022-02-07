@@ -20,15 +20,15 @@ const allowedOrigins = [
 ];
 // const storage = new Storage();
 const REQUEST_LIMIT = 1024 * 1024 * 10 // 10MB
-
+const FILE_SIZE_LIMIT = 1024 * 1024 * 100 // 100MB
 // Setup
 app.use(express.json({ limit: REQUEST_LIMIT }))
+app.use(bodyParser.raw({ limit: FILE_SIZE_LIMIT }))
+app.use(fileUpload());
 
 // Below will serve the app on :3001 as well....
 // app.use(express.static(path.join(__dirname, "..", "build")));
 // app.use(express.static(path.join(__dirname, "../public")));
-app.use(fileUpload());
-app.use(bodyParser.raw())
 app.use(cors({
   origin: function (origin, callback) {
     // allow requests with no origin 
