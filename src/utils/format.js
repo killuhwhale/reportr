@@ -1,4 +1,3 @@
-import { round } from "mathjs"
 import { toFloat } from "./convertCalc"
 
 const groupBySortBy = (list, groupBy, sortBy) => {
@@ -139,6 +138,15 @@ const naturalSortBy = (a, b, s) => {
   return naturalSort(a[s], b[s])
 }
 
+const naturalSortByKeys = (a, b, keys) => {
+  let keyA = ''
+  let keyB = ''
+  keys.forEach(key => {
+    keyA += a[key]
+    keyB += b[key]
+  })
+  return naturalSort(keyA, keyB)
+}
 
 const sortByKeys = (a, b, keys) => {
   let keyA = ''
@@ -151,4 +159,4 @@ const sortByKeys = (a, b, keys) => {
 }
 
 
-export { sortByKeys, nestedGroupBy, groupBySortBy, groupByKeys, formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, percentageAsMGKG }
+export { naturalSortByKeys, sortByKeys, nestedGroupBy, groupBySortBy, groupByKeys, formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, percentageAsMGKG }

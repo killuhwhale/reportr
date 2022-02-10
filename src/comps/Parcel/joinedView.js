@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Typography, IconButton, Tooltip
 } from '@material-ui/core'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import Delete from '@material-ui/icons/Delete'
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { get, post } from "../../utils/requests"
+import { post } from "../../utils/requests"
+import { naturalSortByKeys } from '../../utils/format'
 
 
 class JoinedView extends Component {
@@ -54,7 +55,7 @@ class JoinedView extends Component {
     return (
       <Grid container item xs={12}>
         {this.state.field_parcels.length > 0 ?
-          this.state.field_parcels.map((fieldParcel, i) => {
+          this.state.field_parcels.sort((a, b) => naturalSortByKeys(a, b, ['title', 'pnumber'])).map((fieldParcel, i) => {
             return (
               <Grid key={`fieldParcel1337${i}`} item container xs={6} justifyContent="center" alignItems="center" className='showOnHoverParent'>
                 <Grid item xs={10} style={{ display: 'flex' }}>

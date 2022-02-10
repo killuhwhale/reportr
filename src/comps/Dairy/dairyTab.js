@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 import {
   DatePicker
@@ -15,8 +15,6 @@ import { get, post, postXLSX } from '../../utils/requests'
 import ParcelAndFieldView from "../Parcel/parcelAndFieldView"
 import OperatorView from "../Operators/operatorView"
 
-import pdfMake from "pdfmake/build/pdfmake"
-import pdfFonts from "pdfmake/build/vfs_fonts"
 import { generatePDF } from './pdfCharts';
 import ActionCancelModal from "../Modals/actionCancelModal"
 import UploadTSVModal from "../Modals/uploadTSVModal"
@@ -28,19 +26,6 @@ import { getReportingPeriodDays } from "../../utils/herdCalculation"
 import { uploadXLSX } from '../../utils/TSV'
 import XLSX from 'xlsx'
 import { BASE_URL } from '../../utils/environment';
-
-
-pdfMake.vfs = pdfFonts.pdfMake.vfs
-
-
-const HORIBAR_WIDTH = '600px'
-const HORIBAR_HEIGHT = '300px'
-const BAR_WIDTH = '500px'
-const BAR_HEIGHT = '333px'
-const CHART_BACKGROUND_COLOR = "#f7f7f7"
-const RADIUS = 40
-const PAD = 10
-
 
 
 /**
@@ -205,7 +190,7 @@ class DairyTab extends Component {
   }
 
   onUploadXLSX() {
-    const workbook = this.state.uploadedFileData
+
     const file = this.state.rawFileForServer
     postXLSX(`${BASE_URL}/tsv/uploadXLSX/${this.state.dairy.pk}`, file)
       .then(res => {
@@ -220,6 +205,8 @@ class DairyTab extends Component {
         console.log(err)
       })
 
+    // Client side upload
+    // const workbook = this.state.uploadedFileData
     // uploadXLSX(workbook, this.state.dairy.pk)
     //   .then(res => {
     //     console.log("Completed! C-engineer voice")
@@ -351,25 +338,7 @@ class DairyTab extends Component {
                   />
                 </Grid>
                 <Grid item xs={4}>
-                  {/* <TextField select
-                    label="Primary Breed"
-                    value={
-                      Math.max(0, this.props.BREEDS.indexOf(this.state.dairy.p_breed))
-                    }
-                    onChange={(ev) => {
-                      this.props.onChange({ target: { name: 'p_breed', value: this.props.BREEDS[ev.target.value] } })
-                    }}
-                    style={{ width: "100%" }}
-                    SelectProps={{
-                      native: true,
-                    }}
-                  >
-                    {this.props.BREEDS.map((el, i) => {
-                      return (
-                        <option key={`breeds${i}`} value={i}>{el}</option>
-                      )
-                    })}
-                  </TextField> */}
+
                 </Grid>
               </Grid>
               <Grid item container xs={12} style={{ marginTop: "16px" }}>

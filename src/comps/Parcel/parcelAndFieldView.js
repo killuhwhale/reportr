@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import DeleteIcon from '@material-ui/icons/Delete'
-import ParcelNumber from "./parcelNumber"
 import FieldForm from "../Field/fieldForm"
 import FieldParcelJoinModal from "../Modals/fieldParcelJoinModal"
 import JoinedView from "./joinedView"
@@ -15,12 +14,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { get, post } from "../../utils/requests"
 import { AddCircleOutline, ImportExport } from '@material-ui/icons'
-
-
-const COUNTIES = ["Merced", "San Joaquin"]
-const BASINS = ["River", "Rio"]
-const BREEDS = ["Heffy guy", "Milker Boi", "Steakz"]
-
+import { naturalSortBy } from '../../utils/format'
 
 class ParcelView extends Component {
   constructor(props) {
@@ -306,7 +300,7 @@ class ParcelView extends Component {
         <Grid item key="PVparcelNumbermn" xs={6}>
           <Grid item container xs={12}>
             {this.state.parcels.length > 0 ?
-              this.state.parcels.map((parcel, i) => {
+              this.state.parcels.sort((a, b) => naturalSortBy(a, b, 'pnumber')).map((parcel, i) => {
                 return (
                   <Grid item container xs={6} key={`parcelViewPV${i}`} justifyContent="center" alignItems="center"
                     style={{ marginBottom: '8px' }} className='showOnHoverParent'>
@@ -347,7 +341,7 @@ class ParcelView extends Component {
 
         <Grid item key="PVfield" xs={6}>
           {this.state.fields.length > 0 ?
-            this.state.fields.map((field, i) => {
+            this.state.fields.sort((a, b) => naturalSortBy(a, b, 'title')).map((field, i) => {
               return (
                 <Grid container item xs={12} key={`parcelViewFieldsPV${i}`} className='showOnHoverParent'>
                   <Grid item xs={11}>

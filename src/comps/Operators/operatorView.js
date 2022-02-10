@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Paper, Typography, IconButton, Tooltip
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
-import AddIcon from '@material-ui/icons/Add'
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
@@ -14,6 +13,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { get, post } from '../../utils/requests';
 import { ImportExport, InsertEmoticon } from '@material-ui/icons';
+import { naturalSortByKeys } from '../../utils/format'
 
 
 
@@ -170,7 +170,7 @@ class OperatorView extends Component {
         </Grid>
 
         {this.state.operators.length > 0 ?
-          this.state.operators.map((operator, i) => {
+          this.state.operators.sort((a, b) => naturalSortByKeys(a, b, ['title', 'primary_phone'])).map((operator, i) => {
             return (
               <Paper elevation={2} key={`operatorOV${i}`} style={{ padding: '15px' }} className='showOnHoverParent'>
                 <Grid item container xs={12} justifyContent="center" alignItems="center" align="center" >

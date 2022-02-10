@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 // Material UI
 import {
-  Grid, Paper, Button, Typography, Modal, TextField, Switch
+  Grid, Typography, TextField, Switch
 }
   from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
@@ -21,7 +21,7 @@ class OperatorForm extends Component {
 
   render() {
     return (
-      <Grid item container xs={12} style={{marginBottom: '32px'}}>
+      <Grid item container xs={12} style={{ marginBottom: '32px' }}>
         <Grid item xs={4}>
           <TextField
             name='title'
@@ -94,7 +94,7 @@ class OperatorForm extends Component {
             name="is_responsible" color="secondary"
             label="Responsible for permit fees"
             checked={this.state.operator.is_responsible}
-            onChange={(ev) => this.props.onChange(this.props.index, {target: {name: 'is_responsible', value: ev.target.checked}})}
+            onChange={(ev) => this.props.onChange(this.props.index, { target: { name: 'is_responsible', value: ev.target.checked } })}
           />
         </Grid>
 
@@ -106,7 +106,7 @@ class OperatorForm extends Component {
             name="is_owner" color="secondary"
             label="Owner"
             checked={this.state.operator.is_owner}
-            onChange={(ev) => this.props.onChange(this.props.index, {target: {name: 'is_owner', value: ev.target.checked}})}
+            onChange={(ev) => this.props.onChange(this.props.index, { target: { name: 'is_owner', value: ev.target.checked } })}
           />
         </Grid>
         <Grid item xs={2}>
@@ -117,7 +117,7 @@ class OperatorForm extends Component {
             name="is_operator" color="secondary"
             label="Operator"
             checked={this.state.operator.is_operator}
-            onChange={(ev) => this.props.onChange(this.props.index, {target: {name: 'is_operator', value: ev.target.checked}})}
+            onChange={(ev) => this.props.onChange(this.props.index, { target: { name: 'is_operator', value: ev.target.checked } })}
           />
         </Grid>
       </Grid>

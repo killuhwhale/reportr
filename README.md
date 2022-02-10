@@ -38,6 +38,8 @@ ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
 
 TODO
 
+Fix tests, out of order comparing objects. and formatting of values
+
 
 
 Account Management for Owners
@@ -56,11 +58,13 @@ Account Management for Owners
 
 
 
-
   - TODO()
-    - Login UI needs to show errors
     - Send Emails for confirmation and passwords
 
+  - Server side upload to db
+    - Send .xlsx to server to process.
+  - Testing
+    - Accounts users.js
 
 
 Owner and User

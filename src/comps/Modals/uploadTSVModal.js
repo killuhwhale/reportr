@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 // Material UI
-import { Grid, Paper, Button, Typography, Modal, TextField, CircularProgress } from '@material-ui/core';
+import { Grid, Paper, Button, Typography, Modal, CircularProgress } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
 class UploadTSVModal extends Component {

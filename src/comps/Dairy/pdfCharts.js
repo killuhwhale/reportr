@@ -1,5 +1,5 @@
 import Chart from 'chart.js/auto';
-import pdfMake, { getCurrentPage, getPageSize, initializePage } from "pdfmake/build/pdfmake"
+import pdfMake from "pdfmake/build/pdfmake"
 import dd from "./pdf"
 import pdfFonts from "pdfmake/build/vfs_fonts"
 import { getAnnualReportData } from "./pdfDB"
