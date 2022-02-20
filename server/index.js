@@ -2920,8 +2920,9 @@ app.post("/api/postImage", (req, res) => {
 app.get('/', (req, res) => {
   db.query("SELECT 5 as five;", [], (err, result) => {
     if (!err) {
-      res.json(result.rows)
       console.log("Test runtime logs.")
+      res.json(result.rows)
+
       return;
     }
     res.send(err);
