@@ -29,45 +29,45 @@ module.exports = (app) => {
     app.post(`/${api}/login`, (req, res) => {
         const { email, password } = req.body
         console.log("Logging in", email, password)
-        db.login(email, (err, response) => {
-            if (!err) {
-                const { rows } = response
-                const user = rows[0] ?? {}
-                const hash = user.password
-                if (user && hash) {
-                    bcrypt.compare(password, hash, function (err, valid) {
-                        console.log(err, email, password, hash, valid)
-                        if (err) {
-                            res.json({ "error": { msg: "Passowrd compare error", code: 'auth/compare-error' } })
-                            return
-                        }
-                        if (valid) {
-                            delete user['password']
+        // db.login(email, (err, response) => {
+        //     if (!err) {
+        //         const { rows } = response
+        //         const user = rows[0] ?? {}
+        //         const hash = user.password
+        //         if (user && hash) {
+        //             bcrypt.compare(password, hash, function (err, valid) {
+        //                 console.log(err, email, password, hash, valid)
+        //                 if (err) {
+        //                     res.json({ "error": { msg: "Passowrd compare error", code: 'auth/compare-error' } })
+        //                     return
+        //                 }
+        //                 if (valid) {
+        //                     delete user['password']
 
-                            jwt.sign({ user }, SECRET_KEY, JWT_OPTIONS, (err, token) => {
-                                if (!err) {
-                                    res.json({ "data": { token, user } })
-                                } else {
-                                    res.json({ "error": { msg: "Invalid password", code: 'auth/token-error' } })
-                                }
+        //                     jwt.sign({ user }, SECRET_KEY, JWT_OPTIONS, (err, token) => {
+        //                         if (!err) {
+        //                             res.json({ "data": { token, user } })
+        //                         } else {
+        //                             res.json({ "error": { msg: "Invalid password", code: 'auth/token-error' } })
+        //                         }
 
-                            })
+        //                     })
 
-                        } else {
-                            res.json({ "error": { msg: "Invalid password", code: 'auth/wrong-password' } })
-                            console.error({ msg: "Invalid password", code: 'auth/wrong-password' })
-                        }
-                    });
-                } else {
-                    res.json({ "error": { msg: "Error logging in, info not found.", code: 'auth/user-not-found' } })
-                    console.error("Error logging in, info not found.")
-                }
-            } else {
-                res.json({ "error": `auth/db-error ${err.code}` })
-                console.error(`auth/db-error ${err.code}`)
+        //                 } else {
+        //                     res.json({ "error": { msg: "Invalid password", code: 'auth/wrong-password' } })
+        //                     console.error({ msg: "Invalid password", code: 'auth/wrong-password' })
+        //                 }
+        //             });
+        //         } else {
+        //             res.json({ "error": { msg: "Error logging in, info not found.", code: 'auth/user-not-found' } })
+        //             console.error("Error logging in, info not found.")
+        //         }
+        //     } else {
+        //         res.json({ "error": `auth/db-error ${err.code}` })
+        //         console.error(`auth/db-error ${err.code}`)
 
-            }
-        })
+        //     }
+        // })
     })
 
 
