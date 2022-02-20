@@ -20,20 +20,31 @@ const get = (url) => {
 const post = (url, data) => {
   const token = localStorage.getItem('UserAuth_jwtToken') ?? ''
 
-  return fetch(url, {
-    method: "POST",
-    mode: "cors",
-    cache: "no-cache",
-    credentials: "same-origin",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    redirect: "follow",
-    refferrerPolicy: "no-referrer",
-    body: JSON.stringify(data)
+  return new Promise((resolve, reject) => {
+    fetch(url, {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      redirect: "follow",
+      refferrerPolicy: "no-referrer",
+      body: JSON.stringify(data)
+    })
+      .then(res => {
+        console.log("res::", res)
+        resolve(res.json())
+      }
+      )
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+
   })
-    .then(res => res.json())
 }
 
 const postXLSX = (url, data) => {

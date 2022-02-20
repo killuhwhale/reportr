@@ -8,7 +8,8 @@ const app = express(); // create express app
 
 var http = require('http').createServer(app);
 const db = require('./db/index')
-
+var expressWinston = require('express-winston');
+var winston = require('winston'); // for transports.Console
 
 
 const allowedOrigins = [
@@ -16,7 +17,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:8080',
-  "https://fragservices.app"
+  "https://fragservices.app",
+  "https://reportrr-918ff.web.app"
 ];
 // const storage = new Storage();
 const REQUEST_LIMIT = 1024 * 1024 * 10 // 10MB
@@ -43,8 +45,8 @@ app.use(cors({
   }
 }));
 
-require(`./accounts/account.js`)(app);
-require(`./tsv/serverTsv.js`)(app);
+// const accountsAPI = require(`./accounts/account.js`)(app);
+// const tsvAPI = require(`./tsv/serverTsv.js`)(app);
 
 app.post("/api/tsv/create", (req, res) => {
 
@@ -2935,3 +2937,27 @@ http.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
 });
 
+app.use(expressWinston.logger({
+  transports: [
+    new winston.transports.Console()
+  ],
+  format: winston.format.combine(
+    winston.format.colorize(),
+    winston.format.json()
+  ),
+  meta: true, // optional: control whether you want to log the meta data about the request (default to true)
+  msg: "HTTP {{req.method}} {{req.url}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+  expressFormat: true, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+  colorize: false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yell
+}));
+
+// express-winston errorLogger makes sense AFTER the router.
+app.use(expressWinston.errorLogger({
+  transports: [
+    new winston.transports.Console()
+  ],
+  format: winston.format.combine(
+    winston.format.colorize(),
+    winston.format.json()
+  )
+}));
