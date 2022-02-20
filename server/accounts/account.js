@@ -51,13 +51,17 @@ module.exports = (app) => {
 
                         } else {
                             res.json({ "error": { msg: "Invalid password", code: 'auth/wrong-password' } })
+                            console.error({ msg: "Invalid password", code: 'auth/wrong-password' })
                         }
                     });
                 } else {
                     res.json({ "error": { msg: "Error logging in, info not found.", code: 'auth/user-not-found' } })
+                    console.error("Error logging in, info not found.")
                 }
             } else {
                 res.json({ "error": `auth/db-error ${err.code}` })
+                console.error(`auth/db-error ${err.code}`)
+
             }
         })
     })
