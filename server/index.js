@@ -45,8 +45,8 @@ app.use(cors({
   }
 }));
 
-// const accountsAPI = require(`./accounts/account.js`)(app);
-// const tsvAPI = require(`./tsv/serverTsv.js`)(app);
+const accountsAPI = require(`./accounts/account.js`)(app);
+const tsvAPI = require(`./tsv/serverTsv.js`)(app);
 
 app.post("/api/tsv/create", (req, res) => {
 
