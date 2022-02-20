@@ -18,7 +18,8 @@ const get = (url) => {
 }
 
 const post = (url, data) => {
-  const token = localStorage.getItem('UserAuth_jwtToken')
+  const token = localStorage.getItem('UserAuth_jwtToken') ?? ''
+
   return fetch(url, {
     method: "POST",
     mode: "cors",

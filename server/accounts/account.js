@@ -29,6 +29,7 @@ const verifyToken = (req, res, next) => {
 module.exports = (app) => {
     app.post(`/${api}/login`, (req, res) => {
         const { email, password } = req.body
+        console.log("Logging in", email, password)
         db.login(email, (err, response) => {
             if (!err) {
                 const { rows } = response
@@ -37,6 +38,10 @@ module.exports = (app) => {
                 if (user && hash) {
                     bcrypt.compare(password, hash, function (err, valid) {
                         console.log(err, email, password, hash, valid)
+                        if (err) {
+                            res.json({ "error": { msg: "Passowrd compare error", code: 'auth/compare-error' } })
+                            return
+                        }
                         if (valid) {
                             delete user['password']
 

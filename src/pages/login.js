@@ -42,6 +42,21 @@ class Login extends Component {
     let email = document.getElementById('email')
     let pass1 = document.getElementById('password')
 
+    if (!email.value) {
+      this.setState({
+        usernameError: true, usernameHelperTxt: 'Email not given.',
+        passwordError: false, passwordHelperTxt: ''
+      })
+      return
+    }
+    if (!pass1.value) {
+      this.setState({
+        usernameError: false, usernameHelperTxt: '',
+        passwordError: true, passwordHelperTxt: 'Password not given.'
+      })
+      return
+    }
+
     auth.login(email.value, pass1.value)
       .then(res => {
         console.log(res)
