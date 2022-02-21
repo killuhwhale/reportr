@@ -1657,7 +1657,7 @@ const onUploadXLSX = (dairy_id, tsvText, numCols, tsvType, uploadedFilename) => 
         })
             .catch(err => {
                 console.log("Error with all promises", err)
-                reject({ err: "Error with all promises", tsvType, uploadedFilename })
+                reject({ err: "Error with all promises", tsvType, uploadedFilename, error: err })
             })
     })
 }
@@ -3131,7 +3131,7 @@ const ceateDischargeTSVFromMap = (tsvText, tsvType, dairy_id) => {
                         resolve(null)
                     } else {
                         console.log(err)
-                        reject({ "error": "Created discharge unsuccessful" });
+                        reject({ "error": "Created discharge unsuccessful", err });
                     }
                 }
             )
