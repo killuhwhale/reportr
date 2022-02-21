@@ -63,8 +63,9 @@ const toFloat = (num) => {
         float = parseFloat(num.replaceAll(',', ''))
 
     } catch (err) {
-        logger.info(`${num} is not a function (replaceAll)`)
-        return 0.00
+        logger.info(num)
+        logger.info('is not a function (replaceAll)')
+        return num
     }
 
     if (isNaN(float)) {
