@@ -45,7 +45,7 @@ module.exports = (app) => {
             })
             .catch(err => {
                 console.log(err)
-                res.json({ error: 'Failure', err })
+                res.json({ error: 'Failure', ...err })
             })
 
     })
@@ -1692,7 +1692,7 @@ const uploadXLSX = (workbook, dairy_id) => {
                 resolve(res)
             })
             .catch(err => {
-                reject({ error: promises })
+                reject({ error: err, msg: 'Error with all promises' })
             })
     })
 }
