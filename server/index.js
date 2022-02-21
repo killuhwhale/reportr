@@ -8,22 +8,6 @@ const app = express(); // create express app
 
 var http = require('http').createServer(app);
 const db = require('./db/index')
-var expressWinston = require('express-winston');
-var winston = require('winston'); // for transports.Console
-const loggerConfig = {
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({
-      filename: 'logs/example.log'
-    })
-  ],
-  format: winston.format.combine(
-    winston.format.colorize(),
-    winston.format.json()
-  ),
-  msg: "HTTP {{req.method}} {{req.url}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
-}
-const logger = winston.createLogger(loggerConfig)
 
 const allowedOrigins = [
   'http://localhost',
@@ -207,7 +191,6 @@ app.get("/api/dairies/:reportingYear", (req, res) => {
 });
 
 app.get("/api/dairy/:dairy_id", (req, res) => {
-  logger.log({ message: 'Getting dairy by dairy id, test logs.' })
   db.getDairy(req.params.dairy_id,
     (err, result) => {
       if (!err) {
@@ -2951,18 +2934,3 @@ http.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
 });
 
-app.use(expressWinston.logger(loggerConfig));
-
-// express-winston errorLogger makes sense AFTER the router.
-app.use(expressWinston.errorLogger({
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({
-      filename: 'logs/example.log'
-    })
-  ],
-  format: winston.format.combine(
-    winston.format.colorize(),
-    winston.format.json()
-  )
-}));
