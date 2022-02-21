@@ -4,10 +4,10 @@ const {
     harvestTemplate, wwTemplate, fwTemplate, smTemplate, cfTemplate, smExportTemplate,
     wwExportTemplate, soilTemplate, plowdownTemplate, tiledrainageTemplate, dischargeTemplate
 } = require('./serverTsvTemplates')
-const parseurl = require('parseurl')
 const db = require('../db/index')
-const isTesting = false
+const logger = require('../logs/logging')
 
+const isTesting = false
 const HARVEST = isTesting ? 'Test - Production Records' : 'Production Records'
 const PROCESS_WASTEWATER = isTesting ? 'Test - WW Applications' : 'WW Applications'
 const FRESHWATER = isTesting ? 'Test - FW Applications' : 'FW Applications'
@@ -40,11 +40,12 @@ module.exports = (app) => {
         const workbook = XLSX.read(req.body)
         uploadXLSX(workbook, dairy_id)
             .then(result => {
-                console.log("End res", result)
+                logger.info(result)
                 res.json({ data: 'Success' })
             })
             .catch(err => {
-                console.log(err)
+                logger.info('Failure')
+                logger.info(err)
                 res.json({ error: 'Failure', ...err })
             })
 
@@ -139,7 +140,7 @@ const searchField = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej(err)
                 }
             })
@@ -160,7 +161,7 @@ const insertField = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej(err)
                 }
             })
@@ -180,7 +181,7 @@ const searchFieldCrop = (value) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej(err)
                 }
             }
@@ -275,7 +276,7 @@ const searchWasterWaterAnalysis = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ error: "Search all searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc unsuccessful" })
                 }
             }
@@ -373,7 +374,7 @@ const insertWasterWaterAnalysis = (data, dairy_id) => {
                     // Duplicate entry, resolve null to search again
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ error: "Created field_crop_app_process_wastewater_analysis unsuccessful" });
                 }
             }
@@ -397,7 +398,7 @@ const searchFreshwaterSource = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Search all searchFieldCropAppFreshwaterSource unsuccessful" });
                 }
             })
@@ -425,7 +426,7 @@ const insertFreshwaterSource = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Created field_crop_app_freshwater_source unsuccessful" });
 
                 }
@@ -455,7 +456,7 @@ const searchFreshwaterAnalysis = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Search all searchFieldCropAppFreshwaterAnalysis unsuccessful" });
                 }
             })
@@ -538,7 +539,7 @@ const insertFreshwaterAnalysis = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log("FWA: err", err)
+                    logger.info("FWA: err", err)
                     rej({ "error": "Create field_crop_app_freshwater_analysis unsuccessful" });
                 }
             }
@@ -565,7 +566,7 @@ const searchManureAnalysis = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     res.json({ "error": "Search all searchFieldCropAppSolidmanureAnalysis unsuccessful" });
                 }
             })
@@ -639,7 +640,7 @@ const insertManureAnalysis = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Created field_crop_app_solidmanure_analysis unsuccessful" });
 
                 }
@@ -668,7 +669,7 @@ const searchNutrientImportAnalysis = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Search all nutrient_import unsuccessful" });
                 }
             })
@@ -714,7 +715,7 @@ const insertNutrientImportAnalysis = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Created nutrient_import unsuccessful" });
                 }
             }
@@ -742,7 +743,7 @@ const searchSoilAnalysis = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Search soil_analysis unsuccessful" });
                 }
             })
@@ -799,7 +800,7 @@ const insertSoilAnalysis = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Created soil_import unsuccessful" });
                 }
             }
@@ -822,7 +823,7 @@ const searchOperator = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Search operators unsuccessful" });
                 }
             })
@@ -849,7 +850,7 @@ const insertOperator = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Created operator unsuccessful" });
                 }
             }
@@ -875,7 +876,7 @@ const searchContact = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Search export_contact unsuccessful" });
                 }
             })
@@ -905,7 +906,7 @@ const insertContact = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Created contact unsuccessful" });
                 }
             }
@@ -935,7 +936,7 @@ const searchHauler = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Search export_hauler unsuccessful" });
                 }
             })
@@ -977,7 +978,7 @@ const insertHauler = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Created hauler unsuccessful" });
                 }
             }
@@ -1005,7 +1006,7 @@ const searchRecipient = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Search export_recipient unsuccessful" });
                 }
             })
@@ -1047,7 +1048,7 @@ const insertRecipient = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Created recipient unsuccessful" });
                 }
             }
@@ -1075,7 +1076,7 @@ const searchDest = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Search export_dest unsuccessful" });
                 }
             })
@@ -1115,7 +1116,7 @@ const insertDest = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Created dest unsuccessful" });
                 }
             }
@@ -1141,7 +1142,7 @@ const searchDrainSrc = (value, dairy_id) => {
                         resolve(null)
                     }
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Search drain_src unsuccessful" });
                 }
             })
@@ -1167,7 +1168,7 @@ const insertDrainSrc = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     resolve(null)
                 } else {
-                    console.log(err)
+                    logger.info(err)
                     rej({ "error": "Created drain_src unsuccessful" });
                 }
             }
@@ -1377,7 +1378,7 @@ const updateTSV = (tsvData) => {
             if (!err) {
                 res("Updated tsv successfully");
             } else {
-                console.log(err)
+                logger.info(err)
                 rej({ "error": "Updated tsv unsuccessful" });
             }
         })
@@ -1568,15 +1569,15 @@ const getFieldCropFromMap = (commonRowData, dairy_id, tsvType) => {
                                 resolve(field_crop_res)
                             })
                             .catch(err => {
-                                console.log(err)
+                                logger.info(err)
                                 reject(err)
                             })
                     } else {
-                        console.log("Crop not valid.", crop_title)
+                        logger.info("Crop not valid.", crop_title)
                     }
                 } else {
-                    console.log("Prepare Field Crop: Field not valid.", res)
-                    console.log(fieldObj, cropObj)
+                    logger.info("Prepare Field Crop: Field not valid.", res)
+                    logger.info(fieldObj, cropObj)
                 }
             })
     })
@@ -1611,7 +1612,7 @@ const getFieldCropAppFromMap = (commonRowData, dairy_id, tsvType) => {
 
                     })
                     .catch(err => {
-                        console.log(err, commonRowData)
+                        logger.info(err, commonRowData)
 
                     })
             })
@@ -1656,7 +1657,7 @@ const onUploadXLSX = (dairy_id, tsvText, numCols, tsvType, uploadedFilename) => 
                 })
         })
             .catch(err => {
-                console.log("Error with all promises", err)
+                logger.info("Error with all promises", err)
                 reject({ err: "Error with all promises", tsvType, uploadedFilename, error: err })
             })
     })
@@ -1798,7 +1799,7 @@ const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
                                         } else if (err.code === '23505') {
                                             resolve(null)
                                         } else {
-                                            console.log(err)
+                                            logger.info(err)
                                             rej({ "error": "Created field_crop_harvest unsuccessful" });
                                         }
                                     })
@@ -1843,7 +1844,7 @@ const createHarvestTSVFromMap = (tsvText, tsvType, dairy_id) => {
                 resolve(res)
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 reject(err)
             })
     })
@@ -1983,14 +1984,14 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id
                         }
 
                         else {
-                            console.log(err)
+                            logger.info(err)
                             rej({ "error": "Created field_crop_app_process_wastewater unsuccessful" });
                         }
                     }
                 )
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 rej(err)
             })
     })
@@ -2107,7 +2108,7 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
                                     } else if (err.code === '23505') {
                                         resolve(null)
                                     } else {
-                                        console.log(err)
+                                        logger.info(err)
                                         rej({ "error": "Created field_crop_app_freshwater unsuccessful" });
 
                                     }
@@ -2119,14 +2120,14 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
                         })
 
                 } else {
-                    console.log("Error with reading pk", row)
+                    logger.info("Error with reading pk", row)
                 }
 
 
 
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 rej(err)
             })
     })
@@ -2220,19 +2221,19 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_id) => {
                             } else if (err.code === '23505') {
                                 resolve(null)
                             } else {
-                                console.log(err)
+                                logger.info(err)
                                 rej({ "error": "Created field_crop_app_solidmanure unsuccessful" });
                             }
                         }
                     )
                 } else {
-                    console.log("Error with reading pk for solidmanure analysis", row)
+                    logger.info("Error with reading pk for solidmanure analysis", row)
                     rej({ "error": "Error with reading pk for solidmanure analysis" });
                 }
 
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 rej(err)
             })
     })
@@ -2294,18 +2295,18 @@ const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_id) => {
                             } else if (err.code === '23505') {
                                 resolve(null)
                             } else {
-                                console.log(err)
+                                logger.info(err)
                                 rej({ "error": "Created field_crop_app_fertilizer unsuccessful" });
                             }
                         }
                     )
                 } else {
-                    console.log("Error with reading pk for nutrient import", row)
+                    logger.info("Error with reading pk for nutrient import", row)
                     rej({ error: "Error with reading pk for nutrient import" })
                 }
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 rej(err)
             })
     })
@@ -2474,19 +2475,19 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_id) => {
                                 } else if (err.code === '23505') {
                                     resolve(null)
                                 } else {
-                                    console.log('Insert soil error', err)
+                                    logger.info('Insert soil error', err)
                                     reject({ error: "Insert field_crop_app_soil unsuccessful" });
                                 }
                             }
                         )
                     })
                     .catch(err => {
-                        console.log("Get all fca_soil_analysis", err)
+                        logger.info("Get all fca_soil_analysis", err)
                         reject(err)
                     })
             })
             .catch(err => {
-                console.log('Lazy get field for fca_soil_analysis error:', err)
+                logger.info('Lazy get field for fca_soil_analysis error:', err)
                 reject(err)
             })
     })
@@ -2541,13 +2542,13 @@ const createPlowdownCreditApplicationFromMap = (row, field_crop_app, dairy_id) =
                         } else if (err.code === '23505') {
                             resolve(null)
                         } else {
-                            console.log('Insert plowdown error', err)
+                            logger.info('Insert plowdown error', err)
                             reject({ error: "Insert field_crop_app_plowdown unsuccessful" });
                         }
                     })
             })
             .catch(err => {
-                console.log('Lazy get field for fields error:', err)
+                logger.info('Lazy get field for fields error:', err)
                 reject(err)
             })
     })
@@ -2616,7 +2617,7 @@ const createDataFromTSVListRowMap = (row, i, dairy_id, tsvType) => {
                 }
             })
             .catch(field_crop_app_err => {
-                console.log(field_crop_app_err)
+                logger.info(field_crop_app_err)
             })
 
     })
@@ -2644,12 +2645,12 @@ const uploadNutrientApp = (tsvText, tsvType, dairy_id) => {
                         resolve(res)
                     })
                     .catch(err => {
-                        console.log(err)
+                        logger.info(err)
                         reject(err)
                     })
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 reject(err)
             })
     })
@@ -2792,12 +2793,12 @@ const _lazyGetExportDestFromMap = (row, dairy_id) => {
                         resolve([operatorObj, contactObj, haulerObj, export_dest_res])
                     })
                     .catch(err => {
-                        console.log(err)
+                        logger.info(err)
                         reject(err)
                     })
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 reject(err)
             })
 
@@ -2871,7 +2872,7 @@ const createDataFromManureExportTSVListRowMap = (row, i, dairy_id) => {
                         } else if (err.code === '23505') {
                             resolve(null)
                         } else {
-                            console.log('Insert export_manure_manifest error', err)
+                            logger.info('Insert export_manure_manifest error', err)
                             reject({ error: "Insert export_manure_manifest unsuccessful" });
                         }
                     }
@@ -2880,7 +2881,7 @@ const createDataFromManureExportTSVListRowMap = (row, i, dairy_id) => {
 
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 reject(err)
             })
     })
@@ -2951,14 +2952,14 @@ const createDataFromWastewaterExportTSVListRowMap = (row, i, dairy_id) => {
                         } else if (err.code === '23505') {
                             resolve(null)
                         } else {
-                            console.log('Insert export_ww_manifest error', err)
+                            logger.info('Insert export_ww_manifest error', err)
                             reject({ error: "Insert export_ww_manifest unsuccessful" });
                         }
                     }
                 )
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 reject(err)
             })
     })
@@ -2986,7 +2987,7 @@ const uploadExportTSV = (tsvText, tsvType, dairy_id) => {
                 resolve(res)
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 reject(err)
             })
     })
@@ -3055,14 +3056,14 @@ const createTileDrainageFromMap = (tsvText, tsvType, dairy_id) => {
                             } else if (err.code === '23505') {
                                 resolve(null)
                             } else {
-                                console.log(err)
+                                logger.info(err)
                                 reject({ "error": "Created drain_analysis unsuccessful" });
                             }
                         }
                     )
                 })
                 .catch(err => {
-                    console.log(err)
+                    logger.info(err)
                     reject(err)
                 })
         })
@@ -3074,7 +3075,7 @@ const createTileDrainageFromMap = (tsvText, tsvType, dairy_id) => {
                 resolve(res)
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 reject(err)
             })
     })
@@ -3133,7 +3134,7 @@ const ceateDischargeTSVFromMap = (tsvText, tsvType, dairy_id) => {
                         } else if (err.code === '23505') {
                             resolve(null)
                         } else {
-                            console.log(err)
+                            logger.info(err)
                             reject({ "error": "Created discharge unsuccessful", err });
                         }
                     }
@@ -3151,7 +3152,7 @@ const ceateDischargeTSVFromMap = (tsvText, tsvType, dairy_id) => {
                 resolve(res)
             })
             .catch(err => {
-                console.log(err)
+                logger.info(err)
                 reject({ err, msgA: "WTF" })
             })
     })
