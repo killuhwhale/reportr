@@ -1823,7 +1823,12 @@ const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
 
 const checkEmpty = (val) => {
     // If value is empty, return 0 to avoid error in DB.
-    return toFloat(val)
+    try {
+        return toFloat(val)
+    } catch (err) {
+        logger.info(`Failed w/ val: ${val}`)
+    }
+    return 0
 }
 /** Harvest
  * 
