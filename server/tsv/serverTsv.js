@@ -3108,35 +3108,39 @@ const ceateDischargeTSVFromMap = (tsvText, tsvType, dairy_id) => {
         const ref_number = row["Reference Number for Discharge Site"]
 
         return new Promise((resolve, reject) => {
-            db.insertDischarge(
-                [
-                    dairy_id,
-                    discharge_type,
-                    discharge_datetime,
-                    discharge_loc,
-                    toFloat(vol),
-                    vol_unit,
-                    toFloat(duration_of_discharge),
-                    discharge_src,
-                    method_of_measuring,
-                    sample_location_reason,
-                    ref_number
-                ],
-                (err, result) => {
-                    if (!err) {
-                        if (result.rows[0] ?? false) {
-                            resolve(result.rows[0])
+            try {
+                db.insertDischarge(
+                    [
+                        dairy_id,
+                        discharge_type,
+                        discharge_datetime,
+                        discharge_loc,
+                        toFloat(vol),
+                        vol_unit,
+                        toFloat(duration_of_discharge),
+                        discharge_src,
+                        method_of_measuring,
+                        sample_location_reason,
+                        ref_number
+                    ],
+                    (err, result) => {
+                        if (!err) {
+                            if (result.rows[0] ?? false) {
+                                resolve(result.rows[0])
+                            } else {
+                                resolve({})
+                            }
+                        } else if (err.code === '23505') {
+                            resolve(null)
                         } else {
-                            resolve({})
+                            console.log(err)
+                            reject({ "error": "Created discharge unsuccessful", err });
                         }
-                    } else if (err.code === '23505') {
-                        resolve(null)
-                    } else {
-                        console.log(err)
-                        reject({ "error": "Created discharge unsuccessful", err });
                     }
-                }
-            )
+                )
+            } catch (err) {
+                reject({ err, message: "errororororo" })
+            }
 
         })
     })
