@@ -1652,12 +1652,12 @@ const onUploadXLSX = (dairy_id, tsvText, numCols, tsvType, uploadedFilename) => 
                     resolve("Complete")
                 })
                 .catch(uploadTSVToDBErr => {
-                    reject(uploadTSVToDBErr)
+                    reject({ uploadTSVToDBErr, err: 'Upload tsv file error', tsvType, uploadedFilename })
                 })
         })
             .catch(err => {
                 console.log("Error with all promises", err)
-                reject(err)
+                reject({ err: "Error with all promises", tsvType, uploadedFilename })
             })
     })
 }
@@ -1673,6 +1673,7 @@ const uploadXLSX = (workbook, dairy_id) => {
 
         // For Each Sheet, feed to onUploadXLSX
         let promises = []
+
         workbook.SheetNames.forEach(sheetName => {
             // const numCols = TSV_INFO[sheetName].numCols // todo sheetnames need to match the keys in TSV file 
             // const tsvType = TSV_INFO[sheetName].tsvType
@@ -1691,7 +1692,7 @@ const uploadXLSX = (workbook, dairy_id) => {
                 resolve(res)
             })
             .catch(err => {
-                reject(err)
+                reject({ error: promises })
             })
     })
 }
