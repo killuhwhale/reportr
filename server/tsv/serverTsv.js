@@ -3148,7 +3148,7 @@ const ceateDischargeTSVFromMap = (tsvText, tsvType, dairy_id) => {
             })
             .catch(err => {
                 console.log(err)
-                reject(err)
+                reject({ err, msgA: "WTF" })
             })
     })
 }
