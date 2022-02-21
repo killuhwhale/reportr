@@ -1806,10 +1806,10 @@ const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
                                 rej(field_crop_err)
                             })
                     } else {
-                        rej(res)
+                        rej({ err: `Crop not found ${field_title} ${plant_date}` })
                     }
                 } else {
-                    rej(res)
+                    rej({ err: `Field not found ${field_title} ${plant_date}` })
                 }
             })
             .catch(err => {
@@ -2112,6 +2112,9 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
                                     }
                                 }
                             )
+                        })
+                        .catch(err => {
+                            rej({ error: `field_crop_app_freshwater_analysis ${searchValue}` })
                         })
 
                 } else {
