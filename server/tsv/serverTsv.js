@@ -45,7 +45,7 @@ module.exports = (app) => {
             })
             .catch(err => {
                 console.log(err)
-                res.json({ error: 'Failure' })
+                res.json({ error: 'Failure', err })
             })
 
     })

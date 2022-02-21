@@ -35,7 +35,6 @@ const post = (url, data) => {
       body: JSON.stringify(data)
     })
       .then(res => {
-        console.log("res::", res)
         resolve(res.json())
       }
       )
