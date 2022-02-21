@@ -1823,7 +1823,7 @@ const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
 
 const checkEmpty = (val) => {
     // If value is empty, return 0 to avoid error in DB.
-    return val.length > 0 ? val.replaceAll(',', '') : 0
+    return toFloat(val)
 }
 /** Harvest
  * 
