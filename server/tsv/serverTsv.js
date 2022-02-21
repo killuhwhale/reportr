@@ -3125,7 +3125,7 @@ const ceateDischargeTSVFromMap = (tsvText, tsvType, dairy_id) => {
                     ],
                     (err, result) => {
                         if (!err) {
-                            if (result.rows && result.rows[0] ?? false) {
+                            if (result.rows && result.rows[0]) {
                                 resolve(result.rows[0])
                             } else {
                                 resolve({})
