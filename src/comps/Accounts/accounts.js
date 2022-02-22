@@ -20,8 +20,11 @@ const AccountRow = (props) => {
         <Grid item xs={3} className='showOnHoverParent'>
             <Card variant="outlined">
                 <CardContent>
-                    <Grid item xs={12}>
-                        <Typography variant='caption'>({account.account_type}) {account.email} </Typography>
+                    <Grid item xs={12} align='right'>
+                        <Typography variant='caption'>{account.account_type === 0 ? "Owner" : "Emp"} </Typography>
+                    </Grid>
+                    <Grid item xs={12} align='center'>
+                        <Typography variant='caption'>{account.email} </Typography>
                     </Grid>
                     <Grid item xs={12}>
                         <Typography variant='caption'> {account.username ? account.username : 'No username'} </Typography>
@@ -216,7 +219,7 @@ class Accounts extends Component {
                                                 <Typography variant='h6'> Accounts </Typography>
                                             </Grid>
 
-                                            <Grid item xs={12}>
+                                            <Grid item xs={12} style={{ marginTop: '32px' }}>
                                                 <Grid item container xs={12} spacing={4}>
                                                     {this.props.open ?
                                                         this.state.allAccounts.sort((a, b) => naturalSortBy(a, b, 'email')).map((account, i) => {

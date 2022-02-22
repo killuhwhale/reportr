@@ -27,7 +27,7 @@ Chart.register({
     // render the value of the chart above the bar
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
-
+    console.log(chartInstance)
     chartInstance.data.datasets.forEach((dataset, di) => {
       for (var i = 0; i < dataset.data.length; i++) {
         // rewrite text if it is too close to edge for hoizontal bar chart
@@ -48,6 +48,7 @@ Chart.register({
         // Format number, All should be rounded integers, if over 1000, show 412,000 as  412K
 
         // num = num && num >= 1e4 ? `${formatInt(num / 1000)}K` : formatInt(num)
+        ctx.fillStyle = "#777";
 
         if (chartInstance.scales.x.type === "logarithmic") {
           ctx.fillText(num, bar.x + xOffset + 10, bar.y);
@@ -61,7 +62,7 @@ Chart.register({
 })
 
 
-const barChartConfig = (labels, data) => {
+const barChartConfig = (labels, data, backgroundColor = null) => {
   return {
     type: 'bar',
 
@@ -153,7 +154,7 @@ const barChartConfig = (labels, data) => {
           const ctx = chart.canvas.getContext('2d');
           ctx.save();
           ctx.globalCompositeOperation = 'destination-over';
-          ctx.fillStyle = CHART_BACKGROUND_COLOR;
+          ctx.fillStyle = backgroundColor || CHART_BACKGROUND_COLOR;
 
           // Top line and top right corner
           ctx.lineTo(PAD, 0, chart.width - PAD, 0)

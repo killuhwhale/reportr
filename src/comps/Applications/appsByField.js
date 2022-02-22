@@ -21,20 +21,22 @@ const HeaderRow = (props) => {
     const headerInfo = props.headerInfo
     return (
         <HeaderRowGrid item container xs={12}>
-            <Grid item xs={2}>
+            <Grid item xs={2} align='center'>
                 <Typography variant='caption' color='primary' > Applied: {formatDate(headerInfo['app_date'].split('T')[0])}</Typography>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={3} align='center'>
                 <Typography variant='caption' color='primary' > Method: {headerInfo['app_method']}</Typography>
             </Grid>
-            <Grid item xs={2}>
-                <Typography variant='caption' color='primary' > Rain Prior: {headerInfo['precip_before']}</Typography>
-            </Grid>
-            <Grid item xs={3}>
-                <Typography variant='caption' color='primary' > Rain During: {headerInfo['precip_during']}</Typography>
-            </Grid>
-            <Grid item xs={3}>
-                <Typography variant='caption' color='primary' > Rain After: {headerInfo['precip_after']}</Typography>
+            <Grid item container xs={7}>
+                <Grid item xs={4} align='center'>
+                    <Typography variant='caption' color='primary' > Rain Prior: {headerInfo['precip_before']}</Typography>
+                </Grid>
+                <Grid item xs={4} align='center'>
+                    <Typography variant='caption' color='primary' > Rain During: {headerInfo['precip_during']}</Typography>
+                </Grid>
+                <Grid item xs={4} align='center'>
+                    <Typography variant='caption' color='primary' > Rain After: {headerInfo['precip_after']}</Typography>
+                </Grid>
             </Grid>
         </HeaderRowGrid>
     )
@@ -45,16 +47,16 @@ const AppEventRow = (props) => {
     const ev = props.event
     return (
         <Grid item container xs={12}>
-            <Grid item xs={2}>
+            <Grid item xs={2} align='center'>
                 <Typography variant='caption'>{ev['app_desc'] || ev['src_desc']}</Typography>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={2} align='center'>
                 <Typography variant='caption'>{ev['material_type'] || ev['entry_type']}</Typography>
             </Grid>
             <Grid item xs={2}>
 
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={2} align='center'>
                 <Typography variant='caption'>{formatFloat(ev['amount_applied'])} </Typography>
             </Grid>
             <Grid item xs={1}>
@@ -79,19 +81,19 @@ const AppEventRow = (props) => {
 const AppEventHeaderRow = (props) => {
     return (
         <Grid item container xs={12}>
-            <Grid item xs={2}>
+            <Grid item xs={2} align='center'>
                 <Typography variant='caption' color='secondary' >Source name</Typography>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={2} align='center'>
                 <Typography variant='caption' color='secondary' >Material Type</Typography>
             </Grid>
             <Grid item xs={2}>
 
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={2} align='center'>
                 <Typography variant='caption' color='secondary' >Amount applied</Typography>
             </Grid>
-            <Grid item xs={1}>
+            <Grid item xs={1} >
                 <Typography variant='caption' color='secondary' >N (lbs/ acre)</Typography>
             </Grid>
             <Grid item xs={1}>
@@ -331,6 +333,7 @@ class AppsByField extends Component {
             this.state.viewPlantDateKey !== prevState.viewPlantDateKey) {
             this.updateChart()
         }
+        console.log("Theme change")
 
     }
 
@@ -390,7 +393,7 @@ class AppsByField extends Component {
         let chartData = this.getAppEventTotalsByViewKeys()
         const labels = ['N', 'P', 'K', "Salt"]
         chartData = [[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]]
-        this.chart = createBarChart(document.getElementById('fieldSummaryChart'), barChartConfig(labels, chartData))
+        this.chart = createBarChart(document.getElementById('fieldSummaryChart'), barChartConfig(labels, chartData, '#00000000'))
     }
     /** Chart isnt displaying Numbers on top of bars 
      */
