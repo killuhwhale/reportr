@@ -4,9 +4,7 @@ import { Grid, Paper, Button, Typography, Modal, TextField, CircularProgress } f
 import { withTheme } from '@material-ui/core/styles';
 import { get, post } from '../../utils/requests';
 import { zeroTimeDate } from "../../utils/convertCalc"
-
-
-const YEARS = [2020, 2021, 2022, 2023, 2024, 2025, 2026]
+import { YEARS } from '../../utils/constants'
 
 const latestEntry = (entries) => {
 	// Returns the object in the list with the highest pk 
@@ -121,8 +119,8 @@ class AddDairyModal extends Component {
 					if (isDuplicateYear(dairies, reportingYear)) {
 						this.props.onDone()
 						this.props.onClose()
-						this.props.onAlert(`Error: Dairy already created for year: ${reportingYear}`, 'error')
-
+						this.toggleIsLoading(false)
+						this.props.onAlert(`Dairy already created for reporting year: ${reportingYear}`, 'error')
 					}
 					else if (dairies && typeof dairies === typeof [] && dairies.length > 0) {
 						// This dairy will be the dairy_id that will be used to query and duplicate each table.

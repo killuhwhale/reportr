@@ -125,3 +125,25 @@
 {"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:44)","service":"user-service"}
 {"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service"}
 {"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service"}
+{"level":"info","message":"(db/index.js:35)","service":"user-service"}
+{"level":"info","message":"(db/index.js:36)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37)","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}

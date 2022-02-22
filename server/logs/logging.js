@@ -44,7 +44,7 @@ function formatLogArguments(args) {
         }
     }
 
-    return [args[0], args[args.length - 1]]
+    return args
 }
 
 /**
@@ -78,10 +78,10 @@ function getStackInfo(stackIndex) {
 
 module.exports = {
     logger: logger,
-    error: () => {
-        logger.error.apply(logger, formatLogArguments(arguments))
+    error: (msg) => {
+        logger.error.apply(logger, formatLogArguments([msg, ...arguments]))
     },
     info: (msg) => {
-        logger.info.apply(logger, formatLogArguments([...arguments, msg]))
+        logger.info.apply(logger, formatLogArguments([msg, ...arguments]))
     }
 }

@@ -98,6 +98,16 @@ class Login extends Component {
     this.setState({ registerInfo })
   }
 
+  listenEnter(ev, action) {
+    if ((ev.keyCode || ev.which) === 13) {
+      if (action === 'login') {
+        this.handleLoginSubmit(ev)
+      } else if (action === 'register') {
+        this.handleSubmit(ev)
+      }
+    }
+  }
+
   /* Register */
   handleSubmit(ev) {
 
@@ -166,6 +176,7 @@ class Login extends Component {
                       style={{ margin: 8 }}
                       label="Password"
                       margin="normal"
+                      onKeyDown={(ev) => this.listenEnter(ev, 'login')}
                     />
                   </Grid><Grid item xs={4}></Grid>
 
@@ -243,6 +254,7 @@ class Login extends Component {
                       label="Confirm Password"
                       margin="normal"
                       fullWidth
+                      onKeyDown={(ev) => this.listenEnter(ev, 'register')}
                     />
                   </Grid>
                   <Grid item xs={4}></Grid>

@@ -1,5 +1,7 @@
+import { JWT_TOKEN } from "./constants"
+
 const get = (url) => {
-  const token = localStorage.getItem('UserAuth_jwtToken')
+  const token = localStorage.getItem(JWT_TOKEN)
   return new Promise((resolve, reject) => {
     fetch(url, {
       headers: {
@@ -18,7 +20,7 @@ const get = (url) => {
 }
 
 const post = (url, data) => {
-  const token = localStorage.getItem('UserAuth_jwtToken') ?? ''
+  const token = localStorage.getItem(JWT_TOKEN) ?? ''
 
   return new Promise((resolve, reject) => {
     fetch(url, {
@@ -47,7 +49,7 @@ const post = (url, data) => {
 }
 
 const postXLSX = (url, data) => {
-  const token = localStorage.getItem('UserAuth_jwtToken')
+  const token = localStorage.getItem(JWT_TOKEN)
   return fetch(url, {
     method: "POST",
     mode: "cors",

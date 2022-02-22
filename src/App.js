@@ -1,14 +1,12 @@
-import { app, FirebaseAuthContext } from "./firebaseConfig"
-import { getAuth, onAuthStateChanged } from "firebase/auth";
 import React from "react";
 import {
-  Switch, Route, Link, BrowserRouter
+  Switch, Route, BrowserRouter
 } from 'react-router-dom';
 import {
   createTheme, withStyles, withTheme, ThemeProvider, responsiveFontSizes
 } from '@material-ui/core/styles';
 import {
-  Grid, IconButton, Paper, Typography, ClickAwayListener
+  Grid, IconButton, Typography, ClickAwayListener
 } from '@material-ui/core';
 
 
@@ -24,7 +22,7 @@ import HomePage from "./pages/homePage"
 import TSVPrint from "./pages/tsvPrint"
 import { BASE_URL } from "./utils/environment"
 import { TSV_INFO } from "./utils/TSV"
-import { auth, UserAuth } from './utils/users'
+import { auth } from './utils/users'
 import "./App.css"
 
 const AlertGrid = withStyles(theme => ({
@@ -121,7 +119,6 @@ let DarkTheme = responsiveFontSizes(createTheme(darkTheme), breakPoints)
 let PdfTheme = responsiveFontSizes(createTheme(pdftheme), breakPoints)
 let LightTheme = responsiveFontSizes(createTheme(lightTheme), breakPoints)
 
-// const auth = getAuth();
 
 
 export default class App extends React.Component {
@@ -148,22 +145,18 @@ export default class App extends React.Component {
 
 
   listenUser() {
-
     auth.onAuthStateChange((user) => {
-      console.log("Auth state change", user)
       if (user) {
         this.setState({ user })
       } else {
-        console.log("Logged out!")
         this.setState({ user: {} })
       }
     });
   }
 
   onAlert(alertMsg, alertSeverity) {
-    console.log("Alert: msg/severity", alertMsg, alertSeverity)
     this.setState({ alertMsg: alertMsg, alertSeverity: alertSeverity, showAlert: true })
-    // this.delayedClose()
+    this.delayedClose()
   }
 
   delayedClose() {
@@ -177,7 +170,6 @@ export default class App extends React.Component {
   }
 
   onLogin(user) {
-    console.log("App.js onLogin:", user)
     this.setState({ user })
   }
 
@@ -188,79 +180,67 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <FirebaseAuthContext.Provider value={app}>
-        <BrowserRouter >
-          <ThemeProvider theme={this.state.theme}>
-            {
-              this.state.showAlert ?
-                <SeverityAlert
-                  onClose={this.onCloseAlert.bind(this)}
-                  severity={this.state.alertSeverity}
-                  msg={this.state.alertMsg} />
-                :
-                <React.Fragment></React.Fragment>
-
-            }
-            {this.state.user && this.state.user.pk ?
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Switch>
-                  <Route exact path="/">
-                    <BackgroundGrid container direction="column" alignItems="center">
-                      <Grid item container xs={12}
-                        style={{
-                          minHeight: "100%",
-                          paddingTop: "8px",
-                          paddingLeft: "8px",
-                          paddingRight: "8px"
-                        }}
-                      >
-                        <HomePage
-                          user={this.state.user}
-                          BASE_URL={BASE_URL}
-                          toggleTheme={this.toggleTheme.bind(this)}
-                          onAlert={this.onAlert.bind(this)}
-                        />
-
-                      </Grid>
-                    </BackgroundGrid>
-                  </Route>
-
-                  <Route path="/tsv/:dairy_id/:tsvType"
-                    render={props => {
-                      return (
-                        <ThemeProvider theme={PdfTheme}>
-                          <TSVPrint
-                            dairy_id={props.match.params.dairy_id}
-                            tsvType={props.match.params.tsvType}
-                            numCols={TSV_INFO[props.match.params.tsvType].numCols}
-                            BASE_URL={BASE_URL}
-                            onAlert={this.onAlert.bind(this)} />
-                        </ThemeProvider>
-                      )
-                    }
-                    }
-                  />
-                </Switch>
-
-
-
-              </MuiPickersUtilsProvider>
+      <BrowserRouter >
+        <ThemeProvider theme={this.state.theme}>
+          {
+            this.state.showAlert ?
+              <SeverityAlert
+                onClose={this.onCloseAlert.bind(this)}
+                severity={this.state.alertSeverity}
+                msg={this.state.alertMsg} />
               :
-              <Login
-                onLogin={this.onLogin.bind(this)}
-                onAlert={this.onAlert.bind(this)}
-              />
-            }
-          </ThemeProvider>
-        </BrowserRouter>
-      </FirebaseAuthContext.Provider>
-      // :
-      // <ThemeProvider theme={this.state.theme}>
-      //   <Login
-      //     onLogin={this.onLogin.bind(this)}
-      //     onAlert={this.onAlert.bind(this)}
-      //   />
-      // </ThemeProvider>
+              <React.Fragment></React.Fragment>
+
+          }
+          {this.state.user && this.state.user.pk ?
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <Switch>
+                <Route exact path="/">
+                  <BackgroundGrid container direction="column" alignItems="center">
+                    <Grid item container xs={12}
+                      style={{
+                        minHeight: "100%",
+                        paddingTop: "8px",
+                        paddingLeft: "8px",
+                        paddingRight: "8px"
+                      }}
+                    >
+                      <HomePage
+                        user={this.state.user}
+                        BASE_URL={BASE_URL}
+                        toggleTheme={this.toggleTheme.bind(this)}
+                        onAlert={this.onAlert.bind(this)}
+                      />
+
+                    </Grid>
+                  </BackgroundGrid>
+                </Route>
+
+                <Route path="/tsv/:dairy_id/:tsvType"
+                  render={props => {
+                    return (
+                      <ThemeProvider theme={PdfTheme}>
+                        <TSVPrint
+                          dairy_id={props.match.params.dairy_id}
+                          tsvType={props.match.params.tsvType}
+                          numCols={TSV_INFO[props.match.params.tsvType].numCols}
+                          BASE_URL={BASE_URL}
+                          onAlert={this.onAlert.bind(this)} />
+                      </ThemeProvider>
+                    )
+                  }
+                  }
+                />
+              </Switch>
+            </MuiPickersUtilsProvider>
+            :
+            <Login
+              onLogin={this.onLogin.bind(this)}
+              onAlert={this.onAlert.bind(this)}
+            />
+          }
+        </ThemeProvider>
+      </BrowserRouter>
     )
   }
 }

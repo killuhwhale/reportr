@@ -1,10 +1,9 @@
 const format = require('pg-format');
 const { Pool, Client } = require('pg');
 const process = require('process');
-
+const logger = require('../logs/logging')
 const PORT = process.env.PORT || 3001;
 const TESTING = process.env.testing || false
-console.log("Testing: ", TESTING)
 
 const test = {
   host: 'localhost',
@@ -33,6 +32,8 @@ const prodDigitalOcean = {
 }
 const isProd = PORT !== 3001
 const pool = new Pool(TESTING ? test : isProd ? prodDigitalOcean : dev)
+
+logger.info(`Connected to db: ${TESTING ? "Test" : isProd ? "Ocean" : "Dev"} db.`)
 
 module.exports = {
   pool,
@@ -344,8 +345,6 @@ module.exports = {
     )
   },
   insertFullHerd: (values, callback) => {
-
-
     return pool.query(
       `INSERT INTO herds(
         dairy_id,
@@ -356,7 +355,7 @@ module.exports = {
         calf_young,
         calf_old,
         p_breed,
-        p_breed_other) RETURNING *`,
+        p_breed_other) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
       values,
       callback
     )

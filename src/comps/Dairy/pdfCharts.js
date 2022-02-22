@@ -262,6 +262,8 @@ const createCharts = (props, area) => {
 
 }
 
+
+
 const createHoriBarChartImage = (key, labels, data, title, area) => {
   let canvas = document.createElement('canvas')
   canvas.style.width = HORIBAR_WIDTH
@@ -324,7 +326,6 @@ const createHoriBarChartImage = (key, labels, data, title, area) => {
           x: {
             type: 'logarithmic',
             color: "#0f0",
-            // position: 'left', // `axis` is determined by the position as `'y'`
             title: {
               text: "lbs",
               display: true,
@@ -332,12 +333,6 @@ const createHoriBarChartImage = (key, labels, data, title, area) => {
                 size: 14
               }
             },
-            // ticks: {
-            //   // Include a dollar sign in the ticks
-            //   callback: function (value, index, values) {
-            //     return `${value} lbs/ton`
-            //   }
-            // }
           }
         },
         animation: {

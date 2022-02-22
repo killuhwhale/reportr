@@ -23,22 +23,8 @@ import { zeroTimeDate } from "../../utils/convertCalc"
 import { ImportExport } from '@material-ui/icons'
 
 import { getReportingPeriodDays } from "../../utils/herdCalculation"
-import { uploadXLSX } from '../../utils/TSV'
 import XLSX from 'xlsx'
 import { BASE_URL } from '../../utils/environment';
-
-
-/**
- * street VARCHAR(100) NOT NULL,
-  cross_street VARCHAR(50),
-  county VARCHAR(30),
-  city VARCHAR(30) NOT NULL,
-  city_state VARCHAR(3),
-  city_zip VARCHAR(20) NOT NULL,
-  title VARCHAR(30) NOT NULL,
-  basin_plan VARCHAR(30),
-  began timestamp,
- */
 
 
 const ReportingPeriod = (props) => {

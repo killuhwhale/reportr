@@ -19,14 +19,11 @@ import NutrientApplicationTab from "../comps/Applications/appNutrientTab"
 import ExportTab from "../comps/Exports/exportTab"
 import ActionCancelModal from "../comps/Modals/actionCancelModal"
 import Accounts from "../comps/Accounts/accounts"
-import { auth, UserAuth } from '../utils/users'
+import { auth } from '../utils/users'
 import { get, post } from "../utils/requests"
 
-import { B64_LOGO } from "../specific"
-
-const COUNTIES = ['Amador', 'Butte', 'Colusa', 'Fresno', 'Glenn', 'Kern', 'Kings', 'Lassen', 'Madera', 'Merced', 'Modoc', 'Placer', 'Sacramento', 'San Joaquin', 'Shasta', 'Solano', 'Stanislaus', 'Sutter', 'Tehama', 'Tulare', 'Yolo', 'Yuba']
-const BASINS = ["Sacramento River Basin", "San Joaquin River Basin", 'Tulare Basin']
-const BREEDS = ['Ayrshire', 'Brown Swiss', 'Guernsey', 'Holstein', 'Jersey', 'Jersey-Holstein Cross', 'Milking Shorthorn', 'Other']
+import { ALPHA_LOGO } from "../specific"
+import { COUNTIES, BASINS, BREEDS } from '../utils/constants'
 
 
 class HomePage extends Component {
@@ -209,7 +206,9 @@ class HomePage extends Component {
         <Grid item container alignItems='flex-start' xs={2} >
           <Grid item container xs={12}>
             <Grid item xs={12} align='center'>
-              <img src={'/fr_logo_alpha.png'} width="100%" height='65px' />
+              {/* <img src={'/fr_logo_alpha.png'} width="100%" height='65px' /> */}
+              <img src={ALPHA_LOGO} width="100%" height='65px' />
+
             </Grid>
             <Grid item container justifyContent='center' alignItems='center' xs={12}>
               <Grid item xs={10} style={{ marginBottom: '16px' }}>

@@ -6,11 +6,11 @@
 
 import { get, post } from "./requests";
 import { BASE_URL } from './environment'
-
+import { JWT_TOKEN } from './constants'
 
 
 class UserAuth {
-    #TOKEN_KEY = 'UserAuth_jwtToken';
+    #TOKEN_KEY = JWT_TOKEN;
     #token = '';
     currentUser = {};
     #authStateChangeFns = [];

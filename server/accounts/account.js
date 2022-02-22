@@ -1,17 +1,10 @@
-
 const db = require('../db/accounts/accounts')
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 
-
 const api = 'accounts'
-const SECRET_KEY = '133742069'
-const JWT_OPTIONS = {
-    expiresIn: "10h"
-}
+const { WHITE_LIST, JWT_SECRET_KEY, JWT_OPTIONS, BCRYPT_SALT_ROUNDS } = require("../specific")
 
-const WHITE_LIST = ['t@g.com'].map(email => email.toLocaleLowerCase()) // White list of emails for owner accounts
 
 const verifyToken = (req, res, next) => {
     const bearerToken = req.headers['authorization']
@@ -28,7 +21,6 @@ const verifyToken = (req, res, next) => {
 module.exports = (app) => {
     app.post(`/${api}/login`, (req, res) => {
         const { email, password } = req.body
-        console.log("Logging in", email, password)
         db.login(email, (err, response) => {
             if (!err) {
                 const { rows } = response
@@ -44,7 +36,7 @@ module.exports = (app) => {
                         if (valid) {
                             delete user['password']
 
-                            jwt.sign({ user }, SECRET_KEY, JWT_OPTIONS, (err, token) => {
+                            jwt.sign({ user }, JWT_SECRET_KEY, JWT_OPTIONS, (err, token) => {
                                 if (!err) {
                                     res.json({ "data": { token, user } })
                                 } else {
@@ -73,14 +65,14 @@ module.exports = (app) => {
 
     app.post(`/${api}/create`, verifyToken, (req, res) => {
 
-        jwt.verify(req.token, SECRET_KEY, (err, decoded) => {
+        jwt.verify(req.token, JWT_SECRET_KEY, (err, decoded) => {
             if (!err) {
                 const { user } = decoded
                 if (user && user.account_type < 1) {
                     const { user } = req.body
                     const { email, password, username } = user
 
-                    bcrypt.hash(password, saltRounds, function (err, hash) {
+                    bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
                         db.insertAccount(email, hash, username, (err, result) => {
                             if (!err) {
                                 res.json({ "data": result.rows })
@@ -103,12 +95,12 @@ module.exports = (app) => {
         const { email, password } = req.body
 
         if (WHITE_LIST.indexOf(email.toLocaleLowerCase()) >= 0) {
-            bcrypt.hash(password, saltRounds, function (err, hash) {
+            bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
                 if (!err) {
                     db.insertOwnerAccount(email, hash, (dbErr, result) => {
                         if (!dbErr) {
                             const user = result && result.rows.length > 0 ? result.rows[0] : {}
-                            jwt.sign({ user }, SECRET_KEY, JWT_OPTIONS, (err, token) => {
+                            jwt.sign({ user }, JWT_SECRET_KEY, JWT_OPTIONS, (err, token) => {
                                 res.json({ "data": { token, user } })
                             })
 
@@ -133,7 +125,7 @@ module.exports = (app) => {
 
     app.post(`/${api}/currentUser`, verifyToken, (req, res) => {
         const { token } = req
-        jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
             if (!err) {
                 const { user } = decoded
                 db.getAccount(user.pk, (dbErr, result) => {
@@ -159,7 +151,7 @@ module.exports = (app) => {
         const { token } = req
         const updatedUserInfo = req.body.user
         console.log("Update ", updatedUserInfo)
-        jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
             if (!err) {
                 const { user } = decoded
                 console.log("Token user", user)
@@ -191,7 +183,7 @@ module.exports = (app) => {
 
     const hashPassword = (password) => {
         return new Promise((resolve, reject) => {
-            bcrypt.hash(password, saltRounds, function (err, hash) {
+            bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
                 if (!err) {
                     resolve(hash)
                 } else {
@@ -204,7 +196,7 @@ module.exports = (app) => {
 
     const _changePassword = (password, pk) => {
         return new Promise((resolve, reject) => {
-            bcrypt.hash(password, saltRounds, function (err, hash) {
+            bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
                 if (!err) {
                     db.changePassword([hash, pk], (dbErr, result) => {
                         console.log("Done changing passowrd")
@@ -232,7 +224,7 @@ module.exports = (app) => {
         const { currentPassword, newPassword, pk } = req.body.userPassword // account data to update password
 
 
-        jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
             if (!err) {
                 const { user: userToken } = decoded // Current signed in user
 
@@ -291,7 +283,7 @@ module.exports = (app) => {
     app.get(`/${api}/all`, verifyToken, (req, res) => {
         // Check authN first
         const token = req.token
-        jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
             if (!err) {
                 const { user } = decoded
                 if (user.account_type < 1) {
@@ -317,7 +309,7 @@ module.exports = (app) => {
         const pk = req.body.pk
         console.log("pk ", pk)
 
-        jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
             if (!err) {
                 const { user } = decoded
                 console.log("Token user", user)

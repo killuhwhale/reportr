@@ -6,22 +6,26 @@ const {
 } = require('./serverTsvTemplates')
 const db = require('../db/index')
 const logger = require('../logs/logging')
-
-const isTesting = false
-const HARVEST = isTesting ? 'Test - Production Records' : 'Production Records'
-const PROCESS_WASTEWATER = isTesting ? 'Test - WW Applications' : 'WW Applications'
-const FRESHWATER = isTesting ? 'Test - FW Applications' : 'FW Applications'
-const SOLIDMANURE = isTesting ? 'Test - SM Applications' : 'SM Applications'
-const FERTILIZER = isTesting ? 'Test - Commercial Fertilizer' : 'Commercial Fertilizer'
-const SOIL = isTesting ? 'Test - Soil Analyses' : 'Soil Analyses'
-const PLOWDOWN_CREDIT = isTesting ? 'Test - Plowdown Credit' : 'Plowdown Credit'
-const DRAIN = isTesting ? 'Test - Tile Drainage Systems' : 'Tile Drainage Systems'
-const DISCHARGE = isTesting ? 'Test - Discharges' : 'Discharges'
-const MANURE = isTesting ? 'Test - SM Exports' : 'SM Exports'
-const WASTEWATER = isTesting ? 'Test - WW Exports' : 'WW Exports'
-
-
+const { validValue, validDetectLimit, validValueLarge, validDetectLimitLarge,
+    validTDS, validTDSDL, validTFS, validTFSDL, validMoisture, validValueAboveDL,
+    validTotalN, validPH, validOrganicMatter, validImportAmount, validImportCon,
+    validAmountHauled,
+} = require('./validInput')
 const api = 'tsv'
+
+// Each Tab/Sheet Name is linked to a TSV Type
+// When uploading a Workbook, the sheetName determines which TSV Type the sheet represents and must match one of the following
+const HARVEST = 'Production Records'
+const PROCESS_WASTEWATER = 'WW Applications'
+const FRESHWATER = 'FW Applications'
+const SOLIDMANURE = 'SM Applications'
+const FERTILIZER = 'Commercial Fertilizer'
+const SOIL = 'Soil Analyses'
+const PLOWDOWN_CREDIT = 'Plowdown Credit'
+const DRAIN = 'Tile Drainage Systems'
+const DISCHARGE = 'Discharges'
+const MANURE = 'SM Exports'
+const WASTEWATER = 'WW Exports'
 const verifyToken = (req, res, next) => {
     const bearerToken = req.headers['authorization']
     if (bearerToken) {
@@ -1765,6 +1769,7 @@ const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
                                     rej({ error: 'Field Crop not found' })
                                     return
                                 }
+                                // TODO(valid) Validate Data Here Before Insert
 
                                 db.insertFieldCropHarvest(
                                     [
@@ -1959,7 +1964,7 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id
     }
 
     // dairy_id, sample_date, sample_desc
-
+    // TODO(valid) analysis(all values), app(amount) validate
     const searchValue = { sample_date, sample_desc }
     return new Promise((resolve, rej) => {
         // Need to lazyget process_wastewater_analysis

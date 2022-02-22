@@ -1,26 +1,13 @@
-const path = require("path");
 const express = require("express");
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const process = require('process');
 var bodyParser = require('body-parser')
 const app = express(); // create express app
-
-var http = require('http').createServer(app);
+var http = require('http').createServer(app)
 const db = require('./db/index')
+const { ALLOWED_ORIGINS, REQUEST_LIMIT, FILE_SIZE_LIMIT } = require("./specific")
 
-const allowedOrigins = [
-  'http://localhost',
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:8080',
-  '127.0.0.1:3001', // Testing - npm test
-  "https://fragservices.app",
-  "https://reportrr-918ff.web.app"
-];
-// const storage = new Storage();
-const REQUEST_LIMIT = 1024 * 1024 * 10 // 10MB
-const FILE_SIZE_LIMIT = 1024 * 1024 * 100 // 100MB
 // Setup
 app.use(express.json({ limit: REQUEST_LIMIT }))
 app.use(bodyParser.raw({ limit: FILE_SIZE_LIMIT }))
@@ -34,7 +21,7 @@ app.use(cors({
     // allow requests with no origin 
     // (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
+    if (ALLOWED_ORIGINS.indexOf(origin) === -1) {
       var msg = `The CORS policy for this site does not 
         allow access from the specified Origin(${origin}).`
       return callback(new Error(msg), false);
@@ -127,11 +114,11 @@ app.post("/api/dairy_base/create", (req, res) => {
   db.insertDairyBase([title], (err, result) => {
 
     if (!err) {
-      res.json({ "error": "Inserted dairy_base successfully" });
+      res.json({ "data": "Inserted dairy_base successfully" });
       return;
     }
     console.log(err)
-    res.json({ "error": "Inserted dairy_base unsuccessful" });
+    res.json({ "error": "Inserted dairy_base unsuccessful", code: err.code });
   })
 });
 app.post("/api/dairy_base/update", (req, res) => {
@@ -2920,9 +2907,7 @@ app.post("/api/postImage", (req, res) => {
 app.get('/', (req, res) => {
   db.query("SELECT 5 as five;", [], (err, result) => {
     if (!err) {
-      console.log("Test runtime logs.")
       res.json(result.rows)
-
       return;
     }
     res.send(err);
