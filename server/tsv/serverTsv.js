@@ -7,7 +7,6 @@ const {
 const db = require('../db/index')
 const logger = require('../logs/logging')
 
-
 const isTesting = false
 const HARVEST = isTesting ? 'Test - Production Records' : 'Production Records'
 const PROCESS_WASTEWATER = isTesting ? 'Test - WW Applications' : 'WW Applications'
@@ -56,24 +55,12 @@ module.exports = (app) => {
 
 
 const toFloat = (num) => {
-    if (!num || typeof (num) !== typeof (' ')) {
-        return 0.00
-    }
-    let float = 0.00
-    try {
-        float = parseFloat(num.replaceAll(',', ''))
-    } catch (err) {
-        logger.info(num)
-        logger.info('is not a function (replaceAll)')
-        return num
-    }
+    const float = num && typeof (num) === typeof ('') && num.length > 0 ? parseFloat(num.replaceAll(',', '')) : typeof (num) === typeof (0) || typeof (num) === typeof (0.0) ? num : 0
 
     if (isNaN(float)) {
-        logger.info(`${float} is not a number`)
         throw `${float} is not a number`
         // return 0.0001337
     }
-
     return float
 }
 
@@ -1834,6 +1821,16 @@ const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
 
 }
 
+const checkEmpty = (val) => {
+    // If value is empty, return 0 to avoid error in DB.
+    let f = 0
+    try {
+        f = toFloat(val)
+    } catch (err) {
+        logger.info(`Failed w/ val: ${val}`)
+    }
+    return f
+}
 /** Harvest
  * 
  * 
@@ -1928,37 +1925,37 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id
         sample_desc,
         sample_data_src,
         material_type,
-        kn_con: toFloat(kn_con),
-        nh4_con: toFloat(nh4_con),
-        nh3_con: toFloat(nh3_con),
-        no3_con: toFloat(no3_con),
-        p_con: toFloat(p_con),
-        k_con: toFloat(k_con),
-        ca_con: toFloat(ca_con),
-        mg_con: toFloat(mg_con),
-        na_con: toFloat(na_con),
-        hco3_con: toFloat(hco3_con),
-        co3_con: toFloat(co3_con),
-        so4_con: toFloat(so4_con),
-        cl_con: toFloat(cl_con),
-        ec: toFloat(ec),
-        tds: toFloat(tds),
-        kn_dl: toFloat(kn_dl),
-        nh4_dl: toFloat(nh4_dl),
-        nh3_dl: toFloat(nh3_dl),
-        no3_dl: toFloat(no3_dl),
-        p_dl: toFloat(p_dl),
-        k_dl: toFloat(k_dl),
-        ca_dl: toFloat(ca_dl),
-        mg_dl: toFloat(mg_dl),
-        na_dl: toFloat(na_dl),
-        hco3_dl: toFloat(hco3_dl),
-        co3_dl: toFloat(co3_dl),
-        so4_dl: toFloat(so4_dl),
-        cl_dl: toFloat(cl_dl),
-        ec_dl: toFloat(ec_dl),
-        tds_dl: toFloat(tds_dl),
-        ph: toFloat(ph),
+        kn_con: checkEmpty(kn_con),
+        nh4_con: checkEmpty(nh4_con),
+        nh3_con: checkEmpty(nh3_con),
+        no3_con: checkEmpty(no3_con),
+        p_con: checkEmpty(p_con),
+        k_con: checkEmpty(k_con),
+        ca_con: checkEmpty(ca_con),
+        mg_con: checkEmpty(mg_con),
+        na_con: checkEmpty(na_con),
+        hco3_con: checkEmpty(hco3_con),
+        co3_con: checkEmpty(co3_con),
+        so4_con: checkEmpty(so4_con),
+        cl_con: checkEmpty(cl_con),
+        ec: checkEmpty(ec),
+        tds: checkEmpty(tds),
+        kn_dl: checkEmpty(kn_dl),
+        nh4_dl: checkEmpty(nh4_dl),
+        nh3_dl: checkEmpty(nh3_dl),
+        no3_dl: checkEmpty(no3_dl),
+        p_dl: checkEmpty(p_dl),
+        k_dl: checkEmpty(k_dl),
+        ca_dl: checkEmpty(ca_dl),
+        mg_dl: checkEmpty(mg_dl),
+        na_dl: checkEmpty(na_dl),
+        hco3_dl: checkEmpty(hco3_dl),
+        co3_dl: checkEmpty(co3_dl),
+        so4_dl: checkEmpty(so4_dl),
+        cl_dl: checkEmpty(cl_dl),
+        ec_dl: checkEmpty(ec_dl),
+        tds_dl: checkEmpty(tds_dl),
+        ph: checkEmpty(ph),
     }
 
     // dairy_id, sample_date, sample_desc
@@ -2070,30 +2067,30 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
                         src_type,
                         sample_desc,
                         src_of_analysis,
-                        n_con: toFloat(n_con),
-                        nh4_con: toFloat(nh4_con),
-                        no2_con: toFloat(no2_con),
-                        ca_con: toFloat(ca_con),
-                        mg_con: toFloat(mg_con),
-                        na_con: toFloat(na_con),
-                        hco3_con: toFloat(hco3_con),
-                        co3_con: toFloat(co3_con),
-                        so4_con: toFloat(so4_con),
-                        cl_con: toFloat(cl_con),
-                        ec: toFloat(ec),
-                        tds: toFloat(tds),
-                        n_dl: toFloat(n_dl),
-                        nh4_dl: toFloat(nh4_dl),
-                        no2_dl: toFloat(no2_dl),
-                        ca_dl: toFloat(ca_dl),
-                        mg_dl: toFloat(mg_dl),
-                        na_dl: toFloat(na_dl),
-                        hco3_dl: toFloat(hco3_dl),
-                        co3_dl: toFloat(co3_dl),
-                        so4_dl: toFloat(so4_dl),
-                        cl_dl: toFloat(cl_dl),
-                        ec_dl: toFloat(ec_dl),
-                        tds_dl: toFloat(tds_dl)
+                        n_con: checkEmpty(n_con),
+                        nh4_con: checkEmpty(nh4_con),
+                        no2_con: checkEmpty(no2_con),
+                        ca_con: checkEmpty(ca_con),
+                        mg_con: checkEmpty(mg_con),
+                        na_con: checkEmpty(na_con),
+                        hco3_con: checkEmpty(hco3_con),
+                        co3_con: checkEmpty(co3_con),
+                        so4_con: checkEmpty(so4_con),
+                        cl_con: checkEmpty(cl_con),
+                        ec: checkEmpty(ec),
+                        tds: checkEmpty(tds),
+                        n_dl: checkEmpty(n_dl),
+                        nh4_dl: checkEmpty(nh4_dl),
+                        no2_dl: checkEmpty(no2_dl),
+                        ca_dl: checkEmpty(ca_dl),
+                        mg_dl: checkEmpty(mg_dl),
+                        na_dl: checkEmpty(na_dl),
+                        hco3_dl: checkEmpty(hco3_dl),
+                        co3_dl: checkEmpty(co3_dl),
+                        so4_dl: checkEmpty(so4_dl),
+                        cl_dl: checkEmpty(cl_dl),
+                        ec_dl: checkEmpty(ec_dl),
+                        tds_dl: checkEmpty(tds_dl)
                     }
 
                     lazyGet('field_crop_app_freshwater_analysis', searchValue, freshwater_analysis_data, dairy_id)
@@ -2103,10 +2100,10 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
                                     dairy_id,
                                     field_crop_app.pk,
                                     freshwater_analysis.pk,
-                                    toFloat(app_rate),
-                                    toFloat(run_time),
-                                    toFloat(amount_applied),
-                                    toFloat(amt_applied_per_acre)
+                                    checkEmpty(app_rate),
+                                    checkEmpty(run_time),
+                                    checkEmpty(amount_applied),
+                                    checkEmpty(amt_applied_per_acre)
                                 ],
                                 (err, result) => {
 
@@ -2183,26 +2180,26 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_id) => {
         sample_date,
         material_type,
         src_of_analysis,
-        moisture: toFloat(moisture),
+        moisture: checkEmpty(moisture),
         method_of_reporting,
-        n_con: toFloat(n_con),
-        p_con: toFloat(p_con),
-        k_con: toFloat(k_con),
-        ca_con: toFloat(ca_con),
-        mg_con: toFloat(mg_con),
-        na_con: toFloat(na_con),
-        s_con: toFloat(s_con),
-        cl_con: toFloat(cl_con),
-        tfs: toFloat(tfs),
-        n_dl: toFloat(n_dl),
-        p_dl: toFloat(p_dl),
-        k_dl: toFloat(k_dl),
-        ca_dl: toFloat(ca_dl),
-        mg_dl: toFloat(mg_dl),
-        na_dl: toFloat(na_dl),
-        s_dl: toFloat(s_dl),
-        cl_dl: toFloat(cl_dl),
-        tfs_dl: toFloat(tfs_dl),
+        n_con: checkEmpty(n_con),
+        p_con: checkEmpty(p_con),
+        k_con: checkEmpty(k_con),
+        ca_con: checkEmpty(ca_con),
+        mg_con: checkEmpty(mg_con),
+        na_con: checkEmpty(na_con),
+        s_con: checkEmpty(s_con),
+        cl_con: checkEmpty(cl_con),
+        tfs: checkEmpty(tfs),
+        n_dl: checkEmpty(n_dl),
+        p_dl: checkEmpty(p_dl),
+        k_dl: checkEmpty(k_dl),
+        ca_dl: checkEmpty(ca_dl),
+        mg_dl: checkEmpty(mg_dl),
+        na_dl: checkEmpty(na_dl),
+        s_dl: checkEmpty(s_dl),
+        cl_dl: checkEmpty(cl_dl),
+        tfs_dl: checkEmpty(tfs_dl),
     }
 
     // Get Source
@@ -2272,13 +2269,13 @@ const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_id) => {
         import_desc,
         import_date,
         material_type,
-        amount_imported: toFloat(amount_imported),
+        amount_imported: checkEmpty(amount_imported),
         method_of_reporting,
-        moisture: toFloat(moisture),
-        n_con: toFloat(n_con),
-        p_con: toFloat(p_con),
-        k_con: toFloat(k_con),
-        salt_con: toFloat(salt_con),
+        moisture: checkEmpty(moisture),
+        n_con: checkEmpty(n_con),
+        p_con: checkEmpty(p_con),
+        k_con: checkEmpty(k_con),
+        salt_con: checkEmpty(salt_con),
     }
 
     return new Promise((resolve, rej) => {

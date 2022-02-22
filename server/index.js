@@ -14,6 +14,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:8080',
+  '127.0.0.1:3001', // Testing - npm test
   "https://fragservices.app",
   "https://reportrr-918ff.web.app"
 ];
