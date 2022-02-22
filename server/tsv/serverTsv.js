@@ -60,9 +60,7 @@ const toFloat = (num) => {
     }
     let float = 0.00
     try {
-        logger.info(`Try to replaceAll: ${num} -- ${typeof (num)}`)
         float = parseFloat(num.replaceAll(',', ''))
-
     } catch (err) {
         logger.info(num)
         logger.info('is not a function (replaceAll)')
