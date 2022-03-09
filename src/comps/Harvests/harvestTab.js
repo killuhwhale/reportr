@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, IconButton, Tooltip
 } from '@material-ui/core'
-
 
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import { CloudUpload } from '@material-ui/icons' // uploadTSV
@@ -21,11 +20,11 @@ import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import {
   readTSV, uploadHarvestTSV, uploadTSVToDB, HARVEST
 } from "../../utils/TSV"
+import { REPORTING_METHODS, SOURCE_OF_ANALYSES } from '../../utils/constants'
 
 
 
-const REPORTING_METHODS = ['dry-weight', 'as-is']
-const SOURCE_OF_ANALYSES = ['Lab Analysis', 'Other/ estimated']
+
 
 
 class HarvestTab extends Component {

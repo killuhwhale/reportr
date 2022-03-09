@@ -11,6 +11,8 @@ const { validValue, validDetectLimit, validValueLarge, validDetectLimitLarge,
     validTotalN, validPH, validOrganicMatter, validImportAmount, validImportCon,
     validAmountHauled,
 } = require('./validInput')
+
+const { REPORTING_METHODS } = require('../constants')
 const api = 'tsv'
 
 // Each Tab/Sheet Name is linked to a TSV Type
@@ -26,6 +28,7 @@ const DRAIN = 'Tile Drainage Systems'
 const DISCHARGE = 'Discharges'
 const MANURE = 'SM Exports'
 const WASTEWATER = 'WW Exports'
+
 const verifyToken = (req, res, next) => {
     const bearerToken = req.headers['authorization']
     if (bearerToken) {
@@ -39,9 +42,9 @@ const verifyToken = (req, res, next) => {
 }
 module.exports = (app) => {
     app.post(`/${api}/uploadXLSX/:dairy_id`, verifyToken, (req, res) => {
-        const { file } = req.body
         const { dairy_id } = req.params
         const workbook = XLSX.read(req.body)
+
         uploadXLSX(workbook, dairy_id)
             .then(result => {
                 logger.info(result)
@@ -50,13 +53,12 @@ module.exports = (app) => {
             .catch(err => {
                 logger.info('Failure')
                 logger.info(err)
-                res.json({ error: 'Failure', ...err })
+                res.json({ ...err })
             })
 
     })
 
 }
-
 
 const toFloat = (num) => {
     const float = num && typeof (num) === typeof ('') && num.length > 0 ? parseFloat(num.replaceAll(',', '')) : typeof (num) === typeof (0) || typeof (num) === typeof (0.0) ? num : 0
@@ -67,7 +69,6 @@ const toFloat = (num) => {
     }
     return float
 }
-
 
 const SHEET_NAMES = [
     HARVEST, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, MANURE, WASTEWATER,
@@ -377,6 +378,9 @@ const insertWasterWaterAnalysis = (data, dairy_id) => {
                 } else if (err.code === '23505') {
                     // Duplicate entry, resolve null to search again
                     resolve(null)
+                } else if (err.code === '1000') {
+                    // Duplicate entry, resolve null to search again
+                    rej({ error: err.msg })
                 } else {
                     logger.info(err)
                     rej({ error: "Created field_crop_app_process_wastewater_analysis unsuccessful" });
@@ -542,6 +546,8 @@ const insertFreshwaterAnalysis = (data, dairy_id) => {
                     }
                 } else if (err.code === '23505') {
                     resolve(null)
+                } else if (err.code === '1000') {
+                    rej({ error: err.msg })
                 } else {
                     logger.info("FWA: err", err)
                     rej({ "error": "Create field_crop_app_freshwater_analysis unsuccessful" });
@@ -643,6 +649,8 @@ const insertManureAnalysis = (data, dairy_id) => {
                     }
                 } else if (err.code === '23505') {
                     resolve(null)
+                } else if (err.code === '1000') {
+                    rej({ error: err.msg })
                 } else {
                     logger.info(err)
                     rej({ "error": "Created field_crop_app_solidmanure_analysis unsuccessful" });
@@ -718,7 +726,10 @@ const insertNutrientImportAnalysis = (data, dairy_id) => {
                     }
                 } else if (err.code === '23505') {
                     resolve(null)
-                } else {
+                } else if (err.code === '1000') {
+                    rej({ error: err.msg })
+                }
+                else {
                     logger.info(err)
                     rej({ "error": "Created nutrient_import unsuccessful" });
                 }
@@ -803,6 +814,8 @@ const insertSoilAnalysis = (data, dairy_id) => {
                     }
                 } else if (err.code === '23505') {
                     resolve(null)
+                } else if (err.code === '1000') {
+                    rej({ error: err.msg })
                 } else {
                     logger.info(err)
                     rej({ "error": "Created soil_import unsuccessful" });
@@ -811,8 +824,6 @@ const insertSoilAnalysis = (data, dairy_id) => {
         )
     })
 }
-
-
 
 const searchOperator = (value, dairy_id) => {
     const { op_title, op_primary_phone,
@@ -1184,173 +1195,181 @@ const insertDrainSrc = (data, dairy_id) => {
 
 const lazyGet = (endpoint, value, data, dairy_id) => {
     return new Promise(async (resolve, rej) => {
-        switch (endpoint) {
-            case 'fields':
-                const fResult = await searchField(value, dairy_id) ??
-                    await insertField(data, dairy_id) ??
-                    await searchField(value, dairy_id)
-                if (!fResult.error) {
-                    resolve(fResult)
-                } else {
-                    reject(fResult)
-                }
+        try {
+            switch (endpoint) {
+                case 'fields':
+                    const fResult = await searchField(value, dairy_id) ??
+                        await insertField(data, dairy_id) ??
+                        await searchField(value, dairy_id)
+                    if (!fResult.error) {
+                        resolve(fResult)
+                    } else {
+                        rej(fResult)
+                    }
 
-                break
-            case 'field_crop':
-                const fcResult = await searchFieldCrop(value, dairy_id) ??
-                    await insertFieldCrop(data, dairy_id) ??
-                    await searchFieldCrop(value, dairy_id)
+                    break
+                case 'field_crop':
+                    const fcResult = await searchFieldCrop(value, dairy_id) ??
+                        await insertFieldCrop(data, dairy_id) ??
+                        await searchFieldCrop(value, dairy_id)
 
-                if (!fcResult.error) {
-                    resolve(fcResult)
-                } else {
-                    reject(fcResult)
-                }
-                break
+                    if (!fcResult.error) {
+                        resolve(fcResult)
+                    } else {
+                        rej(fcResult)
+                    }
+                    break
 
-            case 'field_crop_app':
-                const fcaResult = await searchFieldCropApp(value, dairy_id) ??
-                    await insertFieldCropApp(data, dairy_id) ??
-                    await searchFieldCropApp(value, dairy_id)
-                if (!fcaResult.error) {
-                    resolve(fcaResult)
-                } else {
-                    reject(fcaResult)
-                }
-                break
-            case 'field_crop_app_process_wastewater_analysis':
-                const waResult = await searchWasterWaterAnalysis(value, dairy_id) ??
-                    await insertWasterWaterAnalysis(data, dairy_id) ??
-                    await searchWasterWaterAnalysis(value, dairy_id)
-                if (!waResult.error) {
-                    resolve(waResult)
-                } else {
-                    reject(waResult)
-                }
-                break
+                case 'field_crop_app':
+                    const fcaResult = await searchFieldCropApp(value, dairy_id) ??
+                        await insertFieldCropApp(data, dairy_id) ??
+                        await searchFieldCropApp(value, dairy_id)
+                    if (!fcaResult.error) {
+                        resolve(fcaResult)
+                    } else {
+                        rej(fcaResult)
+                    }
+                    break
+                case 'field_crop_app_process_wastewater_analysis':
+                    const waResult = await searchWasterWaterAnalysis(value, dairy_id) ??
+                        await insertWasterWaterAnalysis(data, dairy_id) ??
+                        await searchWasterWaterAnalysis(value, dairy_id)
+                    if (!waResult.error) {
+                        resolve(waResult)
+                    } else {
+                        rej(waResult)
+                    }
+                    break
 
-            case 'field_crop_app_freshwater_source':
-                const fwsResult = await searchFreshwaterSource(value, dairy_id) ??
-                    await insertFreshwaterSource(data, dairy_id) ??
-                    await searchFreshwaterSource(value, dairy_id)
-                if (!fwsResult.error) {
-                    resolve(fwsResult)
-                } else {
-                    reject(fwsResult)
-                }
-                break
+                case 'field_crop_app_freshwater_source':
+                    const fwsResult = await searchFreshwaterSource(value, dairy_id) ??
+                        await insertFreshwaterSource(data, dairy_id) ??
+                        await searchFreshwaterSource(value, dairy_id)
+                    if (!fwsResult.error) {
+                        resolve(fwsResult)
+                    } else {
+                        rej(fwsResult)
+                    }
+                    break
 
-            case 'field_crop_app_freshwater_analysis':
-                const fwaResult = await searchFreshwaterAnalysis(value, dairy_id) ??
-                    await insertFreshwaterAnalysis(data, dairy_id) ??
-                    await searchFreshwaterAnalysis(value, dairy_id)
-                if (!fwaResult.error) {
-                    resolve(fwaResult)
-                } else {
-                    reject(fwaResult)
-                }
-                break
-            case 'field_crop_app_solidmanure_analysis':
-
-
-                const smResult = await searchManureAnalysis(value, dairy_id) ??
-                    await insertManureAnalysis(data, dairy_id) ??
-                    await searchManureAnalysis(value, dairy_id)
-                if (!smResult.error) {
-                    resolve(smResult)
-                } else {
-                    reject(smResult)
-                }
-                break
+                case 'field_crop_app_freshwater_analysis':
+                    const fwaResult = await searchFreshwaterAnalysis(value, dairy_id) ??
+                        await insertFreshwaterAnalysis(data, dairy_id) ??
+                        await searchFreshwaterAnalysis(value, dairy_id)
+                    if (!fwaResult.error) {
+                        resolve(fwaResult)
+                    } else {
+                        rej(fwaResult)
+                    }
+                    break
+                case 'field_crop_app_solidmanure_analysis':
 
 
-            case 'nutrient_import':
-                const fertlizerResult = await searchNutrientImportAnalysis(value, dairy_id) ??
-                    await insertNutrientImportAnalysis(data, dairy_id) ??
-                    await searchNutrientImportAnalysis(value, dairy_id)
-                if (!fertlizerResult.error) {
-                    resolve(fertlizerResult)
-                } else {
-                    reject(fertlizerResult)
-                }
-                break
-
-            case 'field_crop_app_soil_analysis':
-                const soilResult = await searchSoilAnalysis(value, dairy_id) ??
-                    await insertSoilAnalysis(data, dairy_id) ??
-                    await searchSoilAnalysis(value, dairy_id)
-                if (!soilResult.error) {
-                    resolve(soilResult)
-                } else {
-                    reject(soilResult)
-                }
-                break
-
-            case 'operators':
-                const opResult = await searchOperator(value, dairy_id) ??
-                    await insertOperator(data, dairy_id) ??
-                    await searchOperator(value, dairy_id)
-                if (!opResult.error) {
-                    resolve(opResult)
-                } else {
-                    reject(opResult)
-                }
-                break
-            case 'export_contact':
-                const contactResult = await searchContact(value, dairy_id) ??
-                    await insertContact(data, dairy_id) ??
-                    await searchContact(value, dairy_id)
-                if (!contactResult.error) {
-                    resolve(contactResult)
-                } else {
-                    reject(contactResult)
-                }
-                break
-            case 'export_hauler':
-                const haulerResult = await searchHauler(value, dairy_id) ??
-                    await insertHauler(data, dairy_id) ??
-                    await searchHauler(value, dairy_id)
-                if (haulerResult && !haulerResult.error) {
-                    resolve(haulerResult)
-                } else {
-                    reject(haulerResult)
-                }
-                break
-            case 'export_recipient':
-                const recipientResult = await searchRecipient(value, dairy_id) ??
-                    await insertRecipient(data, dairy_id) ??
-                    await searchRecipient(value, dairy_id)
-                if (recipientResult && !recipientResult.error) {
-                    resolve(recipientResult)
-                } else {
-                    reject(recipientResult)
-                }
-                break
-            case 'export_dest':
-                const destResult = await searchDest(value, dairy_id) ??
-                    await insertDest(data, dairy_id) ??
-                    await searchDest(value, dairy_id)
-                if (!destResult.error) {
-                    resolve(destResult)
-                } else {
-                    reject(destResult)
-                }
-                break
+                    const smResult = await searchManureAnalysis(value, dairy_id) ??
+                        await insertManureAnalysis(data, dairy_id) ??
+                        await searchManureAnalysis(value, dairy_id)
+                    if (!smResult.error) {
+                        resolve(smResult)
+                    } else {
+                        rej(smResult)
+                    }
+                    break
 
 
-            case 'drain_source':
-                const drainResult = await searchDrainSrc(value, dairy_id) ??
-                    await insertDrainSrc(data, dairy_id) ??
-                    await searchDrainSrc(value, dairy_id)
-                if (!drainResult.error) {
-                    resolve(drainResult)
-                } else {
-                    reject(drainResult)
-                }
-                break
-            default:
-                break
+                case 'nutrient_import':
+                    try {
+                        const fertlizerResult = await searchNutrientImportAnalysis(value, dairy_id) ??
+                            await insertNutrientImportAnalysis(data, dairy_id) ??
+                            await searchNutrientImportAnalysis(value, dairy_id)
+                        if (!fertlizerResult.error) {
+                            resolve(fertlizerResult)
+                        } else {
+                            rej(fertlizerResult)
+                        }
+                    } catch (e) {
+                        rej(e)
+                    }
+                    break
 
+                case 'field_crop_app_soil_analysis':
+                    const soilResult = await searchSoilAnalysis(value, dairy_id) ??
+                        await insertSoilAnalysis(data, dairy_id) ??
+                        await searchSoilAnalysis(value, dairy_id)
+                    if (!soilResult.error) {
+                        resolve(soilResult)
+                    } else {
+                        rej(soilResult)
+                    }
+                    break
+
+                case 'operators':
+                    const opResult = await searchOperator(value, dairy_id) ??
+                        await insertOperator(data, dairy_id) ??
+                        await searchOperator(value, dairy_id)
+                    if (!opResult.error) {
+                        resolve(opResult)
+                    } else {
+                        rej(opResult)
+                    }
+                    break
+                case 'export_contact':
+                    const contactResult = await searchContact(value, dairy_id) ??
+                        await insertContact(data, dairy_id) ??
+                        await searchContact(value, dairy_id)
+                    if (!contactResult.error) {
+                        resolve(contactResult)
+                    } else {
+                        rej(contactResult)
+                    }
+                    break
+                case 'export_hauler':
+                    const haulerResult = await searchHauler(value, dairy_id) ??
+                        await insertHauler(data, dairy_id) ??
+                        await searchHauler(value, dairy_id)
+                    if (haulerResult && !haulerResult.error) {
+                        resolve(haulerResult)
+                    } else {
+                        rej(haulerResult)
+                    }
+                    break
+                case 'export_recipient':
+                    const recipientResult = await searchRecipient(value, dairy_id) ??
+                        await insertRecipient(data, dairy_id) ??
+                        await searchRecipient(value, dairy_id)
+                    if (recipientResult && !recipientResult.error) {
+                        resolve(recipientResult)
+                    } else {
+                        rej(recipientResult)
+                    }
+                    break
+                case 'export_dest':
+                    const destResult = await searchDest(value, dairy_id) ??
+                        await insertDest(data, dairy_id) ??
+                        await searchDest(value, dairy_id)
+                    if (!destResult.error) {
+                        resolve(destResult)
+                    } else {
+                        rej(destResult)
+                    }
+                    break
+
+
+                case 'drain_source':
+                    const drainResult = await searchDrainSrc(value, dairy_id) ??
+                        await insertDrainSrc(data, dairy_id) ??
+                        await searchDrainSrc(value, dairy_id)
+                    if (!drainResult.error) {
+                        resolve(drainResult)
+                    } else {
+                        rej(drainResult)
+                    }
+                    break
+                default:
+                    break
+
+            }
+        } catch (e) {
+            rej(e)
         }
 
     })
@@ -1660,9 +1679,8 @@ const onUploadXLSX = (dairy_id, tsvText, numCols, tsvType, uploadedFilename) => 
                     reject({ uploadTSVToDBErr, err: 'Upload tsv file error', tsvType, uploadedFilename })
                 })
         })
-            .catch(err => {
-                logger.info("Error with all promises", err)
-                reject({ err: "Error with all promises", tsvType, uploadedFilename, error: err })
+            .catch(error => {
+                reject({ tsvType, uploadedFilename, error })
             })
     })
 }
@@ -1697,7 +1715,7 @@ const uploadXLSX = (workbook, dairy_id) => {
                 resolve(res)
             })
             .catch(err => {
-                reject({ error: err, msg: 'Error with all promises' })
+                reject(err)
             })
     })
 }
@@ -1761,7 +1779,8 @@ const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
                             k: typical_k,
                             salt: salt
                         }
-
+                        // Before lazy getting field_crop
+                        // Make sure acres_planted is less than croppable acres
                         lazyGet('field_crop', searchValue, field_crop_data, dairy_id)
                             .then(fieldCropObj => {
 
@@ -1803,6 +1822,8 @@ const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
 
                                         } else if (err.code === '23505') {
                                             resolve(null)
+                                        } else if (err.code === '1000') {
+                                            rej({ error: err.msg })
                                         } else {
                                             logger.info(err)
                                             rej({ "error": "Created field_crop_harvest unsuccessful" });
@@ -1993,17 +2014,21 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id
                         } else if (err.code === '23505') {
                             resolve('FCAPW already exists')
                         }
+                        else if (err.code === '1000') {
+                            rej({ error: err.msg })
+                        }
 
                         else {
                             logger.info(err)
-                            rej({ "error": "Created field_crop_app_process_wastewater unsuccessful" });
+                            rej({ "error": "Created field_crop_app_process_wastewaterZZZ unsuccessful" });
                         }
                     }
                 )
             })
             .catch(err => {
                 logger.info(err)
-                rej(err)
+                console.log("ASDASDZZZ", err)
+                rej({ error: err })
             })
     })
 }
@@ -2118,6 +2143,8 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
                                         }
                                     } else if (err.code === '23505') {
                                         resolve(null)
+                                    } else if (err.code === '1000') {
+                                        rej({ error: err.msg })
                                     } else {
                                         logger.info(err)
                                         rej({ "error": "Created field_crop_app_freshwater unsuccessful" });
@@ -2127,7 +2154,7 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
                             )
                         })
                         .catch(err => {
-                            rej({ error: `field_crop_app_freshwater_analysis ${searchValue}` })
+                            rej(err)
                         })
 
                 } else {
@@ -2223,6 +2250,7 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_id) => {
                             toFloat(amt_applied_per_acre)
                         ],
                         (err, result) => {
+                            console.log(err)
                             if (!err) {
                                 if (result.rows[0] ?? false) {
                                     resolve(result.rows[0])
@@ -2231,6 +2259,8 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_id) => {
                                 }
                             } else if (err.code === '23505') {
                                 resolve(null)
+                            } else if (err.code === '1000') {
+                                rej({ error: err.msg })
                             } else {
                                 logger.info(err)
                                 rej({ "error": "Created field_crop_app_solidmanure unsuccessful" });
@@ -2305,6 +2335,8 @@ const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_id) => {
                                 }
                             } else if (err.code === '23505') {
                                 resolve(null)
+                            } else if (err.code === '1000') {
+                                rej({ error: err.msg })
                             } else {
                                 logger.info(err)
                                 rej({ "error": "Created field_crop_app_fertilizer unsuccessful" });
@@ -2552,6 +2584,8 @@ const createPlowdownCreditApplicationFromMap = (row, field_crop_app, dairy_id) =
                             }
                         } else if (err.code === '23505') {
                             resolve(null)
+                        } else if (err.code === '1000') {
+                            rej({ error: err.msg })
                         } else {
                             logger.info('Insert plowdown error', err)
                             reject({ error: "Insert field_crop_app_plowdown unsuccessful" });
@@ -2599,33 +2633,38 @@ const createDataFromTSVListRowMap = (row, i, dairy_id, tsvType) => {
                  */
 
                 let result = null
-                if (tsvType === PROCESS_WASTEWATER) {
-                    result = await createProcessWastewaterApplicationFromMap(row, field_crop_app, dairy_id)
-                } else if (tsvType === FRESHWATER) {
-                    // Creates source, analysis and event
-                    result = await createFreshwaterApplicationFromMap(row, field_crop_app, dairy_id)
-                } else if (tsvType === SOLIDMANURE) {
-                    // Creates source, analysis and event
-                    result = await createSolidmanureApplicationFromMap(row, field_crop_app, dairy_id)
-                }
-                else if (tsvType === FERTILIZER) {
-                    // Creates Nutrient Import, Fertilizer
-                    result = await createFertilizerApplicationFromMap(row, field_crop_app, dairy_id)
-                }
-                else if (tsvType === SOIL) {
-                    // Creates Nutrient Import, Fertilizer
-                    result = await createSoilApplicationFromMap(row, field_crop_app, dairy_id)
-                } else if (tsvType === PLOWDOWN_CREDIT) {
-                    // Creates Nutrient Import, Fertilizer
-                    // resolve(createPlowdownCreditApplication(row, field_crop_app, dairy_id))
-                    result = await createPlowdownCreditApplicationFromMap(row, field_crop_app, dairy_id)
+                try {
+                    if (tsvType === PROCESS_WASTEWATER) {
+                        result = await createProcessWastewaterApplicationFromMap(row, field_crop_app, dairy_id)
+                    } else if (tsvType === FRESHWATER) {
+                        // Creates source, analysis and event
+                        result = await createFreshwaterApplicationFromMap(row, field_crop_app, dairy_id)
+                    } else if (tsvType === SOLIDMANURE) {
+                        // Creates source, analysis and event
+                        result = await createSolidmanureApplicationFromMap(row, field_crop_app, dairy_id)
+                    }
+                    else if (tsvType === FERTILIZER) {
+                        // Creates Nutrient Import, Fertilizer
+                        result = await createFertilizerApplicationFromMap(row, field_crop_app, dairy_id)
+                    }
+                    else if (tsvType === SOIL) {
+                        // Creates Nutrient Import, Fertilizer
+                        result = await createSoilApplicationFromMap(row, field_crop_app, dairy_id)
+                    } else if (tsvType === PLOWDOWN_CREDIT) {
+                        // Creates Nutrient Import, Fertilizer
+                        // resolve(createPlowdownCreditApplication(row, field_crop_app, dairy_id))
+                        result = await createPlowdownCreditApplicationFromMap(row, field_crop_app, dairy_id)
+                    }
+
+                    if (!result || !result.error) {
+                        resolve(result)
+                    } else {
+                        rej(result)
+                    }
+                } catch (e) {
+                    rej(e)
                 }
 
-                if (!result || !result.error) {
-                    resolve(result)
-                } else {
-                    rej(result)
-                }
             })
             .catch(field_crop_app_err => {
                 logger.info(field_crop_app_err)
@@ -2882,6 +2921,8 @@ const createDataFromManureExportTSVListRowMap = (row, i, dairy_id) => {
 
                         } else if (err.code === '23505') {
                             resolve(null)
+                        } else if (err.code === '1000') {
+                            reject({ error: err.msg })
                         } else {
                             logger.info('Insert export_manure_manifest error', err)
                             reject({ error: "Insert export_manure_manifest unsuccessful" });
@@ -2962,6 +3003,8 @@ const createDataFromWastewaterExportTSVListRowMap = (row, i, dairy_id) => {
 
                         } else if (err.code === '23505') {
                             resolve(null)
+                        } else if (err.code === '1000') {
+                            reject({ error: err.msg })
                         } else {
                             logger.info('Insert export_ww_manifest error', err)
                             reject({ error: "Insert export_ww_manifest unsuccessful" });
@@ -3066,6 +3109,8 @@ const createTileDrainageFromMap = (tsvText, tsvType, dairy_id) => {
                                 }
                             } else if (err.code === '23505') {
                                 resolve(null)
+                            } else if (err.code === '1000') {
+                                rej({ error: err.msg })
                             } else {
                                 logger.info(err)
                                 reject({ "error": "Created drain_analysis unsuccessful" });

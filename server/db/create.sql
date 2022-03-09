@@ -148,8 +148,8 @@ CREATE TABLE IF NOT EXISTS field_crop(
   field_id INT NOT NULL,
   crop_id INT NOT NULL,
   plant_date timestamp,
-  acres_planted NUMERIC(6,2),
-  typical_yield NUMERIC(6,2), -- tons/ acre 
+  acres_planted NUMERIC(12,2),
+  typical_yield NUMERIC(12,2), -- tons/ acre 
   
   -- TODO() Typical data copied from crops, consider dropping this and using crop_id to get info instead.
   moisture NUMERIC(6,2), -- stored as a percent 10 == 10%
@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS field_crop_harvest(
   expected_yield_tons_acre NUMERIC(12,2) NOT NULL,
   method_of_reporting VARCHAR(20)  NOT NULL, -- reporting method
   actual_yield NUMERIC(6,2)  NOT NULL, -- tons -- calculate to find tons/ acres by field_crop.acres_planted 
-  src_of_analysis VARCHAR(50) NOT NULL,
+  src_of_analysis VARCHAR(50) NOT NULL, -- plant tissue analysis
   -- Actual concentrations
   moisture NUMERIC(5,2), -- Percent range 0.01 -> 100.00
   n NUMERIC(5,3) DEFAULT 0.0, -- Percent .001 -> 99.999 
@@ -737,11 +737,9 @@ CREATE TABLE IF NOT EXISTS export_manifest(
   n_con_mg_kg NUMERIC(10,4),
   p_con_mg_kg NUMERIC(10,4),
   k_con_mg_kg NUMERIC(10,4),
-
-  
   tfs NUMERIC(7,4),
 
-  salt_lbs_rm NUMERIC(10,2),  --New
+  salt_lbs_rm NUMERIC(10,2),  -- New, not needed, noticed during validation not in form on merced app
   
   -- For Process wastewater
   kn_con_mg_l NUMERIC(10,4),
@@ -750,12 +748,12 @@ CREATE TABLE IF NOT EXISTS export_manifest(
   no3_con_mg_l NUMERIC(10,4),
   p_con_mg_l NUMERIC(10,4),
   k_con_mg_l NUMERIC(10,4),
-  ec_umhos_cm NUMERIC(10,4), -- New
+  ec_umhos_cm NUMERIC(10,4), -- New, not needed, noticed during validation not in form on merced app
   tds NUMERIC(5,0),
   
   
-  -- Shared between manure and wastewater -- New
-  n_lbs_rm NUMERIC(10,2),
+  -- Shared between manure and wastewater -- New, not needed(remove), noticed during validation not in form on merced app
+  n_lbs_rm NUMERIC(10,2), 
   p_lbs_rm NUMERIC(10,2),
   k_lbs_rm NUMERIC(10,2),
   UNIQUE(dairy_id, operator_id, export_contact_id, export_dest_id, last_date_hauled, material_type),

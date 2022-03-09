@@ -1,5 +1,8 @@
 import { jest } from '@jest/globals';
 import { round } from 'mathjs';
+import { postXLSX } from '../../../utils/requests'
+import fs from 'fs'
+
 import {
     getApplicationAreaA, getApplicationAreaB, getAvailableNutrientsAB, getAvailableNutrientsC,
     getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA,
@@ -7,7 +10,9 @@ import {
 } from '../../../comps/Dairy/pdfDB'
 import { naturalSort, naturalSortBy, naturalSortByKeys, sortByKeys } from '../../../utils/format';
 
-const dairy_id = 13
+import { BASE_URL } from "../../../utils/environment"
+
+const dairy_id = 1
 
 const tp = (num, precision = 6) => {
     // to precision
@@ -18,64 +23,75 @@ const isIDPK = (key) => {
     return key.indexOf("_id") >= 0 || key.indexOf("pk") >= 0
 }
 
+describe('Test upload XLSX', () => {
+    test('Upload XLSX.', async () => {
+        try {
+            let xlsxURL = `tsv/uploadXLSX/1`
+            const data = fs.readFileSync('./src/tests/comps/Dairy/Test Sheet.xlsx').buffer
+            const res = await postXLSX(`${BASE_URL}/${xlsxURL}`, data)
+        } catch (e) {
+            console.log("Upload XLSX error", e)
+        }
+    })
+})
 
 describe('Test pdfDB', () => {
 
-    beforeAll(async () => {
-        //Spin up Express App and DB.
-        // On DB startup create scripts will be executed
-        // I need a way to upload the same data each time.
-        // Currently relying on uploadXLSX
+    // beforeAll(async () => {
+    //     //Spin up Express App and DB.
+    //     // On DB startup create scripts will be executed
+    //     // I need a way to upload the same data each time.
+    //     // Currently relying on uploadXLSX
 
-        // Express App would need to know where to connect to/ how to connect to DB.
+    //     // Express App would need to know where to connect to/ how to connect to DB.
 
-    })
-
-    // test('A. LIST OF LAND APPLICATION AREAS.', async () => {
-    //     const { applicationAreaA } = await getApplicationAreaA(dairy_id)
-    //     applicationAreaA.fields.forEach(field => {
-    //         Object.keys(field).forEach(key => {
-    //             if (isIDPK(key)) {
-    //                 delete field[key]
-    //             }
-    //         })
-    //     })
-
-
-    //     const expectedResult = {
-    //         fields: [
-    //             {
-    //                 title: 'Field 1',
-    //                 acres: '22.00',
-    //                 cropable: '22.00',
-    //                 harvest_count: 2,
-    //                 waste_type: 'process wastewater',
-    //                 parcels: ['0000000000000001', '0000000000000002']
-    //             },
-    //             {
-    //                 title: 'Field 17',
-    //                 acres: '290.00',
-    //                 cropable: '290.00',
-    //                 harvest_count: 0,
-    //                 waste_type: 'manure',
-    //                 parcels: []
-    //             },
-    //             {
-    //                 title: 'Field 2',
-    //                 acres: '17.00',
-    //                 cropable: '17.00',
-    //                 harvest_count: 2,
-    //                 waste_type: 'process wastewater',
-    //                 parcels: []
-    //             }
-    //         ].sort((a, b) => naturalSortBy(a, b, 'title')),
-    //         total_for_apps: [329, 329, 4],
-    //         total_NOT_for_apps: [0, 0, 0],
-    //         total_app_area: [329, 329, 4]
-    //     }
-
-    //     expect(applicationAreaA).toEqual(expectedResult)
     // })
+
+    test('A. LIST OF LAND APPLICATION AREAS.', async () => {
+        const { applicationAreaA } = await getApplicationAreaA(dairy_id)
+        applicationAreaA.fields.forEach(field => {
+            Object.keys(field).forEach(key => {
+                if (isIDPK(key)) {
+                    delete field[key]
+                }
+            })
+        })
+
+
+        const expectedResult = {
+            fields: [
+                {
+                    title: 'Field 1',
+                    acres: '22.00',
+                    cropable: '22.00',
+                    harvest_count: 2,
+                    waste_type: 'process wastewater',
+                    parcels: []
+                },
+                {
+                    title: 'Field 17',
+                    acres: '290.00',
+                    cropable: '290.00',
+                    harvest_count: 0,
+                    waste_type: 'manure',
+                    parcels: []
+                },
+                {
+                    title: 'Field 2',
+                    acres: '17.00',
+                    cropable: '17.00',
+                    harvest_count: 2,
+                    waste_type: 'process wastewater',
+                    parcels: []
+                }
+            ].sort((a, b) => naturalSortBy(a, b, 'title')),
+            total_for_apps: [329, 329, 4],
+            total_NOT_for_apps: [0, 0, 0],
+            total_app_area: [329, 329, 4]
+        }
+
+        expect(applicationAreaA).toEqual(expectedResult)
+    })
 
     test('B. APPLICATION AREAS Crops and Harvests.', async () => {
         const { applicationAreaB } = await getApplicationAreaB(dairy_id)
@@ -104,9 +120,6 @@ describe('Test pdfDB', () => {
                 })
             })
         })
-
-
-
 
 
         const expectedResult = {
@@ -1622,33 +1635,33 @@ describe('Test pdfDB', () => {
         })
     })
 
-    // test('AB. HERD INFORMATION:MANURE GENERATED', async () => {
-    //     const { availableNutrientsAB } = await getAvailableNutrientsAB(dairy_id)
+    test('AB. HERD INFORMATION:MANURE GENERATED', async () => {
+        const { availableNutrientsAB } = await getAvailableNutrientsAB(dairy_id)
 
-    //     Object.keys(availableNutrientsAB.herdInfo).map(key => {
-    //         if (isIDPK(key)) {
-    //             delete availableNutrientsAB.herdInfo[key]
-    //         }
-    //     })
+        Object.keys(availableNutrientsAB.herdInfo).map(key => {
+            if (isIDPK(key)) {
+                delete availableNutrientsAB.herdInfo[key]
+            }
+        })
 
-    //     const expectedResult = {
-    //         herdInfo: {
-    //             milk_cows: [1, 1, 2, 1, 1, 1],
-    //             dry_cows: [1, 1, 2, 1, 5000],
-    //             bred_cows: [1, 1, 2, 1, 1],
-    //             cows: [1, 1, 2, 1, 1],
-    //             calf_young: [1, 1, 2, 1],
-    //             calf_old: [1, 1, 2, 1],
-    //             p_breed: "Ayrshire", // Default option
-    //             p_breed_other: "",
-    //         },
+        const expectedResult = {
+            herdInfo: {
+                milk_cows: [1, 1, 2, 1, 1, 1],
+                dry_cows: [1, 1, 2, 1, 5000],
+                bred_cows: [1, 1, 2, 1, 1],
+                cows: [1, 1, 2, 1, 1],
+                calf_young: [1, 1, 2, 1],
+                calf_old: [1, 1, 2, 1],
+                p_breed: "Ayrshire", // Default option
+                p_breed_other: "",
+            },
 
-    //         herdCalc: ['67.83', '705.93', '101.02', '146.58', '702.72']
-    //     }
+            herdCalc: ['67.83', '705.93', '101.02', '146.58', '702.72']
+        }
 
-    //     expect(availableNutrientsAB).toEqual(expectedResult)
+        expect(availableNutrientsAB).toEqual(expectedResult)
 
-    // })
+    })
 
     test('C. Process Wastewater Generated', async () => {
         const { availableNutrientsC } = await getAvailableNutrientsC(dairy_id)
@@ -2330,10 +2343,10 @@ describe('Test pdfDB', () => {
                         k_con: '50.00',
                         ec: '20.00',
                         org_matter: '20.00',
-                        n_dl: '50.00',
-                        total_p_dl: '50.00',
-                        p_dl: '50.00',
-                        k_dl: '50.00',
+                        n_dl: '5.00',
+                        total_p_dl: '5.00',
+                        p_dl: '5.00',
+                        k_dl: '5.00',
                         ec_dl: '5.00',
                         org_matter_dl: '5.00',
                         title: 'Field 1',
@@ -2350,10 +2363,10 @@ describe('Test pdfDB', () => {
                         k_con: '50.00',
                         ec: '20.00',
                         org_matter: '20.00',
-                        n_dl: '50.00',
-                        total_p_dl: '50.00',
-                        p_dl: '50.00',
-                        k_dl: '50.00',
+                        n_dl: '5.00',
+                        total_p_dl: '5.00',
+                        p_dl: '5.00',
+                        k_dl: '5.00',
                         ec_dl: '5.00',
                         org_matter_dl: '5.00',
                         title: 'Field 1',
@@ -2370,10 +2383,10 @@ describe('Test pdfDB', () => {
                         k_con: '50.00',
                         ec: '20.00',
                         org_matter: '20.00',
-                        n_dl: '50.00',
-                        total_p_dl: '50.00',
-                        p_dl: '50.00',
-                        k_dl: '50.00',
+                        n_dl: '5.00',
+                        total_p_dl: '5.00',
+                        p_dl: '5.00',
+                        k_dl: '5.00',
                         ec_dl: '5.00',
                         org_matter_dl: '5.00',
                         title: 'Field 1',
@@ -2528,8 +2541,9 @@ describe('Test pdfDB', () => {
         }
         expect(nutrientAnalysis).toEqual(expectedResult)
     })
-    // test('A. NUTRIENT ANALYSES ', async () => {
-    //     const res = await getExceptionReportingABC(dairy_id)
-    //     // console.log(res)
-    // })
+
+    test('ABC. Exception Reporting ', async () => {
+        const res = await getExceptionReportingABC(dairy_id)
+        // console.log(res)
+    })
 })

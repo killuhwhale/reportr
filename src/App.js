@@ -156,7 +156,7 @@ export default class App extends React.Component {
 
   onAlert(alertMsg, alertSeverity) {
     this.setState({ alertMsg: alertMsg, alertSeverity: alertSeverity, showAlert: true })
-    this.delayedClose()
+    // this.delayedClose()
   }
 
   delayedClose() {

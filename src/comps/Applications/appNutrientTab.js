@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, AppBar, Tabs, Tab
+  Grid, Typography, IconButton, Tooltip, AppBar, Tabs, Tab
 } from '@material-ui/core'
 
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
@@ -18,39 +18,8 @@ import AddFieldCropApplicationModal from "../Modals/addFieldCropApplicationModal
 import ActionCancelModal from "../Modals/actionCancelModal"
 
 import { get, post } from '../../utils/requests';
-import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, WASTEWATER, SOIL, PLOWDOWN_CREDIT, } from '../../utils/TSV'
-import { NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES } from '../../utils/constants'
-
-
-const PRECIPITATIONS = [
-  "No Precipitation",
-  "Standing water",
-  "Lightrain",
-  "Steady rain",
-  "Heavy rain",
-  "Hail",
-  "Snow",
-]
-const APP_METHODS = [
-  'No till (plowdown credit)',
-  'Plow/disc',
-  'Broadcast/incorporate',
-  'Shank',
-  'Injection',
-  'Sweep',
-  'Banding',
-  'Sidedress',
-  'Pipeline',
-  'Surface (irragation',
-  'Subsurface (irragation',
-  'Towed tank',
-  'Towed hose',
-  'Other',
-]
-
-const REPORTING_METHODS = ['dry-weight', 'as-is']
-const SOURCE_OF_ANALYSES = ['Lab Analysis', 'Other/ estimated']
-
+import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, } from '../../utils/TSV'
+import { APP_METHODS, PRECIPITATIONS, REPORTING_METHODS, SOURCE_OF_ANALYSES, NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES } from '../../utils/constants'
 
 class NutrientApplicationTab extends Component {
   constructor(props) {

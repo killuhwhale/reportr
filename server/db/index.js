@@ -1,9 +1,12 @@
 const format = require('pg-format');
 const { Pool, Client } = require('pg');
+const fs = require('fs');
 const process = require('process');
 const logger = require('../logs/logging')
 const PORT = process.env.PORT || 3001;
-const TESTING = process.env.testing || false
+const { validFieldCropHarvest, validProcessWastewaterAnalysis, validProcessWastewater, validFreshwaterAnalysis, validSolidmanureAnalysis, validSolidmanure, validNutrientImport, validFertilizer, validSoilAnalysis, validPlowdownCredit, validDrainAnalysis, validExportManifest } = require('./validate');
+const { validStartEndDates } = require('../tsv/validInput');
+
 
 const test = {
   host: 'localhost',
@@ -30,10 +33,69 @@ const prodDigitalOcean = {
   }
 
 }
-const isProd = PORT !== 3001
+
+// const isProd = PORT !== 3001
+const TESTING = process.env.NODE_ENV === 'test' || false
+const isProd = process.env.NODE_ENV === 'ocean' || false
 const pool = new Pool(TESTING ? test : isProd ? prodDigitalOcean : dev)
 
 logger.info(`Connected to db: ${TESTING ? "Test" : isProd ? "Ocean" : "Dev"} db.`)
+
+
+
+
+
+
+
+const insertDairyBase = (values, callback) => {
+  return pool.query(
+    format("INSERT INTO dairy_base(title) VALUES (%L)", values),
+    [],
+    callback
+  )
+}
+
+const insertDairy = (values, callback) => {
+  const [dairy_base_id, title, reporting_yr, period_start, period_end] = values
+
+  if (!validStartEndDates(period_start, period_end)) {
+    callback({ code: '1000', messagge: 'Dairy reporting period start must be before the reporting period end date.' })
+    return
+  }
+
+  return pool.query(
+    format("INSERT INTO dairies(dairy_base_id, title, reporting_yr, period_start, period_end) VALUES (%L)", values),
+    [],
+    callback
+  )
+}
+
+const insertHerd = (values, callback) => {
+
+
+  return pool.query(
+    format(`INSERT INTO herds(
+      dairy_id) VALUES (%L)`, values),
+    [],
+    callback
+  )
+}
+
+const updateHerd = (values, callback) => {
+  return pool.query(`UPDATE herds SET
+    milk_cows = $1,
+    dry_cows = $2,
+    bred_cows = $3,
+    cows = $4,
+    calf_young = $5,
+    calf_old = $6,
+    p_breed = $7,
+    p_breed_other = $8
+    WHERE pk=$9`,
+    values,
+    callback
+  )
+}
 
 module.exports = {
   pool,
@@ -51,13 +113,7 @@ module.exports = {
       callback
     )
   },
-  insertDairyBase: (values, callback) => {
-    return pool.query(
-      format("INSERT INTO dairy_base(title) VALUES (%L)", values),
-      [],
-      callback
-    )
-  },
+  insertDairyBase,
   updateDairy: (values, callback) => {
     return pool.query(`UPDATE dairy_base SET
     title = $1
@@ -95,16 +151,16 @@ module.exports = {
       callback
     )
   },
-  insertDairy: (values, callback) => {
+  insertDairy,
 
-
-    return pool.query(
-      format("INSERT INTO dairies(dairy_base_id, title, reporting_yr, period_start, period_end) VALUES (%L)", values),
-      [],
-      callback
-    )
-  },
   insertFullDairy: (values, callback) => {
+    const [dairy_base_id, reporting_yr, street, cross_street, county, city,
+      city_state, city_zip, title, basin_plan, began, period_start, period_end
+    ] = values
+    if (!validStartEndDates(period_start, period_end)) {
+      callback({ code: '1000', messagge: 'Dairy reporting period start must be before the reporting period end date.' })
+      return
+    }
     return pool.query(
       format("INSERT INTO dairies(dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, city_zip, title, basin_plan, began, period_start, period_end) VALUES (%L) RETURNING *", values),
       [],
@@ -112,6 +168,12 @@ module.exports = {
     )
   },
   updateDairy: (values, callback) => {
+    const [street, cross_street, county, city,
+      city_state, city_zip, title, basin_plan, began, period_start, period_end, pk] = values
+    if (!validStartEndDates(period_start, period_end)) {
+      callback({ code: '1000', messagge: 'Dairy reporting period start must be before the reporting period end date.' })
+      return
+    }
     return pool.query(`UPDATE dairies SET
       street = $1, 
       cross_street = $2,
@@ -334,16 +396,7 @@ module.exports = {
     )
   },
 
-  insertHerd: (values, callback) => {
-
-
-    return pool.query(
-      format(`INSERT INTO herds(
-        dairy_id) VALUES (%L)`, values),
-      [],
-      callback
-    )
-  },
+  insertHerd,
   insertFullHerd: (values, callback) => {
     return pool.query(
       `INSERT INTO herds(
@@ -368,24 +421,15 @@ module.exports = {
       callback
     )
   },
-  updateHerd: (values, callback) => {
-    return pool.query(`UPDATE herds SET
-      milk_cows = $1,
-      dry_cows = $2,
-      bred_cows = $3,
-      cows = $4,
-      calf_young = $5,
-      calf_old = $6,
-      p_breed = $7,
-      p_breed_other = $8
-      WHERE pk=$9`,
-      values,
-      callback
-    )
-  },
+  updateHerd,
 
   insertFieldCrop: (values, callback) => {
+    const [dairy_id, field_id, crop_id, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt] = values
 
+    if (acres_planted < 1 || acres_planted > 2147483647) {
+      callback({ code: '1000', messagge: 'Acres planted must be between 1 - 2,147,483,647.' })
+      return
+    }
 
     return pool.query(
       format(`INSERT INTO field_crop(
@@ -461,9 +505,12 @@ module.exports = {
     )
   },
 
-
   insertFieldCropHarvest: (values, callback) => {
-
+    const isValid = validFieldCropHarvest(values)
+    if (isValid.code !== '0') {
+      callback(isValid)  // returns {code: '1001', msg: 'errMsg'}
+      return
+    }
 
     return pool.query(
       format(`INSERT INTO field_crop_harvest(
@@ -697,7 +744,11 @@ module.exports = {
   },
 
   insertFieldCropApplicationProcessWastewaterAnalysis: (values, callback) => {
-
+    const isValid = validProcessWastewaterAnalysis(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
 
     return pool.query(
       format(`
@@ -762,7 +813,11 @@ module.exports = {
   },
 
   insertFieldCropApplicationProcessWastewater: (values, callback) => {
-
+    const isValid = validProcessWastewater(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
 
     return pool.query(
       format(`INSERT INTO field_crop_app_process_wastewater(
@@ -899,7 +954,11 @@ module.exports = {
   },
 
   insertFieldCropApplicationFreshwaterAnalysis: (values, callback) => {
-
+    const isValid = validFreshwaterAnalysis(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
 
     return pool.query(
       format(`INSERT INTO field_crop_app_freshwater_analysis(
@@ -1069,6 +1128,12 @@ module.exports = {
   },
 
   insertFieldCropApplicationSolidmanureAnalysis: (values, callback) => {
+    const isValid = validSolidmanureAnalysis(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
+
     return pool.query(
       format(`INSERT INTO field_crop_app_solidmanure_analysis(
         dairy_id,
@@ -1132,6 +1197,12 @@ module.exports = {
   },
 
   insertFieldCropApplicationSolidmanure: (values, callback) => {
+    const isValid = validSolidmanure(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
+
     return pool.query(
       format(`INSERT INTO field_crop_app_solidmanure(
         dairy_id,
@@ -1222,6 +1293,13 @@ module.exports = {
 
 
   insertNutrientImport: (values, callback) => {
+    const isValid = validNutrientImport(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
+
+
     return pool.query(
       format(`INSERT INTO nutrient_import(
         dairy_id,
@@ -1295,6 +1373,12 @@ module.exports = {
 
 
   insertFieldCropApplicationFertilizer: (values, callback) => {
+    const isValid = validFertilizer(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
+
     return pool.query(
       format(`INSERT INTO field_crop_app_fertilizer(
         dairy_id,
@@ -1377,6 +1461,12 @@ module.exports = {
 
 
   insertFieldCropApplicationSoilAnalysis: (values, callback) => {
+    const isValid = validSoilAnalysis(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
+
     return pool.query(
       format(`INSERT INTO field_crop_app_soil_analysis(
         dairy_id,
@@ -1534,6 +1624,12 @@ module.exports = {
   },
 
   insertFieldCropApplicationPlowdownCredit: (values, callback) => {
+    const isValid = validPlowdownCredit(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
+
     return pool.query(
       format(`INSERT INTO field_crop_app_plowdown_credit(
         dairy_id,
@@ -1645,6 +1741,12 @@ module.exports = {
   },
 
   insertDrainAnalysis: (values, callback) => {
+    const isValid = validDrainAnalysis(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
+
     return pool.query(
       format(`INSERT INTO drain_analysis(
         dairy_id,
@@ -1902,6 +2004,12 @@ module.exports = {
 
 
   insertExportManifest: (values, callback) => {
+    const isValid = validExportManifest(values)
+    if (isValid.code !== '0') {
+      callback(isValid)
+      return
+    }
+
     return pool.query(
       format(`INSERT INTO export_manifest(
         dairy_id,
@@ -2596,3 +2704,138 @@ module.exports = {
 
 }
 
+const resetDB = (pool) => {
+  return new Promise((resolve, reject) => {
+    pool.query(`DO $$ DECLARE
+      r RECORD;
+      BEGIN
+        FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = current_schema()) LOOP
+            EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
+        END LOOP;
+      END $$;
+    `, [], (err, res) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(res)
+      }
+    })
+  })
+}
+
+const createSchema = (pool) => {
+  return new Promise((resolve, reject) => {
+    let createSql = fs.readFileSync('./server/db/create.sql').toString();
+    let createCropsSql = fs.readFileSync('./server/db/create_crops.sql').toString();
+    let createAccountsSql = fs.readFileSync('./server/db/create_accounts.sql').toString();
+
+    pool.query(createSql, [], (err, res) => {
+      if (!err) {
+        pool.query(createCropsSql, [], (err, res) => {
+          if (err) {
+            reject(err)
+          } else {
+            pool.query(createAccountsSql, [], (err, res) => {
+              if (err) {
+                reject(err)
+              } else {
+                resolve(res)
+              }
+            })
+          }
+        })
+      } else {
+        reject(err)
+      }
+    })
+  })
+}
+
+const createBaseDairy = async (title) => {
+  return new Promise((resolve, reject) => {
+
+    insertDairyBase([title], (err, res) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(res)
+      }
+    })
+  })
+}
+
+
+const createDairy = async (title) => {
+  return new Promise((resolve, reject) => {
+
+    insertDairy([1, title, '2020', '01/01/2020', '12/31/2020'], (err, res) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(res)
+      }
+    })
+  })
+}
+
+const createHerds = async () => {
+  return new Promise((resolve, reject) => {
+    /*
+      milk_cows = $1,
+        dry_cows = $2,
+        bred_cows = $3,
+        cows = $4,
+        calf_young = $5,
+        calf_old = $6,
+        p_breed = $7,
+        p_breed_other = $8
+        WHERE pk=$9`,
+     */
+    const updateData = [
+      [1, 1, 2, 1, 1, 1],
+      [1, 1, 2, 1, 5000],
+      [1, 1, 2, 1, 1],
+      [1, 1, 2, 1, 1],
+      [1, 1, 2, 1],
+      [1, 1, 2, 1],
+      "Ayrshire",
+      "",
+      1
+    ]
+
+    insertHerd([1], (err, res) => {
+      if (err) {
+        reject(err)
+      } else {
+        updateHerd(updateData, (err, res) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(res)
+          }
+        })
+      }
+    })
+  })
+}
+
+
+const initTestDB = async (pool) => {
+  try {
+    const res = await resetDB(pool)
+    const res1 = await createSchema(pool)
+    const res2 = await createBaseDairy("Pharmaz")
+    const res3 = await createDairy('Pharmaz')
+    const res4 = await createHerds()
+
+
+    console.log("Success init test DB.")
+  } catch (e) {
+    console.log("Error init test DB.", e)
+  }
+}
+
+if (TESTING) {
+  // sudo kill -9 $(sudo lsof -t -i:3001)
+  initTestDB(pool)
+}

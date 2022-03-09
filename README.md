@@ -14,17 +14,8 @@ PSQL
   user: admin
   pass: mostdope
 
-HARCODED VARS:  TODO() Move these to src/sepcific.js
-  - server/accounts/accounts.js - whiteList for owner emails
-  - utils/TSV.js
-    - isTesting // For testing TSV Uploads
-    - Also Creates Vars that correspond to Sheet Names, sheet names must match in order for Upload XLSX workbook to work.
-  - DairyTab.js
-    - Variables to determine Chart size in Annual Report
-  - HomePage.js (Shouldnt change for a single company)
-    - COUNTIES
-    - BASINS 
-    - BREEDS
+
+  // sudo kill -9 $(sudo lsof -t -i:3001)
   
 
 ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
@@ -37,9 +28,6 @@ ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
 
 
 TODO
-
-Fix tests, out of order comparing objects. and formatting of values
-
 
 
 Account Management for Owners

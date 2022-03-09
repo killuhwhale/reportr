@@ -148,3 +148,598 @@
 {"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
 {"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
 {"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1897) toFloat is not defined","service":"user-service","stack":"ReferenceError: toFloat is not defined\n    at exports.validMoisture (/Users/chrisandaya/ws_node/reportr/server/tsv/validInput.js:36:5)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1770:38\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:1665) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"err":"Error with all promises","error":{},"tsvType":"Production Records","uploadedFilename":"Production Records"},"level":"info","message":"(tsv/serverTsv.js:53)","msg":"Error with all promises","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1896) toFloat is not a function","service":"user-service","stack":"TypeError: toFloat is not a function\n    at exports.validMoisture (/Users/chrisandaya/ws_node/reportr/server/tsv/validInput.js:36:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1769:38\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:1664) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"err":"Error with all promises","error":{},"tsvType":"Production Records","uploadedFilename":"Production Records"},"level":"info","message":"(tsv/serverTsv.js:53)","msg":"Error with all promises","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1896) toFloat is not a function","service":"user-service","stack":"TypeError: toFloat is not a function\n    at exports.validMoisture (/Users/chrisandaya/ws_node/reportr/server/tsv/validInput.js:37:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1769:38\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:1664) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"err":"Error with all promises","error":{},"tsvType":"Production Records","uploadedFilename":"Production Records"},"level":"info","message":"(tsv/serverTsv.js:53)","msg":"Error with all promises","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1895) Cannot read properties of undefined (reading 'forEach')","service":"user-service","stack":"TypeError: Cannot read properties of undefined (reading 'forEach')\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1785:102\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:1663) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"err":"Error with all promises","error":{},"tsvType":"Production Records","uploadedFilename":"Production Records"},"level":"info","message":"(tsv/serverTsv.js:53)","msg":"Error with all promises","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"error":"Field 1 Corn silage 8/29/20 Nitrogen: 0.664 needs to be between above 100.00 DL","level":"info","message":"(tsv/serverTsv.js:1896)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1663) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"err":"Error with all promises","error":{"error":"Field 1 Corn silage 8/29/20 Nitrogen: 0.664 needs to be between above 100.00 DL"},"tsvType":"Production Records","uploadedFilename":"Production Records"},"level":"info","message":"(tsv/serverTsv.js:53)","msg":"Error with all promises","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"error":"Harvest Field 2 Corn silage 8/29/20 Nitrogen: 5450 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:1898)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1663) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"err":"Error with all promises","error":{"error":"Harvest Field 2 Corn silage 8/29/20 Nitrogen: 5450 needs to be between 0 - 999,999.99"},"tsvType":"Production Records","uploadedFilename":"Production Records"},"level":"info","message":"(tsv/serverTsv.js:53)","msg":"Error with all promises","service":"user-service"}
+{"error":"Harvest Field 1 Oats silage-soft dough 4/20/20 Nitrogen: 5000 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:1898)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1663) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"err":"Error with all promises","error":{"error":"Harvest Field 1 Oats silage-soft dough 4/20/20 Nitrogen: 5000 needs to be between 0 - 999,999.99"},"tsvType":"Production Records","uploadedFilename":"Production Records"},"level":"info","message":"(tsv/serverTsv.js:53)","msg":"Error with all promises","service":"user-service"}
+{"error":"Harvest Field 1 Oats silage-soft dough 4/20/20 Nitrogen: 5000 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:1898)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1663) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"err":"Error with all promises","error":{"error":"Harvest Field 1 Oats silage-soft dough 4/20/20 Nitrogen: 5000 needs to be between 0 - 999,999.99"},"tsvType":"Production Records","uploadedFilename":"Production Records"},"level":"info","message":"(tsv/serverTsv.js:53)","msg":"Error with all promises","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"error":"Harvest Field 1 Corn silage 8/29/20 Nitrogen: 6640 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:1898)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1663) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"err":"Error with all promises","error":{"error":"Harvest Field 1 Corn silage 8/29/20 Nitrogen: 6640 needs to be between 0 - 999,999.99"},"tsvType":"Production Records","uploadedFilename":"Production Records"},"level":"info","message":"(tsv/serverTsv.js:53)","msg":"Error with all promises","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"error":"Harvest Field 1 Oats silage-soft dough 4/20/20 Nitrogen: 5000 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:1898)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1663) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"err":"Error with all promises","error":{"error":"Harvest Field 1 Oats silage-soft dough 4/20/20 Nitrogen: 5000 needs to be between 0 - 999,999.99"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1898) Harvest Field 1 Oats silage-soft dough 4/20/20 Nitrogen: 5000 needs to be between 0 - 999,999.99","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1663) Error with all promises","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"err":"Error with all promises","error":"Harvest Field 1 Oats silage-soft dough 4/20/20 Nitrogen: 5000 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1897) Harvest Field 1 Oats silage-soft dough 4/20/20 Nitrogen: 5000 needs to be between 0 - 999,999.99","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":"Harvest Field 1 Oats silage-soft dough 4/20/20 Nitrogen: 5000 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(tsv/serverTsv.js:1897) Harvest Field 2 Oats silage-soft dough 4/20/20 Nitrogen: 5970 needs to be between 0 - 999,999.99","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":"Harvest Field 2 Oats silage-soft dough 4/20/20 Nitrogen: 5970 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1857) field_title is not defined","service":"user-service","stack":"ReferenceError: field_title is not defined\n    at exports.validFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:8:34)\n    at Object.insertFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:489:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1773:36\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:1806)","messagge":"Harvest 4/20/20 (391)tons Actual Yield must be between 1 and 2,147,483,647.","service":"user-service"}
+{"error":"Created field_crop_harvest unsuccessful","level":"info","message":"(tsv/serverTsv.js:1857)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Created field_crop_harvest unsuccessful"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:1806)","messagge":"Harvest 4/20/20 (275)tons Actual Yield must be between 1 and 2,147,483,647.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:1806)","messagge":"Harvest 8/29/20 (569)tons Actual Yield must be between 1 and 2,147,483,647.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:1806)","messagge":"Harvest 8/29/20 (440)tons Actual Yield must be between 1 and 2,147,483,647.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1859) reject is not defined","service":"user-service","stack":"ReferenceError: reject is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1806:45\n    at Object.insertFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:491:7)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1773:36\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1859) reject is not defined","service":"user-service","stack":"ReferenceError: reject is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1806:45\n    at Object.insertFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:491:7)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1773:36\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"error":"Harvest 4/20/20 (275)tons Actual Yield must be between 1 and 2,147,483,647.","level":"info","message":"(tsv/serverTsv.js:1859)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Harvest 4/20/20 (275)tons Actual Yield must be between 1 and 2,147,483,647."},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"error":"Harvest 4/20/20 (275)tons Actual Yield must be between 1 and 2,147,483,647.","level":"info","message":"(tsv/serverTsv.js:1859)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Harvest 4/20/20 (275)tons Actual Yield must be between 1 and 2,147,483,647."},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"error":"Harvest 4/20/20 (391)tons Actual Yield must be between 1 and 2,147,483,647.","level":"info","message":"(tsv/serverTsv.js:1859)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Harvest 4/20/20 (391)tons Actual Yield must be between 1 and 2,147,483,647."},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"error":"Harvest 4/20/20 (275)tons Actual Yield must be between 1 and 2,147,483,647.","level":"info","message":"(tsv/serverTsv.js:1859)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Harvest 4/20/20 (275)tons Actual Yield must be between 1 and 2,147,483,647."},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1859) validMoisture is not defined","service":"user-service","stack":"ReferenceError: validMoisture is not defined\n    at exports.validFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:23:5)\n    at Object.insertFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:489:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1773:36\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(tsv/serverTsv.js:1859) validMoisture is not defined","service":"user-service","stack":"ReferenceError: validMoisture is not defined\n    at exports.validFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:23:5)\n    at Object.insertFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:489:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1773:36\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1859) validTFS is not defined","service":"user-service","stack":"ReferenceError: validTFS is not defined\n    at exports.validFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:30:9)\n    at Object.insertFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:489:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1773:36\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1859) toFloat is not defined","service":"user-service","stack":"ReferenceError: toFloat is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/db/validate.js:48:9\n    at Array.forEach (<anonymous>)\n    at exports.validFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:41:14)\n    at Object.insertFieldCropHarvest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:489:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1773:36\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:36) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:721)","msg":"Nutirent Import (Commercial Fertilizer) 05/09/2020 Dry manure: Separator solids UN32 Nitrogen: 19400 needs to be between 0 - 999,999.99","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"Nutirent Import (Commercial Fertilizer) 05/09/2020 Dry manure: Separator solids UN32 Nitrogen: 19400 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:2329)","service":"user-service"}
+{"error":"Nutirent Import (Commercial Fertilizer) 05/09/2020 Dry manure: Separator solids UN32 Nitrogen: 19400 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:2640)","service":"user-service"}
+{"error":"Nutirent Import (Commercial Fertilizer) 05/09/2020 Dry manure: Separator solids UN32 Nitrogen: 19400 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:2329)","service":"user-service"}
+{"error":"Nutirent Import (Commercial Fertilizer) 05/09/2020 Dry manure: Separator solids UN32 Nitrogen: 19400 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:2640)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"Nutirent Import (Commercial Fertilizer) 05/09/2020 Dry manure: Separator solids UN32 Nitrogen: 19400 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:2329)","service":"user-service"}
+{"error":"Nutirent Import (Commercial Fertilizer) 05/09/2020 Dry manure: Separator solids UN32 Nitrogen: 19400 needs to be between 0 - 999,999.99","level":"info","message":"(tsv/serverTsv.js:2674)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Nutirent Import (Commercial Fertilizer) 05/09/2020 Dry manure: Separator solids UN32 Nitrogen: 19400 needs to be between 0 - 999,999.99"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Commercial Fertilizer","uploadedFilename":"Commercial Fertilizer"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:646)","msg":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Moisture 56 needs to be between 0.10 - 100.00","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:646)","msg":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Moisture 56 needs to be between 0.10 - 100.00","service":"user-service"}
+{"error":"Created field_crop_app_solidmanure_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2260)","service":"user-service"}
+{"error":"Created field_crop_app_solidmanure_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2677)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Created field_crop_app_solidmanure_analysis unsuccessful"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Applications","uploadedFilename":"SM Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:646)","msg":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Moisture 56 needs to be between 0.10 - 100.00","service":"user-service"}
+{"error":"Created field_crop_app_solidmanure_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2262)","service":"user-service"}
+{"error":"Created field_crop_app_solidmanure_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2679)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Created field_crop_app_solidmanure_analysis unsuccessful"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Applications","uploadedFilename":"SM Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:646)","msg":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Moisture 56 needs to be between 0.10 - 100.00","service":"user-service"}
+{"error":"Created field_crop_app_solidmanure_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2262)","service":"user-service"}
+{"error":"Created field_crop_app_solidmanure_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2679)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Created field_crop_app_solidmanure_analysis unsuccessful"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Applications","uploadedFilename":"SM Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:646)","msg":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Moisture 56 needs to be between 0.10 - 100.00","service":"user-service"}
+{"error":"Created field_crop_app_solidmanure_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2263)","service":"user-service"}
+{"error":"Created field_crop_app_solidmanure_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2680)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Created field_crop_app_solidmanure_analysis unsuccessful"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Applications","uploadedFilename":"SM Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Moisture 56 needs to be between 0.10 - 100.00","level":"info","message":"(tsv/serverTsv.js:2265)","service":"user-service"}
+{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Moisture 56 needs to be between 0.10 - 100.00","level":"info","message":"(tsv/serverTsv.js:2682)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Moisture 56 needs to be between 0.10 - 100.00"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Applications","uploadedFilename":"SM Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:545) FWA: err","service":"user-service"}
+{"error":"field_crop_app_freshwater_analysis [object Object]","level":"info","message":"(tsv/serverTsv.js:2681)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"field_crop_app_freshwater_analysis [object Object]"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"level":"info","message":"(tsv/serverTsv.js:545) FWA: err","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:545) FWA: err","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:545) FWA: err","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:545) FWA: err","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:545) FWA: err","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:545) FWA: err","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:545) FWA: err","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"field_crop_app_freshwater_analysis [object Object]","level":"info","message":"(tsv/serverTsv.js:2683)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"field_crop_app_freshwater_analysis [object Object]"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"error":"field_crop_app_freshwater_analysis [object Object]","level":"info","message":"(tsv/serverTsv.js:2683)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"field_crop_app_freshwater_analysis [object Object]"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"field_crop_app_freshwater_analysis [object Object]","level":"info","message":"(tsv/serverTsv.js:2685)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"field_crop_app_freshwater_analysis [object Object]"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"field_crop_app_freshwater_analysis [object Object]","level":"info","message":"(tsv/serverTsv.js:2689)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"field_crop_app_freshwater_analysis [object Object]"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"field_crop_app_freshwater_analysis [object Object]","level":"info","message":"(tsv/serverTsv.js:2689)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"field_crop_app_freshwater_analysis [object Object]"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"field_crop_app_freshwater_analysisZZZ [object Object]","level":"info","message":"(tsv/serverTsv.js:2689)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"field_crop_app_freshwater_analysisZZZ [object Object]"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"field_crop_app_freshwater_analysisZZZ [object Object]","level":"info","message":"(tsv/serverTsv.js:2690)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"field_crop_app_freshwater_analysisZZZ [object Object]"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"Freshwater Analysis 9/22/2020 Canal Water Lab Analysis TDS must be between 0 and 20,000.","level":"info","message":"(tsv/serverTsv.js:2685)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Freshwater Analysis 9/22/2020 Canal Water Lab Analysis TDS must be between 0 and 20,000."},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2021)","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2685)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"WW Applications","uploadedFilename":"WW Applications"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2021)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2021)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 11/12/2019 Lagoon 484 Kjeldahl-nitrogen: 4840000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2021)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2021)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2021)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2021)","service":"user-service"}
+{"error":"Freshwater Analysis 08/06/2020 Irrigation Water Lab Analysis Nitrogen: 1e+44 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2685)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2021)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2688)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"WW Applications","uploadedFilename":"WW Applications"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"error":"Freshwater Analysis 9/22/2020 Canal Water Lab Analysis Nitrogen: 1e+44 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2688)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 11/12/2019 Lagoon 484 Kjeldahl-nitrogen: 4840000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"Freshwater Analysis 9/22/2020 Canal Water Lab Analysis Nitrogen: 1e+44 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2688)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Freshwater Analysis 9/22/2020 Canal Water Lab Analysis Nitrogen: 1e+44 needs to be between 0 - 99,999.99"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2688)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 11/12/2019 Lagoon 484 Kjeldahl-nitrogen: 4840000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2688)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"WW Applications","uploadedFilename":"WW Applications"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"error":"Freshwater Analysis 9/22/2020 Canal Water Lab Analysis EC: 2590000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2688)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 11/12/2019 Lagoon 484 Kjeldahl-nitrogen: 4840000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 11/12/2019 Lagoon 484 Kjeldahl-nitrogen: 4840000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"error":{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful"},"level":"info","message":"(tsv/serverTsv.js:2689)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful"}},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"WW Applications","uploadedFilename":"WW Applications"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"error":"Freshwater Analysis 9/22/2020 Canal Water Lab Analysis EC: 2590000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2689)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"code":"1000","level":"info","message":"(tsv/serverTsv.js:380)","msg":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","service":"user-service"}
+{"error":"Created field_crop_app_process_wastewater_analysis unsuccessful","level":"info","message":"(tsv/serverTsv.js:2024)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99"},"level":"info","message":"(tsv/serverTsv.js:2692)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99"}},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"WW Applications","uploadedFilename":"WW Applications"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"Freshwater Analysis 9/22/2020 Canal Water Lab Analysis EC: 2590000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2692)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 11/12/2019 Lagoon 484 Kjeldahl-nitrogen: 4840000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"Freshwater Analysis 08/06/2020 Irrigation Water Lab Analysis Nitrogen: 499000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2692)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Freshwater Analysis 08/06/2020 Irrigation Water Lab Analysis Nitrogen: 499000 needs to be between 0 - 99,999.99"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"FW Applications","uploadedFilename":"FW Applications"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99"},"level":"info","message":"(tsv/serverTsv.js:2692)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 11/12/2019 Lagoon 484 Kjeldahl-nitrogen: 4840000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99"},"level":"info","message":"(tsv/serverTsv.js:2694)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99"}},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"WW Applications","uploadedFilename":"WW Applications"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"Freshwater Analysis 9/22/2020 Canal Water Lab Analysis EC: 2590000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2694)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2526) Get all fca_soil_analysis","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2694) validOrganicMatter is not defined","service":"user-service","stack":"ReferenceError: validOrganicMatter is not defined\n    at exports.validSoilAnalysis (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:319:5)\n    at Object.insertFieldCropApplicationSoilAnalysis (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1445:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:786:12\n    at new Promise (<anonymous>)\n    at insertSoilAnalysis (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:767:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1294:31\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"error":"ProcessWastewaterAnalysis 11/12/2019 Lagoon 484 Kjeldahl-nitrogen: 4840000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99"},"level":"info","message":"(tsv/serverTsv.js:2694)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99"}},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"WW Applications","uploadedFilename":"WW Applications"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 11/12/2019 Lagoon 484 Kjeldahl-nitrogen: 4840000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 Kjeldahl-nitrogen: 4370000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"error":"Freshwater Analysis 08/06/2020 Irrigation Water Lab Analysis Nitrogen: 485000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2694)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 03/09/2020 Lagoon 490 Kjeldahl-nitrogen: 4900000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2027)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2526) Get all fca_soil_analysis","service":"user-service"}
+{"error":"Soil Analysis 11/12/2019 Soil Sample A Lab Analysis Nitrogen: 500000 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2694)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2526) Get all fca_soil_analysis","service":"user-service"}
+{"error":"Soil Analysis 11/12/2019 Soil Sample B Lab Analysis Phosphorus: 20 needs to be between above 50 DL","level":"info","message":"(tsv/serverTsv.js:2694)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Soil Analysis 11/12/2019 Soil Sample B Lab Analysis Phosphorus: 20 needs to be between above 50 DL"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Soil Analyses","uploadedFilename":"Soil Analyses"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen: 19400 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2275)","service":"user-service"}
+{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen: 19400 needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2696)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen: 19400 needs to be between 0 - 99,999.99"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Applications","uploadedFilename":"SM Applications"}
+{"level":"info","message":"(tsv/serverTsv.js:2594) Lazy get field for fields error:","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2696) validPlowdownCredit is not defined","service":"user-service","stack":"ReferenceError: validPlowdownCredit is not defined\n    at Object.insertFieldCropApplicationPlowdownCredit (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1608:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2566:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen: 19400 DL needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2275)","service":"user-service"}
+{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen: 19400 DL needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2696)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen: 19400 DL needs to be between 0 - 99,999.99"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Applications","uploadedFilename":"SM Applications"}
+{"level":"info","message":"(tsv/serverTsv.js:2594) Lazy get field for fields error:","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2696) validPlowdownCredit is not defined","service":"user-service","stack":"ReferenceError: validPlowdownCredit is not defined\n    at Object.insertFieldCropApplicationPlowdownCredit (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1608:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2566:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2594) Lazy get field for fields error:","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2696) validPlowdownCredit is not defined","service":"user-service","stack":"ReferenceError: validPlowdownCredit is not defined\n    at Object.insertFieldCropApplicationPlowdownCredit (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1608:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2566:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Plowdown Credit","uploadedFilename":"Plowdown Credit"}
+{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen Detection Limit,1000000: Phosphorus Detection Limit,1000000 DL needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2275)","service":"user-service"}
+{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen Detection Limit,1000000: Phosphorus Detection Limit,1000000 DL needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2696)","service":"user-service"}
+{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen Detection Limit,1000000: Phosphorus Detection Limit,1000000 DL needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2275)","service":"user-service"}
+{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen Detection Limit,1000000: Phosphorus Detection Limit,1000000 DL needs to be between 0 - 99,999.99","level":"info","message":"(tsv/serverTsv.js:2696)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{"error":"Solidmanure Analysis 3/9/20 Manure Caetano Corral solids Lab Analysis Nitrogen Detection Limit,1000000: Phosphorus Detection Limit,1000000 DL needs to be between 0 - 99,999.99"},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Applications","uploadedFilename":"SM Applications"}
+{"level":"info","message":"(tsv/serverTsv.js:2594) Lazy get field for fields error:","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2696) validPlowdownCredit is not defined","service":"user-service","stack":"ReferenceError: validPlowdownCredit is not defined\n    at Object.insertFieldCropApplicationPlowdownCredit (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1608:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2566:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2594) Lazy get field for fields error:","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2696) validPlowdownCredit is not defined","service":"user-service","stack":"ReferenceError: validPlowdownCredit is not defined\n    at Object.insertFieldCropApplicationPlowdownCredit (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1608:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2566:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Plowdown Credit","uploadedFilename":"Plowdown Credit"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2594) Lazy get field for fields error:","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2696) validLbsAcrePlowdownCredit is not defined","service":"user-service","stack":"ReferenceError: validLbsAcrePlowdownCredit is not defined\n    at exports.validPlowdownCredit (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:342:9)\n    at Object.insertFieldCropApplicationPlowdownCredit (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1608:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2566:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"Plowdown Credit","uploadedFilename":"Plowdown Credit"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) validExportManifest is not defined","service":"user-service","stack":"ReferenceError: validExportManifest is not defined\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3042) validExportManifest is not defined","service":"user-service","stack":"ReferenceError: validExportManifest is not defined\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:3014) validExportManifest is not defined","service":"user-service","stack":"ReferenceError: validExportManifest is not defined\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3042) validExportManifest is not defined","service":"user-service","stack":"ReferenceError: validExportManifest is not defined\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) validExportManifest is not defined","service":"user-service","stack":"ReferenceError: validExportManifest is not defined\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3014) validExportManifest is not defined","service":"user-service","stack":"ReferenceError: validExportManifest is not defined\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:403:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3042) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:403:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:403:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3014) rej is not defined","service":"user-service","stack":"ReferenceError: rej is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:3005:29\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1990:7)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3042) rej is not defined","service":"user-service","stack":"ReferenceError: rej is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:3005:29\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1990:7)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3014) rej is not defined","service":"user-service","stack":"ReferenceError: rej is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:3005:29\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1990:7)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:403:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3042) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:403:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:403:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"error":"Export Manifest 1/25/20 Process wastewater  420000 Moisture 0 must be between 0.10 - 100.00.","level":"info","message":"(tsv/serverTsv.js:3042)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:406:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3042) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:406:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:3014) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:406:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3042) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:406:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3014) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:406:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) validImportAmount is not defined","service":"user-service","stack":"ReferenceError: validImportAmount is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:406:5)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) itemp is not defined","service":"user-service","stack":"ReferenceError: itemp is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:423:34)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3042) itemp is not defined","service":"user-service","stack":"ReferenceError: itemp is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:423:34)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) itemp is not defined","service":"user-service","stack":"ReferenceError: itemp is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:423:34)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3014) dls is not defined","service":"user-service","stack":"ReferenceError: dls is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:434:36)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3042) dls is not defined","service":"user-service","stack":"ReferenceError: dls is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:434:36)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3014) dls is not defined","service":"user-service","stack":"ReferenceError: dls is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:434:36)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2967:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) itemp is not defined","service":"user-service","stack":"ReferenceError: itemp is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:424:34)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:3042) itemp is not defined","service":"user-service","stack":"ReferenceError: itemp is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:424:34)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(tsv/serverTsv.js:52) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:53)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:2934) itemp is not defined","service":"user-service","stack":"ReferenceError: itemp is not defined\n    at exports.validExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/validate.js:424:34)\n    at Object.insertExportManifest (/Users/chrisandaya/ws_node/reportr/server/db/index.js:1988:21)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:2881:20\n    at processTicksAndRejections (node:internal/process/task_queues:96:5)"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:48)","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:37) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:38) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}

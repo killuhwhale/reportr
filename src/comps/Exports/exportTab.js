@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, AppBar, Tabs, Tab
+  Grid, Typography, IconButton, Tooltip
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -11,7 +11,6 @@ import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import LocalDrinkIcon from '@material-ui/icons/LocalDrink'
 import { VariableSizeList as List } from "react-window"
 
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import ActionCancelModal from '../Modals/actionCancelModal'
@@ -25,18 +24,18 @@ import UploadTSVModal from "../Modals/uploadTSVModal"
 
 import { get, post } from '../../utils/requests';
 import {
-  TSV_INFO, checkEmpty, readTSV, processTSVText, lazyGet, uploadTSVToDB, MANURE, WASTEWATER,
-  createDataFromManureExportTSVListRow, uploadExportTSV
+  TSV_INFO, checkEmpty, readTSV, uploadTSVToDB, MANURE, WASTEWATER,
+  uploadExportTSV
 } from '../../utils/TSV'
 import { getAvailableNutrientsG } from '../Dairy/pdfDB'
 import { formatFloat, groupBySortBy } from '../../utils/format'
+import { REPORTING_METHODS } from '../../utils/constants'
 
 
 
 
 
 // Might need to pull these up from here and appNutrientTab.js to homePage.js
-const REPORTING_METHODS = ['dry-weight', 'as-is']
 const MANIFEST_MATERIAL_TYPES = [
   "Dry manure: Separator solids",
   "Dry manure: Corral solids",

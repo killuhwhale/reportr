@@ -1,12 +1,13 @@
-import { get, post } from '../../utils/requests'
+import { get } from '../../utils/requests'
 import {
   toFloat, opArrayByPos, calcLbsFromTonsAsPercent,
-  MGMLToLBS, percentToLBSForGals, percentToLBS, calcLbsAsMGKG, calcLbsAsPercent
+  MGMLToLBS, percentToLBSForGals, percentToLBS, calcLbsAsPercent
 } from '../../utils/convertCalc'
 import { groupBySortBy, groupByKeys, naturalSort, naturalSortBy, nestedGroupBy } from '../../utils/format'
 import calculateHerdManNKPNaCl, { getReportingPeriodDays } from "../../utils/herdCalculation"
-import { NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES, WASTEWATER_MATERIAL_TYPES, FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
+import { NUTRIENT_IMPORT_MATERIAL_TYPES } from '../../utils/constants'
 import { BASE_URL } from "../../utils/environment"
+import { REPORTING_METHODS } from '../../utils/constants'
 export default function mTEA() { }
 
 const GALS_PER_ACREINCH = 27154.2856
@@ -305,7 +306,7 @@ const getAvailableNutrientsF = (dairy_id) => {
             calcLbsFromTonsAsPercent(el.n_con, el.moisture, el.amount_imported, el.method_of_reporting),
             calcLbsFromTonsAsPercent(el.p_con, el.moisture, el.amount_imported, el.method_of_reporting),
             calcLbsFromTonsAsPercent(el.k_con, el.moisture, el.amount_imported, el.method_of_reporting),
-            calcLbsFromTonsAsPercent(el.salt_con, el.moisture, el.amount_imported, 'as-is'),
+            calcLbsFromTonsAsPercent(el.salt_con, el.moisture, el.amount_imported, REPORTING_METHODS[1]),
           ])
             .reduce((a, c) => opArrayByPos(a, c))
           : [0, 0, 0, 0]

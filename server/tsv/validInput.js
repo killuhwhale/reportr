@@ -1,4 +1,12 @@
+const toFloat = (num) => {
+    const float = num && typeof (num) === typeof ('') && num.length > 0 ? parseFloat(num.replaceAll(',', '')) : typeof (num) === typeof (0) || typeof (num) === typeof (0.0) ? num : 0
 
+    if (isNaN(float)) {
+        throw `${float} is not a number`
+        // return 0.0001337
+    }
+    return float
+}
 // Single Field validation
 exports.validValue = (val) => {
     return toFloat(val) >= 0.00 && toFloat(val) <= 99999.99
@@ -56,7 +64,7 @@ exports.validOrganicMatter = (val) => {
 }
 
 exports.validImportAmount = (val) => {
-    return toFloat(val) >= 0.01 && toFloat(val) <= 100000000.00
+    return toFloat(val) >= 0.10 && toFloat(val) <= 100000000.00
 }
 
 exports.validImportCon = (val) => {
@@ -79,4 +87,19 @@ exports.validAmountLBSAcre = (val) => {
 // Harvest yield tons
 exports.validHarvestYield = (val) => {
     return toFloat(val) >= 0.01 && toFloat(val) <= 500000.00
+}
+
+exports.validLbsAcrePlowdownCredit = (val) => {
+    return toFloat(val) >= 0.00 && toFloat(val) <= 10000.00
+}
+
+
+exports.validStartEndDates = (period_start, period_end) => {
+    try {
+        const start = new Date(period_start).getTime()
+        const end = new Date(period_end).getTime()
+        return start < end
+    } catch (e) {
+        return false
+    }
 }
