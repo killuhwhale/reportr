@@ -1,12 +1,9 @@
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-
 import React, { Component } from 'react'
 import {
   Grid, Paper, Button, Typography, TextField
 } from '@material-ui/core'
 import { withTheme } from '@material-ui/core/styles'
 import { auth, UserAuth } from '../utils/users'
-
 
 class Login extends Component {
   constructor(props) {

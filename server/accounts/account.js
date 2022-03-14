@@ -28,7 +28,6 @@ module.exports = (app) => {
                 const hash = user.password
                 if (user && hash) {
                     bcrypt.compare(password, hash, function (err, valid) {
-                        console.log(err, email, password, hash, valid)
                         if (err) {
                             res.json({ "error": { msg: "Passowrd compare error", code: 'auth/compare-error' } })
                             return
@@ -63,14 +62,19 @@ module.exports = (app) => {
     })
 
 
+    // Allows Company admins to create user accounts for their company
     app.post(`/${api}/create`, verifyToken, (req, res) => {
 
         jwt.verify(req.token, JWT_SECRET_KEY, (err, decoded) => {
             if (!err) {
                 const { user } = decoded
-                if (user && user.account_type < 1) {
-                    const { user } = req.body
-                    const { email, password, username } = user
+                // Check that this request is by a company admin account, and the user company_id is same as the id in the request
+                if (user && user.account_type === 2) {
+                    const { new_user } = req.body
+                    const { email, password, username, company_id } = new_user
+                    if (company_id !== user.company_id) {
+                        return res.json({ error: 'Cannot create Account for another company.' })
+                    }
 
                     bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
                         db.insertAccount(email, hash, username, (err, result) => {
@@ -91,13 +95,24 @@ module.exports = (app) => {
 
     })
 
-    app.post(`/${api}/register`, (req, res) => {
-        const { email, password } = req.body
 
-        if (WHITE_LIST.indexOf(email.toLocaleLowerCase()) >= 0) {
+
+    // This will be for the dashboard only 
+    app.post(`/${api}/register`, verifyToken, (req, res) => {
+        const { email, password, company_id } = req.body
+        jwt.verify(req.token, JWT_SECRET_KEY, (err, decoded) => {
+            if (err) {
+                return res.json({ error: err })
+            }
+
+            const { user } = decoded
+            if (user.account_type !== 3) {
+                return res.json({ error: 'Permission denied.' })
+            }
+
             bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
                 if (!err) {
-                    db.insertOwnerAccount(email, hash, (dbErr, result) => {
+                    db.insertOwnerAccount(email, hash, company_id, (dbErr, result) => {
                         if (!dbErr) {
                             const user = result && result.rows.length > 0 ? result.rows[0] : {}
                             jwt.sign({ user }, JWT_SECRET_KEY, JWT_OPTIONS, (err, token) => {
@@ -116,21 +131,52 @@ module.exports = (app) => {
                     res.json({ "error": err })
                 }
             });
+        })
+    })
 
-        } else {
-            res.json({ "error": "Email not on the white list" })
+    app.post(`/${api}/registerAdmin`, (req, res) => {
+        const { email, password, SECRET } = req.body
+        if (SECRET !== "1337mostdope#@!123(*)89098&^%%^65blud") {
+            console.log("Denied Secret")
+            return res.json({ error: "Permission denied" })
         }
+
+        bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
+            if (!err) {
+                console.log("Inserting Admin Account")
+                db.insertAdminAccount(email, hash, (dbErr, result) => {
+                    console.log("After insert")
+                    if (!dbErr) {
+                        const user = result && result.rows.length > 0 ? result.rows[0] : {}
+                        jwt.sign({ user }, JWT_SECRET_KEY, JWT_OPTIONS, (err, token) => {
+                            res.json({ "data": { token, user } })
+                        })
+
+                    } else {
+                        if (dbErr.code === "23505") {
+                            res.json({ "error": "User with email already exists." })
+                        } else {
+                            res.json({ "error": dbErr.detail })
+                        }
+                    }
+                })
+            } else {
+                res.json({ "error": err })
+            }
+        });
+
+
 
     })
 
     app.post(`/${api}/currentUser`, verifyToken, (req, res) => {
+        // Based on current token, get the user information
         const { token } = req
         jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
             if (!err) {
                 const { user } = decoded
                 db.getAccount(user.pk, (dbErr, result) => {
                     if (!dbErr) {
-                        console.log(result.rows)
                         const data = result.rows.length > 0 ? result.rows[0] : {}
                         res.json({ 'data': data })
                     } else {
@@ -146,7 +192,7 @@ module.exports = (app) => {
 
     })
 
-
+    // Update account information
     app.post(`/${api}/update`, verifyToken, (req, res) => {
         const { token } = req
         const updatedUserInfo = req.body.user
@@ -156,7 +202,7 @@ module.exports = (app) => {
                 const { user } = decoded
                 console.log("Token user", user)
                 // If owner or user is updating their own username
-                if (updatedUserInfo.pk === user.pk || user.account_type < 1) {
+                if (updatedUserInfo.pk === user.pk || (user.account_type === 2 && user.company_id === updatedUserInfo.company_id)) {
                     const { username, email, pk } = updatedUserInfo
                     db.updateAccount([username, email, pk], (dbErr, result) => {
                         console.log("Done inserting")
@@ -221,7 +267,7 @@ module.exports = (app) => {
 
     app.post(`/${api}/changePassword`, verifyToken, (req, res) => {
         const { token } = req
-        const { currentPassword, newPassword, pk } = req.body.userPassword // account data to update password
+        const { currentPassword, newPassword, pk, company_id } = req.body.userPassword // account data to update password
 
 
         jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
@@ -259,7 +305,7 @@ module.exports = (app) => {
                         .catch(err => {
                             console.log(err)
                         })
-                } else if (userToken.account_type < 1) {
+                } else if ((userToken.account_type === 2 && userToken.company_id === company_id) || userToken.account_type === 3) {
                     // hash newPassword and update
                     // commonCode
                     _changePassword(newPassword, pk)
@@ -280,14 +326,17 @@ module.exports = (app) => {
     })
 
 
-    app.get(`/${api}/all`, verifyToken, (req, res) => {
+    app.get(`/${api}/all/:company_id`, verifyToken, (req, res) => {
         // Check authN first
         const token = req.token
+        const { company_id } = req.params
+
         jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
             if (!err) {
                 const { user } = decoded
-                if (user.account_type < 1) {
-                    db.getAccounts((err, result) => {
+                console.log(user)
+                if ((user.account_type === 2 && user.company_id === company_id) || user.account_type === 3) {
+                    db.getAccounts(company_id, (err, result) => {
                         if (!err) {
                             res.json({ "data": result.rows })
                         } else {
@@ -295,7 +344,7 @@ module.exports = (app) => {
                         }
                     })
                 } else {
-                    res.json({ "error": 'Permission denied.' })
+                    res.json({ "error": `Permission denied: all accounts for company id (${company_id}).` })
                 }
             } else {
                 res.json({ "error": 'Invalid Token' })
@@ -306,7 +355,7 @@ module.exports = (app) => {
 
     app.post(`/${api}/delete`, verifyToken, (req, res) => {
         const { token } = req
-        const pk = req.body.pk
+        const { pk, company_id } = req.body
         console.log("pk ", pk)
 
         jwt.verify(token, JWT_SECRET_KEY, (err, decoded) => {
@@ -314,7 +363,7 @@ module.exports = (app) => {
                 const { user } = decoded
                 console.log("Token user", user)
                 // If owner or user is updating their own username
-                if (pk === user.pk || user.account_type < 1) {
+                if (pk === user.pk || (user.account_type === 2 && user.company_id === company_id)) {
 
                     db.rmAccount(pk, (dbErr, result) => {
                         console.log("Done deleteing")

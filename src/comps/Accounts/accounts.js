@@ -92,10 +92,14 @@ class Accounts extends Component {
     }
 
     getAccounts() {
-        UserAuth.getAllAccounts()
+        const company_id = auth.currentUser.company_id
+        console.log("GEtting all accounts for comp id: ", company_id)
+        UserAuth.getAllAccounts(company_id)
             .then(res => {
+                console.log(res)
                 if (res.data) {
                     const { data: users } = res
+                    console.log("Settings users: ", users)
                     this.setState({ allAccounts: users, allAccountInvoked: true })
                 } else {
                     this.setState({ allAccountInvoked: true })
@@ -104,19 +108,6 @@ class Accounts extends Component {
             .catch(err => {
                 console.log(err)
                 this.setState({ allAccountInvoked: true })
-            })
-    }
-
-
-
-
-    registerUser(email, password) {
-        UserAuth.registerUser(email, password)
-            .then(res => {
-                console.log("Registed user!: ", res)
-            })
-            .catch(err => {
-                console.log(err)
             })
     }
 
@@ -204,7 +195,7 @@ class Accounts extends Component {
 
                                 <Grid item xs={1}></Grid>
                                 <Grid item container xs={10}>
-                                    {auth.currentUser && auth.currentUser.account_type === 0 ?
+                                    {auth.currentUser && (auth.currentUser.account_type === 2 || auth.currentUser.account_type === 3) ?
                                         <Fragment>
 
                                             <Grid item xs={12} align='right'>

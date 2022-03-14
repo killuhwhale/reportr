@@ -279,7 +279,7 @@ class AddDairyModal extends Component {
 	render() {
 		return (
 			<Modal
-				open={this.state.open}
+				open={this.props.open}
 				onClose={this.props.onClose}
 				aria-labelledby="simple-modal-title"
 				aria-describedby="simple-modal-description">

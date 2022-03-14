@@ -91,12 +91,75 @@ app.post("/api/tsv/update", (req, res) => {
   })
 });
 
+
+app.get("/api/companies", (req, res) => {
+  db.getCompanies(null,
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      res.json({ "error": "Get comapnies unsuccessful", err: err });
+    })
+});
+app.get("/api/companies/:pk", (req, res) => {
+  db.getCompany(req.params.pk,
+    (err, result) => {
+      if (!err) {
+        res.json(result.rows)
+        return;
+      }
+      res.json({ "error": "Get company unsuccessful", err: err });
+    })
+});
+app.post("/api/companies/create", (req, res) => {
+  const {
+    title
+  } = req.body
+  db.insertCompany([title], (err, result) => {
+    if (!err) {
+      res.json({ "data": "Inserted company successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "error": "Inserted company unsuccessful", code: err.code });
+  })
+});
+app.post("/api/companies/update", (req, res) => {
+  const {
+    title, pk
+  } = req.body
+
+  db.updateCompany([
+    title, pk
+  ], (err, result) => {
+
+    if (!err) {
+      res.json(result);
+      return;
+    }
+    console.log(err)
+    res.json({ "error": "Updated company unsuccessful" });
+  })
+});
+
+app.post("/api/companies/delete", (req, res) => {
+  db.rmCompany(req.body.pk, (err, result) => {
+
+    if (!err) {
+      res.json({ "error": "Deleted company successfully" });
+      return;
+    }
+    console.log(err)
+    res.json({ "error": "Deleted company unsuccessful" });
+  })
+});
+
 // API
+app.get("/api/dairy_base/:company_id", (req, res) => {
+  const { company_id } = req.params
 
-
-app.get("/api/dairy_base", (req, res) => {
-  console.log("Getting db")
-  db.getDairyBase(null,
+  db.getDairyBase(company_id,
     (err, result) => {
       if (!err) {
         res.json(result.rows)
@@ -105,14 +168,12 @@ app.get("/api/dairy_base", (req, res) => {
       res.json({ "error": "Get dairy_base unsuccessful", err: err });
     })
 });
-
-
 app.post("/api/dairy_base/create", (req, res) => {
   const {
-    title
+    title,
+    companyID
   } = req.body
-  db.insertDairyBase([title], (err, result) => {
-
+  db.insertDairyBase([companyID, title], (err, result) => {
     if (!err) {
       res.json({ "data": "Inserted dairy_base successfully" });
       return;
@@ -128,7 +189,7 @@ app.post("/api/dairy_base/update", (req, res) => {
     title, pk
   } = req.body
 
-  db.updateDairy([
+  db.updateDairyBase([
     title, pk
   ], (err, result) => {
 
@@ -140,7 +201,6 @@ app.post("/api/dairy_base/update", (req, res) => {
     res.json({ "error": "Updated dairy_base unsuccessful" });
   })
 });
-
 app.post("/api/dairy_base/delete", (req, res) => {
   console.log("Deleting.... dairy_base", req.body.pk)
   db.rmDairyBase(req.body.pk, (err, result) => {

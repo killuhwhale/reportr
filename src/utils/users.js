@@ -85,9 +85,33 @@ class UserAuth {
         return this.currentUser ? this.currentUser : {}
     }
 
-    registerUser(email, password) {
+
+    // For Dev use, create account for a company
+    registerUser(email, password, company_id) {
         return new Promise((resolve, reject) => {
-            post(`${BASE_URL}/accounts/register`, { email, password })
+            post(`${BASE_URL}/accounts/register`, { email, password, company_id })
+                .then(res => {
+                    if (res.data) {
+                        const { data: { user, token } } = res
+                        this.setUserAndToken(user, token)
+                        resolve(user)
+
+                    } else {
+                        reject(res.error)
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject(err)
+                })
+        })
+    }
+
+
+    // Register Site Admin. For Dev use
+    registerAdminUser(email, password) {
+        return new Promise((resolve, reject) => {
+            post(`${BASE_URL}/accounts/registerAdmin`, { email, password, SECRET: "1337mostdope#@!123(*)89098&^%%^65blud" })
                 .then(res => {
                     if (res.data) {
                         const { data: { user, token } } = res
@@ -181,9 +205,9 @@ class UserAuth {
         })
     }
 
-    static getAllAccounts() {
+    static getAllAccounts(companyID) {
         return new Promise((resolve, reject) => {
-            get(`${BASE_URL}/accounts/all`)
+            get(`${BASE_URL}/accounts/all/${companyID}`)
                 .then(res => {
                     resolve(res)
                 })
@@ -204,5 +228,4 @@ class UserAuth {
 }
 
 const auth = new UserAuth()
-console.log("AUTHN CREATED!")
 export { auth, UserAuth }

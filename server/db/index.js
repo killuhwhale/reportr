@@ -45,11 +45,17 @@ logger.info(`Connected to db: ${TESTING ? "Test" : isProd ? "Ocean" : "Dev"} db.
 
 
 
-
+const insertCompany = (values, callback) => {
+  return pool.query(
+    format("INSERT INTO companies(title) VALUES (%L)", values),
+    [],
+    callback
+  )
+}
 
 const insertDairyBase = (values, callback) => {
   return pool.query(
-    format("INSERT INTO dairy_base(title) VALUES (%L)", values),
+    format("INSERT INTO dairy_base(company_id, title) VALUES (%L)", values),
     [],
     callback
   )
@@ -105,16 +111,46 @@ module.exports = {
   insert: (stmt, values, callback) => {
     return pool.query(format(stmt, values), [], callback)
   },
-
-  getDairyBase: (dairy_id, callback) => {
+  getCompanies: (_, callback) => {
     return pool.query(
-      format("SELECT * FROM dairy_base", dairy_id),
+      "SELECT * FROM companies",
       [],
       callback
     )
   },
+  getCompany: (company_id, callback) => {
+    return pool.query(
+      "SELECT * FROM companies where pk=$L",
+      [company_id],
+      callback
+    )
+  },
+  insertCompany,
+  updateCompany: (values, callback) => {
+    return pool.query(`UPDATE companies SET
+    title = $1
+    WHERE pk=$2 RETURNING *`,
+      values,
+      callback
+    )
+  },
+  rmCompany: (id, callback) => {
+    return pool.query(
+      format("DELETE FROM companies where pk = %L", id),
+      [],
+      callback
+    )
+  },
+
+  getDairyBase: (company_id, callback) => {
+    return pool.query(
+      "SELECT * FROM dairy_base where company_id=$1",
+      [company_id],
+      callback
+    )
+  },
   insertDairyBase,
-  updateDairy: (values, callback) => {
+  updateDairyBase: (values, callback) => {
     return pool.query(`UPDATE dairy_base SET
     title = $1
     WHERE pk=$2 RETURNING *`,

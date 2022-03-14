@@ -20,6 +20,7 @@ import lightTheme from "./css/lightTheme"
 import Login from "./pages/login"
 import HomePage from "./pages/homePage"
 import TSVPrint from "./pages/tsvPrint"
+import AdminDashboard from "./pages/adminDashboard"
 import { BASE_URL } from "./utils/environment"
 import { TSV_INFO } from "./utils/TSV"
 import { auth } from './utils/users'
@@ -231,6 +232,12 @@ export default class App extends React.Component {
                   }
                   }
                 />
+                <Route path="/adminDashboard">
+                  <AdminDashboard
+                    onAlert={this.onAlert.bind(this)}
+                  />
+                </Route>
+
               </Switch>
             </MuiPickersUtilsProvider>
             :

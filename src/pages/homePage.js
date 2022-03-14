@@ -32,6 +32,7 @@ class HomePage extends Component {
     this.state = {
       user: props.user,
       baseDairies: [],
+      checkedForBaseDairies: false,
       baseDairiesIdx: 0,
       dairies: [],
       dairyIdx: 0, // current dairy being edited      
@@ -62,18 +63,20 @@ class HomePage extends Component {
     this.getBaseDairies()
   }
 
+
   getBaseDairies() {
-    console.log(this.props.BASE_URL)
-    get(`${this.props.BASE_URL}/api/dairy_base`)
+
+    const companyID = auth.currentUser.company_id
+    get(`${this.props.BASE_URL}/api/dairy_base/${companyID}`)
       .then(res => {
         const dairyBase = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
         if (Object.keys(dairyBase).length > 0) {
           let baseDairiesIdx = this.state.baseDairiesIdx < res.length ? this.state.baseDairiesIdx : 0
-          this.setState({ baseDairies: res, baseDairiesIdx: baseDairiesIdx, dairyBase }, () => {
+          this.setState({ baseDairies: res, checkedForBaseDairies: true, baseDairiesIdx: baseDairiesIdx, dairyBase }, () => {
             this.getDairies()
           })
         } else {
-          this.setState({ baseDairies: res, baseDairiesIdx: 0, dairyBase })
+          this.setState({ baseDairies: res, checkedForBaseDairies: true, baseDairiesIdx: 0, dairyBase })
         }
       })
       .catch(err => {

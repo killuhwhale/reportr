@@ -31,7 +31,6 @@
     "start": "npm run start-client",
     "build": "react-scripts build",
     "test": "NODE_ENV=test react-scripts test",
-    "pretest": "NODE_ENV=test nodemon server/index.js &",
     "resetDB": "echo 'Resetting DB...'",
     "eject": "react-scripts eject"
   },

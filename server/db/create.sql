@@ -10,13 +10,21 @@
 --     END LOOP;
 -- END $$;
 
-
+CREATE TABLE IF NOT EXISTS companies(
+  pk SERIAL PRIMARY KEY,
+  title VARCHAR(100) NOT NULL,
+  unique(title)
+);
 
 -- Query 
 CREATE TABLE IF NOT EXISTS dairy_base(
-  pk SERIAL PRIMARY KEY,  
+  pk SERIAL PRIMARY KEY,
+  company_id INTEGER NOT NULl,
   title VARCHAR(100) NOT NULL,
-  UNIQUE(title)
+  UNIQUE(title),
+  CONSTRAINT fk_company
+    FOREIGN KEY(company_id)
+    REFERENCES companies(pk)
 );
 
 CREATE TABLE IF NOT EXISTS dairies(

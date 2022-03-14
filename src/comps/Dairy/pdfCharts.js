@@ -27,7 +27,6 @@ Chart.register({
     // render the value of the chart above the bar
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
-    console.log(chartInstance)
     chartInstance.data.datasets.forEach((dataset, di) => {
       for (var i = 0; i < dataset.data.length; i++) {
         // rewrite text if it is too close to edge for hoizontal bar chart

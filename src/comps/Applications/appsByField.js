@@ -333,8 +333,6 @@ class AppsByField extends Component {
             this.state.viewPlantDateKey !== prevState.viewPlantDateKey) {
             this.updateChart()
         }
-        console.log("Theme change")
-
     }
 
     async getNutrientBudget() {

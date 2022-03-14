@@ -13,8 +13,6 @@ PSQL
   DB: reportrr
   user: admin
   pass: mostdope
-
-
   // sudo kill -9 $(sudo lsof -t -i:3001)
   
 
@@ -24,11 +22,6 @@ ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
       - Sheet: N con 47.2 ec 1,110.0 Tds 575 , Merced app: N con 48.50 ec 1,660.0 Tds 10
 
     - This was making me think I had a bug, but spreadsheet data and data in merced app don't match 100% :(
-
-
-
-TODO
-
 
 Account Management for Owners
  - Login
@@ -44,17 +37,6 @@ Account Management for Owners
     - Password, email, username
   - Delete 
 
-
-
-  - TODO()
-    - Send Emails for confirmation and passwords
-
-  - Server side upload to db
-    - Send .xlsx to server to process.
-  - Testing
-    - Accounts users.js
-
-
 Owner and User
   - Change Password
 
@@ -64,22 +46,133 @@ Owner and User
   - Delete Accounts
   - Reset Passwords for accounts
 
+  - TODO()
+    - Send Emails for confirmation and passwords
+  
+  - Testing
+    - Accounts users.js
 
 
-Write down required columns in sheet.
 
 Github is private, the only passwords visible in code is for the DB and that is in a .yaml file uploaded directly to Digital Ocean
   - Might not need env vars.
-  - add baseURL to process env vars 
+
+
+Testing:
+  App 
+    Tests upload of XLXS and the calculations for each section of the annual report. 
+  
+  Test Command
+    npm test
+
+
+Deployment:
+  Backend:
+    github -> digital ocean
+  
+  Front End:
+    npm build -> Firebase deploy
+
+  Deploy command
+    npm build; git add .; git commit -m 'deploy'; git push; firebase deploy;
+
+
+
+Todo:
+  
+  Lock each companies data down.
+  When a request is issued, check if the user is apart of the company.
+  (Curently, the )
+
+
+  Accounts Dashboard
+    - Update dashboard to make sure it works with the new company_id
+      - Check labels for each account
+      - Check can add new accounts
+      - Check to update each new account....
+
+
+
+  #Admin Dashboard
+    Ensure only accounts with lvl 3 can access that page
+
+    List of Companies
+      - Delete, update title
+    
+    - Company Management Modal
+      - Account list
+        - Delete, change password, update username
+    
+  
+
+
+Goals:
+
+  Caching or State Management
+    - Avoid multiple requests each time user goes to a new tab
+    - Redux to store responses and check there first
+    - Find another caching solution
+
+  Add Company entity
+    This will make it possible for this to be a software as a service to multiple companies.
+    - Every Dairy Base should belong to a company and subsequently each dairy
+  
+  Permissions
+    - Allow Accounts access data from a single company
+  
+  Setup Testing Execution before commiting to Github
+ 
+  Dockerize React and Express Apps
+ 
+  Micro Service-ize
+    - Accounts
+    - TSV
+    - Dairy, and other info
+ 
+
+
+
+Current Flow
+- Register User from a pre-defined set of emails
+- Once there is a user get all dairies
+
+
+New Flow
+- Register User from a pre-defined set of emails
+  
+- Get all Dairies based on Current Accounts token info
+  - Store the company ID in the token
+
+
+
+
+
+
 
 
 Problems:   
 
-Herds
+  Permission, ensure only  authenticated users can get data.
+  How should I ensure a certain user can view certain things in database
+  
+    1. dairy_id is typically tied to each entity
+      - accounts and dairy ids can be associated
+        - token can encode which dairy_ids the account can see
+
+    2. On each request, lookup in DB which dairy_id the account can see
+
+
+  Testing
+    - Server side
+      Need to test:
+        Accounts
+    - Client Side
+      ???
+
 
   - Upload TSV process 
     - Ensure there are rows of data bfore uploading.
-    - Need to avoid updating TSV file in DB with an empty doc....
+    - Need to avoid updating TSV file in DB with an empty doc...
 
   - Dates are slightly off due to timezone.... (I think)
     - Creating a date inititally for a dairy, days should be jan 1st to dec 31st 
@@ -87,17 +180,7 @@ Herds
       
   - Delete Dairy base
     - No way to delete dairy base
-
-  - Setup Testing with Docker Containers.
-    
-  - (BUG) No validation checks
-    - All Spreadsheets need Numeric Data Validation. Could add to Spreadsheet but should also be in the code.
-      - Check website by entering wrong info and implement it.
-      - Total kn must be higher than combined nitrogen nh4 nh3 no2,
-      - Limits betweem 0-999,999.99
-      - TDS 1-20,0000
-      - EC 0 - 99,9999.99 (something like this)
-      - Percentages are 0-100
+  
 
 ##### Rosies website notes.
 Upload their documents
