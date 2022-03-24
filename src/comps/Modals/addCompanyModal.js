@@ -26,7 +26,7 @@ class AddCompanyModal extends Component {
             return
         }
 
-        const res = await post(`${BASE_URL}/api/companies/create`, { title: companyTitle })
+        const res = await post(`${BASE_URL}/accounts/companies/create`, { title: companyTitle })
 
         if (res.error) {
             this.props.onAlert('Company not created!', 'error')

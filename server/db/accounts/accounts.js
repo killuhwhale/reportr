@@ -1,3 +1,5 @@
+const format = require('pg-format');
+const { ROLES } = require('../../constants')
 const { pool } = require('../index')
 const OWNER_ACCT = 2
 const ADMIN_ACCT = 3
@@ -34,32 +36,32 @@ module.exports = {
             callback
         )
     },
-    insertAccount: (email, password, username, company_id, callback) => {
+    insertAccount: (email, password, username, account_type, company_id, callback) => {
         return pool.query(
-            "INSERT INTO accounts(email, password, username, company_id) VALUES ($1, $2, $3, $4) RETURNING pk, username, email, account_type, company_id",
-            [email, password, username, company_id],
+            "INSERT INTO accounts(email, password, username, account_type, company_id) VALUES ($1, $2, $3, $4, $5) RETURNING pk, username, email, account_type, company_id",
+            [email, password, username, account_type, company_id],
             callback
         )
     },
     insertOwnerAccount: (email, password, company_id, callback) => {
         return pool.query(
             "INSERT INTO accounts(email, password, account_type, company_id) VALUES ($1, $2, $3, $4) RETURNING pk, username, email, account_type, company_id",
-            [email, password, OWNER_ACCT, company_id],
+            [email, password, ROLES.ADMIN, company_id],
             callback
         )
     },
     insertAdminAccount: (email, password, callback) => {
         return pool.query(
             "INSERT INTO accounts(email, password, account_type, company_id) VALUES ($1, $2, $3, $4) RETURNING pk, username, email, account_type, company_id",
-            [email, password, ADMIN_ACCT, 1],
+            [email, password, ROLES.HACKER, 1],
             callback
         )
     },
     updateAccount: (values, callback) => {
 
         return pool.query(`UPDATE accounts SET
-        username = $1, email = $2
-        WHERE pk=$3 RETURNING pk, username, email, account_type`,
+        username = $1, email = $2, account_type = $3
+        WHERE pk=$4 RETURNING pk, username, email, account_type`,
             values,
             callback
         )
@@ -80,4 +82,54 @@ module.exports = {
             callback
         )
     },
+
+
+
+    getCompanies: (_, callback) => {
+        return pool.query(
+            "SELECT title, pk FROM companies",
+            [],
+            callback
+        )
+    },
+
+    getCompany: (company_id, callback) => {
+        return pool.query(
+            "SELECT title, pk FROM companies where pk=$1",
+            [company_id],
+            callback
+        )
+    },
+    getCompanySecret: (company_id, callback) => {
+        return pool.query(
+            "SELECT company_secret FROM companies where pk=$1",
+            [company_id],
+            callback
+        )
+    },
+    insertCompany: (values, callback) => {
+        return pool.query(
+            format("INSERT INTO companies(title, company_secret) VALUES (%L)", values),
+            [],
+            callback
+        )
+    },
+    updateCompany: (values, callback) => {
+        return pool.query(`UPDATE companies SET
+        title = $1
+        WHERE pk=$2 RETURNING *`,
+            values,
+            callback
+        )
+    },
+    rmCompany: (id, callback) => {
+        return pool.query(
+            format("DELETE FROM companies where pk = %L", id),
+            [],
+            callback
+        )
+    },
+
+
+
 }

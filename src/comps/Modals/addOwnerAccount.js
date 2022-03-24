@@ -5,6 +5,7 @@ import { withTheme } from '@material-ui/core/styles';
 import { auth } from '../../utils/users'
 
 
+// Reportrr Management
 class AddOwnerAccount extends Component {
 
     constructor(props) {
@@ -106,32 +107,6 @@ class AddOwnerAccount extends Component {
                                     />
                                 </Grid>
 
-
-                                {
-                                    /* <Grid item xs={12}>
-                                        <TextField select
-                                            name='companyID'
-                                            value={this.state.companyID}
-                                            onChange={this.onChange.bind(this)}
-                                            label="Company"
-                                            style={{ width: "75%" }}
-                                            SelectProps={{
-                                                native: true,
-                                            }}
-                                        >
-                                            {
-                                                this.state.companies.length > 0 ?
-                                                    this.state.companies.map((company, i) => {
-                                                        return (
-                                                            <option key={`companyKey${i}`} value={company.pk}>{`${company.title} (${company.pk})`}</option>
-                                                        )
-                                                    })
-                                                    :
-                                                    <option value={-1}>No Companies</option>
-                                            }
-                                        </TextField>
-                                    </Grid> */
-                                }
                                 <Grid item xs={6}>
                                     <Button
                                         variant="outlined"

@@ -10,6 +10,7 @@ import AddCompanyModal from '../comps/Modals/addCompanyModal'
 import CompanyManagementModal from '../comps/Modals/companyManagementModal'
 import { get } from '../utils/requests'
 import { BASE_URL } from '../utils/environment'
+import { ROLES } from '../utils/constants'
 
 
 /**
@@ -69,12 +70,12 @@ class AdminDashboard extends Component {
 
     async getAllCompanies() {
         try {
-            const res = await get(`${BASE_URL}/api/companies`)
+            const res = await get(`${BASE_URL}/accounts/companies`)
             if (res.error) {
                 console.log(res)
                 return
             }
-
+            console.log(res)
             this.setState({ companies: res })
         } catch (e) {
             console.log(e)
@@ -86,50 +87,59 @@ class AdminDashboard extends Component {
 
         return (
             <Grid item container xs={12} align="center" >
-                <Grid item xs={12} >
-                    <Typography variant='h2'>Admin Dashboard</Typography>
-                </Grid>
+                {
+                    auth.currentUser.account_type === ROLES.HACKER ?
+                        <Fragment>
 
-                <Grid item xs={12} >
-                    <div style={{ display: 'inline-flex' }}>
-                        <Typography variant='h4'>Companies </Typography>
-                        <Tooltip title='Add Company'>
-                            <IconButton onClick={() => this.toggleShowAddCompanyModal(true)}>
-                                <AddCircleOutline />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                </Grid>
+                            <Grid item xs={12} >
+                                <Typography variant='h2'>Admin Dashboard</Typography>
+                            </Grid>
 
-                <Grid item xs={12} >
-                    {this.state.companies.length > 0 ?
-                        this.state.companies.map((company, i) => {
-                            return <CompanyRow key={`company_row_${i}`}
-                                company={company}
-                                showCompanyManagementModal={this.showCompanyManagementModal.bind(this)}
+                            <Grid item xs={12} >
+                                <div style={{ display: 'inline-flex' }}>
+                                    <Typography variant='h4'>Companies </Typography>
+                                    <Tooltip title='Add Company'>
+                                        <IconButton onClick={() => this.toggleShowAddCompanyModal(true)}>
+                                            <AddCircleOutline />
+                                        </IconButton>
+                                    </Tooltip>
+                                </div>
+                            </Grid>
+
+                            <Grid item xs={12} >
+                                {this.state.companies.length > 0 ?
+                                    this.state.companies.map((company, i) => {
+                                        return <CompanyRow key={`company_row_${i}`}
+                                            company={company}
+                                            showCompanyManagementModal={this.showCompanyManagementModal.bind(this)}
+                                        />
+                                    })
+                                    :
+                                    <Fragment></Fragment>
+                                }
+                            </Grid>
+
+                            <AddCompanyModal
+                                open={this.state.showAddCompanyModal}
+                                onClose={() => this.toggleShowAddCompanyModal(false)}
+                                modalText='Add Company'
+                                actionText='Add'
+                                cancelText='Cancel'
+                                onAlert={this.props.onAlert}
                             />
-                        })
+
+                            <CompanyManagementModal
+                                open={this.state.showCompanyManagementModal}
+                                onClose={() => this.toggleShowCompanyManagementModal(false)}
+                                managementCompanyID={this.state.managementCompanyID}
+                                cancelText='Cancel'
+                                onAlert={this.props.onAlert}
+                            />
+                        </Fragment>
+
                         :
                         <Fragment></Fragment>
-                    }
-                </Grid>
-
-                <AddCompanyModal
-                    open={this.state.showAddCompanyModal}
-                    onClose={() => this.toggleShowAddCompanyModal(false)}
-                    modalText='Add Company'
-                    actionText='Add'
-                    cancelText='Cancel'
-                    onAlert={this.props.onAlert}
-                />
-
-                <CompanyManagementModal
-                    open={this.state.showCompanyManagementModal}
-                    onClose={() => this.toggleShowCompanyManagementModal(false)}
-                    managementCompanyID={this.state.managementCompanyID}
-                    cancelText='Cancel'
-                    onAlert={this.props.onAlert}
-                />
+                }
 
             </Grid>
         )

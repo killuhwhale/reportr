@@ -149,7 +149,7 @@ class DairyTab extends Component {
   }
   deleteAllFromTable() {
 
-    post(`${this.props.BASE_URL}/api/dairies/delete`, { pk: this.state.dairy.pk })
+    post(`${this.props.BASE_URL}/api/dairies/delete`, { dairy_id: this.state.dairy.pk })
       .then(res => {
         this.getAllFields()
         this.getAllParcels()

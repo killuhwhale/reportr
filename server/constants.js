@@ -1,3 +1,11 @@
+exports.ROLES = {
+    READ: 1,
+    WRITE: 2,
+    DELETE: 3,
+    ADMIN: 4,
+    HACKER: 5
+}
+
 exports.REPORTING_METHODS = ['dry-weight', 'as-is']
 
 exports.NUTRIENT_IMPORT_MATERIAL_TYPES = [

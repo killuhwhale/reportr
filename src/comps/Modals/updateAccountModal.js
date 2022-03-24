@@ -3,17 +3,20 @@ import { withTheme } from "@material-ui/core/styles"
 import { Component, Fragment } from "react"
 import { auth, UserAuth } from '../../utils/users'
 import CancelIcon from '@material-ui/icons/Cancel';
+import { ROLES } from "../../utils/constants";
 
 class UpdateAccountModal extends Component {
     constructor(props) {
         super(props)
+        console.log('this.state.accountInfo.account_type', props.updateAccount)
         this.state = {
             emailError: '',
             usernameError: '',
             passwordError: '',
             accountInfo: {
                 email: props.updateAccount.email ?? '',
-                username: props.updateAccount.username ?? ''
+                username: props.updateAccount.username ?? '',
+                account_type: props.updateAccount.account_type ?? 1,
             }
 
         }
@@ -24,24 +27,24 @@ class UpdateAccountModal extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.props.updateAccount !== prevProps.updateAccount) {
-            const { username, email } = this.props.updateAccount
-            this.setState({ accountInfo: { email, username } })
+            const { username, email, account_type } = this.props.updateAccount
+            this.setState({ accountInfo: { email, username, account_type } })
         }
     }
 
     updateAccount() {
-        const { email, username } = this.state.accountInfo
-        const { email: oldEmail, username: oldUsername, pk } = this.props.updateAccount
+        const { email, username, account_type } = this.state.accountInfo
+        const { email: oldEmail, username: oldUsername, pk, account_type: old_account_type } = this.props.updateAccount
 
         const user = {
-            username, email, pk
+            username, email, pk, account_type, company_id: auth.currentUser.company_id
         }
 
-        if (email !== oldEmail || username !== oldUsername) {
+        if (email !== oldEmail || username !== oldUsername || account_type !== old_account_type) {
             console.log("Updating ", user)
             UserAuth.updateAccount(user)
                 .then(res => {
-                    if (auth.currentUser.account_type === 0) {
+                    if (auth.currentUser.account_type === ROLES.ADMIN) {
                         this.props.getAccounts()
                     } else {
                         auth.getUserByToken()
@@ -80,6 +83,7 @@ class UpdateAccountModal extends Component {
     }
 
     render() {
+        console.log('this.state.accountInfo.account_type', this.state.accountInfo.account_type)
         return (
             <Modal open={this.props.open} onClose={this.props.onClose}
                 aria-labelledby="simple-modal-title"
@@ -103,6 +107,7 @@ class UpdateAccountModal extends Component {
                                         helperText={this.state.usernameError}
                                         name='username'
                                         type='text'
+                                        style={{ width: '50%', marginTop: '12px' }}
                                         onChange={this.onChange.bind(this)}
                                         InputProps={{
                                             endAdornment: (
@@ -128,6 +133,7 @@ class UpdateAccountModal extends Component {
                                         helperText={this.state.emailError}
                                         name='email'
                                         type='text'
+                                        style={{ width: '50%', marginTop: '12px' }}
                                         onChange={this.onChange.bind(this)}
                                         InputProps={{
                                             endAdornment: (
@@ -143,6 +149,28 @@ class UpdateAccountModal extends Component {
                                             ),
                                         }}
                                     />
+                                </Grid>
+
+                                <Grid item xs={12}>
+                                    <TextField select
+                                        label='Access Level'
+                                        // value={this.state.accountInfo.account_type}
+                                        value={this.state.accountInfo.account_type ?? 1}
+                                        name='account_type'
+                                        type='text'
+                                        onChange={this.onChange.bind(this)}
+                                        style={{ width: '50%', marginTop: '12px' }}
+                                    >
+                                        {
+                                            Object.keys(ROLES).filter(role => ROLES[role] <= ROLES.ADMIN).map(role => {
+                                                return (
+                                                    <option value={ROLES[role]} key={`key_${role}`}>
+                                                        {role}
+                                                    </option>
+                                                )
+                                            })
+                                        }
+                                    </TextField>
                                 </Grid>
 
                                 <Grid item container xs={12} style={{ marginTop: '32px' }}>

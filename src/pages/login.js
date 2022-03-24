@@ -117,7 +117,8 @@ class Login extends Component {
     } else if (!email) {
       this.props.onAlert("Missing E-mail", "error")
     } else if (pass1 === pass2 && email) {
-      auth.registerUser(email, pass1)
+
+      auth.registerAdminUser(email, pass1)
         .then(user => {
           console.log(user)
           this.props.onLogin(user)

@@ -6,11 +6,7 @@ const {
 } = require('./serverTsvTemplates')
 const db = require('../db/index')
 const logger = require('../logs/logging')
-const { validValue, validDetectLimit, validValueLarge, validDetectLimitLarge,
-    validTDS, validTDSDL, validTFS, validTFSDL, validMoisture, validValueAboveDL,
-    validTotalN, validPH, validOrganicMatter, validImportAmount, validImportCon,
-    validAmountHauled,
-} = require('./validInput')
+const { verifyToken, verifyUserFromCompanyByDairyID } = require('../utils/middleware')
 
 const { REPORTING_METHODS } = require('../constants')
 const api = 'tsv'
@@ -29,22 +25,12 @@ const DISCHARGE = 'Discharges'
 const MANURE = 'SM Exports'
 const WASTEWATER = 'WW Exports'
 
-const verifyToken = (req, res, next) => {
-    const bearerToken = req.headers['authorization']
-    if (bearerToken) {
-        const token = bearerToken.split(" ")[1]
-        req.token = token
-        next()
-    } else {
-        res.sendStatus(403)
-    }
 
-}
 module.exports = (app) => {
-    app.post(`/${api}/uploadXLSX/:dairy_id`, verifyToken, (req, res) => {
+    app.post(`/${api}/uploadXLSX/:dairy_id`, verifyToken, verifyUserFromCompanyByDairyID, (req, res) => {
         const { dairy_id } = req.params
-        const workbook = XLSX.read(req.body)
 
+        const workbook = XLSX.read(req.body)
         uploadXLSX(workbook, dairy_id)
             .then(result => {
                 logger.info(result)

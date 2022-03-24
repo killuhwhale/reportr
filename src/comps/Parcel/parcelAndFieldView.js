@@ -84,6 +84,7 @@ class ParcelView extends Component {
         this.props.onAlert('Failed to update.', 'error')
       })
   }
+
   onFieldUpdate(field_pk, field) {
     let fields = this.state.curUpdateFields
     fields[field.pk] = field
@@ -92,6 +93,7 @@ class ParcelView extends Component {
       curUpdateFields: fields
     })
   }
+
   updateFields() {
     console.log("Send Fields for Update")
     console.log(this.state.curUpdateFields)
@@ -100,7 +102,7 @@ class ParcelView extends Component {
       updates.push(post(
         `${this.props.BASE_URL}/api/fields/update`,
         {
-          data: this.state.curUpdateFields[field_pk]
+          data: { ...this.state.curUpdateFields[field_pk], dairy_id: this.state.dairy.pk }
         }
       ))
     })
@@ -181,11 +183,22 @@ class ParcelView extends Component {
         this.toggleDeleteParcelModal(false)
       })
   }
+
   deleteField() {
-    post(`${this.props.BASE_URL}/api/fields/delete`, { pk: this.state.curDelField.pk })
+    post(`${this.props.BASE_URL}/api/fields/delete`, { pk: this.state.curDelField.pk, dairy_id: this.state.dairy.pk })
       .then(res => {
         console.log(res)
-        this.props.onFieldDelete()
+        if (res.error) {
+          this.props.onAlert('Failed to delete!', 'error')
+        } else {
+          this.props.onAlert('Deleted!', 'success')
+          this.props.onFieldDelete()
+        }
+        this.toggleDeleteFieldModal(false)
+      })
+      .catch(err => {
+        console.log("error: ", err)
+        this.props.onAlert('Failed to delete!', 'error')
         this.toggleDeleteFieldModal(false)
       })
   }

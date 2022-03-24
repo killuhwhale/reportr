@@ -12,16 +12,18 @@ import UpdateAccountModal from '../Modals/updateAccountModal'
 import UpdateIcon from '@material-ui/icons/Update';
 import ChangePasswordModal from '../Modals/changePasswordModal'
 import ActionCancelModal from '../Modals/actionCancelModal'
+import { ROLES } from "../../utils/constants";
 
 
 const AccountRow = (props) => {
     const account = props.account
+    const account_type = parseInt(account.account_type)
     return (
         <Grid item xs={3} className='showOnHoverParent'>
             <Card variant="outlined">
                 <CardContent>
                     <Grid item xs={12} align='right'>
-                        <Typography variant='caption'>{account.account_type === 0 ? "Owner" : "Emp"} </Typography>
+                        <Typography variant='caption'>{account_type >= ROLES.ADMIN ? "Owner" : "Emp"} {account_type >= ROLES.ADMIN ? "" : account_type == ROLES.DELETE ? "(Del)" : account_type === ROLES.WRITE ? "(Write)" : "(Read)"}  </Typography>
                     </Grid>
                     <Grid item xs={12} align='center'>
                         <Typography variant='caption'>{account.email} </Typography>
@@ -131,7 +133,7 @@ class Accounts extends Component {
 
     deleteAccount() {
         const { email, pk } = this.state.deletedAccount
-        UserAuth.deleteAccount(pk)
+        UserAuth.deleteAccount(pk, auth.currentUser.company_id)
             .then(res => {
                 console.log("Account deleted ", res)
                 this.getAccounts()
@@ -195,7 +197,7 @@ class Accounts extends Component {
 
                                 <Grid item xs={1}></Grid>
                                 <Grid item container xs={10}>
-                                    {auth.currentUser && (auth.currentUser.account_type === 2 || auth.currentUser.account_type === 3) ?
+                                    {auth.currentUser && (auth.currentUser.account_type === ROLES.ADMIN || auth.currentUser.account_type === ROLES.HACKER) ?
                                         <Fragment>
 
                                             <Grid item xs={12} align='right'>

@@ -80,18 +80,27 @@ Deployment:
 
 Todo:
   
+  - Ensure that Owner accounts cant change their account type, this would result in losing access to company.
+   
+
   Lock each companies data down.
   When a request is issued, check if the user is apart of the company.
-  (Curently, the )
 
+  - Check if user is from company
+    - Update and Delete is given by pk
+      - 1. Add Dairy_id to query and then use existing function
+        - Pro: Logic is already in place
+        - Con: Need to go add dairyId to each request
 
-  Accounts Dashboard
-    - Update dashboard to make sure it works with the new company_id
-      - Check labels for each account
-      - Check can add new accounts
-      - Check to update each new account....
+      - 2. Write special sql for each entity by pk
+        - Pro: Practice writing SQL
+        - Con: Adds complexity w/ more SQL queries and function calls.
 
+      - 3. Query entity by pk to get dairy_id and then use existing function
+        - Pro: easy implementation
+        - Con: too many requests
 
+  - Check is user has required permissions READ, WRITE, DELETE, ADMIN
 
   #Admin Dashboard
     Ensure only accounts with lvl 3 can access that page
@@ -151,6 +160,9 @@ New Flow
 
 
 Problems:   
+
+  (Dashboard)
+  Need a way to create a reportrr admin account to create company admin accounts.
 
   Permission, ensure only  authenticated users can get data.
   How should I ensure a certain user can view certain things in database

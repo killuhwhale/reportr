@@ -1,6 +1,16 @@
 export default function mTea() { }
-export const JWT_TOKEN = 'UserAuth_jwtToken'
+export const ACCESS_TOKEN_KEY = 'UserAuth_access'
+export const REFRESH_TOKEN_KEY = 'UserAuth_refresh'
+export const COMPANY_ID_KEY = 'UserAuth_company_id_key'
 export const YEARS = [2020, 2021, 2022, 2023, 2024, 2025, 2026]
+
+export const ROLES = {
+  READ: 1,
+  WRITE: 2,
+  DELETE: 3,
+  ADMIN: 4,
+  HACKER: 5
+}
 
 export const COUNTIES = ['Amador', 'Butte', 'Colusa', 'Fresno', 'Glenn', 'Kern', 'Kings', 'Lassen', 'Madera', 'Merced', 'Modoc', 'Placer', 'Sacramento', 'San Joaquin', 'Shasta', 'Solano', 'Stanislaus', 'Sutter', 'Tehama', 'Tulare', 'Yolo', 'Yuba']
 export const BASINS = ["Sacramento River Basin", "San Joaquin River Basin", 'Tulare Basin']

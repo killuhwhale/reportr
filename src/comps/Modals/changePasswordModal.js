@@ -43,8 +43,9 @@ class ChangePasswordModal extends Component {
         this.setState({ currentPasswordError: '', newPasswordError: '', confirmPasswordError: '' })
 
         const changePasswordData = {
-            currentPassword, newPassword, pk
+            currentPassword, newPassword, pk, company_id: auth.currentUser.company_id
         }
+
 
         UserAuth.changePassword(changePasswordData)
             .then(res => {

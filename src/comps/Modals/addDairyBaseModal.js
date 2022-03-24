@@ -34,11 +34,11 @@ class AddBaseDairyModal extends Component {
 
 	createBaseDairy() {
 		const title = this.state.createDairyTitle
-		const companyID = auth.currentUser.company_id
+		const company_id = auth.currentUser.company_id
 
 		if (title && title.length > 0) {
 			post(`${this.props.BASE_URL}/api/dairy_base/create`, {
-				title, companyID
+				title, company_id
 			})
 				.then(res => {
 					console.log(res)
