@@ -130,7 +130,7 @@ class Agreement extends Component {
     }
 
     console.log("Updating: ", this.state.agreement)
-    post(`${this.props.BASE_URL}/api/agreement/update`, this.state.agreement)
+    post(`${this.props.BASE_URL}/api/agreement/update`, { ...this.state.agreement, dairy_id: this.state.dairy_id })
       .then(res => {
         console.log(res)
       })
@@ -154,7 +154,7 @@ class Agreement extends Component {
     }
 
 
-    post(`${this.props.BASE_URL}/api/note/update`, this.state.note)
+    post(`${this.props.BASE_URL}/api/note/update`, { ...this.state.note, dairy_id: this.state.dairy_id })
       .then(res => {
         console.log(res)
       })
@@ -245,7 +245,7 @@ class Agreement extends Component {
     if (certification.owner_id !== certification.operator_id) {
       // If certiciation is created already, its pk will be stored and not -1
       if (this.state.certification_id !== -1) {
-        post(`${this.props.BASE_URL}/api/certification/update`, certification)
+        post(`${this.props.BASE_URL}/api/certification/update`, { ...certification, dairy_id: this.state.dairy_id })
           .then((res => {
             console.log("Updated", res)
           }))

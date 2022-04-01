@@ -124,7 +124,7 @@ class CropTab extends Component {
 
   deleteFieldCrop(delFieldCropObj) {
     console.log("Deleting field crop ", delFieldCropObj)
-    post(`${this.props.BASE_URL}/api/field_crop/delete`, { pk: delFieldCropObj.pk })
+    post(`${this.props.BASE_URL}/api/field_crop/delete`, { pk: delFieldCropObj.pk, dairy_id: this.state.dairy.pk })
       .then(res => {
         console.log(res)
         this.getAllFieldCrops()

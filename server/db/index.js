@@ -135,6 +135,14 @@ module.exports = {
       callback
     )
   },
+  getCompanyIDByDairyBaseID: (dairyBaseID, callback) => {
+    return pool.query(
+      "SELECT company_id FROM dairy_base where pk=$1",
+      [dairyBaseID],
+      callback
+    )
+  },
+
 
   getDairiesByDairyBaseID: (dairyBaseID, callback) => {
     return pool.query(

@@ -40,7 +40,7 @@ class JoinedView extends Component {
   deleteJoinedFieldParcel() {
     if (Object.keys(this.state.curDeleteFieldParcel).length > 0) {
       let pk = this.state.curDeleteFieldParcel.pk
-      post(`${this.props.BASE_URL}/api/field_parcel/delete`, { data: pk })
+      post(`${this.props.BASE_URL}/api/field_parcel/delete`, { pk, dairy_id: this.state.dairy.pk })
         .then(res => {
           this.toggleDeletejJoinFieldParcel(false)
           this.props.onDelete()

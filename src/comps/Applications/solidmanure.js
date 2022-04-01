@@ -422,7 +422,10 @@ class Solidmanure extends Component {
 
   onSolidmanureDelete() {
     if (Object.keys(this.state.deleteSolidmanureObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_solidmanure/delete`, { pk: this.state.deleteSolidmanureObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_solidmanure/delete`, {
+        pk: this.state.deleteSolidmanureObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteSolidmanureModal(false)
@@ -436,7 +439,11 @@ class Solidmanure extends Component {
 
   onSolidmanureAnalysisDelete() {
     if (Object.keys(this.state.deleteSolidmanureAnalysisObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_solidmanure_analysis/delete`, { pk: this.state.deleteSolidmanureAnalysisObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_solidmanure_analysis/delete`, {
+        pk: this.state.deleteSolidmanureAnalysisObj.pk,
+        dairy_id: this.state.dairy_id
+      }
+      )
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteSolidmanureAnalysisModal(false)

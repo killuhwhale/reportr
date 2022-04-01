@@ -376,7 +376,10 @@ class ProcessWastewater extends Component {
   }
   onProcessWastewaterDelete() {
     if (Object.keys(this.state.deleteProcessWastewaterObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater/delete`, { pk: this.state.deleteProcessWastewaterObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater/delete`, {
+        pk: this.state.deleteProcessWastewaterObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteProcessWastewaterModal(false)

@@ -117,8 +117,8 @@ class DairyTab extends Component {
   getAllParcels() {
     get(`${this.props.BASE_URL}/api/parcels/${this.state.dairy.pk}`)
       .then(res => {
-        // console.log(res)
-        this.setState({ parcels: res })
+        console.log(res)
+        if (res && res.length > 0) this.setState({ parcels: res })
       })
       .catch(err => { console.log(err) })
   }

@@ -263,7 +263,7 @@ class CropView extends Component {
       let field_list = field_crops[field_id] // list of field_crop objects by field_id
       field_list.forEach(field_crop => {
         const { pk, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt } = field_crop
-        const data = { pk, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt }
+        const data = { pk, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt, dairy_id: this.state.dairy.pk }
         promises.push(post(`${this.props.BASE_URL}/api/field_crop/update`, data))
       })
 

@@ -1,8 +1,6 @@
 const format = require('pg-format');
 const { ROLES } = require('../../constants')
 const { pool } = require('../index')
-const OWNER_ACCT = 2
-const ADMIN_ACCT = 3
 
 
 module.exports = {

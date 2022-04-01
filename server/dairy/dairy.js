@@ -1,13 +1,13 @@
 
 
 const db = require('../db/index')
-const { verifyToken, needsHacker, verifyUserFromCompanyByDairyID, verifyUserFromCompany,
-    needsRead, needsWrite, needsDelete, needsAdmin
+const { verifyToken, needsHacker, verifyUserFromCompanyByDairyID, verifyUserFromCompanyByCompanyID,
+    verifyUserFromCompanyByDairyBaseID, needsRead, needsWrite, needsDelete, needsAdmin
 } = require('../utils/middleware')
 
 module.exports = (app) => {
 
-    app.post("/api/tsv/create", (req, res) => {
+    app.post("/api/tsv/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
 
         const { dairy_id, title, data, tsvType } = req.body
         db.insertTSV([dairy_id, title, data, tsvType], (err, result) => {
@@ -19,7 +19,7 @@ module.exports = (app) => {
             res.json({ "error": "Inserted TSV unsuccessful", existsErr: err.code === '23505' });
         })
     });
-    app.get("/api/tsv/:dairy_id/:tsvType", (req, res) => {
+    app.get("/api/tsv/:dairy_id/:tsvType", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
         db.getTSVs(req.params.dairy_id, req.params.tsvType,
             (err, result) => {
                 if (!err) {
@@ -30,7 +30,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all TSVs unsuccessful" });
             })
     });
-    app.post("/api/tsv/delete", (req, res) => {
+    app.post("/api/tsv/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting TSV w/ pk: ", req.body.pk)
         db.rmTSV(req.body.pk, (err, result) => {
             if (!err) {
@@ -41,7 +41,7 @@ module.exports = (app) => {
             res.json({ "error": "Deleted TSV unsuccessful" });
         })
     });
-    app.post("/api/tsv/type/delete", (req, res) => {
+    app.post("/api/tsv/type/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting TSV w/ dairy_id and tsvtype: ", req.body)
         db.rmTSVByDairyIDTSVType([req.body.dairy_id, req.body.tsvType], (err, result) => {
             if (!err) {
@@ -52,7 +52,7 @@ module.exports = (app) => {
             res.json({ "error": "Deleted TSV unsuccessful" });
         })
     });
-    app.post("/api/tsv/update", (req, res) => {
+    app.post("/api/tsv/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating.... tsv", req.body)
         const { title, data, tsvType, dairy_id } = req.body
         db.updateTSV([title, data, tsvType, dairy_id], (err, result) => {
@@ -67,9 +67,8 @@ module.exports = (app) => {
 
 
 
-
     // API
-    app.get("/api/dairy_base/:company_id", verifyToken, verifyUserFromCompany, needsRead, (req, res) => {
+    app.get("/api/dairy_base/:company_id", verifyToken, verifyUserFromCompanyByCompanyID, needsRead, (req, res) => {
         const { company_id } = req.params
 
         db.getDairyBase(company_id,
@@ -81,7 +80,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get dairy_base unsuccessful", err: err });
             })
     });
-    app.post("/api/dairy_base/create", verifyToken, verifyUserFromCompany, needsWrite, (req, res) => {
+    app.post("/api/dairy_base/create", verifyToken, verifyUserFromCompanyByCompanyID, needsWrite, (req, res) => {
         const {
             title,
             company_id
@@ -96,7 +95,7 @@ module.exports = (app) => {
             res.json({ "error": "Inserted dairy_base unsuccessful", code: err.code });
         })
     });
-    app.post("/api/dairy_base/update", verifyToken, verifyUserFromCompany, needsWrite, (req, res) => {
+    app.post("/api/dairy_base/update", verifyToken, verifyUserFromCompanyByDairyBaseID, needsWrite, (req, res) => {
         console.log("Updating.... dairy_base", req.body)
         // req.body.data is a list of values in order to match DB Table
         const {
@@ -115,7 +114,8 @@ module.exports = (app) => {
             res.json({ "error": "Updated dairy_base unsuccessful" });
         })
     });
-    app.post("/api/dairy_base/delete", verifyToken, verifyUserFromCompany, needsDelete, (req, res) => {
+
+    app.post("/api/dairy_base/delete", verifyToken, verifyUserFromCompanyByDairyBaseID, needsDelete, (req, res) => {
         console.log("Deleting.... dairy_base", req.body.pk)
         db.rmDairyBase(req.body.pk, (err, result) => {
 
@@ -128,9 +128,10 @@ module.exports = (app) => {
         })
     });
 
-
-    app.get("/api/dairies/dairyBaseId/:dairyBaseId", verifyToken, needsRead, (req, res) => {
-        db.getDairiesByDairyBaseID(req.params.dairyBaseId,
+    // 1. add company id to requests
+    //verifyUserFromCompanyByDairyBaseID
+    app.get("/api/dairies/dairyBaseID/:dairyBaseID/:company_id", verifyToken, verifyUserFromCompanyByDairyBaseID, needsRead, (req, res) => {
+        db.getDairiesByDairyBaseID(req.params.dairyBaseID,
             (err, result) => {
                 if (!err) {
 
@@ -150,9 +151,9 @@ module.exports = (app) => {
                 res.json({ "error": "Get dairy unsuccessful" });
             })
     });
-    app.post("/api/dairies/create", verifyToken, needsWrite, (req, res) => {
+    app.post("/api/dairies/create", verifyToken, verifyUserFromCompanyByDairyBaseID, needsWrite, (req, res) => {
         db.insertDairy([
-            req.body.dairyBaseId,
+            req.body.dairyBaseID,
             req.body.title,
             req.body.reportingYear,
             req.body.period_start,
@@ -167,15 +168,15 @@ module.exports = (app) => {
             res.json({ "error": "Inserted dairy unsuccessful" });
         })
     });
-    app.post("/api/dairies/full/create", verifyToken, needsWrite, (req, res) => {
+    app.post("/api/dairies/full/create", verifyToken, verifyUserFromCompanyByDairyBaseID, needsWrite, (req, res) => {
         const {
-            dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, title, city_zip,
+            dairyBaseID, reporting_yr, street, cross_street, county, city, city_state, title, city_zip,
             basin_plan, began, period_start, period_end,
 
         } = req.body
         console.log("Inserting full dairy info:", req.body)
         db.insertFullDairy([
-            dairy_base_id, reporting_yr, street, cross_street, county, city, city_state, city_zip,
+            dairyBaseID, reporting_yr, street, cross_street, county, city, city_state, city_zip,
             title, basin_plan, began, period_start, period_end,
         ], (err, result) => {
 
@@ -187,7 +188,7 @@ module.exports = (app) => {
             res.json({ "error": "Inserted full dairy unsuccessful", failData: req.body });
         })
     });
-    app.post("/api/dairies/update", verifyToken, verifyUserFromCompanyByDairyID, (req, res) => {
+    app.post("/api/dairies/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body)
         // req.body.data is a list of values in order to match DB Table
         const {
@@ -206,7 +207,7 @@ module.exports = (app) => {
             res.json({ "error": "Updated dairy unsuccessful" });
         })
     });
-    app.post("/api/dairies/delete", verifyToken, verifyUserFromCompanyByDairyID, (req, res) => {
+    app.post("/api/dairies/delete", verifyToken, verifyUserFromCompanyByDairyID, needsAdmin, (req, res) => {
 
         db.rmDairy(req.body.dairy_id, (err, result) => {
 
@@ -289,7 +290,7 @@ module.exports = (app) => {
             res.json({ "error": "Inserted parcel unsuccessful" });
         })
     });
-    app.post("/api/parcels/update", needsWrite, (req, res) => {
+    app.post("/api/parcels/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body.data)
         const { pnumber, pk } = req.body.data
         db.updateParcel([pnumber, pk], (err, result) => {
@@ -302,7 +303,7 @@ module.exports = (app) => {
             res.json({ "error": "Updated parcel unsuccessful" });
         })
     });
-    app.post("/api/parcels/delete", needsDelete, (req, res) => {
+    app.post("/api/parcels/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmParcel(req.body.pk, (err, result) => {
 
@@ -339,9 +340,9 @@ module.exports = (app) => {
             res.json({ "error": "Inserted field_parcel unsuccessful" });
         })
     });
-    app.post("/api/field_parcel/delete", verifyToken, needsDelete, (req, res) => {
-        console.log("Deleting....", req.body.data)
-        db.rmFieldParcel(req.body.data, (err, result) => {
+    app.post("/api/field_parcel/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
+        const { pk } = req.body
+        db.rmFieldParcel(pk, (err, result) => {
 
             if (!err) {
                 res.json({ "error": "Deleted field_parcel successfully" });
@@ -403,7 +404,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all operators by operator status unsuccessful" });
             })
     });
-    app.post("/api/operators/update", verifyToken, needsWrite, (req, res) => {
+    app.post("/api/operators/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body)
         const {
             dairy_id,
@@ -442,7 +443,7 @@ module.exports = (app) => {
             res.json({ "error": "Updated operator unsuccessful" });
         })
     });
-    app.post("/api/operators/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/operators/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmOperator(req.body.pk, (err, result) => {
 
@@ -518,7 +519,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all herds unsuccessful" });
             })
     });
-    app.post("/api/herds/update", verifyToken, needsWrite, (req, res) => {
+    app.post("/api/herds/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body)
         const { milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, p_breed, p_breed_other, pk } = req.body
         db.updateHerd([
@@ -590,7 +591,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop unsuccessful" });
             })
     });
-    app.post("/api/field_crop/update", verifyToken, needsWrite, (req, res) => {
+    app.post("/api/field_crop/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body)
         const { plant_date, acres_planted, typical_yield, moisture, n, p, k, salt, pk } = req.body
         db.updateFieldCrop([
@@ -605,8 +606,7 @@ module.exports = (app) => {
             res.json({ "error": "Updated field_crop unsuccessful" });
         })
     });
-
-    app.post("/api/field_crop/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCrop(req.body.pk, (err, result) => {
 
@@ -618,7 +618,6 @@ module.exports = (app) => {
             res.json({ "error": "Deleted field_crop unsuccessful" });
         })
     });
-
     app.post("/api/field_crop/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting all field_crop....", req.body)
         db.rmAllFieldCrop(req.body.dairy_id, (err, result) => {
@@ -631,7 +630,6 @@ module.exports = (app) => {
             res.json({ "error": "Deleted all field_crop unsuccessful" });
         })
     });
-
 
     app.post("/api/field_crop_harvest/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Creating....", req.body)
@@ -698,7 +696,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_harvest unsuccessful" });
             })
     });
-    app.post("/api/field_crop_harvest/update", verifyToken, needsWrite, (req, res) => {
+    app.post("/api/field_crop_harvest/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body)
         const {
             harvest_date, density, basis, actual_yield, moisture, n, p, k, tfs, pk
@@ -715,7 +713,7 @@ module.exports = (app) => {
             res.json({ "error": "Updated field_crop_harvest unsuccessful" });
         })
     });
-    app.post("/api/field_crop_harvest/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_harvest/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropHarvest(req.body.pk, (err, result) => {
 
@@ -771,7 +769,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app/update", verifyToken, needsWrite, (req, res) => {
+    app.post("/api/field_crop_app/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body)
         const {
             app_date, app_method, precip_before, precip_during, precip_after, pk
@@ -788,7 +786,7 @@ module.exports = (app) => {
             res.json({ "error": "Updated field_crop_app unsuccessful" });
         })
     });
-    app.post("/api/field_crop_app/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplication(req.body.pk, (err, result) => {
 
@@ -915,7 +913,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_process_wastewater_analysis unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_process_wastewater_analysis/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_process_wastewater_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationProcessWastewaterAnalysis(req.body.pk, (err, result) => {
 
@@ -969,7 +967,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_process_wastewater unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_process_wastewater/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_process_wastewater/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationProcessWastewater(req.body.pk, (err, result) => {
 
@@ -1039,7 +1037,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_freshwater_source unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_freshwater_source/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_freshwater_source/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationFreshwaterSource(req.body.pk, (err, result) => {
 
@@ -1139,7 +1137,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_freshwater_analysis unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_freshwater_analysis/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_freshwater_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationFreshwaterAnalysis(req.body.pk, (err, result) => {
 
@@ -1198,7 +1196,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_freshwater unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_freshwater/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_freshwater/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationFreshwater(req.body.pk, (err, result) => {
 
@@ -1311,7 +1309,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_solidmanure_analysis unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_solidmanure_analysis/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_solidmanure_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationSolidmanureAnalysis(req.body.pk, (err, result) => {
 
@@ -1368,7 +1366,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_solidmanure unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_solidmanure/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_solidmanure/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationSolidmanure(req.body.pk, (err, result) => {
 
@@ -1459,7 +1457,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all nutrient_import by wastewater unsuccessful" });
             })
     });
-    app.post("/api/nutrient_import/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/nutrient_import/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmNutrientImport(req.body.pk, (err, result) => {
 
@@ -1525,7 +1523,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_fertilizer unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_fertilizer/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_fertilizer/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationFertilizer(req.body.pk, (err, result) => {
 
@@ -1619,7 +1617,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_soil_analysis unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_soil_analysis/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_soil_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationSoilAnalysis(req.body.pk, (err, result) => {
 
@@ -1674,7 +1672,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_soil unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_soil/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_soil/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationSoil(req.body.pk, (err, result) => {
             if (!err) {
@@ -1744,7 +1742,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all field_crop_app_plowdown_credit unsuccessful" });
             })
     });
-    app.post("/api/field_crop_app_plowdown_credit/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/field_crop_app_plowdown_credit/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationPlowdownCredit(req.body.pk, (err, result) => {
             if (!err) {
@@ -1801,7 +1799,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all drain_source unsuccessful" });
             })
     });
-    app.post("/api/drain_source/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/drain_source/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmDrainSource(req.body.pk, (err, result) => {
             if (!err) {
@@ -1872,7 +1870,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all drain_analysis unsuccessful" });
             })
     });
-    app.post("/api/drain_analysis/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/drain_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmDrainAnalysis(req.body.pk, (err, result) => {
             if (!err) {
@@ -1938,7 +1936,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all export_hauler unsuccessful" });
             })
     });
-    app.post("/api/export_hauler/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/export_hauler/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmExportHauler(req.body.pk, (err, result) => {
 
@@ -1990,7 +1988,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all export_contact unsuccessful" });
             })
     });
-    app.post("/api/export_contact/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/export_contact/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmExportContact(req.body.pk, (err, result) => {
 
@@ -2055,7 +2053,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all export_recipient unsuccessful" });
             })
     });
-    app.post("/api/export_recipient/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/export_recipient/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmExportRecipient(req.body.pk, (err, result) => {
 
@@ -2117,7 +2115,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all export_dest unsuccessful" });
             })
     });
-    app.post("/api/export_dest/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/export_dest/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmExportDest(req.body.pk, (err, result) => {
 
@@ -2238,7 +2236,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all export_manifest unsuccessful" });
             })
     });
-    app.post("/api/export_manifest/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/export_manifest/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmExportManifest(req.body.pk, (err, result) => {
 
@@ -2250,8 +2248,6 @@ module.exports = (app) => {
             res.json({ "error": "Deleted export_manifest unsuccessful" });
         })
     });
-
-
     app.post("/api/export_manifest/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting all export_manifest....", req.body)
 
@@ -2325,7 +2321,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all discharge unsuccessful" });
             })
     });
-    app.post("/api/discharge/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/discharge/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... discharge", req.body.pk)
         db.rmDischarge(req.body.pk, (err, result) => {
             if (!err) {
@@ -2376,7 +2372,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all agreement unsuccessful" });
             })
     });
-    app.post("/api/agreement/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/agreement/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... agreement", req.body.pk)
         db.rmAgreement(req.body.pk, (err, result) => {
             if (!err) {
@@ -2387,7 +2383,7 @@ module.exports = (app) => {
             res.json({ "error": "Deleted agreement unsuccessful" });
         })
     });
-    app.post("/api/agreement/update", verifyToken, needsWrite, (req, res) => {
+    app.post("/api/agreement/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating.... agreement", req.body)
         const {
             nmp_updated,
@@ -2444,7 +2440,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all note unsuccessful" });
             })
     });
-    app.post("/api/note/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/note/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... note", req.body.pk)
         db.rmNote(req.body.pk, (err, result) => {
             if (!err) {
@@ -2455,7 +2451,7 @@ module.exports = (app) => {
             res.json({ "error": "Deleted note unsuccessful" });
         })
     });
-    app.post("/api/note/update", verifyToken, needsWrite, (req, res) => {
+    app.post("/api/note/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating.... note", req.body)
         const {
             note, pk
@@ -2509,7 +2505,7 @@ module.exports = (app) => {
                 res.json({ "error": "Get all certification unsuccessful" });
             })
     });
-    app.post("/api/certification/delete", verifyToken, needsDelete, (req, res) => {
+    app.post("/api/certification/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... certification", req.body.pk)
         db.rmCertification(req.body.pk, (err, result) => {
             if (!err) {
@@ -2520,7 +2516,7 @@ module.exports = (app) => {
             res.json({ "error": "Deleted certification unsuccessful" });
         })
     });
-    app.post("/api/certification/update", verifyToken, needsWrite, (req, res) => {
+    app.post("/api/certification/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating.... certification", req.body)
         const {
             owner_id,

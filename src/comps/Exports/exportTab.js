@@ -637,7 +637,10 @@ class ExportTab extends Component {
   }
   onExportContactDelete() {
     if (Object.keys(this.state.deleteExportContactObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/export_contact/delete`, { pk: this.state.deleteExportContactObj.pk })
+      post(`${this.props.BASE_URL}/api/export_contact/delete`, {
+        pk: this.state.deleteExportContactObj.pk,
+        dairy: this.state.dairy.pk
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportContactModal(false)
@@ -654,7 +657,10 @@ class ExportTab extends Component {
   }
   onExportHaulerDelete() {
     if (Object.keys(this.state.deleteExportHaulerObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/export_hauler/delete`, { pk: this.state.deleteExportHaulerObj.pk })
+      post(`${this.props.BASE_URL}/api/export_hauler/delete`, {
+        pk: this.state.deleteExportHaulerObj.pk,
+        dairy: this.state.dairy.pk
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportHaulerModal(false)
@@ -671,7 +677,10 @@ class ExportTab extends Component {
   }
   onExportRecipientDelete() {
     if (Object.keys(this.state.deleteExportRecipientObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/export_recipient/delete`, { pk: this.state.deleteExportRecipientObj.pk })
+      post(`${this.props.BASE_URL}/api/export_recipient/delete`, {
+        pk: this.state.deleteExportRecipientObj.pk,
+        dairy: this.state.dairy.pk
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportRecipientModal(false)
@@ -688,7 +697,10 @@ class ExportTab extends Component {
   }
   onExportDestDelete() {
     if (Object.keys(this.state.deleteExportDestObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/export_dest/delete`, { pk: this.state.deleteExportDestObj.pk })
+      post(`${this.props.BASE_URL}/api/export_dest/delete`, {
+        pk: this.state.deleteExportDestObj.pk,
+        dairy: this.state.dairy.pk
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportDestModal(false)
@@ -706,7 +718,10 @@ class ExportTab extends Component {
 
   onExportManifestDelete() {
     if (Object.keys(this.state.deleteExportManifestObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/export_manifest/delete`, { pk: this.state.deleteExportManifestObj.pk })
+      post(`${this.props.BASE_URL}/api/export_manifest/delete`, {
+        pk: this.state.deleteExportManifestObj.pk,
+        dairy: this.state.dairy.pk
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportManifestModal(false)

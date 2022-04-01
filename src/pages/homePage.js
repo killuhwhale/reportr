@@ -86,9 +86,13 @@ class HomePage extends Component {
   }
   getDairies() {
     const dairyBase = this.state.baseDairies[this.state.baseDairiesIdx]
-    const baseDairiesId = dairyBase && dairyBase.pk ? dairyBase.pk : null
-    if (baseDairiesId) {
-      get(`${this.props.BASE_URL}/api/dairies/dairyBaseId/${baseDairiesId}`)
+    const baseDairiesID = dairyBase && dairyBase.pk ? dairyBase.pk : null
+    const company_id = auth.currentUser.company_id
+
+    if (!company_id) return this.props.onAlert('Cannot find company ID', 'error')
+
+    if (baseDairiesID) {
+      get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${baseDairiesID}/${company_id}`)
         .then(res => {
           const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
           let dairyIdx = this.state.dairyIdx < res.length ? this.state.dairyIdx : 0
@@ -96,7 +100,7 @@ class HomePage extends Component {
         })
         .catch(err => {
           console.log(err)
-          this.props.onAlert(`Failed getting dairies for BaseDairyID: ${baseDairiesId}`, 'error')
+          this.props.onAlert(`Failed getting dairies for BaseDairyID: ${baseDairiesID}`, 'error')
         })
     }
   }
@@ -159,11 +163,15 @@ class HomePage extends Component {
   onBaseDairyChange(ev) {
     const { name, value: baseDairiesIdx } = ev.target
     const dairyBase = this.state.baseDairies[baseDairiesIdx]
-    const baseDairiesId = dairyBase && dairyBase.pk ? dairyBase.pk : null
-    if (baseDairiesId) {
+    const baseDairiesID = dairyBase && dairyBase.pk ? dairyBase.pk : null
+    const company_id = auth.currentUser.company_id
+
+    if (!company_id) return this.props.onAlert('Cannot find company ID', 'error')
+
+    if (baseDairiesID) {
       // Query dairies by dairy_base_id
       // Display all dairies by reporting year,
-      get(`${this.props.BASE_URL}/api/dairies/dairyBaseId/${baseDairiesId}`)
+      get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${baseDairiesID}/${company_id}`)
         .then(res => {
           const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
           this.setState({ dairies: res, dairyIdx: 0, dairy, baseDairiesIdx, dairyBase })

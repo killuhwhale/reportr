@@ -132,7 +132,11 @@ class HarvestView extends Component {
   }
   deleteFieldCropHarvest() {
     console.log("Deleting field crop harvest obj", this.state.delFieldCropHarvestObj)
-    post(`${this.props.BASE_URL}/api/field_crop_harvest/delete`, { pk: this.state.delFieldCropHarvestObj.pk })
+    post(`${this.props.BASE_URL}/api/field_crop_harvest/delete`, {
+      pk: this.state.delFieldCropHarvestObj.pk,
+      dairy_id: this.state.dairy.pk
+    }
+    )
       .then(res => {
         console.log(res)
         this.toggleShowDeleteFieldCropHarvestModal(false)

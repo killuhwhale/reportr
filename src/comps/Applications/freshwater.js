@@ -511,7 +511,11 @@ class Freshwater extends Component {
 
   onFreshwaterDelete() {
     if (Object.keys(this.state.deleteFreshwaterObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_freshwater/delete`, { pk: this.state.deleteFreshwaterObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_freshwater/delete`, {
+        pk: this.state.deleteFreshwaterObj.pk,
+        dairy_id: this.state.dairy_id
+      }
+      )
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFreshwaterModal(false)
@@ -524,7 +528,11 @@ class Freshwater extends Component {
   }
   onFreshwaterSourceDelete() {
     if (Object.keys(this.state.deleteFreshwaterSourceObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_freshwater_source/delete`, { pk: this.state.deleteFreshwaterSourceObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_freshwater_source/delete`, {
+        pk: this.state.deleteFreshwaterSourceObj.pk,
+        dairy_id: this.state.dairy_id
+      }
+      )
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFreshwaterSourceModal(false)
@@ -537,7 +545,11 @@ class Freshwater extends Component {
   }
   onFreshwaterAnalysisDelete() {
     if (Object.keys(this.state.deleteFreshwaterAnalysisObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_freshwater_analysis/delete`, { pk: this.state.deleteFreshwaterAnalysisObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_freshwater_analysis/delete`, {
+        pk: this.state.deleteFreshwaterAnalysisObj.pk,
+        dairy_id: this.state.dairy_id
+      }
+      )
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFreshwaterAnalysisModal(false)

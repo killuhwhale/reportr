@@ -129,7 +129,10 @@ class Discharge extends Component {
   }
   onDischargeDelete() {
     if (Object.keys(this.state.deleteDischargeObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/discharge/delete`, { pk: this.state.deleteDischargeObj.pk })
+      post(`${this.props.BASE_URL}/api/discharge/delete`, {
+        pk: this.state.deleteDischargeObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteDischargeModal(false)

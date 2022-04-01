@@ -69,7 +69,7 @@ class ParcelView extends Component {
       updates.push(post(
         `${this.props.BASE_URL}/api/parcels/update`,
         {
-          data: this.state.curUpdateParcels[parcel_pk]
+          data: { ...this.state.curUpdateParcels[parcel_pk], dairy_id: this.state.dairy.pk }
         }
       ))
     })
@@ -176,7 +176,7 @@ class ParcelView extends Component {
 
   deleteParcel() {
     console.log("Deleting parcel", this.state.curDelParcel)
-    post(`${this.props.BASE_URL}/api/parcels/delete`, { pk: this.state.curDelParcel.pk })
+    post(`${this.props.BASE_URL}/api/parcels/delete`, { pk: this.state.curDelParcel.pk, dairy_id: this.state.dairy.pk })
       .then(res => {
         console.log(res)
         this.props.onParcelDelete()

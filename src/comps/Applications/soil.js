@@ -247,7 +247,10 @@ class Soil extends Component {
   }
   onSoilDelete() {
     if (Object.keys(this.state.deleteSoilObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_soil/delete`, { pk: this.state.deleteSoilObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_soil/delete`, {
+        pk: this.state.deleteSoilObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteSoilModal(false)
@@ -269,7 +272,10 @@ class Soil extends Component {
   }
   onSoilAnalysisDelete() {
     if (Object.keys(this.state.deleteSoilAnalysisObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_soil_analysis/delete`, { pk: this.state.deleteSoilAnalysisObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_soil_analysis/delete`, {
+        pk: this.state.deleteSoilAnalysisObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteSoilAnalysisModal(false)

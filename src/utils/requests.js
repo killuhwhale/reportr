@@ -116,7 +116,7 @@ const post = (url, data) => {
         const { errorData, needsRefresh } = await checkForRefresh(res)
 
         if (needsRefresh) {
-          console.log("Needs refresh")
+          console.log("Needs refresh: ", errorData, needsRefresh)
           // Making original request with new token.
           const ogRes = await refreshToken(url, data, 'post')
           resolve(ogRes)
@@ -155,11 +155,18 @@ const postXLSX = (url, data) => {
     body: data
   })
     .then(async res => {
-      const needsRefresh = await checkForRefresh(res)
+      const { errorData, needsRefresh } = await checkForRefresh(res)
       if (needsRefresh) {
+        console.log("Needs refresh: ", errorData, needsRefresh)
+        // Making original request with new token.
         const ogRes = await refreshToken(url, data, 'postXLSX')
         return ogRes
+      } else if (res.status === 403) {
+        console.log("403 but client should see error", errorData)
+        return errorData
       } else {
+        // Normal request
+        console.log(res)
         return res.json()
       }
     })

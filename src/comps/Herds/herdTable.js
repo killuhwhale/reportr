@@ -240,7 +240,7 @@ class HerdTable extends Component {
       const herds = this.state.herds
       herds.p_breed = herds.p_breed.length > 0 ? herds.p_breed : this.props.BREEDS[0]
 
-      post(`${this.props.BASE_URL}/api/herds/update`, this.state.herds)
+      post(`${this.props.BASE_URL}/api/herds/update`, { ...this.state.herds, dairy_id: this.state.dairy.pk })
         .then(res => {
           // console.log(res)
           this.calcHerd()

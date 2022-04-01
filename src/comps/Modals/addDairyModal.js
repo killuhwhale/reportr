@@ -5,6 +5,7 @@ import { withTheme } from '@material-ui/core/styles';
 import { get, post } from '../../utils/requests';
 import { zeroTimeDate } from "../../utils/convertCalc"
 import { YEARS } from '../../utils/constants'
+import { auth } from '../../utils/users';
 
 const latestEntry = (entries) => {
 	// Returns the object in the list with the highest pk 
@@ -105,16 +106,23 @@ class AddDairyModal extends Component {
 	}
 
 	createDairy() {
+		const company_id = auth.currentUser.company_id
 		const reportingYear = YEARS[this.state.reportingYearIdx]
 		const dairyBase = this.state.dairyBase
-		const dairyBaseId = dairyBase.pk ? dairyBase.pk : -1
+		const dairyBaseID = dairyBase.pk ? dairyBase.pk : -1
 		this.toggleIsLoading(true)
 
-		if (dairyBaseId > 0) {
-			// console.log("Creating a dairy for reporting year", reportingYear, dairyBaseId)
+		if (!company_id) {
+			console.log(`Cannot get company ID: ${auth.currentUser}`)
+			console.log(auth.currentUser)
+			return this.props.onAlert('Cannot find comapny ID', 'error')
+		}
+
+		if (dairyBaseID > 0) {
+			// console.log("Creating a dairy for reporting year", reportingYear, dairyBaseID)
 			// console.log("Query for last reporting year.....")
 
-			get(`${this.props.BASE_URL}/api/dairies/dairyBaseId/${dairyBaseId}`)
+			get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${dairyBaseID}/${company_id}`)
 				.then(dairies => {
 					if (isDuplicateYear(dairies, reportingYear)) {
 						this.props.onDone()
@@ -127,12 +135,13 @@ class AddDairyModal extends Component {
 						const latestDairy = latestEntry(dairies)
 						// console.log("Latest Dairy:", latestDairy)
 						const newDairy = {
-							dairy_base_id: dairyBaseId,
+							dairyBaseID,
 							...latestDairy,
 							reporting_yr: reportingYear,
-							period_start: `1/1/${reportingYear}`,
+							period_start: `1/1/${reportingYear}`, // Default date based on year chosed to create.
 							period_end: `12/31/${reportingYear}`,
-							began: zeroTimeDate(new Date(latestDairy.began))
+							began: zeroTimeDate(new Date(latestDairy.began)),
+							company_id
 						}
 						// console.log("New dairy data:", newDairy)
 						// Create dairy with all prev information
@@ -234,12 +243,14 @@ class AddDairyModal extends Component {
 								this.props.onAlert('Faied to create new reporting year!', 'error')
 							})
 					} else {
+
 						post(`${this.props.BASE_URL}/api/dairies/create`, {
-							dairyBaseId,
+							dairyBaseID,
 							title: dairyBase.title,
 							reportingYear,
 							period_start: `1/1/${reportingYear}`,
-							period_end: `12/31/${reportingYear}`
+							period_end: `12/31/${reportingYear}`,
+							company_id
 						})
 							.then(res => {
 								this.props.onDone()
@@ -258,7 +269,7 @@ class AddDairyModal extends Component {
 				})
 
 
-			// Need to query for latest dairy in dairies by dairyBaseId
+			// Need to query for latest dairy in dairies by dairyBaseID
 			// if previous data:
 			// Create new dairy in dairies table (reporting year and title plus duplicate infor if any from query)	
 			// Duplciate the data in each table using the new dairy ID

@@ -92,7 +92,6 @@ module.exports = (app) => {
     app.post(`/${api}/accessToken`, verifyRefreshToken, async (req, res) => {
         const accessToken = await refreshAccessToken(req.user, req.company_id)
         if (accessToken.error) return res.json({ error: accessToken.error })
-
         return res.json(accessToken)
     })
 
@@ -203,7 +202,7 @@ module.exports = (app) => {
     })
 
 
-    // Register ROLES.HACKER
+    // Register ROLES.HACKER TODO() lock this route down somehow.... maybe password protected....
     app.post(`/${api}/registerAdmin`, (req, res) => {
         const { email, password, SECRET } = req.body
         const _SECRET = "1337mostdope#@!123(*)89098&^%%^65blud"
@@ -321,7 +320,7 @@ module.exports = (app) => {
         })
     }
 
-    app.post(`/${api}/changePassword`, verifyToken, (req, res) => {
+    app.post(`/${api}/changePassword`, verifyToken, needsSelfOrAdmin, (req, res) => {
         const { token } = req
         const { currentPassword, newPassword, pk, company_id } = req.body.userPassword // account data to update password
         const { user } = req // Current signed in user
@@ -376,7 +375,7 @@ module.exports = (app) => {
 
     })
 
-    app.get(`/${api}/all/:company_id`, verifyToken, (req, res) => {
+    app.get(`/${api}/all/:company_id`, verifyToken, needsAdmin, (req, res) => {
         const { company_id } = req.params
         const { user } = req
         console.log(`Acct type: ${user.account_type} user_comp_id: ${user.company_id} company_id: ${company_id} `)
@@ -427,6 +426,9 @@ module.exports = (app) => {
             .map(i => base[Math.random() * base.length | 0])
             .join('');
     };
+
+
+    // Companies HACKER use only
 
     app.get(`/${api}/companies`, verifyToken, needsHacker, (req, res) => {
         db.getCompanies(null,

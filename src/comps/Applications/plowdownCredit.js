@@ -152,7 +152,10 @@ class PlowdownCredit extends Component {
   }
   onPlowdownCreditDelete() {
     if (Object.keys(this.state.deletePlowdownCreditObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_plowdown_credit/delete`, { pk: this.state.deletePlowdownCreditObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_plowdown_credit/delete`, {
+        pk: this.state.deletePlowdownCreditObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeletePlowdownCreditModal(false)

@@ -488,7 +488,10 @@ class Fertilizer extends Component {
   }
   onFertilizerDelete() {
     if (Object.keys(this.state.deleteFertilizerObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_fertilizer/delete`, { pk: this.state.deleteFertilizerObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_fertilizer/delete`, {
+        pk: this.state.deleteFertilizerObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFertilizerModal(false)
@@ -501,7 +504,10 @@ class Fertilizer extends Component {
   }
   onNutrientImportDelete() {
     if (Object.keys(this.state.deleteNutrientImportObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/nutrient_import/delete`, { pk: this.state.deleteNutrientImportObj.pk })
+      post(`${this.props.BASE_URL}/api/nutrient_import/delete`, {
+        pk: this.state.deleteNutrientImportObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteNutrientImportModal(false)

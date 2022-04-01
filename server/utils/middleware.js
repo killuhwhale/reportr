@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const accountsDB = require('../db/accounts/accounts')
-const { getCompanyIDByDairyID } = require("../db");
+const { getCompanyIDByDairyID, getCompanyIDByDairyBaseID } = require("../db");
 const { ROLES } = require("../constants");
 const { decrypt } = require('./crypt')
 
@@ -75,6 +75,37 @@ exports.verifyRefreshToken = async (req, res, next) => {
 
 }
 
+const _getCompanyIDByDairyBaseID = (dairyBaseID) => {
+    return new Promise((resolve, reject) => {
+        getCompanyIDByDairyBaseID(dairyBaseID, (err, result) => {
+            if (!err) {
+                console.log(result.rows)
+                if (result && result.rows.length > 0) {
+                    return resolve(result.rows[0].company_id)
+                }
+                console.log(result.rows)
+                return reject(`Error w/ result`)
+            }
+            reject(`Error, ${err.message}`)
+        })
+    })
+}
+
+exports.verifyUserFromCompanyByDairyBaseID = async (req, res, next) => {
+    const { user: { company_id } } = req
+    const dairyBaseID = req.params.dairyBaseID || req.body.dairyBaseID || null
+
+    if (!dairyBaseID) return res.status(403).json({ error: `dairyBaseID not found.` })
+    if (!company_id) return res.status(403).json({ error: `User's comapny_id not found.` })
+
+    // Get company id from baseDairy
+    // Write SQL: select company_id from dairy_base where pk=;
+    const companyIDByDairyBaseID = await _getCompanyIDByDairyBaseID(dairyBaseID)
+    if (parseInt(companyIDByDairyBaseID) === parseInt(company_id)) return next()
+
+    return res.status(403).json({ error: 'User not a part of company via dairy base ID.' })
+}
+
 
 // Verifies token and adds user to request obj
 exports.verifyToken = async (req, res, next) => {
@@ -106,7 +137,7 @@ exports.verifyToken = async (req, res, next) => {
 }
 
 // Checks user is from same company as requested entity
-exports.verifyUserFromCompany = (req, res, next) => {
+exports.verifyUserFromCompanyByCompanyID = (req, res, next) => {
     const { user } = req
     const company_id = req.params.company_id || req.body.company_id || null
 
@@ -124,7 +155,6 @@ exports.verifyUserFromCompany = (req, res, next) => {
 exports.verifyUserFromCompanyByDairyID = async (req, res, next) => {
     const { user: { company_id } } = req
     const dairy_id = req.params.dairy_id || req.body.dairy_id || (req.body.data ? req.body.data.dairy_id : null) || null
-    console.log("Verifying user is from company....")
     if (!dairy_id) {
         return res.status(403).json({ error: 'Permission denied: user not apart of company. No dairy id' })
     }

@@ -105,7 +105,7 @@ class OperatorView extends Component {
     let operators = this.state.operators.filter((op, i) => this.updatedOperators.has(i))
     let promises = operators.map((operator, i) => {
       return (
-        post(`${this.props.BASE_URL}/api/operators/update`, operator)
+        post(`${this.props.BASE_URL}/api/operators/update`, { ...operator, dairy_id: this.state.dairy.pk })
       )
     })
     Promise.all(promises)
@@ -128,7 +128,7 @@ class OperatorView extends Component {
   }
   deleteOperator() {
     console.log("deleteing operator", this.state.curDeleteOperatorObj)
-    post(`${this.props.BASE_URL}/api/operators/delete`, { pk: this.state.curDeleteOperatorObj.pk })
+    post(`${this.props.BASE_URL}/api/operators/delete`, { pk: this.state.curDeleteOperatorObj.pk, dairy_id: this.state.dairy.pk })
       .then(res => {
         console.log(res)
         this.getAllOperators()

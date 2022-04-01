@@ -191,7 +191,10 @@ class Drain extends Component {
   }
   onDrainDelete() {
     if (Object.keys(this.state.deleteDrainObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/drain_source/delete`, { pk: this.state.deleteDrainObj.pk })
+      post(`${this.props.BASE_URL}/api/drain_source/delete`, {
+        pk: this.state.deleteDrainObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteDrainModal(false)
@@ -213,7 +216,10 @@ class Drain extends Component {
   }
   onDrainAnalysisDelete() {
     if (Object.keys(this.state.deleteDrainAnalysisObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/drain_analysis/delete`, { pk: this.state.deleteDrainAnalysisObj.pk })
+      post(`${this.props.BASE_URL}/api/drain_analysis/delete`, {
+        pk: this.state.deleteDrainAnalysisObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteDrainAnalysisModal(false)
