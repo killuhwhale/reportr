@@ -125,7 +125,6 @@ const post = (url, data) => {
           resolve(errorData)
         } else {
           // Normal request
-          console.log(res)
           resolve(res.json())
         }
       })

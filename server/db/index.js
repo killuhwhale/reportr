@@ -44,7 +44,7 @@ logger.info(`Connected to db: ${TESTING ? "Test" : isProd ? "Ocean" : "Dev"} db.
 
 const insertDairyBase = (values, callback) => {
   return pool.query(
-    format("INSERT INTO dairy_base(company_id, title) VALUES (%L)", values),
+    format("INSERT INTO dairy_base(company_id, title) VALUES (%L) RETURNING *", values),
     [],
     callback
   )
@@ -59,7 +59,7 @@ const insertDairy = (values, callback) => {
   }
 
   return pool.query(
-    format("INSERT INTO dairies(dairy_base_id, title, reporting_yr, period_start, period_end) VALUES (%L)", values),
+    format("INSERT INTO dairies(dairy_base_id, title, reporting_yr, period_start, period_end) VALUES (%L) RETURNING *", values),
     [],
     callback
   )
@@ -2732,21 +2732,28 @@ const resetDB = (pool) => {
 
 const createSchema = (pool) => {
   return new Promise((resolve, reject) => {
-    let createSql = fs.readFileSync('./server/db/create.sql').toString();
-    let createCropsSql = fs.readFileSync('./server/db/create_crops.sql').toString();
-    let createAccountsSql = fs.readFileSync('./server/db/create_accounts.sql').toString();
+    let createSql = fs.readFileSync('./db/create.sql').toString();
+    let createCropsSql = fs.readFileSync('./db/create_crops.sql').toString();
+    let createAccountsSql = fs.readFileSync('./db/create_accounts.sql').toString();
+    let createHackerSql = fs.readFileSync('./db/create_hacker.sql').toString();
 
-    pool.query(createSql, [], (err, res) => {
+    pool.query(createAccountsSql, [], (err, res) => {
       if (!err) {
-        pool.query(createCropsSql, [], (err, res) => {
+        pool.query(createSql, [], (err, res) => {
           if (err) {
             reject(err)
           } else {
-            pool.query(createAccountsSql, [], (err, res) => {
+            pool.query(createCropsSql, [], (err, res) => {
               if (err) {
                 reject(err)
               } else {
-                resolve(res)
+                pool.query(createHackerSql, [], (err, res) => {
+                  if (err) {
+                    reject(err)
+                  } else {
+                    resolve(res)
+                  }
+                })
               }
             })
           }
@@ -2758,10 +2765,10 @@ const createSchema = (pool) => {
   })
 }
 
-const createBaseDairy = async (title) => {
+const createBaseDairy = async (title, company_id) => {
   return new Promise((resolve, reject) => {
 
-    insertDairyBase([title], (err, res) => {
+    insertDairyBase([title, company_id], (err, res) => {
       if (err) {
         reject(err)
       } else {
@@ -2830,10 +2837,18 @@ const createHerds = async () => {
 const initTestDB = async (pool) => {
   try {
     const res = await resetDB(pool)
+    console.log("Creating Schema")
+
     const res1 = await createSchema(pool)
-    const res2 = await createBaseDairy("Pharmaz")
-    const res3 = await createDairy('Pharmaz')
-    const res4 = await createHerds()
+
+    // TODO New tests with Accounts API will create Accounts and then companies and dairies
+
+    // console.log("Creating base dairy")
+    // const res2 = await createBaseDairy("Pharmaz")
+    // console.log("Creating Dairy")
+    // const res3 = await createDairy('Pharmaz')
+    // console.log("Creating Herds")
+    // const res4 = await createHerds()
 
 
     console.log("Success init test DB.")

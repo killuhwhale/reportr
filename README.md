@@ -1,27 +1,40 @@
-React
-  reportrr % npm start
+# Info
+  React
+    reportrr % npm start
+  Express
+    reportrr/server % npm start 
 
-Express
-  reportrr/server % npm start 
+  PSQL
+    Running psql macos 
+    - /Library/PostgreSQL/13/scripts/runpsql.sh
+    - added to .zshrc ==> $ runpsql
+    start server from /server npm start
+    start react from root npm start
+    DB: reportrr
+    user: admin
+    pass: mostdope
+    // sudo kill -9 $(sudo lsof -t -i:3001)
 
-PSQL
-  Running psql macos 
-  - /Library/PostgreSQL/13/scripts/runpsql.sh
-  - added to .zshrc ==> $ runpsql
-  start server from /server npm start
-  start react from root npm start
-  DB: reportrr
-  user: admin
-  pass: mostdope
-  // sudo kill -9 $(sudo lsof -t -i:3001)
+# Deployment:
+  Backend:
+    github -> digital ocean
   
+  Front End:
+    npm build -> Firebase deploy
 
-ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
+  Deploy command
+    npm build; git add .; git commit -m 'deploy'; git push; firebase deploy;
+
+
+
+# ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
   - FRESH WATER APP EVENT Field 6 11/01/2019 planted, 10/10/2019 applied, this was in the spreadsheet but not in merced app   
     - FRESH WATER APP EVENT Field 5 05/07/2020 planted, 7/27/2020 applied, 
       - Sheet: N con 47.2 ec 1,110.0 Tds 575 , Merced app: N con 48.50 ec 1,660.0 Tds 10
 
     - This was making me think I had a bug, but spreadsheet data and data in merced app don't match 100% :(
+
+# Features
 
 Account Management for Owners
  - Login
@@ -58,52 +71,53 @@ Github is private, the only passwords visible in code is for the DB and that is 
   - Might not need env vars.
 
 
-Testing:
-  App 
-    Tests upload of XLXS and the calculations for each section of the annual report. 
+# Testing:
+  # Current Test Converagessss
+  - Upload XLSX and Calculate Annual Report data
+  - Util functions (partial)
+    - Format, toFloat, grouping
   
-  Test Command
-    npm test
+  # Missing Crucial Tests
+   - Middleware tests
+    - Ensure requests block invalid requests to read or write to wrong dairy (not belonging to user/company)
+
+   - Account Tests
+    - Ensure Accounts can alter  other accounts incorrectly.
+    - Ensure Accounts are Created, Updated and Deleted by the correct Account.
+      - Admins should only be able to create, update or delete other accounts
+      - Accounts can update themselves
+
+  - Company Test 
+    - Ensure only hacker account can access API.
 
 
-Deployment:
-  Backend:
-    github -> digital ocean
+
+
+# Todo:
+
+  - Display Company Logo
+  - Upload Images Modals
+  - Store Images in Digital Ocean Spaces
+  1. Look for Logo for Company,
+  2. If no Company logo, show upload modal,
+  3. else show logo with delete feature
+
+
+  - Test Accounts API 
+    - Accounts and Companies
+      - Ensure permissions are working correctly.
+      - Ensure its working in general
+    - (Great test case for accounts) Ensure that Owner accounts cant change their account type, this would result in losing access to company.
+
+  - Test Middleware/ User can only access their company's data
+    - Write some tests boi
+
+
+  - Nutrient Application Analyses should be shown and be able to be deleted
   
-  Front End:
-    npm build -> Firebase deploy
 
-  Deploy command
-    npm build; git add .; git commit -m 'deploy'; git push; firebase deploy;
-
-
-
-Todo:
-  
-  - Ensure that Owner accounts cant change their account type, this would result in losing access to company.
-   
-
-  Lock each companies data down.
-  When a request is issued, check if the user is apart of the company.
-
-  - Check if user is from company
-    - Update and Delete is given by pk
-      - 1. Add Dairy_id to query and then use existing function
-        - Pro: Logic is already in place
-        - Con: Need to go add dairyId to each request
-
-      - 2. Write special sql for each entity by pk
-        - Pro: Practice writing SQL
-        - Con: Adds complexity w/ more SQL queries and function calls.
-
-      - 3. Query entity by pk to get dairy_id and then use existing function
-        - Pro: easy implementation
-        - Con: too many requests
-
-  - Check is user has required permissions READ, WRITE, DELETE, ADMIN
-
-  #Admin Dashboard
-    Ensure only accounts with lvl 3 can access that page
+  # Admin Dashboard
+    Ensure only accounts with lvl 5 can access that page
 
     List of Companies
       - Delete, update title
@@ -115,19 +129,12 @@ Todo:
   
 
 
-Goals:
+# Goals:
 
   Caching or State Management
     - Avoid multiple requests each time user goes to a new tab
     - Redux to store responses and check there first
     - Find another caching solution
-
-  Add Company entity
-    This will make it possible for this to be a software as a service to multiple companies.
-    - Every Dairy Base should belong to a company and subsequently each dairy
-  
-  Permissions
-    - Allow Accounts access data from a single company
   
   Setup Testing Execution before commiting to Github
  
@@ -137,50 +144,12 @@ Goals:
     - Accounts
     - TSV
     - Dairy, and other info
- 
 
 
-
-Current Flow
-- Register User from a pre-defined set of emails
-- Once there is a user get all dairies
-
-
-New Flow
-- Register User from a pre-defined set of emails
-  
-- Get all Dairies based on Current Accounts token info
-  - Store the company ID in the token
-
-
-
-
-
-
-
-
-Problems:   
+# Problems   
 
   (Dashboard)
   Need a way to create a reportrr admin account to create company admin accounts.
-
-  Permission, ensure only  authenticated users can get data.
-  How should I ensure a certain user can view certain things in database
-  
-    1. dairy_id is typically tied to each entity
-      - accounts and dairy ids can be associated
-        - token can encode which dairy_ids the account can see
-
-    2. On each request, lookup in DB which dairy_id the account can see
-
-
-  Testing
-    - Server side
-      Need to test:
-        Accounts
-    - Client Side
-      ???
-
 
   - Upload TSV process 
     - Ensure there are rows of data bfore uploading.

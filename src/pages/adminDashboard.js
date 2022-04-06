@@ -11,7 +11,7 @@ import CompanyManagementModal from '../comps/Modals/companyManagementModal'
 import { get } from '../utils/requests'
 import { BASE_URL } from '../utils/environment'
 import { ROLES } from '../utils/constants'
-
+import { CompanyUtil } from '../utils/company/company'
 
 /**
  * CRUD  companies
@@ -70,7 +70,7 @@ class AdminDashboard extends Component {
 
     async getAllCompanies() {
         try {
-            const res = await get(`${BASE_URL}/accounts/companies`)
+            const res = await CompanyUtil.getAllCompanies()
             if (res.error) {
                 console.log(res)
                 return

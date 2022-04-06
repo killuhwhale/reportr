@@ -64,6 +64,15 @@ module.exports = {
             callback
         )
     },
+    updateAccountForUser: (values, callback) => {
+
+        return pool.query(`UPDATE accounts SET
+        username = $1, email = $2
+        WHERE pk=$3 RETURNING pk, username, email, account_type`,
+            values,
+            callback
+        )
+    },
     changePassword: (values, callback) => {
 
         return pool.query(`UPDATE accounts SET
@@ -80,54 +89,5 @@ module.exports = {
             callback
         )
     },
-
-
-
-    getCompanies: (_, callback) => {
-        return pool.query(
-            "SELECT title, pk FROM companies",
-            [],
-            callback
-        )
-    },
-
-    getCompany: (company_id, callback) => {
-        return pool.query(
-            "SELECT title, pk FROM companies where pk=$1",
-            [company_id],
-            callback
-        )
-    },
-    getCompanySecret: (company_id, callback) => {
-        return pool.query(
-            "SELECT company_secret FROM companies where pk=$1",
-            [company_id],
-            callback
-        )
-    },
-    insertCompany: (values, callback) => {
-        return pool.query(
-            format("INSERT INTO companies(title, company_secret) VALUES (%L)", values),
-            [],
-            callback
-        )
-    },
-    updateCompany: (values, callback) => {
-        return pool.query(`UPDATE companies SET
-        title = $1
-        WHERE pk=$2 RETURNING *`,
-            values,
-            callback
-        )
-    },
-    rmCompany: (id, callback) => {
-        return pool.query(
-            format("DELETE FROM companies where pk = %L", id),
-            [],
-            callback
-        )
-    },
-
-
 
 }

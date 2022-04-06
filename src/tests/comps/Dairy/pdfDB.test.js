@@ -1,6 +1,9 @@
 import { jest } from '@jest/globals';
 import { round } from 'mathjs';
-import { postXLSX } from '../../../utils/requests'
+import { postXLSX, post } from '../../../utils/requests'
+import { UserAuth, auth } from '../../../utils/users'
+import { HACKER_EMAIL, HACKER_PASSWORD } from '../../../specific'
+import { CompanyUtil } from '../../../utils/company/company'
 import fs from 'fs'
 
 import {
@@ -11,8 +14,16 @@ import {
 import { naturalSort, naturalSortBy, naturalSortByKeys, sortByKeys } from '../../../utils/format';
 
 import { BASE_URL } from "../../../utils/environment"
-
+const _SECRET = "1337mostdope#@!123(*)89098&^%%^65blud"
 const dairy_id = 1
+const TEST_USER_EMAIL = 't@g.com'
+const TEST_USER_PASSWORD = 'abc123'
+const TEST_USER_EMAIL_READ = 't1@g.com'
+const TEST_USER_PASSWORD_READ = 't@g.com'
+const TEST_USER_EMAIL_WRITE = 't2@g.com'
+const TEST_USER_PASSWORD_WRITE = 't@g.com'
+const TEST_USER_EMAIL_DELETE = 't3@g.com'
+const TEST_USER_PASSWORD_DELETE = 't@g.com'
 
 const tp = (num, precision = 6) => {
     // to precision
@@ -22,6 +33,117 @@ const tp = (num, precision = 6) => {
 const isIDPK = (key) => {
     return key.indexOf("_id") >= 0 || key.indexOf("pk") >= 0
 }
+
+
+describe('Create Accounts', () => {
+    test('Create a company and an admin', async () => {
+        await auth.login(HACKER_EMAIL, HACKER_PASSWORD)
+        console.log("Current User: ", auth.currentUser.email)
+        // post(`${BASE_URL}/company/create`, {title: '', }
+        const { data: { pk: company_id, title } } = await CompanyUtil.createCompany('Pharmz')
+        let adminRes = null
+        expect(title).toEqual('Pharmz')
+
+        try {
+            adminRes = await auth.registerUser(TEST_USER_EMAIL, TEST_USER_PASSWORD, company_id)
+        } catch (e) {
+            console.log("Create Admin error: ", e)
+        }
+
+        expect(adminRes).toEqual({
+            pk: 2,
+            username: '',
+            email: 't@g.com',
+            account_type: 4,
+            company_id: 2
+        })
+    })
+
+    test('Create READ, WRITE, DELETE Accounts with admin', async () => {
+        const company_id = 2
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
+
+        const createReadRes = await UserAuth.createUser({ email: TEST_USER_EMAIL_READ, password: TEST_USER_PASSWORD_READ, account_type: 1, username: 'test1', company_id })
+        const createWriteRes = await UserAuth.createUser({ email: TEST_USER_EMAIL_WRITE, password: TEST_USER_PASSWORD_WRITE, account_type: 2, username: 'test2', company_id })
+        const createDeleteRes = await UserAuth.createUser({ email: TEST_USER_EMAIL_DELETE, password: TEST_USER_PASSWORD_DELETE, account_type: 3, username: 'test3', company_id })
+
+        expect(createReadRes.email).toEqual(TEST_USER_EMAIL_READ)
+        expect(createWriteRes.email).toEqual(TEST_USER_EMAIL_WRITE)
+        expect(createDeleteRes.email).toEqual(TEST_USER_EMAIL_DELETE)
+    })
+})
+
+describe('Create Dairies for 1 company', () => {
+    test('Create Dairy', async () => {
+        const company_id = 2
+        const reportingYear = 2020
+        const dairyTitle = 'Pharmz'
+
+        const res = await post(`${BASE_URL}/api/dairy_base/create`, {
+            title: dairyTitle, company_id
+        })
+        const { pk: dairyBaseID, title } = res
+        console.log('Res: ', res)
+        console.log("Dairy Base: ", title, dairyBaseID)
+
+        const dairyRes = await post(`${BASE_URL}/api/dairies/create`, {
+            dairyBaseID,
+            title,
+            reportingYear,
+            period_start: `1/1/${reportingYear}`,
+            period_end: `12/31/${reportingYear}`,
+            company_id
+        })
+
+        console.log("Dairy Res: ", dairyRes)
+
+        // began by default is a timestamp, constantly changing...
+        expect({ ...dairyRes, began: '' }).toEqual({
+            pk: 1,
+            dairy_base_id: 1,
+            reporting_yr: 2020,
+            period_start: '2020-01-01T08:00:00.000Z',
+            period_end: '2020-12-31T08:00:00.000Z',
+            street: '',
+            cross_street: '',
+            county: null,
+            city: '',
+            city_state: 'CA',
+            city_zip: '',
+            title: 'Pharmz',
+            basin_plan: null,
+            began: ''
+        })
+    })
+})
+
+
+// Run Dairy Tests before
+describe('Test Accounts permissions', () => {
+    test('WRITE Account can create company data', () => {
+
+    })
+    test('READ Account can access company data', () => {
+
+    })
+    test('DELETE Account can remove company data', () => {
+
+    })
+})
+
+describe('Test Accounts cross-company restrictions', () => {
+    test('READ Account can\'t access other company data', () => {
+
+    })
+    test('WRITE Account can\'t create other company data', () => {
+
+    })
+    test('DELETE Account can\'t remove other company data', () => {
+
+    })
+})
+
 
 describe('Test upload XLSX', () => {
     test('Upload XLSX.', async () => {

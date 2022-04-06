@@ -88,8 +88,9 @@ module.exports = (app) => {
 
         db.insertDairyBase([company_id, title], (err, result) => {
             if (!err) {
-                res.json({ "data": "Inserted dairy_base successfully" });
-                return;
+                if (result.rows.length > 0) {
+                    return res.json(result.rows[0]);
+                }
             }
             console.log(err)
             res.json({ "error": "Inserted dairy_base unsuccessful", code: err.code });
@@ -161,8 +162,9 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Inserted dairy successfully" });
-                return;
+                if (result.rows.length > 0) {
+                    return res.json(result.rows[0]);
+                }
             }
             console.log(err)
             res.json({ "error": "Inserted dairy unsuccessful" });

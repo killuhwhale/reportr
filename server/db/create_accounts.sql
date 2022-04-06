@@ -1,6 +1,11 @@
-CREATE  EXTENSION citext;
-CREATE DOMAIN email AS citext
+CREATE EXTENSION IF NOT EXISTS citext;
+DO $$ BEGIN
+    CREATE DOMAIN email AS citext
   CHECK ( value ~ '^[a-zA-Z0-9.!#$%&''*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$' );
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
 
 CREATE TABLE IF NOT EXISTS companies(
   pk SERIAL PRIMARY KEY,

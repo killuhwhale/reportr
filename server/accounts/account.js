@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const db = require('../db/accounts/accounts')
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
-const { verifyToken, needsHacker, needsAdmin, needsSelfOrAdmin, getCompanySecret, verifyRefreshToken } = require("../utils/middleware")
+const { verifyToken, needsHacker, needsAdmin, needsSelfOrAdmin, getCompanySecret, verifyRefreshToken, verifyUserFromCompanyByCompanyID } = require("../utils/middleware")
 const api = 'accounts'
 const { JWT_SECRET_KEY, JWT_OPTIONS, BCRYPT_SALT_ROUNDS } = require("../specific");
 const { ROLES } = require('../constants')
@@ -142,48 +142,41 @@ module.exports = (app) => {
     })
 
     // Allows Company admins to create user accounts for their company
-    app.post(`/${api}/create`, verifyToken, needsAdmin, (req, res) => {
+    app.post(`/${api}/create`, verifyToken, needsAdmin, verifyUserFromCompanyByCompanyID, (req, res) => {
         const { user } = req
-        const { user: { email, password, username, account_type, company_id } } = req.body
+        const { email, password, username, account_type, company_id } = req.body
 
+        // Ensure new account cannot be HACKER role
         if (account_type >= ROLES.HACKER) {
             return res.json({ error: `Cannot create user with account type: ${account_type}` })
         }
 
-        // Check that this request is by a company admin account, and the user company_id is same as the id in the request
-        if (user && user.account_type === ROLES.ADMIN) {
-            if (company_id !== user.company_id) {
-                return res.json({ error: 'Cannot create Account for another company.' })
-            }
-
-            bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
-                db.insertAccount(email, hash, username, account_type, company_id, (err, result) => {
-                    if (!err) {
-                        res.json({ "data": result.rows })
-                    } else {
-                        res.json({ "error": err })
+        bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
+            db.insertAccount(email, hash, username, account_type, company_id, (err, result) => {
+                if (!err) {
+                    if (result.rows.length > 0) {
+                        res.json(result.rows[0])
                     }
-                })
-            });
-        } else {
-            res.json({ "error": "Must be an Admin to add account." })
-        }
-
+                } else {
+                    res.json({ "error": err })
+                }
+            })
+        });
     })
 
-    // This will be for the dashboard only 
+    // This will be for the dashboard only, register admins to a company
     app.post(`/${api}/register`, verifyToken, needsHacker, (req, res) => {
         const { email, password, company_id } = req.body
         const { user } = req
-        if (user.account_type !== ROLES.HACKER) {
-            return res.json({ error: 'Permission denied.' })
-        }
 
         bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
             if (!err) {
                 db.insertOwnerAccount(email, hash, company_id, (dbErr, result) => {
                     if (!dbErr) {
-                        res.json({ data: { user } })
+                        if (result.rows.length > 0) {
+                            console.log("Found sum data: ", result.rows)
+                            res.json(result.rows[0])
+                        }
 
 
                     } else {
@@ -206,6 +199,7 @@ module.exports = (app) => {
     app.post(`/${api}/registerAdmin`, (req, res) => {
         const { email, password, SECRET } = req.body
         const _SECRET = "1337mostdope#@!123(*)89098&^%%^65blud"
+        // const _SECRET =  `d82de250-c4a1-4a1c-86d4-667242ed652247a28da4-9216-46dd-8a92-b9c923779849b3ed06f7-ef55-49b1-929b-142c594aee06bddcb758-1a27-406a-8275-444c5b41e16f9391848b-7bd1-41ab-b103-ea673513308a057c6897-689f-433f-9805-0920116d7983245c2197-4460-4089-86ad-37d4c29f32252c7cad82-9c38-4257-8fd8-440bb3408764d1da3c03-3cf7-4c7b-9b4e-1333ad426cb00d831121-04be-4c39-ba0c-5c5554165dc67ab0574a-27ed-4440-9b1f-3175f5e9eedde96b40bf-cbd3-4b79-98c9-6f16ebc0c9849e12f143-b2b1-41be-83da-22ab54eb11a314584881-3775-446c-87cb-e3e8e0ff087749fe5d64-cd81-45e3-b1ad-ee8206e881d6c8e5903a-290a-421c-911b-63ffcd699108e46354f0-98a8-4d43-8fec-3296d05e7674a4e402d6-d51c-40e1-86e2-b7edadd39e27eca54950-1aad-4fd5-808d-2bdb4b1a2b2644061078-8078-4439-b936-11782ea4e05e97ab7295-8cee-4934-8980-1609017a51b9f5b5dec2-d98e-4674-90bd-6cdf06041a10e89d7506-088b-4b38-844a-c2fd4e7bd2a90c5fab8e-cc6d-4bf4-a004-7ad0c37b80981be24ec4-a789-47a6-b33f-8d726b35eb00f7930c2a-ab69-4ee7-92f7-18f584dd026ec8c1cfcc-048f-4f15-bc6e-c3ce998b3de379ecbb38-4290-44e7-b3ce-eccae32592a54239af36-7099-445c-8367-04cb87c0b59af3083e82-d48e-4607-a9c0-adef937368b0c8eb82eb-bbf1-4c10-9a0d-2aef289a6f3b8113e683-b55f-495f-a49b-26941b7a8c8b65aa2e3e-dc33-4b4b-89e4-a3ba55b8c77e1bbf5609-580c-4555-9e9a-bc11a71d8dffd48e2bab-c56f-41a7-a008-c6ca7f2e6af288aeffa9-54b3-4589-9c82-8ae3f3187578cbc24a04-e30d-4528-a199-eaf8a3a3c57efc5e640f-17d0-4f9f-aaab-8960dd4e3b13216c240e-df58-442f-97b0-2f949831ae813c67c204-e422-4073-9a74-c805f7522596`
         console.log("TODO() Secret is exposed, add to variable from environment: ", SECRET)
 
         if (SECRET !== _SECRET) {
@@ -262,25 +256,33 @@ module.exports = (app) => {
         const { username, email, account_type, company_id, pk } = req.body.user // Updating user
         const { user } = req // current user
 
-        // TODO Lookup user by pk and check their account_type 
-        //   - check if current_account type is less than ROLES.ADMIN (should not alter ADMIN or HACKER roles)
-
-        let new_account_type = user.account_type // init value is the current account_type or old account_type
+        // Create a new query to update account w/out account_type to ensure account_type isnt change by the user.
         // If requesting user is updating their own information do not allow to change account level
-        if (pk !== user.pk) {
-            new_account_type = account_type  // new account 
+        if (pk === user.pk) {
+            const values = [username, email, pk]
+            // db.updateAccountForUser // excludes account_type
+            db.updateAccountForUser(values, (dbErr, result) => {
+                if (!dbErr) {
+                    const data = result.rows.length > 0 ? result.rows[0] : {}
+                    res.json({ 'data': data })
+                } else {
+                    console.log(dbErr)
+                    res.json({ "error": dbErr })
+                }
+            })
+        } else {
+            const values = [username, email, account_type, pk]
+            db.updateAccount(values, (dbErr, result) => {
+                if (!dbErr) {
+                    const data = result.rows.length > 0 ? result.rows[0] : {}
+                    res.json({ 'data': data })
+                } else {
+                    console.log(dbErr)
+                    res.json({ "error": dbErr })
+                }
+            })
         }
 
-        const values = [username, email, new_account_type, pk]
-        db.updateAccount(values, (dbErr, result) => {
-            if (!dbErr) {
-                const data = result.rows.length > 0 ? result.rows[0] : {}
-                res.json({ 'data': data })
-            } else {
-                console.log(dbErr)
-                res.json({ "error": dbErr })
-            }
-        })
     })
 
     const hashPassword = (password) => {
@@ -320,7 +322,7 @@ module.exports = (app) => {
         })
     }
 
-    app.post(`/${api}/changePassword`, verifyToken, needsSelfOrAdmin, (req, res) => {
+    app.post(`/${api}/changePassword`, verifyToken, needsSelfOrAdmin, verifyUserFromCompanyByCompanyID, (req, res) => {
         const { token } = req
         const { currentPassword, newPassword, pk, company_id } = req.body.userPassword // account data to update password
         const { user } = req // Current signed in user
@@ -360,7 +362,7 @@ module.exports = (app) => {
                 .catch(err => {
                     console.log(err)
                 })
-        } else if ((user.account_type === ROLES.ADMIN && user.company_id === company_id) || user.account_type === ROLES.HACKER) {
+        } else if (user.account_type >= ROLES.ADMIN) {
             // hash newPassword and update
             // commonCode
             _changePassword(newPassword, pk)
@@ -375,126 +377,38 @@ module.exports = (app) => {
 
     })
 
-    app.get(`/${api}/all/:company_id`, verifyToken, needsAdmin, (req, res) => {
+    app.get(`/${api}/all/:company_id`, verifyToken, needsAdmin, verifyUserFromCompanyByCompanyID, (req, res) => {
         const { company_id } = req.params
         const { user } = req
-        console.log(`Acct type: ${user.account_type} user_comp_id: ${user.company_id} company_id: ${company_id} `)
-        if (parseInt(user.account_type) === ROLES.ADMIN && parseInt(user.company_id) === parseInt(company_id) || user.account_type === ROLES.HACKER) {
-            db.getAccounts(company_id, (err, result) => {
-                if (!err) {
-                    res.json({ "data": result.rows })
-                } else {
-                    res.json({ "error": err })
-                }
-            })
-        } else {
-            res.json({ "error": `Permission denied: all accounts for company id (${company_id}).` })
-        }
-
+        // TODO() Allow HACKER ROLE to access
+        db.getAccounts(company_id, (err, result) => {
+            if (!err) {
+                res.json({ "data": result.rows })
+            } else {
+                res.json({ "error": err })
+            }
+        })
     })
 
-    app.post(`/${api}/delete`, verifyToken, (req, res) => {
+    app.post(`/${api}/delete`, verifyToken, verifyUserFromCompanyByCompanyID, needsSelfOrAdmin, (req, res) => {
         const { pk, company_id } = req.body
         const { user } = req
-
-        if (pk === user.pk || (user.account_type === ROLES.ADMIN && user.company_id === parseInt(company_id))) {
-
-            db.rmAccount(pk, (dbErr, result) => {
-                console.log("Done deleteing")
-                if (!dbErr) {
-                    console.log(result.rows)
-                    console.log("No dbErr")
-                    const data = result.rows.length > 0 ? result.rows[0] : {}
-                    res.json({ 'data': data })
-                } else {
-                    console.log(dbErr)
-                    res.json({ "error": dbErr })
-                }
-            })
-        } else {
-            res.json({ "error": 'Permission denied: Cannot delete user.' })
-        }
+        db.rmAccount(pk, (dbErr, result) => {
+            console.log("Done deleteing")
+            if (!dbErr) {
+                console.log(result.rows)
+                console.log("No dbErr")
+                const data = result.rows.length > 0 ? result.rows[0] : {}
+                res.json({ 'data': data })
+            } else {
+                console.log(dbErr)
+                res.json({ "error": dbErr })
+            }
+        })
     })
 
-    const genRandomChars = (len) => {
-        const allCapsAlpha = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
-        const allLowerAlpha = [..."abcdefghijklmnopqrstuvwxyz"];
-        const allUniqueChars = [...`~!@#$%^&*()_+-=[]\{}|;:'",./<>?`];
-        const allNumbers = [..."0123456789"];
-        const base = [...allCapsAlpha, ...allNumbers, ...allLowerAlpha, ...allUniqueChars];
-        return [...Array(len)]
-            .map(i => base[Math.random() * base.length | 0])
-            .join('');
-    };
 
 
-    // Companies HACKER use only
 
-    app.get(`/${api}/companies`, verifyToken, needsHacker, (req, res) => {
-        db.getCompanies(null,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                res.json({ "error": "Get comapnies unsuccessful", err: err });
-            })
-    });
-    app.get(`/${api}/companies/:pk`, verifyToken, needsHacker, (req, res) => {
-        db.getCompany(req.params.pk,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                res.json({ "error": "Get company unsuccessful", err: err });
-            })
-    });
 
-    app.post(`/${api}/companies/create`, verifyToken, needsHacker, (req, res) => {
-        const {
-            title
-        } = req.body
-        const secret = genRandomChars(42)
-        const eSecret = encrypt(secret)
-
-        console.log("Created company w/ secret", secret, eSecret)
-
-        db.insertCompany([title, eSecret], (err, result) => {
-            if (!err) {
-                return res.json({ "data": "Inserted company successfully" });
-            }
-            console.log(err)
-            res.json({ "error": "Inserted company unsuccessful", code: err.code });
-        })
-
-    });
-    app.post(`/${api}/companies/update`, verifyToken, needsHacker, (req, res) => {
-        const {
-            title, pk
-        } = req.body
-
-        db.updateCompany([
-            title, pk
-        ], (err, result) => {
-
-            if (!err) {
-                res.json(result);
-                return;
-            }
-            console.log(err)
-            res.json({ "error": "Updated company unsuccessful" });
-        })
-    });
-    app.post(`/${api}/companies/delete`, verifyToken, needsHacker, (req, res) => {
-        db.rmCompany(req.body.pk, (err, result) => {
-
-            if (!err) {
-                res.json({ "error": "Deleted company successfully" });
-                return;
-            }
-            console.log(err)
-            res.json({ "error": "Deleted company unsuccessful" });
-        })
-    });
 }

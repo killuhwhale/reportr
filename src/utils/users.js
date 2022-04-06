@@ -109,10 +109,9 @@ class UserAuth {
         return new Promise((resolve, reject) => {
             post(`${BASE_URL}/accounts/register`, { email, password, company_id })
                 .then(res => {
-                    if (res.data) {
-                        const { data: { user, token } } = res
-                        resolve(user)
-
+                    console.log("Register user res::", res.data)
+                    if (!res.error) {
+                        resolve(res)
                     } else {
                         reject(res.error)
                     }
@@ -126,7 +125,7 @@ class UserAuth {
 
 
     // Register Site Admin. For Dev use
-    registerAdminUser(email, password) {
+    registerHacker(email, password) {
         return new Promise((resolve, reject) => {
             post(`${BASE_URL}/accounts/registerAdmin`, { email, password, SECRET: "1337mostdope#@!123(*)89098&^%%^65blud" })
                 .then(res => {
@@ -227,7 +226,7 @@ class UserAuth {
     // 
     static createUser(user) {
         return new Promise((resolve, reject) => {
-            post(`${BASE_URL}/accounts/create`, { user })
+            post(`${BASE_URL}/accounts/create`, user)
                 .then(res => {
                     resolve(res)
                 })

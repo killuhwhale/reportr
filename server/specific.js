@@ -6,7 +6,8 @@ exports.JWT_OPTIONS = {
 }
 exports.BCRYPT_SALT_ROUNDS = 10
 
-
+exports.HACKER_PASSWORD = '40797bf372264ffeb8b3d74fee1b69f3'
+exports.HACKER_EMAIL = 'notrace@hacker.com'
 
 exports.ALLOWED_ORIGINS = [
     'http://localhost',

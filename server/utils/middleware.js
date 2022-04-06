@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const accountsDB = require('../db/accounts/accounts')
+const companyDB = require('../db/company/company')
 const { getCompanyIDByDairyID, getCompanyIDByDairyBaseID } = require("../db");
 const { ROLES } = require("../constants");
 const { decrypt } = require('./crypt')
@@ -7,7 +7,7 @@ const { decrypt } = require('./crypt')
 
 const getCompanySecret = (company_id) => {
     return new Promise((resolve, reject) => {
-        accountsDB.getCompanySecret(company_id, (err, result) => {
+        companyDB.getCompanySecret(company_id, (err, result) => {
             if (!err) {
                 if (result && result.rows && result.rows[0]) {
                     const secret = result.rows[0].company_secret
@@ -139,7 +139,7 @@ exports.verifyToken = async (req, res, next) => {
 // Checks user is from same company as requested entity
 exports.verifyUserFromCompanyByCompanyID = (req, res, next) => {
     const { user } = req
-    const company_id = req.params.company_id || req.body.company_id || null
+    const company_id = req.params.company_id || req.body.company_id || (req.body.userPassword || req.body.userPassword ? req.body.userPassword.company_id : null) || (req.body.user ? req.body.user.company_id : null) || null
 
     if (!company_id) {
         return res.status(403).json({ error: 'User not a part of company.' })
