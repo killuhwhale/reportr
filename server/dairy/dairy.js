@@ -153,6 +153,8 @@ module.exports = (app) => {
             })
     });
     app.post("/api/dairies/create", verifyToken, verifyUserFromCompanyByDairyBaseID, needsWrite, (req, res) => {
+        console.log("Inserting dairy: ", req.body)
+
         db.insertDairy([
             req.body.dairyBaseID,
             req.body.title,
@@ -235,7 +237,7 @@ module.exports = (app) => {
             })
     });
     app.post("/api/fields/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
-        const { title, acres, cropable, dairy_id } = req.body.data
+        const { title, acres, cropable, dairy_id } = req.body
         db.insertField([title, acres, cropable, dairy_id], (err, result) => {
             if (!err) {
                 res.json(result.rows)
@@ -247,7 +249,7 @@ module.exports = (app) => {
         })
     });
     app.post("/api/fields/update", verifyToken, needsWrite, verifyUserFromCompanyByDairyID, (req, res) => {
-        const { title, acres, cropable, pk } = req.body.data
+        const { title, acres, cropable, pk } = req.body
         db.updateField([title, acres, cropable, pk], (err, result) => {
             if (!err) {
                 return res.json({ data: "Updated field successfully" });
@@ -523,9 +525,9 @@ module.exports = (app) => {
     });
     app.post("/api/herds/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body)
-        const { milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, p_breed, p_breed_other, pk } = req.body
+        const { milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, p_breed, p_breed_other, dairy_id } = req.body
         db.updateHerd([
-            milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, p_breed, p_breed_other, pk
+            milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, p_breed, p_breed_other, dairy_id
         ], (err, result) => {
 
             if (!err) {

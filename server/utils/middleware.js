@@ -155,6 +155,9 @@ exports.verifyUserFromCompanyByCompanyID = (req, res, next) => {
 exports.verifyUserFromCompanyByDairyID = async (req, res, next) => {
     const { user: { company_id } } = req
     const dairy_id = req.params.dairy_id || req.body.dairy_id || (req.body.data ? req.body.data.dairy_id : null) || null
+
+    console.log("verifyUserFromCompanyByDairyID::Looking up dairy with id: ", dairy_id)
+
     if (!dairy_id) {
         return res.status(403).json({ error: 'Permission denied: user not apart of company. No dairy id' })
     }

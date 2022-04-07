@@ -17,7 +17,8 @@ import PlowdownCredit from "./plowdownCredit"
 import AddFieldCropApplicationModal from "../Modals/addFieldCropApplicationModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 
-import { get, post } from '../../utils/requests';
+import { get, post } from '../../utils/requests'
+import { Field } from '../../utils/fields/fields'
 import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, } from '../../utils/TSV'
 import { APP_METHODS, PRECIPITATIONS, REPORTING_METHODS, SOURCE_OF_ANALYSES, NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES } from '../../utils/constants'
 
@@ -94,7 +95,7 @@ class NutrientApplicationTab extends Component {
       })
   }
   getFields() {
-    get(`${this.props.BASE_URL}/api/fields/${this.state.dairy.pk}`)
+    Field.getField(this.state.dairy.pk)
       .then(fields => {
         this.setState({ fields: fields })
       })

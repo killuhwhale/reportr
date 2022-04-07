@@ -8,6 +8,8 @@ import calculateHerdManNKPNaCl, { getReportingPeriodDays } from "../../utils/her
 import { NUTRIENT_IMPORT_MATERIAL_TYPES } from '../../utils/constants'
 import { BASE_URL } from "../../utils/environment"
 import { REPORTING_METHODS } from '../../utils/constants'
+import { Field } from '../../utils/fields/fields'
+
 export default function mTEA() { }
 
 const GALS_PER_ACREINCH = 27154.2856
@@ -411,8 +413,7 @@ const getAvailableNutrientsG = (dairy_id) => {
 const getApplicationAreaA = (dairy_id) => {
   return new Promise((resolve, rej) => {
     Promise.all([
-      get(`${BASE_URL}/api/fields/${dairy_id}`),
-
+      Field.getField(dairy_id),
       get(`${BASE_URL}/api/field_crop_harvest/${dairy_id}`), // get number of harvests per field
       get(`${BASE_URL}/api/field_crop_app_process_wastewater/${dairy_id}`), // check type of waste applied for field
       get(`${BASE_URL}/api/field_crop_app_solidmanure/${dairy_id}`), // check type of waste applied for field

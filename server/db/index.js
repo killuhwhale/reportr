@@ -86,7 +86,7 @@ const updateHerd = (values, callback) => {
     calf_old = $6,
     p_breed = $7,
     p_breed_other = $8
-    WHERE pk=$9`,
+    WHERE dairy_id=$9`,
     values,
     callback
   )
@@ -2765,32 +2765,6 @@ const createSchema = (pool) => {
   })
 }
 
-const createBaseDairy = async (title, company_id) => {
-  return new Promise((resolve, reject) => {
-
-    insertDairyBase([title, company_id], (err, res) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(res)
-      }
-    })
-  })
-}
-
-
-const createDairy = async (title) => {
-  return new Promise((resolve, reject) => {
-
-    insertDairy([1, title, '2020', '01/01/2020', '12/31/2020'], (err, res) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(res)
-      }
-    })
-  })
-}
 
 const createHerds = async () => {
   return new Promise((resolve, reject) => {

@@ -77,7 +77,6 @@ class UserAuth {
                         const refreshToken = res.data.refreshToken.token;
 
                         const user = res.data.user;
-                        console.log("Setting refresh token, ", refreshToken)
                         this.setUserAndToken(user, accessToken, refreshToken)
                         this.setCompanyID(user.company_id)
                         this.authStateChanged()
@@ -109,7 +108,6 @@ class UserAuth {
         return new Promise((resolve, reject) => {
             post(`${BASE_URL}/accounts/register`, { email, password, company_id })
                 .then(res => {
-                    console.log("Register user res::", res.data)
                     if (!res.error) {
                         resolve(res)
                     } else {

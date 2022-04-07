@@ -165,7 +165,6 @@ const postXLSX = (url, data) => {
         return errorData
       } else {
         // Normal request
-        console.log(res)
         return res.json()
       }
     })

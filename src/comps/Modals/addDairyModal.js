@@ -6,6 +6,7 @@ import { get, post } from '../../utils/requests';
 import { zeroTimeDate } from "../../utils/convertCalc"
 import { YEARS } from '../../utils/constants'
 import { auth } from '../../utils/users';
+import { Field } from '../../utils/fields/fields'
 
 const latestEntry = (entries) => {
 	// Returns the object in the list with the highest pk 
@@ -124,6 +125,7 @@ class AddDairyModal extends Component {
 
 			get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${dairyBaseID}/${company_id}`)
 				.then(dairies => {
+					console.log("Checking for duplicates in: ", dairies)
 					if (isDuplicateYear(dairies, reportingYear)) {
 						this.props.onDone()
 						this.props.onClose()
@@ -152,7 +154,7 @@ class AddDairyModal extends Component {
 								// Fetch other prev data using latestDairy
 								if (dairy && typeof dairy === typeof {} && Object.keys(dairy).length > 0) {
 									Promise.all([
-										get(`${this.props.BASE_URL}/api/fields/${latestDairy.pk}`),
+										Field.getField(latestDairy.pk),
 										get(`${this.props.BASE_URL}/api/parcels/${latestDairy.pk}`),
 										get(`${this.props.BASE_URL}/api/field_parcel/${latestDairy.pk}`),
 										get(`${this.props.BASE_URL}/api/operators/${latestDairy.pk}`),
@@ -163,12 +165,7 @@ class AddDairyModal extends Component {
 											if (fields.length > 0) {
 												console.log("Creating fields")
 												promises = fields.map(field => {
-													return post(`${this.props.BASE_URL}/api/fields/create`, {
-														data: {
-															...field,
-															dairy_id: dairy.pk
-														}
-													})
+													return Field.createField(field, dairy.pk)
 												})
 
 											}

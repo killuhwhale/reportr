@@ -1,10 +1,13 @@
 import { jest } from '@jest/globals';
 import { round } from 'mathjs';
+import fs from 'fs'
 import { postXLSX, post } from '../../../utils/requests'
 import { UserAuth, auth } from '../../../utils/users'
 import { HACKER_EMAIL, HACKER_PASSWORD } from '../../../specific'
 import { CompanyUtil } from '../../../utils/company/company'
-import fs from 'fs'
+import { Herds } from '../../../utils/herds/herds'
+import { Field } from '../../../utils/fields/fields'
+
 
 import {
     getApplicationAreaA, getApplicationAreaB, getAvailableNutrientsAB, getAvailableNutrientsC,
@@ -14,10 +17,13 @@ import {
 import { naturalSort, naturalSortBy, naturalSortByKeys, sortByKeys } from '../../../utils/format';
 
 import { BASE_URL } from "../../../utils/environment"
-const _SECRET = "1337mostdope#@!123(*)89098&^%%^65blud"
 const dairy_id = 1
+const TEST_USER_EMAIL_A = 'z@g.com'
+const TEST_USER_PASSWORD_A = 'abc123'
+
 const TEST_USER_EMAIL = 't@g.com'
 const TEST_USER_PASSWORD = 'abc123'
+
 const TEST_USER_EMAIL_READ = 't1@g.com'
 const TEST_USER_PASSWORD_READ = 't@g.com'
 const TEST_USER_EMAIL_WRITE = 't2@g.com'
@@ -38,14 +44,15 @@ const isIDPK = (key) => {
 describe('Create Accounts', () => {
     test('Create a company and an admin', async () => {
         await auth.login(HACKER_EMAIL, HACKER_PASSWORD)
-        console.log("Current User: ", auth.currentUser.email)
         // post(`${BASE_URL}/company/create`, {title: '', }
-        const { data: { pk: company_id, title } } = await CompanyUtil.createCompany('Pharmz')
+        const { data: { pk: company_id, title } } = await CompanyUtil.createCompany('Pharmz') // pk2
+        const { data: { pk: company_id_a } } = await CompanyUtil.createCompany('Growz') //pk3
         let adminRes = null
         expect(title).toEqual('Pharmz')
 
         try {
             adminRes = await auth.registerUser(TEST_USER_EMAIL, TEST_USER_PASSWORD, company_id)
+            await auth.registerUser(TEST_USER_EMAIL_A, TEST_USER_PASSWORD_A, company_id_a) // Company Grows id=3
         } catch (e) {
             console.log("Create Admin error: ", e)
         }
@@ -74,19 +81,27 @@ describe('Create Accounts', () => {
     })
 })
 
+
+
+/** Current task: Create tests for accounts trying to do unprivelged things
+ * 
+ *  Currently only checking user's current role for success, need to check sub rolls for success and super rolls for failure.
+ 
+ *  READ ACCOUNT CANT WRITE OR DELETE
+ *  WRITE ACCOUNT can READ but NOT DELETE
+ *  DELETE ACCOUNT can READ, WRITE and DELETE 
+ */
+
+
 describe('Create Dairies for 1 company', () => {
     test('Create Dairy', async () => {
         const company_id = 2
         const reportingYear = 2020
         const dairyTitle = 'Pharmz'
 
-        const res = await post(`${BASE_URL}/api/dairy_base/create`, {
+        const { pk: dairyBaseID, title } = await post(`${BASE_URL}/api/dairy_base/create`, {
             title: dairyTitle, company_id
         })
-        const { pk: dairyBaseID, title } = res
-        console.log('Res: ', res)
-        console.log("Dairy Base: ", title, dairyBaseID)
-
         const dairyRes = await post(`${BASE_URL}/api/dairies/create`, {
             dairyBaseID,
             title,
@@ -95,8 +110,6 @@ describe('Create Dairies for 1 company', () => {
             period_end: `12/31/${reportingYear}`,
             company_id
         })
-
-        console.log("Dairy Res: ", dairyRes)
 
         // began by default is a timestamp, constantly changing...
         expect({ ...dairyRes, began: '' }).toEqual({
@@ -115,34 +128,93 @@ describe('Create Dairies for 1 company', () => {
             basin_plan: null,
             began: ''
         })
+
+        //////////////
+        // Create a second dairy for the second company
+        ////////////////////////////
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_A, TEST_USER_PASSWORD_A)
+
+        const company_id_a = 3
+        const { pk: dairyBaseID_A, title: title_A } = await post(`${BASE_URL}/api/dairy_base/create`, {
+            title: 'GrowzDairy', company_id: company_id_a
+        })
+
+        await post(`${BASE_URL}/api/dairies/create`, {
+            dairyBaseID: dairyBaseID_A,
+            title: title_A,
+            reportingYear,
+            period_start: `1/1/${reportingYear}`,
+            period_end: `12/31/${reportingYear}`,
+            company_id: company_id_a
+        })
     })
 })
 
 
 // Run Dairy Tests before
 describe('Test Accounts permissions', () => {
-    test('WRITE Account can create company data', () => {
-
+    const dairy_id = 1
+    test('WRITE Account can create company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        // Create a field for dairy_id = 1
+        const res = await Field.createField({ title: 'testField', acres: 10, cropable: 10 }, dairy_id)
+        expect(res).toEqual([
+            {
+                pk: 1,
+                title: 'testField',
+                acres: '10.00',
+                cropable: '10.00',
+                dairy_id: 1
+            }
+        ])
     })
-    test('READ Account can access company data', () => {
-
+    test('READ Account can access company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+        const res = await Field.getField(dairy_id)
+        expect(res).toEqual([
+            {
+                pk: 1,
+                title: 'testField',
+                acres: '10.00',
+                cropable: '10.00',
+                dairy_id: 1
+            }
+        ])
     })
-    test('DELETE Account can remove company data', () => {
-
+    test('DELETE Account can remove company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        const fields = await Field.getField(dairy_id)
+        const res = await Field.deleteField(fields[0].pk, dairy_id)
+        expect(res).toEqual({ data: 'Deleted field successfully' })
     })
 })
-
 describe('Test Accounts cross-company restrictions', () => {
-    test('READ Account can\'t access other company data', () => {
 
+    const dairy_id = 2 // dairy_id that doesn't belong to the user
+    test('READ Account can\'t access other company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const res = await Field.createField({ title: 'testField', acres: 10, cropable: 10 }, dairy_id)
+        expect(res.error).toBeTruthy()
     })
-    test('WRITE Account can\'t create other company data', () => {
-
+    test('WRITE Account can\'t create other company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+        const res = await Field.getField(dairy_id)
+        expect(res.error).toBeTruthy()
     })
-    test('DELETE Account can\'t remove other company data', () => {
-
+    test('DELETE Account can\'t remove other company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        const res = await Field.deleteField(1, dairy_id)
+        expect(res.error).toBeTruthy()
     })
 })
+
 
 
 describe('Test upload XLSX', () => {
@@ -1757,6 +1829,27 @@ describe('Test pdfDB', () => {
         })
     })
 
+    test('Insert and Upate Herd Information', async () => {
+        const dairy_id = 1
+        const updateHerdsInfo = {
+            milk_cows: [1, 1, 2, 1, 1, 1],
+            dry_cows: [1, 1, 2, 1, 5000],
+            bred_cows: [1, 1, 2, 1, 1],
+            cows: [1, 1, 2, 1, 1],
+            calf_young: [1, 1, 2, 1],
+            calf_old: [1, 1, 2, 1],
+            p_breed: "Ayrshire",
+            p_breed_other: "",
+            dairy_id: 1
+        }
+
+        await Herds.createHerd(dairy_id)
+        await Herds.updateHerd(updateHerdsInfo, dairy_id)
+        const herds = await Herds.getHerd(dairy_id)
+        expect(herds[0]).toEqual({ ...updateHerdsInfo, pk: 1 })
+
+    })
+
     test('AB. HERD INFORMATION:MANURE GENERATED', async () => {
         const { availableNutrientsAB } = await getAvailableNutrientsAB(dairy_id)
 
@@ -2668,4 +2761,7 @@ describe('Test pdfDB', () => {
         const res = await getExceptionReportingABC(dairy_id)
         // console.log(res)
     })
+
+
+
 })

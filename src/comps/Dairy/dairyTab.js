@@ -25,7 +25,7 @@ import { ImportExport } from '@material-ui/icons'
 import { getReportingPeriodDays } from "../../utils/herdCalculation"
 import XLSX from 'xlsx'
 import { BASE_URL } from '../../utils/environment';
-
+import { Field } from '../../utils/fields/fields'
 
 const ReportingPeriod = (props) => {
   // onUpdate
@@ -123,7 +123,7 @@ class DairyTab extends Component {
       .catch(err => { console.log(err) })
   }
   getAllFields() {
-    get(`${this.props.BASE_URL}/api/fields/${this.state.dairy.pk}`)
+    Field.getField(this.state.dairy.pk)
       .then(res => {
         // console.log(res)
         this.setState({ fields: res })

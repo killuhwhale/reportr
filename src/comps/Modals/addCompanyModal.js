@@ -4,7 +4,7 @@ import { Grid, Paper, Button, Typography, Modal, TextField, CircularProgress } f
 import { withTheme } from '@material-ui/core/styles';
 import { get, post } from '../../utils/requests';
 import { BASE_URL } from '../../utils/environment';
-import { CompanyUtil } from '../../'
+import { CompanyUtil } from '../../utils/company/company'
 
 class AddCompanyModal extends Component {
 

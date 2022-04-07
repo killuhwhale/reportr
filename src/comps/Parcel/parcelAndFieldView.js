@@ -15,6 +15,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from "../../utils/requests"
 import { AddCircleOutline, ImportExport } from '@material-ui/icons'
 import { naturalSortBy } from '../../utils/format'
+import { Field } from '../../utils/fields/fields'
 
 class ParcelView extends Component {
   constructor(props) {
@@ -229,7 +230,7 @@ class ParcelView extends Component {
   }
 
   createField(field) {
-    post(`${this.props.BASE_URL}/api/fields/create`, { data: { ...field, dairy_id: this.state.dairy.pk } })
+    Field.createField(field, this.state.dairy.pk)
       .then(res => {
         this.toggleFieldModal(false)
         this.props.getAllFields()

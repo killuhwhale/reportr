@@ -9,7 +9,7 @@ import {
     harvestTemplate, wwTemplate, fwTemplate, smTemplate, cfTemplate, smExportTemplate,
     wwExportTemplate, soilTemplate, plowdownTemplate, tiledrainageTemplate, dischargeTemplate
 } from './tsvTemplates'
-
+import { Field } from './fields/fields'
 // Client Side upload, not used DEPRACTED.
 
 export default function mTea() { }
@@ -258,16 +258,20 @@ export const createFieldsFromTSV = (fields, dairy_id) => {
 
 
     let promises = fields.map(field => {
-        let data = {
-            data: {
-                dairy_id: dairy_id,
+        // let data = {
+        //     data: {
+        //         dairy_id: dairy_id,
+        //         title: field[0],
+        //         acres: field[1],
+        //         cropable: field[2]
+        //     }
+        // }
+        return new Promise((res, rej) => {
+            Field.createField({
                 title: field[0],
                 acres: field[1],
                 cropable: field[2]
-            }
-        }
-        return new Promise((res, rej) => {
-            post(`${BASE_URL}/api/fields/create`, data)
+            }, dairy_id)
                 .then(result => {
                     res(result)
                 })
