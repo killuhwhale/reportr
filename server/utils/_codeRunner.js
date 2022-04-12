@@ -41,5 +41,4 @@ console.log(`D-Secret: ${decryptSecret}`)
 const passwordTohash = '40797bf372264ffeb8b3d74fee1b69f3'
 bcrypt.hash(passwordTohash, BCRYPT_SALT_ROUNDS, function (err, hash) {
     console.log(`Hash for ${passwordTohash} is ${hash}`)
-    console.log('$2b$10$wj/ak./b9s0yvvORznMGTe75LLu7.AWlNL6nOmKUrqokhTGTPrSqu' === hash)
 });

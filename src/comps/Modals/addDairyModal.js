@@ -123,7 +123,7 @@ class AddDairyModal extends Component {
 			// console.log("Creating a dairy for reporting year", reportingYear, dairyBaseID)
 			// console.log("Query for last reporting year.....")
 
-			get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${dairyBaseID}/${company_id}`)
+			get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${dairyBaseID}`)
 				.then(dairies => {
 					console.log("Checking for duplicates in: ", dairies)
 					if (isDuplicateYear(dairies, reportingYear)) {

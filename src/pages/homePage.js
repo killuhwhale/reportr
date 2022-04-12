@@ -21,7 +21,7 @@ import ActionCancelModal from "../comps/Modals/actionCancelModal"
 import Accounts from "../comps/Accounts/accounts"
 import { auth } from '../utils/users'
 import { get, post } from "../utils/requests"
-
+import { Dairy } from '../utils/dairy/dairy'
 import { ALPHA_LOGO } from "../specific"
 import { COUNTIES, BASINS, BREEDS } from '../utils/constants'
 
@@ -67,7 +67,8 @@ class HomePage extends Component {
   getBaseDairies() {
 
     const companyID = auth.currentUser.company_id
-    get(`${this.props.BASE_URL}/api/dairy_base/${companyID}`)
+    // get(`${this.props.BASE_URL}/api/dairy_base/${companyID}`)
+    Dairy.getDairyBaseByCompanyID(companyID)
       .then(res => {
         const dairyBase = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
         if (Object.keys(dairyBase).length > 0) {
@@ -92,7 +93,7 @@ class HomePage extends Component {
     if (!company_id) return this.props.onAlert('Cannot find company ID', 'error')
 
     if (baseDairiesID) {
-      get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${baseDairiesID}/${company_id}`)
+      get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${baseDairiesID}`)
         .then(res => {
           const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
           let dairyIdx = this.state.dairyIdx < res.length ? this.state.dairyIdx : 0
@@ -171,7 +172,7 @@ class HomePage extends Component {
     if (baseDairiesID) {
       // Query dairies by dairy_base_id
       // Display all dairies by reporting year,
-      get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${baseDairiesID}/${company_id}`)
+      get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${baseDairiesID}`)
         .then(res => {
           const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
           this.setState({ dairies: res, dairyIdx: 0, dairy, baseDairiesIdx, dairyBase })

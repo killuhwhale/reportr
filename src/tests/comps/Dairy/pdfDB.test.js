@@ -40,11 +40,23 @@ const isIDPK = (key) => {
     return key.indexOf("_id") >= 0 || key.indexOf("pk") >= 0
 }
 
+// Middle Ware verifyRefreshToken
+// verifyUserFromCompanyByDairyBaseID
+// verifyToken
+// verifyUserFromCompanyByCompanyID
+// verifyUserFromCompanyByDairyID
+// verifyUserFromCompanyByUserID
+// needsRead
+// needsWrite
+// needsDelete
+// needsAdmin
+// needsHacker
+// needsSelfOrAdmin
 
+// --------------- Create All Roles and Test various permissions ---------------------------
 describe('Create Accounts', () => {
     test('Create a company and an admin', async () => {
         await auth.login(HACKER_EMAIL, HACKER_PASSWORD)
-        // post(`${BASE_URL}/company/create`, {title: '', }
         const { data: { pk: company_id, title } } = await CompanyUtil.createCompany('Pharmz') // pk2
         const { data: { pk: company_id_a } } = await CompanyUtil.createCompany('Growz') //pk3
         let adminRes = null
@@ -65,7 +77,6 @@ describe('Create Accounts', () => {
             company_id: 2
         })
     })
-
     test('Create READ, WRITE, DELETE Accounts with admin', async () => {
         const company_id = 2
         await auth.logout()
@@ -80,18 +91,6 @@ describe('Create Accounts', () => {
         expect(createDeleteRes.email).toEqual(TEST_USER_EMAIL_DELETE)
     })
 })
-
-
-
-/** Current task: Create tests for accounts trying to do unprivelged things
- * 
- *  Currently only checking user's current role for success, need to check sub rolls for success and super rolls for failure.
- 
- *  READ ACCOUNT CANT WRITE OR DELETE
- *  WRITE ACCOUNT can READ but NOT DELETE
- *  DELETE ACCOUNT can READ, WRITE and DELETE 
- */
-
 
 describe('Create Dairies for 1 company', () => {
     test('Create Dairy', async () => {
@@ -151,11 +150,36 @@ describe('Create Dairies for 1 company', () => {
     })
 })
 
-
-// Run Dairy Tests before
 describe('Test Accounts permissions', () => {
+    test('ADMIN Role Cannot Create Company', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
+        const res = await CompanyUtil.createCompany('PharmzTest')
+        expect(res.error).toBeTruthy()
+    })
+    test('WRITE Role Cannot Create Company', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const res = await CompanyUtil.createCompany('PharmzTest')
+        expect(res.error).toBeTruthy()
+    })
+    test('READ Role Cannot Create Company', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+        const res = await CompanyUtil.createCompany('PharmzTest')
+        expect(res.error).toBeTruthy()
+    })
+    test('DELETE Role Cannot Create Company', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        const res = await CompanyUtil.createCompany('PharmzTest')
+        expect(res.error).toBeTruthy()
+    })
+})
+
+describe('Test Accounts permissions; middleware:: [needsRead, needsWrite, needsDelete, needsAdmin, needsHacker, needsSelfOrAdmin]', () => {
     const dairy_id = 1
-    test('WRITE Account can create company data', async () => {
+    test('WRITE Role can create company data', async () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
         // Create a field for dairy_id = 1
@@ -170,7 +194,7 @@ describe('Test Accounts permissions', () => {
             }
         ])
     })
-    test('READ Account can access company data', async () => {
+    test('READ Role can access company data', async () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
         const res = await Field.getField(dairy_id)
@@ -184,30 +208,156 @@ describe('Test Accounts permissions', () => {
             }
         ])
     })
-    test('DELETE Account can remove company data', async () => {
+    test('DELETE Roles can remove company data', async () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
         const fields = await Field.getField(dairy_id)
         const res = await Field.deleteField(fields[0].pk, dairy_id)
         expect(res).toEqual({ data: 'Deleted field successfully' })
     })
-})
-describe('Test Accounts cross-company restrictions', () => {
+    test('Role permission sub/ super role check', async () => {
+        const dairy_id = 1
 
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        const field = await Field.createField({ title: 'testField', acres: 10, cropable: 10 }, dairy_id)
+        expect(field.error).toBeFalsy()
+
+
+        // WRITE ACCOUNT can READ but NOT DELETE
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const fields = await Field.getField(dairy_id) // Passes
+        const resREAD = await Field.deleteField(fields[0].pk, dairy_id) // Fails
+        expect(resREAD.error).toBeTruthy()
+
+        // READ ACCOUNT CANT WRITE OR DELETE
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+        const resWRITEA = await Field.createField({ title: 'testField', acres: 10, cropable: 10 }, dairy_id) // Fail
+        expect(resWRITEA.error).toBeTruthy
+        const resWRITEB = await Field.deleteField(fields[0].pk, dairy_id)  // Fail
+        expect(resWRITEB.error).toBeTruthy
+
+
+        // Cleanup Field - Delete it
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        const resDELETE = await Field.deleteField(fields[0].pk, dairy_id)  // Fail
+        expect(resDELETE.error).toBeFalsy()
+
+    })
+    test('Test that non-hacker roles cannot create Admin accounts ', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+
+        const res1 = await auth.registerUser('fake@admin.user',
+            'testfakepswd', 1)
+        expect(res1.error).toBeTruthy()
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+
+        const res2 = await auth.registerUser('fake@admin.user', 'testfakepswd', 1)
+        expect(res2.error).toBeTruthy()
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+
+        const res3 = await auth.registerUser('fake@admin.user', 'testfakepswd', 1)
+        expect(res3.error).toBeTruthy()
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
+        const res4 = await auth.registerUser('fake@admin.user', 'testfakepswd', 1)
+        expect(res4.error).toBeTruthy()
+
+        await auth.logout()
+    })
+
+    test('Test Roles cant alter other accounts', async () => {
+        // Admin
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
+        let user = auth.currentUser
+        const ADMIN_USER_ID = user.pk
+
+        // Update w/ correct company_id, another user from different company
+        const res1 = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: 1 })
+        expect(res1.error).toBeTruthy()
+
+        // same company_id and user from same company
+        const resA = await UserAuth.updateAccount({ username: 'TUUsername', email: user.email, account_type: 4, company_id: user.company_id, pk: ADMIN_USER_ID })
+        expect(resA.error).toBeFalsy()  // admin account makes reqest, should be successful (self)
+
+        // Ensure WRITE account is unable to update accounts
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        user = auth.currentUser
+
+        const res2 = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: 1 })
+        expect(res1.error).toBeTruthy()
+
+        const resB = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: ADMIN_USER_ID })
+        expect(resB.error).toBeTruthy()
+
+        // Ensure READ account is unable to update accounts
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+        user = auth.currentUser
+
+        const res3 = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: 1 })
+        expect(res1.error).toBeTruthy()
+
+        const resC = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: ADMIN_USER_ID })
+        expect(resC.error).toBe('You need permission: ADMIN or Self')
+
+        // Ensure DELETE account is unable to update accounts
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        user = auth.currentUser
+
+        const res4 = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: 1 })
+        expect(res1.error).toBeTruthy()
+
+        const resD = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: ADMIN_USER_ID })
+        expect(resD.error).toBeTruthy()
+
+        await auth.logout()
+    })
+    // Template.....
+    test('Test Accounts... ', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+
+        await auth.logout()
+    })
+})
+
+describe('Test Accounts cross-company restrictions', () => {
     const dairy_id = 2 // dairy_id that doesn't belong to the user
-    test('READ Account can\'t access other company data', async () => {
+    test('READ role can\'t access other company data', async () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
         const res = await Field.createField({ title: 'testField', acres: 10, cropable: 10 }, dairy_id)
         expect(res.error).toBeTruthy()
     })
-    test('WRITE Account can\'t create other company data', async () => {
+    test('WRITE role can\'t create other company data', async () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
         const res = await Field.getField(dairy_id)
         expect(res.error).toBeTruthy()
     })
-    test('DELETE Account can\'t remove other company data', async () => {
+    test('DELETE role can\'t remove other company data', async () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
         const res = await Field.deleteField(1, dairy_id)
@@ -216,7 +366,21 @@ describe('Test Accounts cross-company restrictions', () => {
 })
 
 
+describe('Test middleware verifyUserFromCompanyBy*', () => {
+    /**
+            verifyUserFromCompanyByDairyBaseID
+            verifyUserFromCompanyByCompanyID
+            verifyUserFromCompanyByDairyID
+            verifyUserFromCompanyByUserID
+     */
+    test('Test *ByDairyBaseID', async () => {
+        // Send a request from a user that should work get
+        // Send a request from a user that should NOT work by:
+        //  - using wrong DiaryBaseID
+    })
+})
 
+// --------------- Upload XLSX and Test PDF report data calculations ---------------------------
 describe('Test upload XLSX', () => {
     test('Upload XLSX.', async () => {
         try {

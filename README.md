@@ -73,44 +73,65 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 # Testing:
   # Current Test Converagessss
-  - Upload XLSX and Calculate Annual Report data
-  - Util functions (partial)
-    - Format, toFloat, grouping
+  Create Accounts
+    ✓ Create a company and an admin (348 ms)
+    ✓ Create READ, WRITE, DELETE Accounts with admin (270 ms)
+  Create Dairies for 1 company
+    ✓ Create Dairy (103 ms)
+  Test Accounts permissions
+    ✓ ADMIN Role Cannot Create Company (70 ms)
+    ✓ WRITE Role Cannot Create Company (70 ms)
+    ✓ READ Role Cannot Create Company (71 ms)
+    ✓ DELETE Role Cannot Create Company (67 ms)
+    ✓ WRITE Account can create company data (72 ms)
+    ✓ READ Account can access company data (69 ms)
+    ✓ DELETE Account can remove company data (79 ms)
+    ✓ Account permission sub/ super role check (296 ms)
+    ✓ Test Accounts cannot create Admin accounts  (274 ms)
+    ✓ Test Accounts...  (255 ms)
+  Test Accounts cross-company restrictions
+    ✓ READ Account can't access other company data (71 ms)
+    ✓ WRITE Account can't create other company data (66 ms)
+    ✓ DELETE Account can't remove other company data (67 ms)
+  Test upload XLSX
+    ✓ Upload XLSX. (153 ms)
+  Test pdfDB
+    ✓ A. LIST OF LAND APPLICATION AREAS. (15 ms)
+    ✓ B. APPLICATION AREAS Crops and Harvests. (9 ms)
+    ✓ Nutrient Budget A. LAND APPLICATIONS are calculated and totaled correctly. (54 ms)
+    ✓ Nutrient Budget B, NaprbalABC(Summary) Info is calculated accurately. (43 ms)
+    ✓ Insert and Upate Herd Information (15 ms)
+    ✓ AB. HERD INFORMATION:MANURE GENERATED (55 ms)
+    ✓ C. Process Wastewater Generated (11 ms)
+    ✓ F. NUTRIENT IMPORTS (8 ms)
+    ✓ G. NUTRIENT EXPORTS  (12 ms)
+    ✓ A. NUTRIENT ANALYSES  (14 ms)
+    ✓ ABC. Exception Reporting  (4 ms)
   
   # Missing Crucial Tests
-   - Middleware tests
-    - Ensure requests block invalid requests to read or write to wrong dairy (not belonging to user/company)
-
    - Account Tests
     - Ensure Accounts can alter  other accounts incorrectly.
     - Ensure Accounts are Created, Updated and Deleted by the correct Account.
       - Admins should only be able to create, update or delete other accounts
       - Accounts can update themselves
 
-  - Company Test 
-    - Ensure only hacker account can access API.
-
-
-
 
 # Todo:
 
-  - Display Company Logo
-  - Upload Images Modals
-  - Store Images in Digital Ocean Spaces
-  1. Look for Logo for Company,
-  2. If no Company logo, show upload modal,
-  3. else show logo with delete feature
+  # 
 
+  - Generating PDF, Client should send one request instead of many individual
+    - SQL Query to get all required info and format the data to an object that can be easily used by the client side code.
+    - 1. SQL Statement for all data needed
+    - 2. 
 
-  - Test Accounts API 
-    - Accounts and Companies
-      - Ensure permissions are working correctly.
-      - Ensure its working in general
-    - (Great test case for accounts) Ensure that Owner accounts cant change their account type, this would result in losing access to company.
-
-  - Test Middleware/ User can only access their company's data
-    - Write some tests boi
+  # Images - Company Logo
+    - Display Company Logo
+    - Upload Images Modals
+    - Store Images in Digital Ocean Spaces
+    1. Look for Logo for Company,
+    2. If no Company logo, show upload modal,
+    3. else show logo with delete feature
 
 
   - Nutrient Application Analyses should be shown and be able to be deleted

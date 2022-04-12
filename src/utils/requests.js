@@ -121,7 +121,7 @@ const post = (url, data) => {
           const ogRes = await refreshToken(url, data, 'post')
           resolve(ogRes)
         } else if (res.status === 403) {
-          console.log("403 but client should see error", errorData)
+          // console.log("403 but client should see error", errorData)
           resolve(errorData)
         } else {
           // Normal request

@@ -111,7 +111,7 @@ class UserAuth {
                     if (!res.error) {
                         resolve(res)
                     } else {
-                        reject(res.error)
+                        resolve(res)
                     }
                 })
                 .catch(err => {
@@ -162,14 +162,14 @@ class UserAuth {
 
     static updateAccount(user) {
         return new Promise((resolve, reject) => {
-            post(`${BASE_URL}/accounts/update`, { user })
+            post(`${BASE_URL}/accounts/update`, user)
                 .then(res => {
                     if (res.data) {
                         const updatedUser = res.data
                         resolve(updatedUser)
                     } else {
                         console.log(res.error)
-                        reject(res.error)
+                        resolve(res)
                     }
                 })
                 .catch(err => {
@@ -189,7 +189,7 @@ class UserAuth {
                         resolve(updatedUser)
                     } else {
                         console.log(res.error)
-                        reject(res.error)
+                        resolve(res)
                     }
                 })
                 .catch(err => {
@@ -209,7 +209,7 @@ class UserAuth {
                         resolve(deletedUser)
                     } else {
                         console.log(res.error)
-                        reject(res.error)
+                        resolve(res)
                     }
                 })
                 .catch(err => {

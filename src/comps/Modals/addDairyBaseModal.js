@@ -5,7 +5,7 @@ import { withTheme } from '@material-ui/core/styles';
 
 import { get, post } from "../../utils/requests"
 import { auth, UserAuth } from '../../utils/users';
-
+import { Dairy } from '../../utils/dairy/dairy'
 
 
 
@@ -37,9 +37,10 @@ class AddBaseDairyModal extends Component {
 		const company_id = auth.currentUser.company_id
 
 		if (title && title.length > 0) {
-			post(`${this.props.BASE_URL}/api/dairy_base/create`, {
-				title, company_id
-			})
+			// post(`${this.props.BASE_URL}/api/dairy_base/create`, {
+			// 	title, company_id
+			// })
+			Dairy.createDairyBase(title, company_id)
 				.then(res => {
 					console.log(res)
 					if (res.error) {

@@ -2,7 +2,9 @@ const crypto = require("crypto");
 const db = require('../db/accounts/accounts')
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
-const { verifyToken, needsHacker, needsAdmin, needsSelfOrAdmin, getCompanySecret, verifyRefreshToken, verifyUserFromCompanyByCompanyID } = require("../utils/middleware")
+const { verifyToken, needsHacker, needsAdmin, needsSelfOrAdmin, getCompanySecret,
+    verifyRefreshToken, verifyUserFromCompanyByCompanyID, verifyUserFromCompanyByUserID
+} = require("../utils/middleware")
 const api = 'accounts'
 const { JWT_SECRET_KEY, JWT_OPTIONS, BCRYPT_SALT_ROUNDS } = require("../specific");
 const { ROLES } = require('../constants')
@@ -174,11 +176,8 @@ module.exports = (app) => {
                 db.insertOwnerAccount(email, hash, company_id, (dbErr, result) => {
                     if (!dbErr) {
                         if (result.rows.length > 0) {
-                            console.log("Found sum data: ", result.rows)
                             res.json(result.rows[0])
                         }
-
-
                     } else {
                         if (dbErr.code === "23505") {
                             res.json({ "error": "User with email already exists." })
@@ -252,8 +251,8 @@ module.exports = (app) => {
     })
 
     // Update account information
-    app.post(`/${api}/update`, verifyToken, needsSelfOrAdmin, (req, res) => {
-        const { username, email, account_type, company_id, pk } = req.body.user // Updating user
+    app.post(`/${api}/update`, verifyToken, verifyUserFromCompanyByUserID, needsSelfOrAdmin, (req, res) => {
+        const { username, email, account_type, company_id, pk } = req.body // Updating user
         const { user } = req // current user
 
         // Create a new query to update account w/out account_type to ensure account_type isnt change by the user.

@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const companyDB = require('../db/company/company')
-const { getCompanyIDByDairyID, getCompanyIDByDairyBaseID } = require("../db");
+const { getCompanyIDByDairyID, getCompanyIDByDairyBaseID, getCompanyIDByUserID } = require("../db");
 const { ROLES } = require("../constants");
 const { decrypt } = require('./crypt')
 
@@ -184,6 +184,39 @@ exports.verifyUserFromCompanyByDairyID = async (req, res, next) => {
 
 }
 
+exports.verifyUserFromCompanyByUserID = async (req, res, next) => {
+    const { user: { company_id } } = req
+    const user_id = req.params.pk || req.body.pk || null
+
+    console.log("verifyUserFromCompanyByDairyID::Looking up dairy with id: ", user_id)
+
+    if (!user_id) {
+        return res.status(403).json({ error: 'Permission denied: No user id' })
+    }
+
+    getCompanyIDByUserID(user_id, (dbErr, dbRes) => {
+        if (dbErr) {
+            console.log("dbErr", dbErr)
+            return res.status(403).json({ error: 'Permission denied: user not apart of company, error verifyUserFromCompanyByUserID' })
+        }
+
+        const rows = dbRes.rows
+        if (rows[0]) {
+            const { company_id: update_user_company_id } = rows[0]
+            // Requesting user's company is the same as the user being updated.
+            if (parseInt(company_id) === update_user_company_id) {
+                console.log("Verified user is from company")
+                return next()
+            }
+            return res.status(403).json({ error: 'Permission denied: user not apart of company.' })
+        } else {
+            console.log("No dbRes: ", dbRes)
+            res.status(403).json({ error: 'Permission denied: user not apart of company, no results' })
+        }
+    })
+
+}
+
 // TODO Add a couple more verifyUserFromCompanyBy.... 
 // - updates and deletes are by PK, so to do the lookups is a bit more complicated...
 
@@ -221,7 +254,12 @@ exports.needsHacker = async (req, res, next) => {
 
 
 exports.needsSelfOrAdmin = async (req, res, next) => {
-    const { username, email, account_type, company_id, pk } = req.body.user
+    const updateUser = req.body.user || req.body || null
+    if (!updateUser) {
+
+        return res.status(403).json({ error: 'You need permission: user not given needsSelfOrAdmin.' })
+    }
+    const { username, email, account_type, company_id, pk } = updateUser
     const { user } = req
 
     if (user &&

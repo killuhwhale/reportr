@@ -131,7 +131,7 @@ module.exports = (app) => {
 
     // 1. add company id to requests
     //verifyUserFromCompanyByDairyBaseID
-    app.get("/api/dairies/dairyBaseID/:dairyBaseID/:company_id", verifyToken, verifyUserFromCompanyByDairyBaseID, needsRead, (req, res) => {
+    app.get("/api/dairies/dairyBaseID/:dairyBaseID", verifyToken, verifyUserFromCompanyByDairyBaseID, needsRead, (req, res) => {
         db.getDairiesByDairyBaseID(req.params.dairyBaseID,
             (err, result) => {
                 if (!err) {
