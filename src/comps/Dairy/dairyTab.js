@@ -26,6 +26,7 @@ import { getReportingPeriodDays } from "../../utils/herdCalculation"
 import XLSX from 'xlsx'
 import { BASE_URL } from '../../utils/environment';
 import { Field } from '../../utils/fields/fields'
+import { Dairy } from '../../utils/dairy/dairy';
 
 const ReportingPeriod = (props) => {
   // onUpdate
@@ -108,7 +109,7 @@ class DairyTab extends Component {
 
 
   getDaysInPeriod() {
-    getReportingPeriodDays(this.props.BASE_URL, this.state.dairy.pk)
+    getReportingPeriodDays(this.state.dairy.pk)
       .then(days => this.setState({ daysInPeriod: days }))
       .catch(err => console.log(err))
   }
@@ -149,7 +150,8 @@ class DairyTab extends Component {
   }
   deleteAllFromTable() {
 
-    post(`${this.props.BASE_URL}/api/dairies/delete`, { dairy_id: this.state.dairy.pk })
+    // post(`${this.props.BASE_URL}/api/dairies/delete`, { dairy_id: this.state.dairy.pk })
+    Dairy.deleteDairy(this.state.dairy.pk)
       .then(res => {
         this.getAllFields()
         this.getAllParcels()

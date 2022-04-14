@@ -42,6 +42,42 @@ const pool = new Pool(TESTING ? test : isProd ? prodDigitalOcean : dev)
 logger.info(`Connected to db: ${TESTING ? "Test" : isProd ? "Ocean" : "Dev"} db.`)
 
 
+const queryPromiseByFormat = (formattedSQL) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      formattedSQL,
+      [],
+      (err, result) => {
+        if (err) {
+          if (err.code === '23505') return resolve(null)
+          return reject({ error: err })
+        }
+        if (result && result.rows) {
+          return resolve(result.rows)
+        }
+      }
+    )
+  })
+}
+
+const queryPromiseByValues = (formattedSQL, values) => {
+  return new Promise((resolve, reject) => {
+    pool.query(
+      formattedSQL,
+      values,
+      (err, result) => {
+        if (err) {
+          if (err.code === '23505') return resolve(null)
+          return reject({ error: err })
+        }
+        if (result && result.rows) {
+          return resolve(result.rows)
+        }
+      }
+    )
+  })
+}
+
 const insertDairyBase = (values, callback) => {
   return pool.query(
     format("INSERT INTO dairy_base(company_id, title) VALUES (%L) RETURNING *", values),
@@ -50,46 +86,62 @@ const insertDairyBase = (values, callback) => {
   )
 }
 
-const insertDairy = (values, callback) => {
-  const [dairy_base_id, title, reporting_yr, period_start, period_end] = values
+const insertDairy = (dairy_base_id, title, reporting_yr, period_start, period_end) => {
 
   if (!validStartEndDates(period_start, period_end)) {
-    callback({ code: '1000', messagge: 'Dairy reporting period start must be before the reporting period end date.' })
-    return
+    return new Promise((res) => {
+      res({ error: 'Dairy reporting period start must be before the reporting period end date.', code: '1000' })
+    })
+    // callback({ code: '1000', messagge: 'Dairy reporting period start must be before the reporting period end date.' })
+    // return
   }
 
-  return pool.query(
-    format("INSERT INTO dairies(dairy_base_id, title, reporting_yr, period_start, period_end) VALUES (%L) RETURNING *", values),
-    [],
-    callback
+  return queryPromiseByFormat(
+    format(
+      "INSERT INTO dairies(dairy_base_id, title, reporting_yr, period_start, period_end) VALUES (%L) RETURNING *",
+      [dairy_base_id, title, reporting_yr, period_start, period_end]
+    )
   )
+  // return pool.query(
+  //   format("INSERT INTO dairies(dairy_base_id, title, reporting_yr, period_start, period_end) VALUES (%L) RETURNING *", values),
+  //   [],
+  //   callback
+  // )
 }
 
-const insertHerd = (values, callback) => {
 
-
-  return pool.query(
-    format(`INSERT INTO herds(
-      dairy_id) VALUES (%L)`, values),
-    [],
-    callback
-  )
+const insertHerd = (dairy_id) => {
+  return queryPromiseByFormat(format(`INSERT INTO herds(dairy_id) VALUES (%L)`, [dairy_id]))
 }
 
-const updateHerd = (values, callback) => {
-  return pool.query(`UPDATE herds SET
-    milk_cows = $1,
-    dry_cows = $2,
-    bred_cows = $3,
-    cows = $4,
-    calf_young = $5,
-    calf_old = $6,
-    p_breed = $7,
-    p_breed_other = $8
-    WHERE dairy_id=$9`,
-    values,
-    callback
-  )
+const updateHerd = (milk_cows,
+  dry_cows,
+  bred_cows,
+  cows,
+  calf_young,
+  calf_old,
+  p_breed,
+  p_breed_other, dairy_id) => {
+
+  return queryPromiseByValues(`UPDATE herds SET
+  milk_cows = $1,
+  dry_cows = $2,
+  bred_cows = $3,
+  cows = $4,
+  calf_young = $5,
+  calf_old = $6,
+  p_breed = $7,
+  p_breed_other = $8
+  WHERE dairy_id=$9`,
+    [milk_cows,
+      dry_cows,
+      bred_cows,
+      cows,
+      calf_young,
+      calf_old,
+      p_breed,
+      p_breed_other, dairy_id])
+
 }
 
 module.exports = {
@@ -180,14 +232,17 @@ module.exports = {
       callback
     )
   },
-  updateDairy: (values, callback) => {
-    const [street, cross_street, county, city,
-      city_state, city_zip, title, basin_plan, began, period_start, period_end, pk] = values
+  updateDairy: (street, cross_street, county, city,
+    city_state, city_zip, title, basin_plan, began, period_start, period_end, pk) => {
+
+
     if (!validStartEndDates(period_start, period_end)) {
-      callback({ code: '1000', messagge: 'Dairy reporting period start must be before the reporting period end date.' })
-      return
+      return new Promise((res) => {
+        res({ code: '1000', messagge: 'Dairy reporting period start must be before the reporting period end date.' })
+      })
     }
-    return pool.query(`UPDATE dairies SET
+
+    return queryPromiseByValues(`UPDATE dairies SET
       street = $1, 
       cross_street = $2,
       county = $3, 
@@ -200,8 +255,10 @@ module.exports = {
       period_start = $10,
       period_end = $11
       WHERE pk=$12 RETURNING *`,
-      values,
-      callback
+      [
+        street, cross_street, county, city, city_state, city_zip, title,
+        basin_plan, began, period_start, period_end, pk
+      ]
     )
   },
   rmDairy: (id, callback) => {
@@ -212,21 +269,17 @@ module.exports = {
     )
   },
 
-  insertField: (values, callback) => {
-
-
-    return pool.query(
-      format("INSERT INTO fields(title, acres, cropable, dairy_id) VALUES (%L) RETURNING *", values),
-      [],
-      callback
+  insertField: (title, acres, cropable, dairy_id) => {
+    console.log("Inserting field: ", title, acres, cropable, dairy_id)
+    const formattedSQL = format(
+      "INSERT INTO fields(title, acres, cropable, dairy_id) VALUES (%L) RETURNING *",
+      [title, acres, cropable, dairy_id]
     )
+    return queryPromiseByFormat(formattedSQL)
   },
-  getFields: (dairy_id, callback) => {
-    return pool.query(
-      format("SELECT * FROM fields where dairy_id = %L", dairy_id),
-      [],
-      callback
-    )
+  getFields: (dairy_id) => {
+    const formattedSQL = format("SELECT * FROM fields where dairy_id = %L", dairy_id)
+    return queryPromiseByFormat(formattedSQL)
   },
   updateField: (values, callback) => {
     return pool.query(`UPDATE fields SET
@@ -246,21 +299,12 @@ module.exports = {
     )
   },
 
-  insertParcel: (values, callback) => {
-
-
-    return pool.query(
-      format("INSERT INTO parcels(pnumber, dairy_id) VALUES (%L)  RETURNING *", values),
-      [],
-      callback
-    )
+  insertParcel: (pnumber, dairy_id) => {
+    const formattedSQL = format("INSERT INTO parcels(pnumber, dairy_id) VALUES (%L)  RETURNING *", [pnumber, dairy_id])
+    return queryPromiseByFormat(formattedSQL)
   },
-  getParcels: (dairy_id, callback) => {
-    return pool.query(
-      format("SELECT * FROM parcels where dairy_id = %L", dairy_id),
-      [],
-      callback
-    )
+  getParcels: (dairy_id) => {
+    return queryPromiseByFormat(format("SELECT * FROM parcels where dairy_id = %L", dairy_id))
   },
   updateParcel: (values, callback) => {
     return pool.query(`UPDATE parcels SET
@@ -278,44 +322,37 @@ module.exports = {
     )
   },
 
-  insertFieldParcel: (values, callback) => {
-
-
-    return pool.query(
-      format("INSERT INTO field_parcel(dairy_id, field_id, parcel_id) VALUES (%L)  RETURNING *", values),
-      [],
-      callback
-    )
+  insertFieldParcel: (dairy_id, field_id, parcel_id) => {
+    return queryPromiseByFormat(format(
+      "INSERT INTO field_parcel(dairy_id, field_id, parcel_id) VALUES (%L)  RETURNING *",
+      [dairy_id, field_id, parcel_id]
+    ))
   },
-  getFieldParcel: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT
-            fp.pk,
-            fp.field_id,
-            d.title as dairyTitle,
-            p.pnumber,
-            f.title,
-            f.acres,
-            f.cropable
-          
-          FROM field_parcel fp
+  getFieldParcel: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      `SELECT
+          fp.pk,
+          fp.field_id,
+          d.title as dairyTitle,
+          p.pnumber,
+          f.title,
+          f.acres,
+          f.cropable
+        
+        FROM field_parcel fp
 
-          JOIN fields f
-          ON fp.field_id = f.pk
-          
-          JOIN parcels p
-          ON fp.parcel_id = p.pk
-          
-          JOIN dairies d
-          ON fp.dairy_id = d.pk
-          
-          WHERE fp.dairy_id = %L
-         `
-        , dairy_id),
-      [],
-      callback
-    )
+        JOIN fields f
+        ON fp.field_id = f.pk
+        
+        JOIN parcels p
+        ON fp.parcel_id = p.pk
+        
+        JOIN dairies d
+        ON fp.dairy_id = d.pk
+        
+        WHERE fp.dairy_id = %L
+       `
+      , dairy_id))
   },
   rmFieldParcel: (id, callback) => {
     return pool.query(
@@ -334,10 +371,33 @@ module.exports = {
     )
   },
 
-  insertOperator: (values, callback) => {
-    return pool.query(
-      format(`INSERT INTO operators(
-        dairy_id,
+  insertOperator: (dairy_id,
+    title,
+    primary_phone,
+    secondary_phone,
+    street,
+    city,
+    city_state,
+    city_zip,
+    is_owner,
+    is_operator,
+    is_responsible) => {
+
+    const formattedSQL = format(
+      `INSERT INTO operators(
+      dairy_id,
+      title,
+      primary_phone,
+      secondary_phone,
+      street,
+      city,
+      city_state,
+      city_zip,
+      is_owner, 
+      is_operator,
+      is_responsible
+      ) VALUES (%L) RETURNING *`,
+      [dairy_id,
         title,
         primary_phone,
         secondary_phone,
@@ -345,20 +405,14 @@ module.exports = {
         city,
         city_state,
         city_zip,
-        is_owner, 
+        is_owner,
         is_operator,
-        is_responsible
-        ) VALUES (%L) RETURNING *`, values),
-      [],
-      callback
+        is_responsible]
     )
+    return queryPromiseByFormat(formattedSQL)
   },
-  getOperators: (dairy_id, callback) => {
-    return pool.query(
-      format("SELECT * FROM operators where dairy_id = %L", dairy_id),
-      [],
-      callback
-    )
+  getOperators: (dairy_id) => {
+    return queryPromiseByFormat(format("SELECT * FROM operators where dairy_id = %L", dairy_id))
   },
   getOperatorsByOwnerStatus: (values, callback) => {
     return pool.query(
@@ -426,13 +480,8 @@ module.exports = {
       callback
     )
   },
-  getHerd: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT * FROM herds WHERE dairy_id = %L`, dairy_id),
-      [],
-      callback
-    )
+  getHerd: (dairy_id) => {
+    return queryPromiseByFormat(format(`SELECT * FROM herds WHERE dairy_id = %L`, dairy_id))
   },
   updateHerd,
 
@@ -2772,46 +2821,6 @@ const createSchema = (pool) => {
 }
 
 
-const createHerds = async () => {
-  return new Promise((resolve, reject) => {
-    /*
-      milk_cows = $1,
-        dry_cows = $2,
-        bred_cows = $3,
-        cows = $4,
-        calf_young = $5,
-        calf_old = $6,
-        p_breed = $7,
-        p_breed_other = $8
-        WHERE pk=$9`,
-     */
-    const updateData = [
-      [1, 1, 2, 1, 1, 1],
-      [1, 1, 2, 1, 5000],
-      [1, 1, 2, 1, 1],
-      [1, 1, 2, 1, 1],
-      [1, 1, 2, 1],
-      [1, 1, 2, 1],
-      "Ayrshire",
-      "",
-      1
-    ]
-
-    insertHerd([1], (err, res) => {
-      if (err) {
-        reject(err)
-      } else {
-        updateHerd(updateData, (err, res) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(res)
-          }
-        })
-      }
-    })
-  })
-}
 
 
 const initTestDB = async (pool) => {

@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import { round } from 'mathjs';
 import fs from 'fs'
-import { postXLSX, post } from '../../../utils/requests'
+import { postXLSX } from '../../../utils/requests'
 import { UserAuth, auth } from '../../../utils/users'
 import { HACKER_EMAIL, HACKER_PASSWORD } from '../../../specific'
 import { CompanyUtil } from '../../../utils/company/company'
@@ -17,6 +17,7 @@ import {
 import { naturalSort, naturalSortBy, naturalSortByKeys, sortByKeys } from '../../../utils/format';
 
 import { BASE_URL } from "../../../utils/environment"
+import { Dairy } from '../../../utils/dairy/dairy';
 const dairy_id = 1
 const TEST_USER_EMAIL_A = 'z@g.com'
 const TEST_USER_PASSWORD_A = 'abc123'
@@ -40,7 +41,8 @@ const isIDPK = (key) => {
     return key.indexOf("_id") >= 0 || key.indexOf("pk") >= 0
 }
 
-// Middle Ware verifyRefreshToken
+// Middle Ware 
+// verifyRefreshToken
 // verifyUserFromCompanyByDairyBaseID
 // verifyToken
 // verifyUserFromCompanyByCompanyID
@@ -55,7 +57,7 @@ const isIDPK = (key) => {
 
 // --------------- Create All Roles and Test various permissions ---------------------------
 describe('Create Accounts', () => {
-    test('Create a company and an admin', async () => {
+    test('Create 2 companies and admins', async () => {
         await auth.login(HACKER_EMAIL, HACKER_PASSWORD)
         const { data: { pk: company_id, title } } = await CompanyUtil.createCompany('Pharmz') // pk2
         const { data: { pk: company_id_a } } = await CompanyUtil.createCompany('Growz') //pk3
@@ -77,7 +79,7 @@ describe('Create Accounts', () => {
             company_id: 2
         })
     })
-    test('Create READ, WRITE, DELETE Accounts with admin', async () => {
+    test('Create READ, WRITE, DELETE Accounts with admin For First Company', async () => {
         const company_id = 2
         await auth.logout()
         await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
@@ -92,25 +94,16 @@ describe('Create Accounts', () => {
     })
 })
 
-describe('Create Dairies for 1 company', () => {
-    test('Create Dairy', async () => {
-        const company_id = 2
+describe('Create 2 Dairies for ea  company', () => {
+    test('Create Dairies', async () => {
         const reportingYear = 2020
+        const company_id = 2
         const dairyTitle = 'Pharmz'
 
-        const { pk: dairyBaseID, title } = await post(`${BASE_URL}/api/dairy_base/create`, {
-            title: dairyTitle, company_id
-        })
-        const dairyRes = await post(`${BASE_URL}/api/dairies/create`, {
-            dairyBaseID,
-            title,
-            reportingYear,
-            period_start: `1/1/${reportingYear}`,
-            period_end: `12/31/${reportingYear}`,
-            company_id
-        })
+        const { pk: dairyBaseID, title } = await Dairy.createDairyBase(dairyTitle, company_id)
+        const dairyRes = await Dairy.createDairy(dairyBaseID, dairyTitle, reportingYear, company_id)
 
-        // began by default is a timestamp, constantly changing...
+        // began, by default is a timestamp, constantly changing...
         expect({ ...dairyRes, began: '' }).toEqual({
             pk: 1,
             dairy_base_id: 1,
@@ -133,20 +126,9 @@ describe('Create Dairies for 1 company', () => {
         ////////////////////////////
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_A, TEST_USER_PASSWORD_A)
-
         const company_id_a = 3
-        const { pk: dairyBaseID_A, title: title_A } = await post(`${BASE_URL}/api/dairy_base/create`, {
-            title: 'GrowzDairy', company_id: company_id_a
-        })
-
-        await post(`${BASE_URL}/api/dairies/create`, {
-            dairyBaseID: dairyBaseID_A,
-            title: title_A,
-            reportingYear,
-            period_start: `1/1/${reportingYear}`,
-            period_end: `12/31/${reportingYear}`,
-            company_id: company_id_a
-        })
+        const { pk: dairyBaseID_A, title: title_A } = await Dairy.createDairyBase('GrowzDairy', company_id_a)
+        await Dairy.createDairy(dairyBaseID_A, title_A, reportingYear, company_id_a)
     })
 })
 
@@ -177,7 +159,7 @@ describe('Test Accounts permissions', () => {
     })
 })
 
-describe('Test Accounts permissions; middleware:: [needsRead, needsWrite, needsDelete, needsAdmin, needsHacker, needsSelfOrAdmin]', () => {
+describe('Test Accounts permissions', () => {
     const dairy_id = 1
     test('WRITE Role can create company data', async () => {
         await auth.logout()
@@ -218,6 +200,7 @@ describe('Test Accounts permissions; middleware:: [needsRead, needsWrite, needsD
     test('Role permission sub/ super role check', async () => {
         const dairy_id = 1
 
+        // Create a test Field
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
         const field = await Field.createField({ title: 'testField', acres: 10, cropable: 10 }, dairy_id)
@@ -367,16 +350,65 @@ describe('Test Accounts cross-company restrictions', () => {
 
 
 describe('Test middleware verifyUserFromCompanyBy*', () => {
-    /**
-            verifyUserFromCompanyByDairyBaseID
-            verifyUserFromCompanyByCompanyID
-            verifyUserFromCompanyByDairyID
-            verifyUserFromCompanyByUserID
-     */
     test('Test *ByDairyBaseID', async () => {
         // Send a request from a user that should work get
         // Send a request from a user that should NOT work by:
         //  - using wrong DiaryBaseID
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const baseDairyID = 1
+        const wrongBaseDairyID = 2
+        const res = await Dairy.getDairiesByDairyBaseID(baseDairyID)
+        expect(res.length).toBe(1)
+
+        const wrongRes = await Dairy.getDairiesByDairyBaseID(wrongBaseDairyID)
+        console.log(wrongRes)
+        expect(wrongRes.status).toBe(403)
+
+    })
+    test('Test *ByCompanyID', async () => {
+        // Send a request from a user that should work get
+        // Send a request from a user that should NOT work by:
+        //  - using wrong ByCompanyID
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const comapnyID = 2
+        const wrongCompanyID = 3
+        const res = await Dairy.getDairyBaseByCompanyID(comapnyID)
+        expect(res.length).toBe(1)
+
+        const wrongRes = await Dairy.getDairyBaseByCompanyID(wrongCompanyID)
+        expect(wrongRes.status).toBe(403)
+    })
+    test('Test *ByDairyID', async () => {
+        // Send a request from a user that should work get
+        // Send a request from a user that should NOT work by:
+        //  - using wrong ByDairyID
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const dairyID = 1
+        const wrongDairyID = 2
+        const res = await Dairy.getDairyByPK(dairyID)
+        expect(res.length).toBe(1)
+
+        const wrongRes = await Dairy.getDairyByPK(wrongDairyID)
+        expect(wrongRes.status).toBe(403)
+    })
+    test('Test *ByUserID', async () => {
+        // Send a request from a user that should work get
+        // Send a request from a user that should NOT work by:
+        //  - using wrong ByUserID
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const user = { ...auth.currentUser }
+        delete user['company_id']
+        const wrongUser = { ...auth.currentUser, pk: 3 }
+
+        const res = await UserAuth.updateAccount(user)
+        expect(res).toEqual(user)
+
+        const wrongRes = await UserAuth.updateAccount(wrongUser)
+        expect(wrongRes.status).toBe(403)
     })
 })
 

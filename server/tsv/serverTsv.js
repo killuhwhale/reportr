@@ -140,23 +140,17 @@ const searchField = (value, dairy_id) => {
 
 const insertField = (data, dairy_id) => {
     const { title, cropable, acres } = data
-    return new Promise((resolve, rej) => {
-        db.insertField([title, acres, cropable, dairy_id],
-            (err, result) => {
-                if (!err) {
-                    if (result.rows[0] ?? false) {
-                        resolve(result.rows[0])
-                    } else {
-                        rej({ error: "Error getting data after Field insert" })
-                    }
-                } else if (err.code === '23505') {
-                    resolve(null)
-                } else {
-                    logger.info(err)
-                    rej(err)
-                }
-            })
-
+    return new Promise(async (resolve, rej) => {
+        // Returns rows or null if duplicate error
+        try {
+            const res = await db.insertField(title, acres, cropable, dairy_id)
+            console.log('147 on the undacova caahhh', res)
+            if (!res) return resolve(null)
+            return resolve(res[0])
+        } catch (e) {
+            console.log(e)
+            return rej(e)
+        }
     })
 }
 
@@ -832,30 +826,21 @@ const searchOperator = (value, dairy_id) => {
 }
 
 const insertOperator = (data, dairy_id) => {
-    return new Promise((resolve, rej) => {
+    return new Promise(async (resolve, rej) => {
         const { title, primary_phone, secondary_phone, street, city,
             city_state, city_zip, is_owner, is_operator, is_responsible
         } = data
-        db.insertOperator(
-            [
-                dairy_id, title, primary_phone, secondary_phone, street, city,
-                city_state, city_zip, is_owner, is_operator, is_responsible
-            ],
-            (err, result) => {
-                if (!err) {
-                    if (result.rows[0] ?? false) {
-                        resolve(result.rows[0])
-                    } else {
-                        rej({ "error": "insert operator unsuccessful" });
-                    }
-                } else if (err.code === '23505') {
-                    resolve(null)
-                } else {
-                    logger.info(err)
-                    rej({ "error": "Created operator unsuccessful" });
-                }
-            }
-        )
+
+        // Returns rows or null if duplicate error
+        try {
+            const res = await db.insertOperator(dairy_id, title, primary_phone, secondary_phone, street, city,
+                city_state, city_zip, is_owner, is_operator, is_responsible)
+            if (!res) return resolve(null)
+            return resolve(res[0])
+        } catch (e) {
+            console.log(e)
+            return rej(e)
+        }
     })
 }
 
@@ -1425,7 +1410,7 @@ const createHeaderMap = (headerRow, indexAsKey = true) => {
     const invalidChars = ['\b', '\f', '\n', '\r', '\t', '\v']
     headerRow.forEach((item, i) => {
         item = item.trim()
-        if (item.length > 0 && invalidChars.indexOf(item) < 0) {
+        if (item && item.length > 0 && invalidChars.indexOf(item) < 0) {
             if (indexAsKey) {
                 header[i] = item
             } else {
@@ -1457,7 +1442,7 @@ const processTSVTextAsMap = (tsvText, tsvType) => {
     lines.forEach((line, i) => {
         let cols = line.split("\t")
         if (cols[0]) { // skips rows without info in col 0
-            if (started && Object.keys(headerMap).length > 0) {
+            if (started && headerMap && Object.keys(headerMap).length > 0) {
                 rows.push(mapsColToTemplate(cols, headerMap, template))
             }
             else if (cols[0] == "Start") {  // waits until a row with the word "Start" is in the first col. The data will be on proceeding line
@@ -2834,7 +2819,8 @@ const _lazyGetExportDestFromMap = (row, dairy_id) => {
                     })
             })
             .catch(err => {
-                logger.info(err)
+                // logger.info(err)
+                console.log(err)
                 reject(err)
             })
 

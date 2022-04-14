@@ -10,6 +10,7 @@ import {
 } from '../utils/TSV'
 import { createHeaderMap, mapsColToTemplate } from '../utils/TSV'
 import { TABLE_HEADER_BACKGROUND_COLOR, B64_LOGO, } from "../specific"
+import { Dairy } from '../utils/dairy/dairy'
 
 
 const CROP_TITLE_MAP = { 'Alfalfa Haylage': 'Alfalfa Haylage', 'Alfalfa hay': 'Alfalfa hay', 'Almond in shell': 'Almond in shell', 'Apple': 'Apple', 'Barley silage boot stage': 'Barley silage boot stage', 'Barley silage soft dough': 'Barley silage soft dough', 'Barley grain': 'Barley grain', 'Bermudagrass hay': 'Bermudagrass hay', 'Broccoli': 'Broccoli', 'Bromegrass forage': 'Bromegrass forage', 'Cabbage': 'Cabbage', 'Canola grain': 'Canola grain', 'Cantaloupe': 'Cantaloupe', 'Celery': 'Celery', 'Clover-grass hay': 'Clover-grass hay', 'Corn grain': 'Corn grain', 'Corn silage': 'Corn silage', 'Cotton lint': 'Cotton lint', 'Grape': 'Grape', 'Lettuce': 'Lettuce', 'Oats grain': 'Oats grain', 'Oats hay': 'Oats hay', 'Oats silage-soft dough': 'Oats silage', 'Orchardgrass hay': 'Orchardgrass hay', 'Pasture': 'Pasture', 'Pasture Silage': 'Pasture Silage', 'Peach': 'Peach', 'Pear': 'Pear', 'Potato': 'Potato', 'Prune': 'Prune', 'Ryegrass hay': 'Ryegrass hay', 'Safflower': 'Safflower', 'Sorghum': 'Sorghum', 'Sorghum-Sudangrass forage': 'Sorghum-Sudangrass forage', 'Squash': 'Squash', 'Sudangrass hay': 'Sudangrass hay', 'Sudangrass silage': 'Sudangrass silage', 'Sugar beets': 'Sugar beets', 'Sweet Potato': 'Sweet Potato', 'Tall Fescue hay': 'Tall Fescue hay', 'Timothy hay': 'Timothy hay', 'Tomato': 'Tomato', 'Triticale boot stage': 'Triticale boot stage', 'Triticale soft dough': 'Triticale soft dough', 'Vetch forage': 'Vetch forage', 'Wheat grain': 'Wheat grain', 'Wheat Hay': 'Wheat Hay', 'Wheat silage boot stage': 'Wheat silage boot stage', 'Wheat silage soft dough': 'Wheat silage soft dough' }
@@ -226,7 +227,8 @@ class TSVPrint extends Component {
   getTSV() {
     Promise.all([
       get(`${this.props.BASE_URL}/api/tsv/${this.state.dairy_id}/${this.state.tsvType}`),
-      get(`${this.props.BASE_URL}/api/dairy/${this.state.dairy_id}`),
+      // get(`${this.props.BASE_URL}/api/dairy/${this.state.dairy_id}`),
+      Dairy.getDairyByPK(this.state.dairy_id)
     ])
       .then(([res, dairy]) => {
         let aboveHeader = []

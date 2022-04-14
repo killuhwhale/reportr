@@ -1,5 +1,6 @@
 import { get } from "./requests"
 import { daysBetween } from "./convertCalc"
+import { Dairy } from "./dairy/dairy";
 
 
 const LBS_PER_KG = 2.20462262185
@@ -21,9 +22,9 @@ const INORGANIC_SALT_EXCRETION_MILK_COW = 1.29;
 const INORGANIC_SALT_EXCRETION_DRY_COW = 0.63;
 
 
-export const getReportingPeriodDays = (baseUrl, dairy_id) => {
+export const getReportingPeriodDays = (dairy_id) => {
   return new Promise((res, rej) => {
-    get(`${baseUrl}/api/dairy/${dairy_id}`)
+    Dairy.getDairyByPK(dairy_id)
       .then(([dairyInfo]) => {
         dairyInfo = dairyInfo && dairyInfo.period_start && dairyInfo.period_end ? dairyInfo : { period_start: new Date(), period_end: new Date() }
         res(daysBetween(dairyInfo.period_start, dairyInfo.period_end))

@@ -1,9 +1,176 @@
-
-
 const db = require('../db/index')
 const { verifyToken, needsHacker, verifyUserFromCompanyByDairyID, verifyUserFromCompanyByCompanyID,
     verifyUserFromCompanyByDairyBaseID, needsRead, needsWrite, needsDelete, needsAdmin
 } = require('../utils/middleware')
+
+
+const isDuplicateYear = (entries, reportingYr) => {
+    // Returns the object in the list with the highest pk 
+    let isDup = false
+    entries.forEach(entry => {
+        if (entry.reporting_yr === reportingYr) {
+            isDup = true
+        }
+    })
+    return isDup
+}
+
+const latestEntry = (entries) => {
+    // Returns the object in the list with the highest pk 
+    let _max = 0
+    let latest = {}
+    entries.forEach(entry => {
+        if (entry.pk > _max) {
+            _max = entry.pk
+            latest = entry
+        }
+    })
+    return latest
+}
+
+
+const insertDairy = async (dairyBaseID, title, reportingYear, period_start, period_end) => {
+    try {
+        const dairy = await db.insertDairy(dairyBaseID, title, reportingYear, period_start, period_end)
+        if (!dairy) return { error: 'Duplicate dairy' }
+        if (dairy.error) return dairy.error
+        return dairy[0] // rows[0]
+    } catch (e) {
+        return { error: e.toString() }
+    }
+}
+
+
+const updateDairy = async (street, cross_street, county, city, city_state, city_zip, title, basin_plan, began, period_start, period_end, dairy_id) => {
+    try {
+        return await db.updateDairy(street, cross_street, county, city, city_state, city_zip, title, basin_plan, began, period_start, period_end, dairy_id)
+    } catch (e) {
+        return { error: e }
+    }
+}
+
+
+
+const duplicateDairyFieldParcelOperatorHerd = async (latestDairy_ID, newDairy_ID) => {
+    try {
+        const [fields, parcels, operators, herds, fieldParcels] = await Promise.all([
+            db.getFields(latestDairy_ID),
+            db.getParcels(latestDairy_ID),
+            db.getOperators(latestDairy_ID),
+            db.getHerd(latestDairy_ID),
+            db.getFieldParcel(latestDairy_ID),
+        ])
+
+        const new_fields = (await Promise.all(fields.map(async field => {
+            const { title, acres, cropable } = field
+            return db.insertField(title, acres, cropable, newDairy_ID)
+        }))).map(item => item[0])  // Currently ea resolved promise is a list from result.rows in the DB.... So we get a list of resolved promises which are lists of single items...
+
+        const new_parcels = (await Promise.all(parcels.map(async parcel => {
+            const { pnumber } = parcel
+            return db.insertParcel(pnumber, newDairy_ID)
+        }))).map(item => item[0])
+
+        const new_operators = await Promise.all(operators.map(async operator => {
+            const {
+                title,
+                primary_phone,
+                secondary_phone,
+                street,
+                city,
+                city_state,
+                city_zip,
+                is_owner,
+                is_operator,
+                is_responsible } = operator
+            return db.insertOperator(
+                newDairy_ID,
+                title,
+                primary_phone,
+                secondary_phone,
+                street,
+                city,
+                city_state,
+                city_zip,
+                is_owner,
+                is_operator,
+                is_responsible)
+        }))
+
+        const new_herd = await Promise.all(herds.map(async herd => {
+            const { milk_cows,
+                dry_cows,
+                bred_cows,
+                cows,
+                calf_young,
+                calf_old,
+                p_breed,
+                p_breed_other
+            } = herd
+
+            console.log("TODO() need to update herds too")
+            try {
+                await db.insertHerd(newDairy_ID)
+                return db.updateHerd(milk_cows,
+                    dry_cows,
+                    bred_cows,
+                    cows,
+                    calf_young,
+                    calf_old,
+                    p_breed,
+                    p_breed_other,
+                    newDairy_ID)
+            } catch (e) {
+                console.log("Failed to insert/update herds on create")
+            }
+        }))
+
+
+        const findFieldAndParcelID = (field_parcel, new_fields, new_parcels) => {
+            const { title, pnumber } = field_parcel
+            let field_id = null
+            let parcel_id = null
+
+            // Find the field with title and return its pk
+            new_fields.forEach(field => {
+                if (field.title === title) {
+                    field_id = field.pk
+                }
+            })
+            // Find the parcel with pnumber and return its pk
+            new_parcels.forEach(parcel => {
+                if (parcel.pnumber === pnumber) {
+                    parcel_id = parcel.pk
+                }
+            })
+            return { field_id, parcel_id }
+        }
+
+        const new_field_parcels = await Promise.all(fieldParcels.map(async field_parcel => {
+            const { field_id, parcel_id } = findFieldAndParcelID(field_parcel, new_fields, new_parcels)
+            return db.insertFieldParcel(newDairy_ID, field_id, parcel_id)
+        }))
+
+        return { success: true }
+    } catch (e) {
+        console.log(e)
+        return { error: 'Failed to duplicateDairyFieldParcelOperatorHerd', err: e }
+    }
+
+}
+
+const getDairiesByDairyBaseID = (dairyBaseID) => {
+    return new Promise((resolve, reject) => {
+        db.getDairiesByDairyBaseID(dairyBaseID, (err, result) => {
+            if (!err) {
+                if (result && result.rows) {
+                    return resolve(result.rows)
+                }
+            }
+            reject({ "error": "Get all dairies by base id unsuccessful", err })
+        })
+    })
+}
 
 module.exports = (app) => {
 
@@ -115,7 +282,6 @@ module.exports = (app) => {
             res.json({ "error": "Updated dairy_base unsuccessful" });
         })
     });
-
     app.post("/api/dairy_base/delete", verifyToken, verifyUserFromCompanyByDairyBaseID, needsDelete, (req, res) => {
         console.log("Deleting.... dairy_base", req.body.pk)
         db.rmDairyBase(req.body.pk, (err, result) => {
@@ -128,20 +294,14 @@ module.exports = (app) => {
             res.json({ "error": "Deleted dairy_base unsuccessful" });
         })
     });
-
-    // 1. add company id to requests
-    //verifyUserFromCompanyByDairyBaseID
-    app.get("/api/dairies/dairyBaseID/:dairyBaseID", verifyToken, verifyUserFromCompanyByDairyBaseID, needsRead, (req, res) => {
-        db.getDairiesByDairyBaseID(req.params.dairyBaseID,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                res.json({ "error": "Get all dairies by base id unsuccessful" });
-            })
+    app.get("/api/dairies/dairyBaseID/:dairyBaseID", verifyToken, verifyUserFromCompanyByDairyBaseID, needsRead, async (req, res) => {
+        try {
+            return res.json(await getDairiesByDairyBaseID(req.params.dairyBaseID))
+        } catch (e) {
+            return res.json({ "error": "Get all dairies by base id unsuccessful" });
+        }
     });
+
     app.get("/api/dairy/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
         db.getDairy(req.params.dairy_id,
             (err, result) => {
@@ -152,26 +312,64 @@ module.exports = (app) => {
                 res.json({ "error": "Get dairy unsuccessful" });
             })
     });
-    app.post("/api/dairies/create", verifyToken, verifyUserFromCompanyByDairyBaseID, needsWrite, (req, res) => {
+    app.post("/api/dairies/create", verifyToken, verifyUserFromCompanyByDairyBaseID, needsWrite, async (req, res) => {
         console.log("Inserting dairy: ", req.body)
+        const {
+            dairyBaseID, title, reportingYear, period_start, period_end
+        } = req.body
+        // This needs to encompass creating the correct Fields, parcels, field_parcel, operators, herds
+        // Steps:
+        /**
+         * On create dairy, user sends reportingYear and DairyBaseID
+         * 1. Lookup latest dairy by dairyBaseID
+         * 2. Check if it is duplicate year - return w/ error if duplicate
+         * 3. If no latest dairy, createDairy
+         * 4. Else, createFullDairy
+         * 5. Use createDairy to create a basic dairy
+         * 6. Using latestDairy's pk, Look up Fields, parcels, operators, herds AND create them for new dairy
+         * 7. Once they're created for the new dairy, create field_parcel using the newly created fields and parcels.
+         * 
+         */
 
-        db.insertDairy([
-            req.body.dairyBaseID,
-            req.body.title,
-            req.body.reportingYear,
-            req.body.period_start,
-            req.body.period_end,
-        ], (err, result) => {
+        try {
+            // * 1. Lookup latest dairy by dairyBaseID
+            const dairies = await getDairiesByDairyBaseID(dairyBaseID)
+            if (dairies && dairies.length === 0) {
+                console.log("Creating new reporting year dairy")
+                return res.json(await insertDairy(dairyBaseID, title, reportingYear, period_start, period_end))
 
-            if (!err) {
-                if (result.rows.length > 0) {
-                    return res.json(result.rows[0]);
-                }
             }
-            console.log(err)
-            res.json({ "error": "Inserted dairy unsuccessful" });
-        })
+            const latestDairy = latestEntry(dairies)
+
+            // * 2. Check if it is duplicate year - return w/ error if duplicate
+            if (isDuplicateYear(dairies, reportingYear)) return res.json({ error: `Duplicate year. ${reportingYear} already exists.` })
+
+            // * 3.
+            console.log("Creating Full Dairy....")
+            const newDairy = await insertDairy(dairyBaseID, title, reportingYear, period_start, period_end)
+            console.log("New Dairy...", newDairy)
+            if (newDairy.error) return res.json(newDairy.error)
+
+            const {
+                street, cross_street, county, city, city_state, title: latestTitle, city_zip,
+                basin_plan, began, period_start: latestPeriodStart, period_end: latestPeriodEnd
+            } = latestDairy
+
+            const updated = await updateDairy(street, cross_street, county, city, city_state, city_zip, latestTitle, basin_plan, began, latestPeriodStart, latestPeriodEnd, newDairy.pk)
+            if (updated.error) return res.json({ error: updated.error })
+
+            await duplicateDairyFieldParcelOperatorHerd(latestDairy.pk, newDairy.pk)
+            return res.json(newDairy)
+
+        } catch (e) {
+            console.log('Error creating dairy: ', e)
+            return res.json({ error: 'Error', err: e.toString() })
+        }
+
+
+
     });
+    // Deprecated
     app.post("/api/dairies/full/create", verifyToken, verifyUserFromCompanyByDairyBaseID, needsWrite, (req, res) => {
         const {
             dairyBaseID, reporting_yr, street, cross_street, county, city, city_state, title, city_zip,
@@ -192,24 +390,14 @@ module.exports = (app) => {
             res.json({ "error": "Inserted full dairy unsuccessful", failData: req.body });
         })
     });
-    app.post("/api/dairies/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
-        console.log("Updating....", req.body)
-        // req.body.data is a list of values in order to match DB Table
+    app.post("/api/dairies/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, async (req, res) => {
         const {
             street, cross_street, county, city, city_state, title, city_zip, basin_plan, began, period_start, period_end, dairy_id
         } = req.body
+        const updated = await updateDairy(street, cross_street, county, city, city_state, title, city_zip, basin_plan, began, period_start, period_end, dairy_id)
 
-        db.updateDairy([
-            street, cross_street, county, city, city_state, city_zip, title, basin_plan, began, period_start, period_end, dairy_id
-        ], (err, result) => {
-
-            if (!err) {
-                res.json(result);
-                return;
-            }
-            console.log(err)
-            res.json({ "error": "Updated dairy unsuccessful" });
-        })
+        if (updated.error) return res.json({ error: updated.error })
+        return res.json(updated)
     });
     app.post("/api/dairies/delete", verifyToken, verifyUserFromCompanyByDairyID, needsAdmin, (req, res) => {
 
@@ -224,29 +412,21 @@ module.exports = (app) => {
         })
     });
 
-    app.get("/api/fields/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getFields(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(req.params.dairy_id)
-                res.json({ "error": "Get all fields unsuccessful" });
-            })
+    app.get("/api/fields/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFields(req.params.dairy_id))
+        } catch (e) {
+            return res.json({ error: "Get all fields unsuccessful", err: e })
+        }
     });
-    app.post("/api/fields/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
+    app.post("/api/fields/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, async (req, res) => {
         const { title, acres, cropable, dairy_id } = req.body
-        db.insertField([title, acres, cropable, dairy_id], (err, result) => {
-            if (!err) {
-                res.json(result.rows)
-                // res.json({"error": "Inserted field successfully"});
-                return;
-            }
-            console.log(err)
-            res.json({ "error": err });
-        })
+
+        try {
+            return res.json(await db.insertField(title, acres, cropable, dairy_id))
+        } catch (e) {
+            return res.json({ error: e })
+        }
     });
     app.post("/api/fields/update", verifyToken, needsWrite, verifyUserFromCompanyByDairyID, (req, res) => {
         const { title, acres, cropable, pk } = req.body
@@ -269,30 +449,20 @@ module.exports = (app) => {
         })
     });
 
-    app.get("/api/parcels/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getParcels(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                res.json({ "error": "Get all parcels unsuccessful" });
-            })
+    app.get("/api/parcels/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getParcels(req.params.dairy_id))
+        } catch (e) {
+            return res.json({ error: "Get all parcels unsuccessful", err: e })
+        }
     });
-    app.post("/api/parcels/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
-        db.insertParcel([
-            req.body.pnumber,
-            req.body.dairy_id
-        ], (err, result) => {
+    app.post("/api/parcels/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, async (req, res) => {
+        try {
+            return res.json(await db.insertParcel(req.body.pnumber, req.body.dairy_id))
+        } catch (e) {
+            return res.json({ "error": "Inserted parcel unsuccessful", err: e });
+        }
 
-            if (!err) {
-                res.json(result.rows)
-                return;
-            }
-            console.log(err)
-            res.json({ "error": "Inserted parcel unsuccessful" });
-        })
     });
     app.post("/api/parcels/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body.data)
@@ -320,29 +490,20 @@ module.exports = (app) => {
         })
     });
 
-    app.get("/api/field_parcel/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, (req, res) => {
-        db.getFieldParcel(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_parcel unsuccessful" });
-            })
+    app.get("/api/field_parcel/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, async (req, res) => {
+        try {
+            return res.json(await db.getFieldParcel(req.params.dairy_id))
+        } catch (e) {
+            return res.json({ error: "Get all FieldParcel unsuccessful", err: e })
+        }
     });
-    app.post("/api/field_parcel/create", verifyToken, verifyUserFromCompanyByDairyID, (req, res) => {
+    app.post("/api/field_parcel/create", verifyToken, verifyUserFromCompanyByDairyID, async (req, res) => {
         const { dairy_id, field_id, parcel_id } = req.body
-        db.insertFieldParcel([dairy_id, field_id, parcel_id], (err, result) => {
-
-            if (!err) {
-                res.json(result.rows)
-                return;
-            }
-            console.log(err)
-            res.json({ "error": "Inserted field_parcel unsuccessful" });
-        })
+        try {
+            return res.json(await db.insertFieldParcel(dairy_id, field_id, parcel_id))
+        } catch (e) {
+            return res.json({ error: "Created field_parcel unsuccessful", err: e })
+        }
     });
     app.post("/api/field_parcel/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         const { pk } = req.body
@@ -357,36 +518,23 @@ module.exports = (app) => {
         })
     });
 
-    app.post("/api/operators/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
+    app.post("/api/operators/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, async (req, res) => {
         console.log("Creating....", req.body)
         const { dairy_id, title, primary_phone, secondary_phone, street, city,
             city_state, city_zip, is_owner, is_operator, is_responsible } = req.body
-        db.insertOperator(
-            [
-                dairy_id, title, primary_phone, secondary_phone, street, city,
-                city_state, city_zip, is_owner, is_operator, is_responsible
-            ],
-            (err, result) => {
-
-                if (!err) {
-                    res.json({ "error": "Created operator successfully" });
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Created operator unsuccessful" });
-            }
-        )
+        try {
+            return res.json(await db.insertOperator(dairy_id, title, primary_phone, secondary_phone, street, city,
+                city_state, city_zip, is_owner, is_operator, is_responsible))
+        } catch (e) {
+            return res.json({ error: "Created operator unsuccessful", err: e })
+        }
     });
-    app.get("/api/operators/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getOperators(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                res.json({ "error": "Get all operators unsuccessful" });
-            })
+    app.get("/api/operators/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getOperators(req.params.dairy_id))
+        } catch (e) {
+            return res.json({ error: "Get all operators unsuccessful", err: e })
+        }
     });
     app.get("/api/operators/is_owner/:is_owner/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
         db.getOperatorsByOwnerStatus([req.params.is_owner, req.params.dairy_id],
@@ -460,23 +608,13 @@ module.exports = (app) => {
         })
     });
 
-    app.post("/api/herds/create", verifyToken, verifyUserFromCompanyByDairyID, (req, res) => {
-        console.log("Creating....", req.body)
+    app.post("/api/herds/create", verifyToken, verifyUserFromCompanyByDairyID, async (req, res) => {
         const { dairy_id } = req.body
-        db.insertHerd(
-            [
-                dairy_id
-            ],
-            (err, result) => {
-
-                if (!err) {
-                    res.json({ "error": "Created herds successfully" });
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Created herds unsuccessful" });
-            }
-        )
+        try {
+            return res.json(await db.insertHerd(dairy_id))
+        } catch (e) {
+            return res.json({ error: "Created herd unsuccessful", err: e })
+        }
     });
     app.post("/api/herds/full/create", verifyToken, verifyUserFromCompanyByDairyID, (req, res) => {
         console.log("Creating.... full (copy) herds", req.body)
@@ -512,31 +650,30 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/herds/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, (req, res) => {
-        db.getHerd(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                res.json({ "error": "Get all herds unsuccessful" });
-            })
+    app.get("/api/herds/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, async (req, res) => {
+        try {
+            return res.json(await db.getHerd(req.params.dairy_id))
+        } catch (e) {
+            return res.json({ error: "Get all herds unsuccessful", err: e })
+        }
     });
-    app.post("/api/herds/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
+    app.post("/api/herds/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, async (req, res) => {
         console.log("Updating....", req.body)
         const { milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, p_breed, p_breed_other, dairy_id } = req.body
-        db.updateHerd([
-            milk_cows, dry_cows, bred_cows, cows, calf_young, calf_old, p_breed, p_breed_other, dairy_id
-        ], (err, result) => {
-
-            if (!err) {
-                res.json({ "error": "Updated herds successfully" });
-                return;
-            }
-            console.log(err)
-            res.json({ "error": "Updated herds unsuccessful" });
-        })
+        try {
+            return res.json(await db.updateHerd(
+                milk_cows,
+                dry_cows,
+                bred_cows,
+                cows,
+                calf_young,
+                calf_old,
+                p_breed,
+                p_breed_other,
+                dairy_id))
+        } catch (e) {
+            return res.json({ error: "Update herd unsuccessful", err: e })
+        }
     });
 
     app.get("/api/crops/:title", verifyToken, (req, res) => {

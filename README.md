@@ -73,42 +73,52 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 # Testing:
   # Current Test Converagessss
-  Create Accounts
-    ✓ Create a company and an admin (348 ms)
-    ✓ Create READ, WRITE, DELETE Accounts with admin (270 ms)
+   Create Accounts
+    ✓ Create a company and an admin (299 ms)
+    ✓ Create READ, WRITE, DELETE Accounts with admin (253 ms)
   Create Dairies for 1 company
-    ✓ Create Dairy (103 ms)
+    ✓ Create Dairy (96 ms)
   Test Accounts permissions
-    ✓ ADMIN Role Cannot Create Company (70 ms)
+    ✓ ADMIN Role Cannot Create Company (68 ms)
     ✓ WRITE Role Cannot Create Company (70 ms)
-    ✓ READ Role Cannot Create Company (71 ms)
-    ✓ DELETE Role Cannot Create Company (67 ms)
-    ✓ WRITE Account can create company data (72 ms)
-    ✓ READ Account can access company data (69 ms)
-    ✓ DELETE Account can remove company data (79 ms)
-    ✓ Account permission sub/ super role check (296 ms)
-    ✓ Test Accounts cannot create Admin accounts  (274 ms)
-    ✓ Test Accounts...  (255 ms)
+    ✓ READ Role Cannot Create Company (65 ms)
+    ✓ DELETE Role Cannot Create Company (65 ms)
+    ✓ WRITE Role can create company data (69 ms)
+    ✓ READ Role can access company data (66 ms)
+    ✓ DELETE Roles can remove company data (73 ms)
+    ✓ Role permission sub/ super role check (290 ms)
+    ✓ Test that non-hacker roles cannot create Admin accounts  (267 ms)
+    ✓ Test Roles cant alter other accounts (366 ms)
+    ✓ Test Accounts...  (269 ms)
   Test Accounts cross-company restrictions
-    ✓ READ Account can't access other company data (71 ms)
-    ✓ WRITE Account can't create other company data (66 ms)
-    ✓ DELETE Account can't remove other company data (67 ms)
+    ✓ READ role can't access other company data (71 ms)
+    ✓ WRITE role can't create other company data (90 ms)
+    ✓ DELETE role can't remove other company data (64 ms)
+  Test middleware verifyUserFromCompanyBy*
+    ✓ Test *ByDairyBaseID (100 ms)
+    ✓ Test *ByCompanyID (70 ms)
+    ✓ Test *ByDairyID (70 ms)
+    ✓ Test *ByUserID (71 ms)
   Test upload XLSX
-    ✓ Upload XLSX. (153 ms)
+    ✓ Upload XLSX. (164 ms)
   Test pdfDB
-    ✓ A. LIST OF LAND APPLICATION AREAS. (15 ms)
-    ✓ B. APPLICATION AREAS Crops and Harvests. (9 ms)
-    ✓ Nutrient Budget A. LAND APPLICATIONS are calculated and totaled correctly. (54 ms)
-    ✓ Nutrient Budget B, NaprbalABC(Summary) Info is calculated accurately. (43 ms)
-    ✓ Insert and Upate Herd Information (15 ms)
-    ✓ AB. HERD INFORMATION:MANURE GENERATED (55 ms)
-    ✓ C. Process Wastewater Generated (11 ms)
+    ✓ A. LIST OF LAND APPLICATION AREAS. (13 ms)
+    ✓ B. APPLICATION AREAS Crops and Harvests. (7 ms)
+    ✓ Nutrient Budget A. LAND APPLICATIONS are calculated and totaled correctly. (15 ms)
+    ✓ Nutrient Budget B, NaprbalABC(Summary) Info is calculated accurately. (51 ms)
+    ✓ Insert and Upate Herd Information (24 ms)
+    ✓ AB. HERD INFORMATION:MANURE GENERATED (20 ms)
+    ✓ C. Process Wastewater Generated (9 ms)
     ✓ F. NUTRIENT IMPORTS (8 ms)
     ✓ G. NUTRIENT EXPORTS  (12 ms)
-    ✓ A. NUTRIENT ANALYSES  (14 ms)
-    ✓ ABC. Exception Reporting  (4 ms)
+    ✓ A. NUTRIENT ANALYSES  (10 ms)
+    ✓ ABC. Exception Reporting  (6 ms)
   
   # Missing Crucial Tests
+   - Explicit middleware tests 
+   
+   - getReportingPeriodDays
+
    - Account Tests
     - Ensure Accounts can alter  other accounts incorrectly.
     - Ensure Accounts are Created, Updated and Deleted by the correct Account.
@@ -118,7 +128,7 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 # Todo:
 
-  # 
+  # Deleting Users
 
   - Generating PDF, Client should send one request instead of many individual
     - SQL Query to get all required info and format the data to an object that can be easily used by the client side code.
@@ -151,6 +161,28 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 
 # Goals:
+
+# Features:
+  - Single Click Generate All TSVs and PDFS for ea Dairy
+    * Just click and get a folder to drag onto flash drive or open and print! **
+    
+    Impl:
+    - Return a Folder of Folders
+      - Folder:{
+        -Folder_dairyA:{
+          pdfReport.pdf
+          tsv_ProductionRecords.tsv
+          tsv_SheetName.tsv
+        },
+        -Folder_dairyB:{
+          pdfReport.pdf
+          tsv_ProductionRecords.tsv
+          tsv_SheetName.tsv
+        }
+      }
+  
+  - 
+  
 
   Caching or State Management
     - Avoid multiple requests each time user goes to a new tab

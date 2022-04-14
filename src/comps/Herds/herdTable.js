@@ -265,7 +265,7 @@ class HerdTable extends Component {
     // The Calc function should just return the extracted & updated state obj
     // Then the calling function can use the returned object as they need.\
 
-    getReportingPeriodDays(this.props.BASE_URL, this.state.dairy.pk)
+    getReportingPeriodDays(this.state.dairy.pk)
       .then(rpDays => {
         if (this.state.herds) {
           let _herdCalc = calculateHerdManNKPNaCl(this.state.herds, rpDays)

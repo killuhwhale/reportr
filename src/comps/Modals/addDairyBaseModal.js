@@ -37,9 +37,6 @@ class AddBaseDairyModal extends Component {
 		const company_id = auth.currentUser.company_id
 
 		if (title && title.length > 0) {
-			// post(`${this.props.BASE_URL}/api/dairy_base/create`, {
-			// 	title, company_id
-			// })
 			Dairy.createDairyBase(title, company_id)
 				.then(res => {
 					console.log(res)

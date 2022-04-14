@@ -27,7 +27,6 @@ const getCompanySecret = (company_id) => {
 exports.getCompanySecret = getCompanySecret
 
 const decodeToken = (token, company_id) => {
-    console.log("Decoding token for company id: ", company_id)
     return new Promise(async (res, rej) => {
         const secretRes = await getCompanySecret(company_id)
         if (secretRes.error) return rej({ error: `Failed to decode token: ${secretRes.error}` })
@@ -103,7 +102,7 @@ exports.verifyUserFromCompanyByDairyBaseID = async (req, res, next) => {
     const companyIDByDairyBaseID = await _getCompanyIDByDairyBaseID(dairyBaseID)
     if (parseInt(companyIDByDairyBaseID) === parseInt(company_id)) return next()
 
-    return res.status(403).json({ error: 'User not a part of company via dairy base ID.' })
+    return res.status(403).json({ error: 'User not a part of company via dairy base ID.', status: 403 })
 }
 
 
@@ -132,7 +131,7 @@ exports.verifyToken = async (req, res, next) => {
             }
         }
     }
-    res.status(403).json({ error: `Permission denied` })
+    res.status(403).json({ error: `Permission denied`, status: 403 })
 
 }
 
@@ -148,15 +147,15 @@ exports.verifyUserFromCompanyByCompanyID = (req, res, next) => {
         return next()
     }
 
-    return res.status(403).json({ error: 'User not a part of company.' })
+    return res.status(403).json({ error: 'User not a part of company.', status: 403 })
 }
 
 // Checks user is from same company as requested entity by DairyID to lookup CompanyID
 exports.verifyUserFromCompanyByDairyID = async (req, res, next) => {
+    console.log('VerifyByDairyID', req.body)
     const { user: { company_id } } = req
     const dairy_id = req.params.dairy_id || req.body.dairy_id || (req.body.data ? req.body.data.dairy_id : null) || null
 
-    console.log("verifyUserFromCompanyByDairyID::Looking up dairy with id: ", dairy_id)
 
     if (!dairy_id) {
         return res.status(403).json({ error: 'Permission denied: user not apart of company. No dairy id' })
@@ -170,15 +169,13 @@ exports.verifyUserFromCompanyByDairyID = async (req, res, next) => {
         const rows = dbRes.rows
         if (rows[0]) {
             const { company_id: dairy_company_id } = rows[0]
-            console.log("CorrectCompany Res: ", company_id, dairy_company_id)
             if (parseInt(company_id) === dairy_company_id) {
-                console.log("Verified user is from company")
                 return next()
             }
-            return res.status(403).json({ error: 'Permission denied: user not apart of company.' })
+            return res.status(403).json({ error: 'Permission denied: user not apart of company.', status: 403 })
         } else {
-            console.log("No dbRes: ", dbRes)
-            res.status(403).json({ error: 'Permission denied: user not apart of company, no results' })
+            console.log("No dbRes getCompanyIDByDairyID: ", dbRes)
+            res.status(403).json({ error: 'Permission denied: user not apart of company, no results', status: 403 })
         }
     })
 
@@ -188,7 +185,6 @@ exports.verifyUserFromCompanyByUserID = async (req, res, next) => {
     const { user: { company_id } } = req
     const user_id = req.params.pk || req.body.pk || null
 
-    console.log("verifyUserFromCompanyByDairyID::Looking up dairy with id: ", user_id)
 
     if (!user_id) {
         return res.status(403).json({ error: 'Permission denied: No user id' })
@@ -205,13 +201,12 @@ exports.verifyUserFromCompanyByUserID = async (req, res, next) => {
             const { company_id: update_user_company_id } = rows[0]
             // Requesting user's company is the same as the user being updated.
             if (parseInt(company_id) === update_user_company_id) {
-                console.log("Verified user is from company")
                 return next()
             }
-            return res.status(403).json({ error: 'Permission denied: user not apart of company.' })
+            return res.status(403).json({ error: 'Permission denied: user not apart of company.', status: 403 })
         } else {
-            console.log("No dbRes: ", dbRes)
-            res.status(403).json({ error: 'Permission denied: user not apart of company, no results' })
+            console.log("No dbRes getCompanyIDByUserID: ", dbRes)
+            res.status(403).json({ error: 'Permission denied: user not apart of company, no results', status: 403 })
         }
     })
 
@@ -243,7 +238,10 @@ exports.needsDelete = async (req, res, next) => {
 exports.needsAdmin = async (req, res, next) => {
     const { user } = req
     if (user && user.account_type >= ROLES.ADMIN) { return next() }
-    res.status(403).json({ error: 'You need permission: ADMIN' })
+    const msg = 'You need permission: ADMIN'
+    console.log(msg)
+    res.status(403).json({ error: msg })
+
 }
 
 exports.needsHacker = async (req, res, next) => {

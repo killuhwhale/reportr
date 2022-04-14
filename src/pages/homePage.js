@@ -67,7 +67,6 @@ class HomePage extends Component {
   getBaseDairies() {
 
     const companyID = auth.currentUser.company_id
-    // get(`${this.props.BASE_URL}/api/dairy_base/${companyID}`)
     Dairy.getDairyBaseByCompanyID(companyID)
       .then(res => {
         const dairyBase = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
@@ -87,22 +86,26 @@ class HomePage extends Component {
   }
   getDairies() {
     const dairyBase = this.state.baseDairies[this.state.baseDairiesIdx]
-    const baseDairiesID = dairyBase && dairyBase.pk ? dairyBase.pk : null
+    const dairyBaseID = dairyBase && dairyBase.pk ? dairyBase.pk : null
     const company_id = auth.currentUser.company_id
 
     if (!company_id) return this.props.onAlert('Cannot find company ID', 'error')
 
-    if (baseDairiesID) {
-      get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${baseDairiesID}`)
-        .then(res => {
-          const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
-          let dairyIdx = this.state.dairyIdx < res.length ? this.state.dairyIdx : 0
-          this.setState({ dairies: res, dairyIdx: dairyIdx, dairy })
-        })
-        .catch(err => {
-          console.log(err)
-          this.props.onAlert(`Failed getting dairies for BaseDairyID: ${baseDairiesID}`, 'error')
-        })
+    if (dairyBaseID) {
+
+      return new Promise((resolve, reject) => {
+        Dairy.getDairiesByDairyBaseID(dairyBaseID)
+          .then(res => {
+            const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
+            let dairyIdx = this.state.dairyIdx < res.length ? this.state.dairyIdx : 0
+            this.setState({ dairies: res, dairyIdx: dairyIdx, dairy }, () => { resolve() }) // used when we need to do something after the state has been updated w/ new dairies
+          })
+          .catch(err => {
+            console.log(err)
+            reject('Error w/ getDairiesByDairyBaseID')
+            this.props.onAlert(`Failed getting dairies for BaseDairyID: ${dairyBaseID}`, 'error')
+          })
+      })
     }
   }
   onDairyChange(ev) {
@@ -118,7 +121,6 @@ class HomePage extends Component {
     this.setState({ dairies: _dairies })
   }
   updateDairy() {
-    let url = `${this.props.BASE_URL}/api/dairies/update`
     let dairy = this.state.dairies[this.state.dairyIdx]
     let dairyInfo = { ...dairy, dairy_id: dairy.pk }
 
@@ -126,8 +128,15 @@ class HomePage extends Component {
     dairyInfo.county = dairyInfo.county ? dairyInfo.county : COUNTIES[0]
     dairyInfo.basin_plan = dairyInfo.basin_plan ? dairyInfo.basin_plan : BASINS[0]
 
+    const {
+      street, cross_street, county, city, city_state, title, city_zip,
+      basin_plan, began, period_start, period_end, dairy_id
+    } = dairyInfo
 
-    post(url, dairyInfo)
+    Dairy.updateDairy(
+      street, cross_street, county, city, city_state, title, city_zip,
+      basin_plan, began, period_start, period_end, dairy_id
+    )
       .then(res => {
         console.log(res)
         this.props.onAlert('Updated!', 'success')
@@ -164,15 +173,16 @@ class HomePage extends Component {
   onBaseDairyChange(ev) {
     const { name, value: baseDairiesIdx } = ev.target
     const dairyBase = this.state.baseDairies[baseDairiesIdx]
-    const baseDairiesID = dairyBase && dairyBase.pk ? dairyBase.pk : null
+    const dairyBaseID = dairyBase && dairyBase.pk ? dairyBase.pk : null
     const company_id = auth.currentUser.company_id
 
     if (!company_id) return this.props.onAlert('Cannot find company ID', 'error')
 
-    if (baseDairiesID) {
+    if (dairyBaseID) {
       // Query dairies by dairy_base_id
       // Display all dairies by reporting year,
-      get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${baseDairiesID}`)
+      get(`${this.props.BASE_URL}/api/dairies/dairyBaseID/${dairyBaseID}`)
+      Dairy.getDairiesByDairyBaseID(dairyBaseID)
         .then(res => {
           const dairy = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
           this.setState({ dairies: res, dairyIdx: 0, dairy, baseDairiesIdx, dairyBase })
@@ -210,6 +220,21 @@ class HomePage extends Component {
   refreshAfterXLSXUpload() {
     console.log("Calling getBaseDairies()")
     this.getBaseDairies()
+  }
+
+  async onDairyCreated(dairy_id) {
+    try {
+      await this.getDairies()
+      let newDairyIdx = this.state.dairyIdx
+      this.state.dairies.forEach((dairy, i) => {
+        if (dairy.pk === dairy_id) {
+          newDairyIdx = i
+        }
+      })
+      this.setState({ dairyIdx: newDairyIdx })
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   render() {
@@ -443,11 +468,11 @@ class HomePage extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Add Dairy Reporting Year`}
-          onDone={() => { this.getDairies() }}
           dairyBase={Object.keys(this.state.dairyBase).length > 0 ? this.state.dairyBase : {}}
           onClose={() => this.toggleAddDairyModal(false)}
           onAlert={this.props.onAlert}
           BASE_URL={this.props.BASE_URL}
+          onDairyCreated={this.onDairyCreated.bind(this)}
         />
 
         <AddDairyBaseModal

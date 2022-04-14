@@ -122,7 +122,7 @@ const getAvailableNutrientsAB = (dairy_id) => {
           return;
         }
         // Return herdInfo & calculations
-        getReportingPeriodDays(BASE_URL, dairy_id)
+        getReportingPeriodDays(dairy_id)
           .then(rpDays => {
             console.log("PDFDB")
             let totals = calculateHerdManNKPNaCl(herdInfo[0], rpDays)
