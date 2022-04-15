@@ -9,51 +9,127 @@ import { NUTRIENT_IMPORT_MATERIAL_TYPES } from '../../utils/constants'
 import { BASE_URL } from "../../utils/environment"
 import { REPORTING_METHODS } from '../../utils/constants'
 import { Field } from '../../utils/fields/fields'
+import { post } from 'got'
 
 export default function mTEA() { }
 
 const GALS_PER_ACREINCH = 27154.2856
 const AND_RATE = 14 // Atmopheric Nitrogen Deopsition Rate
 
-export const getAnnualReportData = (dairy_id) => {
-  let promises = [
-    getDairyInformationA(dairy_id),
-    getDairyInformationB(dairy_id),
-    getDairyInformationC(dairy_id),
-    getAvailableNutrientsAB(dairy_id),
-    getAvailableNutrientsC(dairy_id),
-    getAvailableNutrientsD(dairy_id),
-    getAvailableNutrientsE(dairy_id),
-    getAvailableNutrientsF(dairy_id),
-    getAvailableNutrientsG(dairy_id),
-    getApplicationAreaA(dairy_id),
-    getApplicationAreaB(dairy_id),
-    getNutrientBudgetA(dairy_id),
-    getNutrientBudgetB(dairy_id),
-    getNutrientAnalysisA(dairy_id),
-    getExceptionReportingABC(dairy_id),
-    getNmpeaStatementsAB(dairy_id),
-    getNotesA(dairy_id),
-    getCertificationA(dairy_id),
-  ]
+// Send one request
 
-  return new Promise((resolve, reject) => {
-    Promise.all(promises)
-      .then(results => {
-        // now I have a list of results in order but I want to pass a single props object.
-        // reduce each object in the list to a single object. Ea obj in the list has a single unique key.
-        let resultsObj = results.reduce((a, c) => ({ ...a, ...c }))
-        console.log(resultsObj)
-        resolve(resultsObj)
+export const getAnnualReportData = async (dairy_id) => {
+  try {
+    return await get(`${BASE_URL}/pdf/dairy/${dairy_id}`)
+
+  } catch (e) {
+    return { error: 'Error getting annual report data.... ' }
+  }
+
+
+}
+
+
+// TODO check tests and see if this returns the correct info in the correct format.
+export const getNutrientBudgetInfo = async (dairy_id) => {
+  try {
+    return await get(`${BASE_URL}/pdf/getNutrientBudgetInfo/${dairy_id}`)
+
+  } catch (e) {
+    return { error: 'Error getting getNutrientBudgetInfo.... ' }
+  }
+
+
+}
+
+// TODO create an endpoint for this.
+// This is used somewhere in the client.... 
+export const getAvailableNutrientsG = (dairy_id) => {
+  return new Promise((resolve, rej) => {
+    Promise.all([
+      get(`${BASE_URL}/api/export_manifest/material_type/${encodeURIComponent('Dry%')}/${dairy_id}`),
+      get(`${BASE_URL}/api/export_manifest/material_type/${encodeURIComponent('Process%')}/${dairy_id}`)
+    ])
+      .then(([dry, process]) => {
+
+        let manureExported = 0
+        let wastewaterExported = 0
+        let dryTotal = dry && dry.length > 0 ?
+          dry.map(el => {
+            manureExported += el.amount_hauled
+            return [
+              calcLbsFromTonsAsPercent(el.n_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
+              calcLbsFromTonsAsPercent(el.p_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
+              calcLbsFromTonsAsPercent(el.k_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
+              calcLbsFromTonsAsPercent(el.tfs, el.moisture, el.amount_hauled, el.reporting_method),
+            ]
+          }
+          ).reduce((a, c) => opArrayByPos(a, c))
+          : [0, 0, 0, 0]
+
+        let processTotal = process && process.length > 0 ?
+          process.map(el => {
+            wastewaterExported += el.amount_hauled
+            return [
+              MGMLToLBS(el.kn_con_mg_l, el.amount_hauled),
+              MGMLToLBS(el.p_con_mg_l, el.amount_hauled),
+              MGMLToLBS(el.k_con_mg_l, el.amount_hauled),
+              MGMLToLBS(el.tds, el.amount_hauled),
+            ]
+          }).reduce((a, c) => opArrayByPos(a, c))
+          : [0, 0, 0, 0]
+
+        // Converting values since values are in percent and need to be displayed in mg/kg
+        dry = dry && dry.length > 0 ? dry.map(el => {
+          el.n_con_mg_kg = parseFloat(el.n_con_mg_kg.replaceAll(',', '')) * 1e4
+          el.p_con_mg_kg = parseFloat(el.p_con_mg_kg.replaceAll(',', '')) * 1e4
+          el.k_con_mg_kg = parseFloat(el.k_con_mg_kg.replaceAll(',', '')) * 1e4
+          return el
+        }) : []
+
+        process = process && process.length > 0 ? process : []
+
+        resolve({
+          'availableNutrientsG': {
+            dry,
+            process,
+            dryTotal,
+            processTotal,
+            manureExported,
+            wastewaterExported,
+            total: opArrayByPos(dryTotal, processTotal)
+          }
+        })
       })
       .catch(err => {
         console.log(err)
-        reject(err)
+        rej(err)
       })
   })
 }
 
-
+/** DEPRECATED
+ * 
+ * 
+ *            DEPRECATED
+ * 
+ * 
+ *                      DEPRECATED
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
 const getDairyInformationA = (dairy_id) => {
   let promises = [
     get(`${BASE_URL}/api/dairy/${dairy_id}`),
@@ -345,69 +421,7 @@ const getAvailableNutrientsF = (dairy_id) => {
   })
 }
 
-const getAvailableNutrientsG = (dairy_id) => {
-  return new Promise((resolve, rej) => {
-    Promise.all([
-      get(`${BASE_URL}/api/export_manifest/material_type/${encodeURIComponent('Dry%')}/${dairy_id}`),
-      get(`${BASE_URL}/api/export_manifest/material_type/${encodeURIComponent('Process%')}/${dairy_id}`)
-    ])
-      .then(([dry, process]) => {
 
-        let manureExported = 0
-        let wastewaterExported = 0
-        let dryTotal = dry && dry.length > 0 ?
-          dry.map(el => {
-            manureExported += el.amount_hauled
-            return [
-              calcLbsFromTonsAsPercent(el.n_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
-              calcLbsFromTonsAsPercent(el.p_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
-              calcLbsFromTonsAsPercent(el.k_con_mg_kg, el.moisture, el.amount_hauled, el.reporting_method),
-              calcLbsFromTonsAsPercent(el.tfs, el.moisture, el.amount_hauled, el.reporting_method),
-            ]
-          }
-          ).reduce((a, c) => opArrayByPos(a, c))
-          : [0, 0, 0, 0]
-
-        let processTotal = process && process.length > 0 ?
-          process.map(el => {
-            wastewaterExported += el.amount_hauled
-            return [
-              MGMLToLBS(el.kn_con_mg_l, el.amount_hauled),
-              MGMLToLBS(el.p_con_mg_l, el.amount_hauled),
-              MGMLToLBS(el.k_con_mg_l, el.amount_hauled),
-              MGMLToLBS(el.tds, el.amount_hauled),
-            ]
-          }).reduce((a, c) => opArrayByPos(a, c))
-          : [0, 0, 0, 0]
-
-        // Converting values since values are in percent and need to be displayed in mg/kg
-        dry = dry && dry.length > 0 ? dry.map(el => {
-          el.n_con_mg_kg = parseFloat(el.n_con_mg_kg.replaceAll(',', '')) * 1e4
-          el.p_con_mg_kg = parseFloat(el.p_con_mg_kg.replaceAll(',', '')) * 1e4
-          el.k_con_mg_kg = parseFloat(el.k_con_mg_kg.replaceAll(',', '')) * 1e4
-          return el
-        }) : []
-
-        process = process && process.length > 0 ? process : []
-
-        resolve({
-          'availableNutrientsG': {
-            dry,
-            process,
-            dryTotal,
-            processTotal,
-            manureExported,
-            wastewaterExported,
-            total: opArrayByPos(dryTotal, processTotal)
-          }
-        })
-      })
-      .catch(err => {
-        console.log(err)
-        rej(err)
-      })
-  })
-}
 
 
 const getApplicationAreaA = (dairy_id) => {
@@ -1078,7 +1092,7 @@ const calcEvNutrientTotals = async (events, harvests) => {
   return { infoLBS, allEvents: allEventsTotals, allAppEvents: allEvents }
 }
 
-const getNutrientBudgetInfo = async (dairy_id) => {
+const _getNutrientBudgetInfo = async (dairy_id) => {
   const [plows, soils, fertilizers, manures, wastewaters, freshwaters, harvests] = await Promise.all([
     get(`${BASE_URL}/api/field_crop_app_plowdown_credit/${dairy_id}`),
     get(`${BASE_URL}/api/field_crop_app_soil/${dairy_id}`),
@@ -1270,10 +1284,3 @@ const getCertificationA = (dairy_id) => {
   })
 }
 
-
-
-export {
-  getApplicationAreaA, getApplicationAreaB, getAvailableNutrientsAB, getAvailableNutrientsC,
-  getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA,
-  getNutrientAnalysisA, getExceptionReportingABC, calcEvNutrientTotals
-};

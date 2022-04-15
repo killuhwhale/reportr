@@ -12,7 +12,7 @@ import { Field } from '../../../utils/fields/fields'
 import {
     getApplicationAreaA, getApplicationAreaB, getAvailableNutrientsAB, getAvailableNutrientsC,
     getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA,
-    getNutrientAnalysisA, getExceptionReportingABC
+    getNutrientAnalysisA, getExceptionReportingABC, getAnnualReportData
 } from '../../../comps/Dairy/pdfDB'
 import { naturalSort, naturalSortBy, naturalSortByKeys, sortByKeys } from '../../../utils/format';
 
@@ -31,6 +31,8 @@ const TEST_USER_EMAIL_WRITE = 't2@g.com'
 const TEST_USER_PASSWORD_WRITE = 't@g.com'
 const TEST_USER_EMAIL_DELETE = 't3@g.com'
 const TEST_USER_PASSWORD_DELETE = 't@g.com'
+
+let ARD = null
 
 const tp = (num, precision = 6) => {
     // to precision
@@ -427,18 +429,24 @@ describe('Test upload XLSX', () => {
 
 describe('Test pdfDB', () => {
 
-    // beforeAll(async () => {
-    //     //Spin up Express App and DB.
-    //     // On DB startup create scripts will be executed
-    //     // I need a way to upload the same data each time.
-    //     // Currently relying on uploadXLSX
+    beforeAll(async () => {
+        //Spin up Express App and DB.
+        // On DB startup create scripts will be executed
+        // I need a way to upload the same data each time.
+        // Currently relying on uploadXLSX
 
-    //     // Express App would need to know where to connect to/ how to connect to DB.
+        // Express App would need to know where to connect to/ how to connect to DB.
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        ARD = await getAnnualReportData(dairy_id)
+    })
 
-    // })
 
     test('A. LIST OF LAND APPLICATION AREAS.', async () => {
-        const { applicationAreaA } = await getApplicationAreaA(dairy_id)
+        // TODO replace the rest of the calls to use this global var with the main call to the server.
+        const { applicationAreaA } = ARD
+        console.log("appArea", applicationAreaA)
+
         applicationAreaA.fields.forEach(field => {
             Object.keys(field).forEach(key => {
                 if (isIDPK(key)) {

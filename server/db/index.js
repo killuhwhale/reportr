@@ -209,12 +209,13 @@ module.exports = {
       callback
     )
   },
-  getDairy: (dairy_id, callback) => {
-    return pool.query(
-      format("SELECT * FROM dairies where pk = %L LIMIT 1", dairy_id),
-      [],
-      callback
-    )
+  getDairy: (dairy_id) => {
+    return queryPromiseByFormat(format("SELECT * FROM dairies where pk = %L LIMIT 1", dairy_id))
+    // return pool.query(
+    //   format("SELECT * FROM dairies where pk = %L LIMIT 1", dairy_id),
+    //   [],
+    //   callback
+    // )
   },
   insertDairy,
 
@@ -414,19 +415,11 @@ module.exports = {
   getOperators: (dairy_id) => {
     return queryPromiseByFormat(format("SELECT * FROM operators where dairy_id = %L", dairy_id))
   },
-  getOperatorsByOwnerStatus: (values, callback) => {
-    return pool.query(
-      "SELECT * FROM operators where is_owner = $1 and dairy_id = $2",
-      values,
-      callback
-    )
+  getOperatorsByOwnerStatus: (is_owner, dairy_id) => {
+    return queryPromiseByValues("SELECT * FROM operators where is_owner = $1 and dairy_id = $2", [is_owner, dairy_id])
   },
-  getOperatorsByOperatorStatus: (values, callback) => {
-    return pool.query(
-      "SELECT * FROM operators where is_operator = $1 and dairy_id = $2",
-      values,
-      callback
-    )
+  getOperatorsByOperatorStatus: (is_operator, dairy_id) => {
+    return queryPromiseByValues("SELECT * FROM operators where is_operator = $1 and dairy_id = $2", [is_operator, dairy_id])
   },
   updateOperator: (values, callback) => {
     return pool.query(`UPDATE operators SET
@@ -501,34 +494,30 @@ module.exports = {
       callback
     )
   },
-  getFieldCrop: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT 
-          fc.pk,
-          fc.field_id,
-          fc.plant_date,
-          fc.acres_planted,
-          fc.typical_yield,
-          fc.moisture,
-          fc.n,
-          fc.p, 
-          fc.k,
-          fc.salt,
-          f.cropable,
-          f.acres,
-          f.title as fieldTitle,
-          c.title as cropTitle 
-        FROM field_crop fc
-        JOIN crops c
-        ON c.pk = fc.crop_id
-        JOIN fields f
-        ON f.pk = fc.field_id
-        WHERE fc.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+  getFieldCrop: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      `SELECT 
+        fc.pk,
+        fc.field_id,
+        fc.plant_date,
+        fc.acres_planted,
+        fc.typical_yield,
+        fc.moisture,
+        fc.n,
+        fc.p, 
+        fc.k,
+        fc.salt,
+        f.cropable,
+        f.acres,
+        f.title as fieldTitle,
+        c.title as cropTitle 
+      FROM field_crop fc
+      JOIN crops c
+      ON c.pk = fc.crop_id
+      JOIN fields f
+      ON f.pk = fc.field_id
+      WHERE fc.dairy_id = %L
+      `, dairy_id))
   },
   updateFieldCrop: (values, callback) => {
     return pool.query(`UPDATE field_crop SET
@@ -559,12 +548,8 @@ module.exports = {
       callback
     )
   },
-  getCropsByTitle: (title, callback) => {
-    return pool.query(
-      `SELECT * FROM crops WHERE title = $1;`,
-      [title],
-      callback
-    )
+  getCropsByTitle: (title) => {
+    return queryPromiseByValues(`SELECT * FROM crops WHERE title = $1;`, [title])
   },
 
   insertFieldCropHarvest: (values, callback) => {
@@ -598,54 +583,50 @@ module.exports = {
       callback
     )
   },
-  getFieldCropHarvest: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT 
-          'harvest' as entry_type,
-           fch.pk,
-           fch.harvest_date,
-           fch.actual_yield,
-           fch.method_of_reporting,
-           fch.moisture as actual_moisture,
-           fch.n as actual_n,
-           fch.p as actual_p,
-           fch.k as actual_k,
-           fch.n_dl,
-           fch.p_dl,
-           fch.k_dl,
-           fch.tfs_dl,
-           fch.tfs,
-           fch.sample_date,
-           fch.src_of_analysis,
-           fch.expected_yield_tons_acre,
-           fch.field_crop_id,
+  getFieldCropHarvest: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      `SELECT 
+      'harvest' as entry_type,
+       fch.pk,
+       fch.harvest_date,
+       fch.actual_yield,
+       fch.method_of_reporting,
+       fch.moisture as actual_moisture,
+       fch.n as actual_n,
+       fch.p as actual_p,
+       fch.k as actual_k,
+       fch.n_dl,
+       fch.p_dl,
+       fch.k_dl,
+       fch.tfs_dl,
+       fch.tfs,
+       fch.sample_date,
+       fch.src_of_analysis,
+       fch.expected_yield_tons_acre,
+       fch.field_crop_id,
 
-           c.title as croptitle,
-           f.title as fieldtitle,
-           f.pk as field_id,
-           fc.plant_date,
-           fc.acres_planted,
-           fc.typical_yield,
-           fc.moisture as typical_moisture,
-           fc.n as typical_n,
-           fc.p as typical_p,
-           fc.k as typical_k,
-           fc.salt as typical_salt
+       c.title as croptitle,
+       f.title as fieldtitle,
+       f.pk as field_id,
+       fc.plant_date,
+       fc.acres_planted,
+       fc.typical_yield,
+       fc.moisture as typical_moisture,
+       fc.n as typical_n,
+       fc.p as typical_p,
+       fc.k as typical_k,
+       fc.salt as typical_salt
 
-        FROM field_crop_harvest fch
-        JOIN field_crop fc
-        ON fc.pk = fch.field_crop_id
-        JOIN fields f
-        ON f.pk = fc.field_id
-        JOIN crops c
-        ON c.pk = fc.crop_id
-        WHERE 
-          fch.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+    FROM field_crop_harvest fch
+    JOIN field_crop fc
+    ON fc.pk = fch.field_crop_id
+    JOIN fields f
+    ON f.pk = fc.field_id
+    JOIN crops c
+    ON c.pk = fc.crop_id
+    WHERE 
+      fch.dairy_id = %L
+    `, dairy_id))
   },
   updateFieldCropHarvest: (values, callback) => {
     return pool.query(`UPDATE field_crop_harvest SET
@@ -847,14 +828,10 @@ module.exports = {
       callback
     )
   },
-  getFieldCropApplicationProcessWastewaterAnalysis: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT * FROM field_crop_app_process_wastewater_analysis
-          WHERE dairy_id = %L`, dairy_id),
-      [],
-      callback
-    )
+  getFieldCropApplicationProcessWastewaterAnalysis: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      `SELECT * FROM field_crop_app_process_wastewater_analysis
+        WHERE dairy_id = %L`, dairy_id))
   },
   rmFieldCropApplicationProcessWastewaterAnalysis: (id, callback) => {
     return pool.query(
@@ -893,73 +870,69 @@ module.exports = {
       callback
     )
   },
-  getFieldCropApplicationProcessWastewater: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT 
-          'wastewater' as entry_type,
-          fcapww.pk,
-          fcapww.dairy_id,
-          fcapww.field_crop_app_id,
-          fcapww.field_crop_app_process_wastewater_analysis_id,
-          fcapww.app_desc,
-          fcapww.amount_applied,
-          
-          fcapwwa.material_type,
-          fcapwwa.sample_date,
-          fcapwwa.sample_desc,
-          fcapwwa.sample_data_src,
-          fcapwwa.kn_con,
-          fcapwwa.nh4_con,
-          fcapwwa.nh3_con,
-          fcapwwa.no3_con,
-          fcapwwa.p_con,
-          fcapwwa.k_con,
-          fcapwwa.ec,
-          fcapwwa.tds,
-          fcapwwa.ph,
-
-          fca.app_date,
-          fca.app_method,
-          fca.precip_before,
-          fca.precip_during,
-          fca.precip_after,
-          
-          c.title as croptitle,
-          f.title as fieldtitle,
-          f.pk as field_id,
-          fc.plant_date,
-          fc.acres_planted,
-          fc.typical_yield,
-          fc.moisture as typical_moisture,
-          fc.n as typical_n,
-          fc.p as typical_p,
-          fc.k as typical_k,
-          fc.salt as typical_salt
-
-        FROM field_crop_app_process_wastewater fcapww
+  getFieldCropApplicationProcessWastewater: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      `SELECT 
+        'wastewater' as entry_type,
+        fcapww.pk,
+        fcapww.dairy_id,
+        fcapww.field_crop_app_id,
+        fcapww.field_crop_app_process_wastewater_analysis_id,
+        fcapww.app_desc,
+        fcapww.amount_applied,
         
-        JOIN field_crop_app fca
-        ON fca.pk = fcapww.field_crop_app_id
+        fcapwwa.material_type,
+        fcapwwa.sample_date,
+        fcapwwa.sample_desc,
+        fcapwwa.sample_data_src,
+        fcapwwa.kn_con,
+        fcapwwa.nh4_con,
+        fcapwwa.nh3_con,
+        fcapwwa.no3_con,
+        fcapwwa.p_con,
+        fcapwwa.k_con,
+        fcapwwa.ec,
+        fcapwwa.tds,
+        fcapwwa.ph,
 
-        JOIN field_crop_app_process_wastewater_analysis fcapwwa
-        ON fcapwwa.pk = fcapww.field_crop_app_process_wastewater_analysis_id
+        fca.app_date,
+        fca.app_method,
+        fca.precip_before,
+        fca.precip_during,
+        fca.precip_after,
         
-        JOIN field_crop fc
-        ON fc.pk = fca.field_crop_id
+        c.title as croptitle,
+        f.title as fieldtitle,
+        f.pk as field_id,
+        fc.plant_date,
+        fc.acres_planted,
+        fc.typical_yield,
+        fc.moisture as typical_moisture,
+        fc.n as typical_n,
+        fc.p as typical_p,
+        fc.k as typical_k,
+        fc.salt as typical_salt
 
-        
-        JOIN fields f
-        ON f.pk = fc.field_id
-        
-        JOIN crops c
-        ON c.pk = fc.crop_id
-        WHERE 
-        fcapww.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+      FROM field_crop_app_process_wastewater fcapww
+      
+      JOIN field_crop_app fca
+      ON fca.pk = fcapww.field_crop_app_id
+
+      JOIN field_crop_app_process_wastewater_analysis fcapwwa
+      ON fcapwwa.pk = fcapww.field_crop_app_process_wastewater_analysis_id
+      
+      JOIN field_crop fc
+      ON fc.pk = fca.field_crop_id
+
+      
+      JOIN fields f
+      ON f.pk = fc.field_id
+      
+      JOIN crops c
+      ON c.pk = fc.crop_id
+      WHERE 
+      fcapww.dairy_id = %L
+      `, dairy_id))
   },
   rmFieldCropApplicationProcessWastewater: (id, callback) => {
     return pool.query(
@@ -984,18 +957,14 @@ module.exports = {
       callback
     )
   },
-  getFieldCropApplicationFreshwaterSource: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT *
-        FROM field_crop_app_freshwater_source
-        WHERE 
-        dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+  getFieldCropApplicationFreshwaterSource: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT *
+      FROM field_crop_app_freshwater_source
+      WHERE 
+      dairy_id = %L
+      `, dairy_id))
   },
   rmFieldCropApplicationFreshwaterSource: (id, callback) => {
     return pool.query(
@@ -1058,25 +1027,21 @@ module.exports = {
       callback
     )
   },
-  getFieldCropApplicationFreshwaterAnalysis: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT *,
-        fcafwa.pk,
-        fcafws.pk as freshwater_source_id
+  getFieldCropApplicationFreshwaterAnalysis: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT *,
+      fcafwa.pk,
+      fcafws.pk as freshwater_source_id
 
 
-        FROM field_crop_app_freshwater_analysis fcafwa
-        JOIN field_crop_app_freshwater_source fcafws
-        ON fcafws.pk = fcafwa.fresh_water_source_id
+      FROM field_crop_app_freshwater_analysis fcafwa
+      JOIN field_crop_app_freshwater_source fcafws
+      ON fcafws.pk = fcafwa.fresh_water_source_id
 
-        WHERE 
-        fcafwa.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+      WHERE 
+      fcafwa.dairy_id = %L
+      `, dairy_id))
   },
   rmFieldCropApplicationFreshwaterAnalysis: (id, callback) => {
     return pool.query(
@@ -1113,73 +1078,69 @@ module.exports = {
       callback
     )
   },
-  getFieldCropApplicationFreshwater: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT 
-          'freshwater' as entry_type,
-          sample_date,
-          src_desc,
-          src_type,
-          sample_desc,
-          src_of_analysis,
-          n_con,
-          nh4_con, 
-          no2_con,
-          ca_con,
-          mg_con,
-          na_con,
-          hco3_con,
-          co3_con,
-          so4_con,
-          cl_con,
-          ec, 
-          tds,
-          app_rate,
-          run_time,
-          amount_applied,
-          amt_applied_per_acre,
+  getFieldCropApplicationFreshwater: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT 
+        'freshwater' as entry_type,
+        sample_date,
+        src_desc,
+        src_type,
+        sample_desc,
+        src_of_analysis,
+        n_con,
+        nh4_con, 
+        no2_con,
+        ca_con,
+        mg_con,
+        na_con,
+        hco3_con,
+        co3_con,
+        so4_con,
+        cl_con,
+        ec, 
+        tds,
+        app_rate,
+        run_time,
+        amount_applied,
+        amt_applied_per_acre,
 
-          f.title as fieldtitle,
-          f.pk as field_id,
-          c.title as croptitle,
-          fc.plant_date,
-          fc.acres_planted,
+        f.title as fieldtitle,
+        f.pk as field_id,
+        c.title as croptitle,
+        fc.plant_date,
+        fc.acres_planted,
 
-          fca.app_date,
-          fca.app_method,
-          fca.precip_before,
-          fca.precip_during,
-          fca.precip_after
-          
+        fca.app_date,
+        fca.app_method,
+        fca.precip_before,
+        fca.precip_during,
+        fca.precip_after
         
-        FROM field_crop_app_freshwater fcfw
+      
+      FROM field_crop_app_freshwater fcfw
 
-        JOIN field_crop_app fca
-        ON fca.pk = fcfw.field_crop_app_id
+      JOIN field_crop_app fca
+      ON fca.pk = fcfw.field_crop_app_id
 
-        JOIN field_crop_app_freshwater_analysis fcafwa
-        ON fcafwa.pk = fcfw.field_crop_app_freshwater_analysis_id
+      JOIN field_crop_app_freshwater_analysis fcafwa
+      ON fcafwa.pk = fcfw.field_crop_app_freshwater_analysis_id
 
-        JOIN field_crop_app_freshwater_source fcafws
-        ON fcafws.pk = fcafwa.fresh_water_source_id
+      JOIN field_crop_app_freshwater_source fcafws
+      ON fcafws.pk = fcafwa.fresh_water_source_id
 
-        JOIN field_crop fc
-        ON fc.pk = fca.field_crop_id
+      JOIN field_crop fc
+      ON fc.pk = fca.field_crop_id
 
-        JOIN fields f
-        ON f.pk = fc.field_id
+      JOIN fields f
+      ON f.pk = fc.field_id
 
-        JOIN crops c
-        ON c.pk = fc.crop_id
+      JOIN crops c
+      ON c.pk = fc.crop_id
 
-        WHERE 
-        fcfw.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+      WHERE 
+      fcfw.dairy_id = %L
+      `, dairy_id))
   },
   rmFieldCropApplicationFreshwater: (id, callback) => {
     return pool.query(
@@ -1228,18 +1189,14 @@ module.exports = {
       callback
     )
   },
-  getFieldCropApplicationSolidmanureAnalysis: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT *
-        FROM field_crop_app_solidmanure_analysis fcasma
-        WHERE 
-        fcasma.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+  getFieldCropApplicationSolidmanureAnalysis: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT *
+    FROM field_crop_app_solidmanure_analysis fcasma
+    WHERE 
+    fcasma.dairy_id = %L
+    `, dairy_id))
   },
   rmFieldCropApplicationSolidmanureAnalysis: (id, callback) => {
     return pool.query(
@@ -1278,72 +1235,69 @@ module.exports = {
       callback
     )
   },
-  getFieldCropApplicationSolidmanure: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT 
-        'manure' as entry_type,
-        fcasm.src_desc,
-        fcasm.amount_applied,
-        fcasm.amt_applied_per_acre,
+  getFieldCropApplicationSolidmanure: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT 
+      'manure' as entry_type,
+      fcasm.src_desc,
+      fcasm.amount_applied,
+      fcasm.amt_applied_per_acre,
 
-        fcasma.sample_desc,
-        fcasma.sample_date,
-        fcasma.material_type,
-        fcasma.src_of_analysis,
-        fcasma.moisture,
-        fcasma.method_of_reporting,
-        fcasma.n_con,
-        fcasma.p_con,
-        fcasma.k_con,
-        fcasma.ca_con,
-        fcasma.mg_con,
-        fcasma.na_con,
-        fcasma.s_con,
-        fcasma.cl_con,
-        fcasma.tfs,
+      fcasma.sample_desc,
+      fcasma.sample_date,
+      fcasma.material_type,
+      fcasma.src_of_analysis,
+      fcasma.moisture,
+      fcasma.method_of_reporting,
+      fcasma.n_con,
+      fcasma.p_con,
+      fcasma.k_con,
+      fcasma.ca_con,
+      fcasma.mg_con,
+      fcasma.na_con,
+      fcasma.s_con,
+      fcasma.cl_con,
+      fcasma.tfs,
+      
+
+      f.title as fieldtitle,
+      f.pk as field_id,
+      c.title as croptitle,
+      fc.plant_date,
+      fc.acres_planted,
+
+      fca.app_date,
+      fca.app_method,
+      fca.precip_before,
+      fca.precip_during,
+      fca.precip_after
         
+      
+      FROM field_crop_app_solidmanure fcasm
 
-        f.title as fieldtitle,
-        f.pk as field_id,
-        c.title as croptitle,
-        fc.plant_date,
-        fc.acres_planted,
+      JOIN field_crop_app fca
+      ON fca.pk = fcasm.field_crop_app_id
 
-        fca.app_date,
-        fca.app_method,
-        fca.precip_before,
-        fca.precip_during,
-        fca.precip_after
-          
-        
-        FROM field_crop_app_solidmanure fcasm
-
-        JOIN field_crop_app fca
-        ON fca.pk = fcasm.field_crop_app_id
-
-        JOIN field_crop_app_solidmanure_analysis fcasma
-        ON fcasma.pk = fcasm.field_crop_app_solidmanure_analysis_id
+      JOIN field_crop_app_solidmanure_analysis fcasma
+      ON fcasma.pk = fcasm.field_crop_app_solidmanure_analysis_id
 
 
-        JOIN field_crop fc
-        ON fc.pk = fca.field_crop_id
+      JOIN field_crop fc
+      ON fc.pk = fca.field_crop_id
 
-        JOIN fields f
-        ON f.pk = fc.field_id
+      JOIN fields f
+      ON f.pk = fc.field_id
 
-        JOIN crops c
-        ON c.pk = fc.crop_id
+      JOIN crops c
+      ON c.pk = fc.crop_id
 
 
 
-        WHERE 
-        fcasm.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+      WHERE 
+      fcasm.dairy_id = %L
+      `, dairy_id))
+
   },
   rmFieldCropApplicationSolidmanure: (id, callback) => {
     return pool.query(
@@ -1392,29 +1346,22 @@ module.exports = {
       callback
     )
   },
-  getNutrientImportByMaterialType: (values, callback) => {
-    return pool.query(
-      `SELECT *
+  getNutrientImportByMaterialType: (material_type, dairy_id) => {
+    return queryPromiseByValues(`SELECT *
       FROM nutrient_import
       WHERE 
       material_type LIKE $1 and
       dairy_id = $2`,
-      values,
-      callback
-    )
+      [material_type, dairy_id])
   },
   getNutrientImportByWastewater: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT *
-        FROM nutrient_import
-        WHERE 
-        material_type ILIKE 'Process%' and
-        dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+    return queryPromiseByFormat(format(
+      `SELECT *
+      FROM nutrient_import
+      WHERE 
+      material_type ILIKE 'Process%' and
+      dairy_id = %L
+      `, dairy_id))
   },
   rmNutrientImport: (id, callback) => {
     return pool.query(
@@ -1453,64 +1400,60 @@ module.exports = {
     )
   },
   getFieldCropApplicationFertilizer: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT 
-        'fertilizer' as entry_type,
-        fcaf.amount_applied,
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT 
+      'fertilizer' as entry_type,
+      fcaf.amount_applied,
 
-        ni.import_desc,
-        ni.import_date,
-        ni.material_type,
-        ni.method_of_reporting,
-        ni.amount_imported,
-        ni.moisture,
-        ni.n_con,
-        ni.p_con,
-        ni.k_con,
-        ni.salt_con,
+      ni.import_desc,
+      ni.import_date,
+      ni.material_type,
+      ni.method_of_reporting,
+      ni.amount_imported,
+      ni.moisture,
+      ni.n_con,
+      ni.p_con,
+      ni.k_con,
+      ni.salt_con,
 
-        f.title as fieldtitle,
-        f.pk as field_id,
-        c.title as croptitle,
-        fc.plant_date,
-        fc.acres_planted,
-        fca.app_date,
-        fca.app_method,
-        fca.precip_before,
-        fca.precip_during,
-        fca.precip_after
-          
+      f.title as fieldtitle,
+      f.pk as field_id,
+      c.title as croptitle,
+      fc.plant_date,
+      fc.acres_planted,
+      fca.app_date,
+      fca.app_method,
+      fca.precip_before,
+      fca.precip_during,
+      fca.precip_after
         
+      
 
 
-        FROM field_crop_app_fertilizer fcaf
+      FROM field_crop_app_fertilizer fcaf
 
-        JOIN field_crop_app fca
-        ON fca.pk = fcaf.field_crop_app_id
+      JOIN field_crop_app fca
+      ON fca.pk = fcaf.field_crop_app_id
 
-        JOIN nutrient_import ni
-        ON ni.pk = fcaf.nutrient_import_id
-
-
-        JOIN field_crop fc
-        ON fc.pk = fca.field_crop_id
-
-        JOIN fields f
-        ON f.pk = fc.field_id
-
-        JOIN crops c
-        ON c.pk = fc.crop_id
+      JOIN nutrient_import ni
+      ON ni.pk = fcaf.nutrient_import_id
 
 
+      JOIN field_crop fc
+      ON fc.pk = fca.field_crop_id
 
-        WHERE 
-        fcaf.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+      JOIN fields f
+      ON f.pk = fc.field_id
+
+      JOIN crops c
+      ON c.pk = fc.crop_id
+
+
+
+      WHERE 
+      fcaf.dairy_id = %L
+      `, dairy_id))
   },
   rmFieldCropApplicationFertilizer: (id, callback) => {
     return pool.query(
@@ -1553,24 +1496,20 @@ module.exports = {
       callback
     )
   },
-  getFieldCropApplicationSoilAnalysis: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT *,
-        fcasa.pk,
-        f.pk as field_pk
-        FROM field_crop_app_soil_analysis fcasa
+  getFieldCropApplicationSoilAnalysis: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT *,
+      fcasa.pk,
+      f.pk as field_pk
+      FROM field_crop_app_soil_analysis fcasa
 
-        JOIN fields f
-        ON f.pk = fcasa.field_id
+      JOIN fields f
+      ON f.pk = fcasa.field_id
 
-        WHERE 
-        fcasa.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+      WHERE 
+      fcasa.dairy_id = %L
+      `, dairy_id))
   },
   rmFieldCropApplicationSoilAnalysis: (id, callback) => {
     return pool.query(
@@ -1602,80 +1541,76 @@ module.exports = {
       callback
     )
   },
-  getFieldCropApplicationSoil: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT
-        'soil' as entry_type,
-        fcas.pk,
-        fcas.src_desc,
+  getFieldCropApplicationSoil: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT
+      'soil' as entry_type,
+      fcas.pk,
+      fcas.src_desc,
 
-        f.title as fieldtitle,
-        f.pk as field_id,
-        c.title as croptitle,
-        fc.plant_date,
-        fc.acres_planted,
-        fca.app_date,
-        fca.pk as field_crop_app_id,
-        fca.app_date,
-        fca.app_method,
-        fca.precip_before,
-        fca.precip_during,
-        fca.precip_after,
- 
-
-        fcasa_one.sample_date as sample_date_0, 
-        fcasa_one.n_con as n_con_0,
-        fcasa_one.p_con as p_con_0,
-        fcasa_one.k_con as k_con_0,
-        fcasa_one.ec as ec_0,
-        fcasa_one.org_matter as org_matter_0,
-
-        fcasa_two.sample_date as sample_date_1,
-        fcasa_two.n_con as n_con_1,
-        fcasa_two.p_con as p_con_1,
-        fcasa_two.k_con as k_con_1,
-        fcasa_two.ec as ec_1,
-        fcasa_two.org_matter as org_matter_1,
-
-        fcasa_three.sample_date as sample_date_2,
-        fcasa_three.n_con as n_con_2,
-        fcasa_three.p_con as p_con_2,
-        fcasa_three.k_con as k_con_2,
-        fcasa_three.ec as ec_2,
-        fcasa_three.org_matter as org_matter_2
+      f.title as fieldtitle,
+      f.pk as field_id,
+      c.title as croptitle,
+      fc.plant_date,
+      fc.acres_planted,
+      fca.app_date,
+      fca.pk as field_crop_app_id,
+      fca.app_date,
+      fca.app_method,
+      fca.precip_before,
+      fca.precip_during,
+      fca.precip_after,
 
 
-        FROM field_crop_app_soil fcas
+      fcasa_one.sample_date as sample_date_0, 
+      fcasa_one.n_con as n_con_0,
+      fcasa_one.p_con as p_con_0,
+      fcasa_one.k_con as k_con_0,
+      fcasa_one.ec as ec_0,
+      fcasa_one.org_matter as org_matter_0,
 
-        JOIN field_crop_app fca
-        on fca.pk = fcas.field_crop_app_id
+      fcasa_two.sample_date as sample_date_1,
+      fcasa_two.n_con as n_con_1,
+      fcasa_two.p_con as p_con_1,
+      fcasa_two.k_con as k_con_1,
+      fcasa_two.ec as ec_1,
+      fcasa_two.org_matter as org_matter_1,
 
-        JOIN field_crop fc
-        ON fc.pk = fca.field_crop_id
+      fcasa_three.sample_date as sample_date_2,
+      fcasa_three.n_con as n_con_2,
+      fcasa_three.p_con as p_con_2,
+      fcasa_three.k_con as k_con_2,
+      fcasa_three.ec as ec_2,
+      fcasa_three.org_matter as org_matter_2
 
-        JOIN fields f
-        ON f.pk = fc.field_id
 
-        JOIN crops c
-        ON c.pk = fc.crop_id
+      FROM field_crop_app_soil fcas
 
-        JOIN field_crop_app_soil_analysis fcasa_one
-        ON fcasa_one.pk = fcas.analysis_one
-        
-        JOIN field_crop_app_soil_analysis fcasa_two
-        ON fcasa_two.pk = fcas.analysis_two
-        
-        JOIN field_crop_app_soil_analysis fcasa_three
-        ON fcasa_three.pk = fcas.analysis_three
-        
-        WHERE 
-        fcas.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+      JOIN field_crop_app fca
+      on fca.pk = fcas.field_crop_app_id
+
+      JOIN field_crop fc
+      ON fc.pk = fca.field_crop_id
+
+      JOIN fields f
+      ON f.pk = fc.field_id
+
+      JOIN crops c
+      ON c.pk = fc.crop_id
+
+      JOIN field_crop_app_soil_analysis fcasa_one
+      ON fcasa_one.pk = fcas.analysis_one
+      
+      JOIN field_crop_app_soil_analysis fcasa_two
+      ON fcasa_two.pk = fcas.analysis_two
+      
+      JOIN field_crop_app_soil_analysis fcasa_three
+      ON fcasa_three.pk = fcas.analysis_three
+      
+      WHERE 
+      fcas.dairy_id = %L
+      `, dairy_id))
   },
   rmFieldCropApplicationSoil: (id, callback) => {
     return pool.query(
@@ -1706,54 +1641,51 @@ module.exports = {
       callback
     )
   },
-  getFieldCropApplicationPlowdownCredit: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT
-        'plowdown' as entry_type,
-        fcapc.pk,
-        fcapc.src_desc,
-        fcapc.n_lbs_acre,
-        fcapc.p_lbs_acre,
-        fcapc.k_lbs_acre,
-        fcapc.salt_lbs_acre,
+  getFieldCropApplicationPlowdownCredit: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT
+      'plowdown' as entry_type,
+      fcapc.pk,
+      fcapc.src_desc,
+      fcapc.n_lbs_acre,
+      fcapc.p_lbs_acre,
+      fcapc.k_lbs_acre,
+      fcapc.salt_lbs_acre,
 
-        f.title as fieldtitle,
-        f.pk as field_id,
-        c.title as croptitle,
-        fc.plant_date,
-        fc.acres_planted,
-        fca.app_date,
-        fca.pk as field_crop_app_id,
-        fca.app_date,
-        fca.app_method,
-        fca.precip_before,
-        fca.precip_during,
-        fca.precip_after
-
-
-        FROM field_crop_app_plowdown_credit fcapc
-
-        JOIN field_crop_app fca
-        on fca.pk = fcapc.field_crop_app_id
-
-        JOIN field_crop fc
-        ON fc.pk = fca.field_crop_id
-
-        JOIN fields f
-        ON f.pk = fc.field_id
-
-        JOIN crops c
-        ON c.pk = fc.crop_id
+      f.title as fieldtitle,
+      f.pk as field_id,
+      c.title as croptitle,
+      fc.plant_date,
+      fc.acres_planted,
+      fca.app_date,
+      fca.pk as field_crop_app_id,
+      fca.app_date,
+      fca.app_method,
+      fca.precip_before,
+      fca.precip_during,
+      fca.precip_after
 
 
-        WHERE 
-        fcapc.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+      FROM field_crop_app_plowdown_credit fcapc
+
+      JOIN field_crop_app fca
+      on fca.pk = fcapc.field_crop_app_id
+
+      JOIN field_crop fc
+      ON fc.pk = fca.field_crop_id
+
+      JOIN fields f
+      ON f.pk = fc.field_id
+
+      JOIN crops c
+      ON c.pk = fc.crop_id
+
+
+      WHERE 
+      fcapc.dairy_id = %L
+      `, dairy_id))
+
   },
   rmFieldCropApplicationPlowdownCredit: (id, callback) => {
     return pool.query(
@@ -1774,17 +1706,13 @@ module.exports = {
     )
   },
   getDrainSource: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT *
-        FROM drain_source
-        WHERE 
-        dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT *
+      FROM drain_source
+      WHERE 
+      dairy_id = %L
+      `, dairy_id))
   },
   rmDrainSource: (id, callback) => {
     return pool.query(
@@ -1832,19 +1760,15 @@ module.exports = {
     )
   },
   getDrainAnalysis: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        // nitrateN, totalP, totalK, totalTDS
-        `SELECT *
-        FROM drain_analysis da
-        JOIN drain_source ds
-        ON ds.pk = da.drain_source_id
-        WHERE 
-        da.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+    return queryPromiseByFormat(format(
+      // nitrateN, totalP, totalK, totalTDS
+      `SELECT *
+      FROM drain_analysis da
+      JOIN drain_source ds
+      ON ds.pk = da.drain_source_id
+      WHERE 
+      da.dairy_id = %L
+      `, dairy_id))
   },
   rmDrainAnalysis: (id, callback) => {
     return pool.query(
@@ -2208,204 +2132,197 @@ module.exports = {
       callback
     )
   },
-  getExportManifestByWastewater: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT 
-        em.pk,
-        em.last_date_hauled,
-        em.amount_hauled,
-        em.material_type,
-        em.amount_hauled_method,
-        em.reporting_method, 
-        em.moisture,
-        em.n_con_mg_kg,
-        em.p_con_mg_kg,
-        em.k_con_mg_kg,
-        em.tfs,
-
-
-        em.ec_umhos_cm,
-        em.salt_lbs_rm,
-        em.n_lbs_rm,
-        em.p_lbs_rm,
-        em.k_lbs_rm,
-        
-        em.kn_con_mg_l,
-        em.nh4_con_mg_l,
-        em.nh3_con_mg_l,
-        em.no3_con_mg_l,
-        em.p_con_mg_l,
-        em.k_con_mg_l,
-        em.tds,
-
-        ed.pnumber,
-        ed.street as dest_street,
-        ed.cross_street as dest_cross_street,
-        ed.county as dest_county,
-        ed.city as dest_city,
-        ed.city_state as dest_city_state,
-        ed.city_zip as dest_city_zip,
-
-        er.pk as recipient_id,
-        er.dest_type,
-        er.title as recipient_title,
-        er.primary_phone as recipient_primary_phone,
-        er.street as recipient_street,
-        er.cross_street as recipient_cross_street,
-        er.county as recipient_county,
-        er.city as recipient_city,
-        er.city_state as recipient_city_state,
-        er.city_zip as recipient_city_zip,
-
-        ec.first_name as contact_first_name,
-        ec.primary_phone as contact_primary_phone,
-
-        op.title as operator_title,
-        op.primary_phone as operator_primary_phone,
-        op.secondary_phone as operator_secondary_phone,
-        op.street as operator_street,
-        op.city as operator_city, 
-        op.city_state as operator_city_state,
-        op.city_zip as operator_city_zip,
-        op.is_owner as operator_is_owner,
-        op.is_responsible as operator_is_responsible,
-
-        eh.title as hauler_title,
-        eh.first_name as hauler_first_name,
-        eh.primary_phone as hauler_primary_phone,
-        eh.street as hauler_street,
-        eh.cross_street as hauler_cross_street,
-        eh.county as hauler_county,
-        eh.city as hauler_city,
-        eh.city_state as hauler_city_state,
-        eh.city_zip as hauler_city_zip
-
-        FROM export_manifest em
-
-        JOIN export_contact ec
-        ON ec.pk = em.export_contact_id
-        
-        JOIN operators op
-        ON op.pk = em.operator_id
-        
-        JOIN export_dest ed
-        ON ed.pk = em.export_dest_id
-        
-        JOIN export_recipient er
-        ON er.pk = ed.export_recipient_id
-
-        JOIN export_hauler eh
-        ON eh.pk = em.export_hauler_id
-
-
-        WHERE 
-        em.material_type ILIKE 'Process%' and
-        em.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
-  },
-  getExportManifestByMaterialType: (values, callback) => {
-    return pool.query(
-
+  getExportManifestByWastewater: (dairy_id) => {
+    return queryPromiseByFormat(format(
       `SELECT 
-        em.pk,
-        em.last_date_hauled,
-        em.amount_hauled,
-        em.material_type,
-        em.amount_hauled_method,
-        em.reporting_method, 
-        em.moisture,
-        em.n_con_mg_kg,
-        em.p_con_mg_kg,
-        em.k_con_mg_kg,
-        
-        em.tfs,
+      em.pk,
+      em.last_date_hauled,
+      em.amount_hauled,
+      em.material_type,
+      em.amount_hauled_method,
+      em.reporting_method, 
+      em.moisture,
+      em.n_con_mg_kg,
+      em.p_con_mg_kg,
+      em.k_con_mg_kg,
+      em.tfs,
 
 
-        em.ec_umhos_cm,
-        em.salt_lbs_rm,
-        em.n_lbs_rm,
-        em.p_lbs_rm,
-        em.k_lbs_rm,
-        
-        em.kn_con_mg_l,
-        em.nh4_con_mg_l,
-        em.nh3_con_mg_l,
-        em.no3_con_mg_l,
-        em.p_con_mg_l,
-        em.k_con_mg_l,
-        em.tds,
+      em.ec_umhos_cm,
+      em.salt_lbs_rm,
+      em.n_lbs_rm,
+      em.p_lbs_rm,
+      em.k_lbs_rm,
+      
+      em.kn_con_mg_l,
+      em.nh4_con_mg_l,
+      em.nh3_con_mg_l,
+      em.no3_con_mg_l,
+      em.p_con_mg_l,
+      em.k_con_mg_l,
+      em.tds,
 
-        ed.pnumber,
-        ed.street as dest_street,
-        ed.cross_street as dest_cross_street,
-        ed.county as dest_county,
-        ed.city as dest_city,
-        ed.city_state as dest_city_state,
-        ed.city_zip as dest_city_zip,
+      ed.pnumber,
+      ed.street as dest_street,
+      ed.cross_street as dest_cross_street,
+      ed.county as dest_county,
+      ed.city as dest_city,
+      ed.city_state as dest_city_state,
+      ed.city_zip as dest_city_zip,
 
-        er.pk as recipient_id,
-        er.dest_type,
-        er.title as recipient_title,
-        er.primary_phone as recipient_primary_phone,
-        er.street as recipient_street,
-        er.cross_street as recipient_cross_street,
-        er.county as recipient_county,
-        er.city as recipient_city,
-        er.city_state as recipient_city_state,
-        er.city_zip as recipient_city_zip,
+      er.pk as recipient_id,
+      er.dest_type,
+      er.title as recipient_title,
+      er.primary_phone as recipient_primary_phone,
+      er.street as recipient_street,
+      er.cross_street as recipient_cross_street,
+      er.county as recipient_county,
+      er.city as recipient_city,
+      er.city_state as recipient_city_state,
+      er.city_zip as recipient_city_zip,
 
-        ec.first_name as contact_first_name,
-        ec.primary_phone as contact_primary_phone,
+      ec.first_name as contact_first_name,
+      ec.primary_phone as contact_primary_phone,
 
-        op.title as operator_title,
-        op.primary_phone as operator_primary_phone,
-        op.secondary_phone as operator_secondary_phone,
-        op.street as operator_street,
-        op.city as operator_city, 
-        op.city_state as operator_city_state,
-        op.city_zip as operator_city_zip,
-        op.is_owner as operator_is_owner,
-        op.is_responsible as operator_is_responsible,
+      op.title as operator_title,
+      op.primary_phone as operator_primary_phone,
+      op.secondary_phone as operator_secondary_phone,
+      op.street as operator_street,
+      op.city as operator_city, 
+      op.city_state as operator_city_state,
+      op.city_zip as operator_city_zip,
+      op.is_owner as operator_is_owner,
+      op.is_responsible as operator_is_responsible,
 
-        eh.title as hauler_title,
-        eh.first_name as hauler_first_name,
-        eh.primary_phone as hauler_primary_phone,
-        eh.street as hauler_street,
-        eh.cross_street as hauler_cross_street,
-        eh.county as hauler_county,
-        eh.city as hauler_city,
-        eh.city_state as hauler_city_state,
-        eh.city_zip as hauler_city_zip
+      eh.title as hauler_title,
+      eh.first_name as hauler_first_name,
+      eh.primary_phone as hauler_primary_phone,
+      eh.street as hauler_street,
+      eh.cross_street as hauler_cross_street,
+      eh.county as hauler_county,
+      eh.city as hauler_city,
+      eh.city_state as hauler_city_state,
+      eh.city_zip as hauler_city_zip
 
-        FROM export_manifest em
+      FROM export_manifest em
 
-        JOIN export_contact ec
-        ON ec.pk = em.export_contact_id
-        
-        JOIN operators op
-        ON op.pk = em.operator_id
-        
-        JOIN export_dest ed
-        ON ed.pk = em.export_dest_id
-        
-        JOIN export_recipient er
-        ON er.pk = ed.export_recipient_id
+      JOIN export_contact ec
+      ON ec.pk = em.export_contact_id
+      
+      JOIN operators op
+      ON op.pk = em.operator_id
+      
+      JOIN export_dest ed
+      ON ed.pk = em.export_dest_id
+      
+      JOIN export_recipient er
+      ON er.pk = ed.export_recipient_id
 
-        JOIN export_hauler eh
-        ON eh.pk = em.export_hauler_id
+      JOIN export_hauler eh
+      ON eh.pk = em.export_hauler_id
 
 
-        WHERE 
-        em.material_type ILIKE $1 and
-        em.dairy_id = $2
-        `,
-      values,
-      callback
-    )
+      WHERE 
+      em.material_type ILIKE 'Process%' and
+      em.dairy_id = %L
+      `, dairy_id))
+
+  },
+  getExportManifestByMaterialType: (material_type, dairy_id) => {
+    return queryPromiseByValues(`SELECT 
+    em.pk,
+    em.last_date_hauled,
+    em.amount_hauled,
+    em.material_type,
+    em.amount_hauled_method,
+    em.reporting_method, 
+    em.moisture,
+    em.n_con_mg_kg,
+    em.p_con_mg_kg,
+    em.k_con_mg_kg,
+    
+    em.tfs,
+
+
+    em.ec_umhos_cm,
+    em.salt_lbs_rm,
+    em.n_lbs_rm,
+    em.p_lbs_rm,
+    em.k_lbs_rm,
+    
+    em.kn_con_mg_l,
+    em.nh4_con_mg_l,
+    em.nh3_con_mg_l,
+    em.no3_con_mg_l,
+    em.p_con_mg_l,
+    em.k_con_mg_l,
+    em.tds,
+
+    ed.pnumber,
+    ed.street as dest_street,
+    ed.cross_street as dest_cross_street,
+    ed.county as dest_county,
+    ed.city as dest_city,
+    ed.city_state as dest_city_state,
+    ed.city_zip as dest_city_zip,
+
+    er.pk as recipient_id,
+    er.dest_type,
+    er.title as recipient_title,
+    er.primary_phone as recipient_primary_phone,
+    er.street as recipient_street,
+    er.cross_street as recipient_cross_street,
+    er.county as recipient_county,
+    er.city as recipient_city,
+    er.city_state as recipient_city_state,
+    er.city_zip as recipient_city_zip,
+
+    ec.first_name as contact_first_name,
+    ec.primary_phone as contact_primary_phone,
+
+    op.title as operator_title,
+    op.primary_phone as operator_primary_phone,
+    op.secondary_phone as operator_secondary_phone,
+    op.street as operator_street,
+    op.city as operator_city, 
+    op.city_state as operator_city_state,
+    op.city_zip as operator_city_zip,
+    op.is_owner as operator_is_owner,
+    op.is_responsible as operator_is_responsible,
+
+    eh.title as hauler_title,
+    eh.first_name as hauler_first_name,
+    eh.primary_phone as hauler_primary_phone,
+    eh.street as hauler_street,
+    eh.cross_street as hauler_cross_street,
+    eh.county as hauler_county,
+    eh.city as hauler_city,
+    eh.city_state as hauler_city_state,
+    eh.city_zip as hauler_city_zip
+
+    FROM export_manifest em
+
+    JOIN export_contact ec
+    ON ec.pk = em.export_contact_id
+    
+    JOIN operators op
+    ON op.pk = em.operator_id
+    
+    JOIN export_dest ed
+    ON ed.pk = em.export_dest_id
+    
+    JOIN export_recipient er
+    ON er.pk = ed.export_recipient_id
+
+    JOIN export_hauler eh
+    ON eh.pk = em.export_hauler_id
+
+
+    WHERE 
+    em.material_type ILIKE $1 and
+    em.dairy_id = $2
+   `,
+      [material_type, dairy_id])
   },
   rmExportManifest: (id, callback) => {
     return pool.query(
@@ -2434,17 +2351,13 @@ module.exports = {
       callback
     )
   },
-  getDischarge: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT *
-        FROM discharge
-        WHERE 
-        dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+  getDischarge: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      `SELECT *
+    FROM discharge
+    WHERE 
+    dairy_id = %L
+    `, dairy_id))
   },
   rmDischarge: (id, callback) => {
     return pool.query(
@@ -2467,17 +2380,13 @@ module.exports = {
       callback
     )
   },
-  getAgreement: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT *
-        FROM agreement
-        WHERE 
-        dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+  getAgreement: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      `SELECT *
+      FROM agreement
+      WHERE 
+      dairy_id = %L
+      `, dairy_id))
   },
   rmAgreement: (id, callback) => {
     return pool.query(
@@ -2509,17 +2418,13 @@ module.exports = {
       callback
     )
   },
-  getNote: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT *
-        FROM note
-        WHERE 
-        dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+  getNote: (dairy_id) => {
+    return queryPromiseByFormat(format(
+      `SELECT *
+      FROM note
+      WHERE 
+      dairy_id = %L
+      `, dairy_id))
   },
   rmNote: (id, callback) => {
     return pool.query(
@@ -2551,32 +2456,28 @@ module.exports = {
     )
   },
   getCertification: (dairy_id, callback) => {
-    return pool.query(
-      format(
-        `SELECT 
-        c.pk,
-        c.owner_id,
-        c.operator_id,
-        c.responsible_id,
-        owner.title as ownertitle,
-        operator.title as operatortitle
+    return queryPromiseByFormat(format(
+      `SELECT 
+      c.pk,
+      c.owner_id,
+      c.operator_id,
+      c.responsible_id,
+      owner.title as ownertitle,
+      operator.title as operatortitle
 
-        FROM certification c
+      FROM certification c
 
-        JOIN operators owner
-        ON owner.pk = c.owner_id
-        
-        JOIN operators operator
-        ON operator.pk = c.operator_id
+      JOIN operators owner
+      ON owner.pk = c.owner_id
+      
+      JOIN operators operator
+      ON operator.pk = c.operator_id
 
-  
 
-        WHERE 
-        c.dairy_id = %L
-        `, dairy_id),
-      [],
-      callback
-    )
+
+      WHERE 
+      c.dairy_id = %L
+      `, dairy_id))
   },
   rmCertification: (id, callback) => {
     return pool.query(

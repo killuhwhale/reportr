@@ -302,16 +302,12 @@ module.exports = (app) => {
         }
     });
 
-    app.get("/api/dairy/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getDairy(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                res.json({ "error": "Get dairy unsuccessful" });
-            })
+    app.get("/api/dairy/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        const dairy = await db.getDairy(req.params.dairy_id)
+        if (dairy.error) return res.json({ error: 'Get dairy unsuccessful' })
+        return res.json(dairy)
     });
+
     app.post("/api/dairies/create", verifyToken, verifyUserFromCompanyByDairyBaseID, needsWrite, async (req, res) => {
         console.log("Inserting dairy: ", req.body)
         const {
@@ -537,6 +533,8 @@ module.exports = (app) => {
         }
     });
     app.get("/api/operators/is_owner/:is_owner/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
+
+
         db.getOperatorsByOwnerStatus([req.params.is_owner, req.params.dairy_id],
             (err, result) => {
                 if (!err) {
@@ -546,7 +544,10 @@ module.exports = (app) => {
                 res.json({ "error": "Get all operators by owner status unsuccessful" });
             })
     });
+
+    // deprecated
     app.get("/api/operators/is_operator/:is_operator/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
+
         db.getOperatorsByOperatorStatus([req.params.is_operator, req.params.dairy_id],
             (err, result) => {
                 if (!err) {
@@ -676,17 +677,13 @@ module.exports = (app) => {
         }
     });
 
-    app.get("/api/crops/:title", verifyToken, (req, res) => {
+    app.get("/api/crops/:title", verifyToken, async (req, res) => {
         console.log("Getting crop by Title", req.body.title)
-        db.getCropsByTitle(req.params.title,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                res.json({ "error": "Get crops by Title unsuccessful" });
-            })
+        try {
+            return res.json(await db.getCropsByTitle(req.params.title))
+        } catch (e) {
+            res.json({ "error": "Get crops by Title unsuccessful" });
+        }
     });
     app.get("/api/crops", verifyToken, (req, res) => {
         db.getCrops("",
@@ -720,17 +717,13 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getFieldCrop(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
+    app.get("/api/field_crop/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCrop(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop unsuccessful" });
+        }
 
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop unsuccessful" });
-            })
     });
     app.post("/api/field_crop/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body)
@@ -825,17 +818,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_harvest/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getFieldCropHarvest(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_harvest unsuccessful" });
-            })
+    app.get("/api/field_crop_harvest/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropHarvest(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_harvest unsuccessful" });
+        }
     });
     app.post("/api/field_crop_harvest/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
         console.log("Updating....", req.body)
@@ -1043,16 +1031,13 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_process_wastewater_analysis/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getFieldCropApplicationProcessWastewaterAnalysis(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_process_wastewater_analysis unsuccessful" });
-            })
+    app.get("/api/field_crop_app_process_wastewater_analysis/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationProcessWastewaterAnalysis(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_process_wastewater_analysis unsuccessful" });
+        }
+
     });
     app.post("/api/field_crop_app_process_wastewater_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1096,18 +1081,14 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_process_wastewater/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getFieldCropApplicationProcessWastewater(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_process_wastewater unsuccessful" });
-            })
+    app.get("/api/field_crop_app_process_wastewater/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationProcessWastewater(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_process_wastewater unsuccessful" });
+        }
     });
+
     app.post("/api/field_crop_app_process_wastewater/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationProcessWastewater(req.body.pk, (err, result) => {
@@ -1166,17 +1147,13 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_freshwater_source/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getFieldCropApplicationFreshwaterSource(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
+    app.get("/api/field_crop_app_freshwater_source/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationFreshwaterSource(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_freshwater_source unsuccessful" });
+        }
 
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_freshwater_source unsuccessful" });
-            })
     });
     app.post("/api/field_crop_app_freshwater_source/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1266,17 +1243,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_freshwater_analysis/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getFieldCropApplicationFreshwaterAnalysis(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_freshwater_analysis unsuccessful" });
-            })
+    app.get("/api/field_crop_app_freshwater_analysis/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationFreshwaterAnalysis(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_freshwater_analysis unsuccessful" });
+        }
     });
     app.post("/api/field_crop_app_freshwater_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1324,18 +1296,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_freshwater/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-
-        db.getFieldCropApplicationFreshwater(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_freshwater unsuccessful" });
-            })
+    app.get("/api/field_crop_app_freshwater/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationFreshwater(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_freshwater unsuccessful" });
+        }
     });
     app.post("/api/field_crop_app_freshwater/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1437,18 +1403,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_solidmanure_analysis/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-
-        db.getFieldCropApplicationSolidmanureAnalysis(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_solidmanure_analysis unsuccessful" });
-            })
+    app.get("/api/field_crop_app_solidmanure_analysis/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationSolidmanureAnalysis(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_solidmanure_analysis unsuccessful" });
+        }
     });
     app.post("/api/field_crop_app_solidmanure_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1494,18 +1454,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_solidmanure/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-
-        db.getFieldCropApplicationSolidmanure(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_solidmanure unsuccessful" });
-            })
+    app.get("/api/field_crop_app_solidmanure/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationSolidmanure(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_solidmanure unsuccessful" });
+        }
     });
     app.post("/api/field_crop_app_solidmanure/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1575,28 +1529,21 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/nutrient_import/material_type/:material_type/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-
-        db.getNutrientImportByMaterialType([req.params.material_type, req.params.dairy_id],
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all nutrient_import by material_type unsuccessful" });
-            })
+    app.get("/api/nutrient_import/material_type/:material_type/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getNutrientImportByMaterialType(req.params.material_type, req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all nutrient_import by material_type unsuccessful" });
+        }
     });
-    app.get("/api/nutrient_import/wastewater/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getNutrientImportByWastewater(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all nutrient_import by wastewater unsuccessful" });
-            })
+
+    app.get("/api/nutrient_import/wastewater/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getNutrientImportByWastewater(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all nutrient_import by wastewater unsuccessful" });
+        }
+
     });
     app.post("/api/nutrient_import/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1651,18 +1598,13 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_fertilizer/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
+    app.get("/api/field_crop_app_fertilizer/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationFertilizer(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_fertilizer unsuccessful" });
+        }
 
-        db.getFieldCropApplicationFertilizer(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_fertilizer unsuccessful" });
-            })
     });
     app.post("/api/field_crop_app_fertilizer/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1745,18 +1687,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_soil_analysis/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-
-        db.getFieldCropApplicationSoilAnalysis(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_soil_analysis unsuccessful" });
-            })
+    app.get("/api/field_crop_app_soil_analysis/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationSoilAnalysis(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_soil_analysis unsuccessful" });
+        }
     });
     app.post("/api/field_crop_app_soil_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1801,17 +1737,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_soil/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-
-        db.getFieldCropApplicationSoil(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_soil unsuccessful" });
-            })
+    app.get("/api/field_crop_app_soil/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationSoil(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_soil unsuccessful" });
+        }
     });
     app.post("/api/field_crop_app_soil/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1872,16 +1803,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/field_crop_app_plowdown_credit/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getFieldCropApplicationPlowdownCredit(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all field_crop_app_plowdown_credit unsuccessful" });
-            })
+    app.get("/api/field_crop_app_plowdown_credit/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getFieldCropApplicationPlowdownCredit(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all field_crop_app_plowdown_credit unsuccessful" });
+        }
     });
     app.post("/api/field_crop_app_plowdown_credit/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -1929,16 +1856,13 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/drain_source/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getDrainSource(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all drain_source unsuccessful" });
-            })
+    app.get("/api/drain_source/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getDrainSource(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all drain_source unsuccessful" });
+        }
+
     });
     app.post("/api/drain_source/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -2000,16 +1924,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/drain_analysis/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getDrainAnalysis(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all drain_analysis unsuccessful" });
-            })
+    app.get("/api/drain_analysis/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getDrainAnalysis(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all drain_analysis unsuccessful" });
+        }
     });
     app.post("/api/drain_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
@@ -2340,29 +2260,20 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/export_manifest/wastewater/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getExportManifestByWastewater(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log("Export manifest wastewater", err)
-                res.json({ "error": "Get all export_manifest wastewater unsuccessful" });
-            })
+    app.get("/api/export_manifest/wastewater/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getExportManifestByWastewater(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all export_manifest wastewater unsuccessful" });
+        }
     });
-    app.get("/api/export_manifest/material_type/:material_type/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
+    app.get("/api/export_manifest/material_type/:material_type/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getExportManifestByMaterialType(req.params.material_type, req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all export_manifest unsuccessful" });
+        }
 
-        db.getExportManifestByMaterialType([req.params.material_type, req.params.dairy_id],
-            (err, result) => {
-                if (!err) {
-
-                    res.json(result.rows)
-                    return;
-                }
-                console.log("Export manifest", err)
-                res.json({ "error": "Get all export_manifest unsuccessful" });
-            })
     });
     app.get("/api/export_manifest/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
 
@@ -2451,16 +2362,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/discharge/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getDischarge(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all discharge unsuccessful" });
-            })
+    app.get("/api/discharge/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getDischarge(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all discharge unsuccessful" });
+        }
     });
     app.post("/api/discharge/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... discharge", req.body.pk)
@@ -2502,16 +2409,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/agreement/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getAgreement(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all agreement unsuccessful" });
-            })
+    app.get("/api/agreement/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getAgreement(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all agreement unsuccessful" });
+        }
     });
     app.post("/api/agreement/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... agreement", req.body.pk)
@@ -2570,16 +2473,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/note/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getNote(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all note unsuccessful" });
-            })
+    app.get("/api/note/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getNote(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all note unsuccessful" });
+        }
     });
     app.post("/api/note/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... note", req.body.pk)
@@ -2635,16 +2534,12 @@ module.exports = (app) => {
             }
         )
     });
-    app.get("/api/certification/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getCertification(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    res.json(result.rows)
-                    return;
-                }
-                console.log(err)
-                res.json({ "error": "Get all certification unsuccessful" });
-            })
+    app.get("/api/certification/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getCertification(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Get all certification unsuccessful" });
+        }
     });
     app.post("/api/certification/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... certification", req.body.pk)
