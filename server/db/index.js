@@ -4,7 +4,11 @@ const fs = require('fs');
 const process = require('process');
 const logger = require('../logs/logging')
 const PORT = process.env.PORT || 3001;
-const { validFieldCropHarvest, validProcessWastewaterAnalysis, validProcessWastewater, validFreshwaterAnalysis, validSolidmanureAnalysis, validSolidmanure, validNutrientImport, validFertilizer, validSoilAnalysis, validPlowdownCredit, validDrainAnalysis, validExportManifest } = require('./validate');
+const {
+  validFieldCropHarvest, validProcessWastewaterAnalysis, validProcessWastewater,
+  validFreshwaterAnalysis, validSolidmanureAnalysis, validSolidmanure, validNutrientImport,
+  validFertilizer, validSoilAnalysis, validPlowdownCredit, validDrainAnalysis, validExportManifest
+} = require('./validate');
 const { validStartEndDates } = require('../tsv/validInput');
 
 
@@ -55,6 +59,7 @@ const queryPromiseByFormat = (formattedSQL) => {
         if (result && result.rows) {
           return resolve(result.rows)
         }
+        return { error: 'queryPromiseByFormat' }
       }
     )
   })
@@ -73,6 +78,7 @@ const queryPromiseByValues = (formattedSQL, values) => {
         if (result && result.rows) {
           return resolve(result.rows)
         }
+        return { error: 'queryPromiseByValues' }
       }
     )
   })
@@ -271,7 +277,6 @@ module.exports = {
   },
 
   insertField: (title, acres, cropable, dairy_id) => {
-    console.log("Inserting field: ", title, acres, cropable, dairy_id)
     const formattedSQL = format(
       "INSERT INTO fields(title, acres, cropable, dairy_id) VALUES (%L) RETURNING *",
       [title, acres, cropable, dairy_id]
@@ -1705,7 +1710,7 @@ module.exports = {
       callback
     )
   },
-  getDrainSource: (dairy_id, callback) => {
+  getDrainSource: (dairy_id) => {
     return queryPromiseByFormat(format(
       // nitrateN, totalP, totalK, totalTDS
       `SELECT *

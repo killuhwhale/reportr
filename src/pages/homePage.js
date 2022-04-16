@@ -24,6 +24,7 @@ import { get, post } from "../utils/requests"
 import { Dairy } from '../utils/dairy/dairy'
 import { ALPHA_LOGO } from "../specific"
 import { COUNTIES, BASINS, BREEDS } from '../utils/constants'
+import UploadLogo from '../comps/Logo/uploadLogo'
 
 
 class HomePage extends Component {
@@ -245,6 +246,7 @@ class HomePage extends Component {
             <Grid item xs={12} align='center'>
               {/* <img src={'/fr_logo_alpha.png'} width="100%" height='65px' /> */}
               <img src={ALPHA_LOGO} width="100%" height='65px' />
+              <UploadLogo company_id={auth.currentUser.company_id} />
 
             </Grid>
             <Grid item container justifyContent='center' alignItems='center' xs={12}>

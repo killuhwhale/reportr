@@ -1,7 +1,7 @@
 import {
-    Grid, Paper, Button, Typography, IconButton, Tooltip, TextField, withStyles
+    Grid, Button, Typography, withStyles
 } from '@material-ui/core'
-import { formatDate, groupByKeys, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
+import { formatDate, naturalSort } from "../../utils/format"
 
 
 
@@ -57,7 +57,11 @@ const renderCropButtons = (appEventObj, viewFieldKey, that) => {
             <Grid item xs={12}><Typography variant='h6'>Plant dates</Typography> </Grid>
             {
                 Object.keys(appEventObj[viewFieldKey]).sort(naturalSort).map(key => {
+                    console.log("Raw key value: ", key)
+
+                    console.log("Nesting.... Nested Key", key, typeof (key), key.toLocaleString(),)
                     const dateKey = key.indexOf("T") > 0 ? formatDate(key.split("T")[0]) : ''
+
                     return (
                         <Grid item xs={2} style={{ marginTop: '8px' }} key={`cropButton${key}`} >
                             <Button variant='outlined' size='small' color='secondary'

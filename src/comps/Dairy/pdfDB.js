@@ -36,6 +36,7 @@ export const getNutrientBudgetInfo = async (dairy_id) => {
     return await get(`${BASE_URL}/pdf/getNutrientBudgetInfo/${dairy_id}`)
 
   } catch (e) {
+    console.log(e)
     return { error: 'Error getting getNutrientBudgetInfo.... ' }
   }
 

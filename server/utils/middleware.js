@@ -152,7 +152,6 @@ exports.verifyUserFromCompanyByCompanyID = (req, res, next) => {
 
 // Checks user is from same company as requested entity by DairyID to lookup CompanyID
 exports.verifyUserFromCompanyByDairyID = async (req, res, next) => {
-    console.log('VerifyByDairyID', req.body)
     const { user: { company_id } } = req
     const dairy_id = req.params.dairy_id || req.body.dairy_id || (req.body.data ? req.body.data.dairy_id : null) || null
 

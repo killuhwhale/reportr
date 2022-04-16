@@ -2091,3 +2091,249 @@
 {"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
 {"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
 {"level":"info","message":"(db/index.js:42) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:40) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:41)","service":"user-service","tsvType":"Tile Drainage Systems","uploadedFilename":"Tile Drainage Systems"}
+{"level":"info","message":"(tsv/serverTsv.js:40) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:41)","service":"user-service","tsvType":"Discharges","uploadedFilename":"Discharges"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:40) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:41)","service":"user-service","tsvType":"Tile Drainage Systems","uploadedFilename":"Tile Drainage Systems"}
+{"level":"info","message":"(tsv/serverTsv.js:40) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:41)","service":"user-service","tsvType":"Discharges","uploadedFilename":"Discharges"}
+{"level":"info","message":"(tsv/serverTsv.js:40) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:41)","service":"user-service","tsvType":"Tile Drainage Systems","uploadedFilename":"Tile Drainage Systems"}
+{"level":"info","message":"(tsv/serverTsv.js:40) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:41)","service":"user-service","tsvType":"Discharges","uploadedFilename":"Discharges"}
+{"level":"info","message":"(tsv/serverTsv.js:40) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:41)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:40) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:41)","service":"user-service","tsvType":"Discharges","uploadedFilename":"Discharges"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1818) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:996:9\n    at new Promise (<anonymous>)\n    at searchDrainSrc (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:995:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1207:47\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1779:13\n    at new Promise (<anonymous>)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1778:16\n    at Array.map (<anonymous>)"}
+{"level":"info","message":"(tsv/serverTsv.js:1398) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:3:9\n    at new Promise (<anonymous>)\n    at searchField (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:2:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1050:43\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:41\n    at Array.map (<anonymous>)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:28\n    at new Promise (<anonymous>)"}
+{"level":"info","message":"(tsv/serverTsv.js:1398) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:3:9\n    at new Promise (<anonymous>)\n    at searchField (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:2:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1050:43\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:41\n    at Array.map (<anonymous>)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:28\n    at new Promise (<anonymous>)"}
+{"level":"info","message":"(tsv/serverTsv.js:1398) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:3:9\n    at new Promise (<anonymous>)\n    at searchField (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:2:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1050:43\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:41\n    at Array.map (<anonymous>)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:28\n    at new Promise (<anonymous>)"}
+{"level":"info","message":"(tsv/serverTsv.js:1398) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:3:9\n    at new Promise (<anonymous>)\n    at searchField (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:2:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1050:43\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:41\n    at Array.map (<anonymous>)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:28\n    at new Promise (<anonymous>)"}
+{"level":"info","message":"(tsv/serverTsv.js:1398) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:3:9\n    at new Promise (<anonymous>)\n    at searchField (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:2:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1050:43\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:41\n    at Array.map (<anonymous>)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:28\n    at new Promise (<anonymous>)"}
+{"level":"info","message":"(tsv/serverTsv.js:1398) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:3:9\n    at new Promise (<anonymous>)\n    at searchField (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:2:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1050:43\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:41\n    at Array.map (<anonymous>)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1382:28\n    at new Promise (<anonymous>)"}
+{"level":"info","message":"(tsv/serverTsv.js:1632) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:690:9\n    at new Promise (<anonymous>)\n    at searchOperator (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:689:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1155:44\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at _lazyGetExportDestFromMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1468:19)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1572:9\n    at new Promise (<anonymous>)\n    at createDataFromManureExportTSVListRowMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1557:12)"}
+{"level":"info","message":"(tsv/serverTsv.js:1632) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:690:9\n    at new Promise (<anonymous>)\n    at searchOperator (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:689:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1155:44\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at _lazyGetExportDestFromMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1468:19)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1572:9\n    at new Promise (<anonymous>)\n    at createDataFromManureExportTSVListRowMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1557:12)"}
+{"level":"info","message":"(tsv/serverTsv.js:1712) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:690:9\n    at new Promise (<anonymous>)\n    at searchOperator (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:689:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1155:44\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at _lazyGetExportDestFromMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1468:19)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1662:9\n    at new Promise (<anonymous>)\n    at createDataFromWastewaterExportTSVListRowMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1641:12)"}
+{"level":"info","message":"(tsv/serverTsv.js:1712) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:690:9\n    at new Promise (<anonymous>)\n    at searchOperator (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:689:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1155:44\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at _lazyGetExportDestFromMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1468:19)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1662:9\n    at new Promise (<anonymous>)\n    at createDataFromWastewaterExportTSVListRowMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1641:12)"}
+{"level":"info","message":"(tsv/serverTsv.js:1830) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:996:9\n    at new Promise (<anonymous>)\n    at searchDrainSrc (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:995:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1207:47\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1779:13\n    at new Promise (<anonymous>)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1778:16\n    at Array.map (<anonymous>)"}
+{"level":"info","message":"(tsv/serverTsv.js:574) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:3:9\n    at new Promise (<anonymous>)\n    at searchField (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:2:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1050:43\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:456:13\n    at new Promise (<anonymous>)\n    at createDataFromHarvestTSVListRowMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:453:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:566:20"}
+{"level":"info","message":"(tsv/serverTsv.js:1740) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:690:9\n    at new Promise (<anonymous>)\n    at searchOperator (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:689:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1155:44\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at _lazyGetExportDestFromMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1468:19)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1572:9\n    at new Promise (<anonymous>)\n    at createDataFromManureExportTSVListRowMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1557:12)"}
+{"level":"info","message":"(tsv/serverTsv.js:1740) db is not defined","service":"user-service","stack":"ReferenceError: db is not defined\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:690:9\n    at new Promise (<anonymous>)\n    at searchOperator (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:689:12)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1155:44\n    at new Promise (<anonymous>)\n    at exports.lazyGet (/Users/chrisandaya/ws_node/reportr/server/tsv/lazyGet.js:1046:12)\n    at _lazyGetExportDestFromMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1468:19)\n    at /Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1662:9\n    at new Promise (<anonymous>)\n    at createDataFromWastewaterExportTSVListRowMap (/Users/chrisandaya/ws_node/reportr/server/tsv/serverTsv.js:1641:12)"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"WW Applications","uploadedFilename":"WW Applications"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"err":"Crop not found Field 1 11/1/19","level":"info","message":"(tsv/serverTsv.js:574)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{"err":"Crop not found Field 1 11/1/19"},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"err":"Crop not found Field 1 5/7/20","level":"info","message":"(tsv/serverTsv.js:574)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{"err":"Crop not found Field 1 5/7/20"},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"err":"Crop not found Field 1 / Oats silage-soft dough 11/1/19","level":"info","message":"(tsv/serverTsv.js:575)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{"err":"Crop not found Field 1 / Oats silage-soft dough 11/1/19"},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"Production Records","uploadedFilename":"Production Records"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:293) Crop not valid.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"Tile Drainage Systems","uploadedFilename":"Tile Drainage Systems"}
+{"error":"Created field_crop unsuccessful","level":"info","message":"(tsv/serverTsv.js:289)","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"Discharges","uploadedFilename":"Discharges"}
+{"error":"Created field_crop unsuccessful","level":"info","message":"(tsv/serverTsv.js:575)","service":"user-service"}
+{"error":"Created field_crop unsuccessful","level":"info","message":"(tsv/serverTsv.js:289)","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"Discharges","uploadedFilename":"Discharges"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"Discharges","uploadedFilename":"Discharges"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"Discharges","uploadedFilename":"Discharges"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"Discharges","uploadedFilename":"Discharges"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:42) Failure","service":"user-service"}
+{"error":{},"level":"info","message":"(tsv/serverTsv.js:43)","service":"user-service","tsvType":"Discharges","uploadedFilename":"Discharges"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:42) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:38)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}

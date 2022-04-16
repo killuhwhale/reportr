@@ -67,7 +67,7 @@ class UploadTSVModal extends Component {
                     type="file"
                   />
                   <Button htmlFor="raised-button-file" variant="outlined" color="primary" component="label">
-                    Select TSV
+                    {this.props.selectFileText || 'Select TSV'}
                   </Button>
                 </Grid>
 

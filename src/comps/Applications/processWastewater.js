@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Grid, Paper, Typography, IconButton, Tooltip, TextField,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -12,7 +12,7 @@ import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
-import { VariableSizeList as List } from "react-window";
+// import { VariableSizeList as List } from "react-window";
 import {
   DatePicker
 } from '@material-ui/pickers';

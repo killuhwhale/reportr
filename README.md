@@ -73,54 +73,52 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 # Testing:
   # Current Test Converagessss
-   Create Accounts
-    ✓ Create a company and an admin (299 ms)
-    ✓ Create READ, WRITE, DELETE Accounts with admin (253 ms)
-  Create Dairies for 1 company
-    ✓ Create Dairy (96 ms)
+  Create Accounts
+    ✓ Create 2 companies and admins (419 ms)
+    ✓ Create READ, WRITE, DELETE Accounts with admin For First Company (265 ms)
+  Create 2 Dairies for ea  company
+    ✓ Create Dairies (101 ms)
+  Create and Update a herd for a company
+    ✓ Insert and Upate Herd Information (171 ms)
   Test Accounts permissions
-    ✓ ADMIN Role Cannot Create Company (68 ms)
-    ✓ WRITE Role Cannot Create Company (70 ms)
-    ✓ READ Role Cannot Create Company (65 ms)
+    ✓ ADMIN Role Cannot Create Company (79 ms)
+    ✓ WRITE Role Cannot Create Company (66 ms)
+    ✓ READ Role Cannot Create Company (64 ms)
     ✓ DELETE Role Cannot Create Company (65 ms)
-    ✓ WRITE Role can create company data (69 ms)
-    ✓ READ Role can access company data (66 ms)
-    ✓ DELETE Roles can remove company data (73 ms)
-    ✓ Role permission sub/ super role check (290 ms)
-    ✓ Test that non-hacker roles cannot create Admin accounts  (267 ms)
-    ✓ Test Roles cant alter other accounts (366 ms)
-    ✓ Test Accounts...  (269 ms)
+    ✓ WRITE Role can create company data (78 ms)
+    ✓ READ Role can access company data (69 ms)
+    ✓ DELETE Roles can remove company data (88 ms)
+    ✓ Role permission sub/ super role check (294 ms)
+    ✓ Test that non-hacker roles cannot create Admin accounts  (273 ms)
+    ✓ Test Roles cant alter other accounts (308 ms)
+    ✓ Test Accounts...  (340 ms)
   Test Accounts cross-company restrictions
-    ✓ READ role can't access other company data (71 ms)
-    ✓ WRITE role can't create other company data (90 ms)
-    ✓ DELETE role can't remove other company data (64 ms)
+    ✓ READ role can't access other company data (65 ms)
+    ✓ WRITE role can't create other company data (67 ms)
+    ✓ DELETE role can't remove other company data (70 ms)
   Test middleware verifyUserFromCompanyBy*
-    ✓ Test *ByDairyBaseID (100 ms)
-    ✓ Test *ByCompanyID (70 ms)
-    ✓ Test *ByDairyID (70 ms)
-    ✓ Test *ByUserID (71 ms)
+    ✓ Test *ByDairyBaseID (72 ms)
+    ✓ Test *ByCompanyID (72 ms)
+    ✓ Test *ByDairyID (71 ms)
+    ✓ Test *ByUserID (72 ms)
   Test upload XLSX
-    ✓ Upload XLSX. (164 ms)
+    ✓ Upload XLSX. (241 ms)
   Test pdfDB
-    ✓ A. LIST OF LAND APPLICATION AREAS. (13 ms)
-    ✓ B. APPLICATION AREAS Crops and Harvests. (7 ms)
-    ✓ Nutrient Budget A. LAND APPLICATIONS are calculated and totaled correctly. (15 ms)
-    ✓ Nutrient Budget B, NaprbalABC(Summary) Info is calculated accurately. (51 ms)
-    ✓ Insert and Upate Herd Information (24 ms)
-    ✓ AB. HERD INFORMATION:MANURE GENERATED (20 ms)
-    ✓ C. Process Wastewater Generated (9 ms)
-    ✓ F. NUTRIENT IMPORTS (8 ms)
-    ✓ G. NUTRIENT EXPORTS  (12 ms)
-    ✓ A. NUTRIENT ANALYSES  (10 ms)
-    ✓ ABC. Exception Reporting  (6 ms)
+    ✓ A. LIST OF LAND APPLICATION AREAS. (6 ms)
+    ✓ B. APPLICATION AREAS Crops and Harvests. (3 ms)
+    ✓ Nutrient Budget A. LAND APPLICATIONS are calculated and totaled correctly. (4 ms)
+    ✓ Nutrient Budget B, NaprbalABC(Summary) Info is calculated accurately. (18 ms)
+    ✓ AB. HERD INFORMATION:MANURE GENERATED
+    ✓ C. Process Wastewater Generated (1 ms)
+    ✓ F. NUTRIENT IMPORTS
+    ✓ G. NUTRIENT EXPORTS  (1 ms)
+    ✓ A. NUTRIENT ANALYSES  (2 ms)
+    ✓ ABC. Exception Reporting 
   
-  # Missing Crucial Tests
-   - Explicit middleware tests 
-   
+  # Missing Crucial Tests   
    - getReportingPeriodDays
 
    - Account Tests
-    - Ensure Accounts can alter  other accounts incorrectly.
     - Ensure Accounts are Created, Updated and Deleted by the correct Account.
       - Admins should only be able to create, update or delete other accounts
       - Accounts can update themselves
@@ -128,12 +126,11 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 # Todo:
 
+  # Sequelize ORM the DB..
+    - each db file, instead of pool.query.... we use the ORM to make the query...
+    - maybe for now we can just use raw queries since theyre already written but for future updates/ addtiions.
+      the ORM will help make migrations much easier.
   # Deleting Users
-
-  - Generating PDF, Client should send one request instead of many individual
-    - SQL Query to get all required info and format the data to an object that can be easily used by the client side code.
-    - 1. SQL Statement for all data needed
-    - 2. 
 
   # Images - Company Logo
     - Display Company Logo
@@ -142,6 +139,11 @@ Github is private, the only passwords visible in code is for the DB and that is 
     1. Look for Logo for Company,
     2. If no Company logo, show upload modal,
     3. else show logo with delete feature
+
+    - Use in:
+      - Header on main site
+      - PDF report
+      - TSV print footer
 
 
   - Nutrient Application Analyses should be shown and be able to be deleted
