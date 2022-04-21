@@ -29,16 +29,45 @@ const decrypt = (secret) => {
 }
 
 
-let SECRET = "shhhhhh!"
-console.log(`Secret: ${SECRET}`)
+// let SECRET = "shhhhhh!"
+// console.log(`Secret: ${SECRET}`)
 
-const encryptedSecret = encrypt(SECRET)
-console.log(`E-Secret: ${encryptedSecret}`)
+// const encryptedSecret = encrypt(SECRET)
+// console.log(`E-Secret: ${encryptedSecret}`)
 
-const decryptSecret = decrypt(encryptedSecret)
-console.log(`D-Secret: ${decryptSecret}`)
+// const decryptSecret = decrypt(encryptedSecret)
+// console.log(`D-Secret: ${decryptSecret}`)
 
-const passwordTohash = '40797bf372264ffeb8b3d74fee1b69f3'
-bcrypt.hash(passwordTohash, BCRYPT_SALT_ROUNDS, function (err, hash) {
-    console.log(`Hash for ${passwordTohash} is ${hash}`)
-});
+// const passwordTohash = '40797bf372264ffeb8b3d74fee1b69f3'
+// bcrypt.hash(passwordTohash, BCRYPT_SALT_ROUNDS, function (err, hash) {
+//     console.log(`Hash for ${passwordTohash} is ${hash}`)
+// });
+
+const a2021 = [168,
+    160,
+    184,
+    176,
+    168,
+    176,
+    176,
+    176,
+    176,
+    168,
+    176,
+    184,]
+
+const a2022 = [168,
+    160,
+    184,
+    168,
+    176,
+    176,
+    168,
+    184,
+    176,
+    168,
+    168,
+    176]
+
+
+console.log(a2021.reduce((p, c) => p + c))

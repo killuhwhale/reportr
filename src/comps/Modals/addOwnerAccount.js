@@ -43,6 +43,10 @@ class AddOwnerAccount extends Component {
             console.log(res)
         } else {
             console.log(res)
+            if (this.props.onAccountCreated) {
+                this.props.onAccountCreated(res)
+                this.props.onClose()
+            }
         }
 
     }

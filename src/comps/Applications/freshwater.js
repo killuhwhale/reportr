@@ -752,6 +752,7 @@ class Freshwater extends Component {
           cancelText="Cancel"
           modalText={`Upload Freshwater TSV`}
           uploadedFilename={this.state.uploadedFilename}
+          fileType="csv"
           onAction={this.onUploadFieldCropAppFreshwateTSV.bind(this)}
           onChange={this.onUploadFieldCropAppFreshwateTSVModalChange.bind(this)}
           onClose={() => this.toggleShowUploadFieldCropAppFreshwateTSVModal(false)}

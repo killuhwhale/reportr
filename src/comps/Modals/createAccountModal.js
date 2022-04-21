@@ -74,7 +74,6 @@ class CreateAccountModal extends Component {
     }
 
     render() {
-        const _ROLES = ['READ', 'WRITE', 'DELETE', 'ADMIN', 'HACKER',]
 
         return (
             <Modal open={this.props.open} onClose={this.props.onClose}
@@ -91,6 +90,11 @@ class CreateAccountModal extends Component {
                     <Grid item align="center" xs={12}>
                         <Paper style={{ height: "50vh", justifyContent: "center" }}>
                             <Grid item container xs={12}>
+                                <Grid item xs={12}>
+                                    <Typography variant="h6" style={{ marginTop: "32px" }}>
+                                        Create Account
+                                    </Typography>
+                                </Grid>
                                 <Grid item xs={6}>
                                     <TextField
                                         label='Username'
@@ -106,11 +110,14 @@ class CreateAccountModal extends Component {
                                 <Grid item xs={6}>
                                     <TextField select
                                         label='Access Level'
-                                        value={[this.state.accountInfo.account_type]}
+                                        value={ROLES[this.state.accountInfo.account_type]}
                                         name='account_type'
                                         type='text'
                                         onChange={this.onChange.bind(this)}
                                         style={{ width: '75%', marginTop: '12px' }}
+                                        SelectProps={{
+                                            native: true,
+                                        }}
                                     >
                                         {
                                             Object.keys(ROLES).filter(role => ROLES[role] <= ROLES.ADMIN).map(role => {

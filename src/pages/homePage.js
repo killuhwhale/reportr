@@ -25,6 +25,7 @@ import { Dairy } from '../utils/dairy/dairy'
 import { ALPHA_LOGO } from "../specific"
 import { COUNTIES, BASINS, BREEDS } from '../utils/constants'
 import UploadLogo from '../comps/Logo/uploadLogo'
+import UserIcon from '../comps/Accounts/userIcon'
 
 
 class HomePage extends Component {
@@ -207,9 +208,9 @@ class HomePage extends Component {
     this.setState({ toggleShowLogoutModal: val })
   }
 
-  logout() {
+  async logout() {
     console.log("Loggin user out!")
-    auth.logout()
+    await auth.logout()
     console.log("After user logout")
     this.confirmLogout(false)
   }
@@ -244,12 +245,9 @@ class HomePage extends Component {
         <Grid item container alignItems='flex-start' xs={2} >
           <Grid item container xs={12}>
             <Grid item xs={12} align='center'>
-              {/* <img src={'/fr_logo_alpha.png'} width="100%" height='65px' /> */}
-              <img src={ALPHA_LOGO} width="100%" height='65px' />
               <UploadLogo company_id={auth.currentUser.company_id} />
-
             </Grid>
-            <Grid item container justifyContent='center' alignItems='center' xs={12}>
+            {/* <Grid item container justifyContent='center' alignItems='center' xs={12}>
               <Grid item xs={10} style={{ marginBottom: '16px' }}>
                 <Typography variant='subtitle1'>
                   <TextField
@@ -267,7 +265,7 @@ class HomePage extends Component {
                   </IconButton>
                 </Tooltip>
               </Grid>
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12}>
               <TextField select
@@ -334,60 +332,33 @@ class HomePage extends Component {
               </Tooltip>
             </Grid>
 
-            <Grid item container xs={12}>
-              <Grid item xs={6} align='center'>
-                <Tooltip title="Light Theme">
-                  <IconButton color="primary" variant="outlined" style={{ marginTop: "0px" }}
-                    onClick={() => this.props.toggleTheme('Light')}>
-                    <FlareIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-              <Grid item xs={6} align='center'>
-                <Tooltip title="Dark Theme">
-                  <IconButton color="primary" variant="outlined" style={{ marginTop: "0px" }}
-                    onClick={() => this.props.toggleTheme('Dark')}>
-                    <NightsStayIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
-            <Grid item container xs={12}>
-              <Grid item xs={12} align='center'>
-                <Tooltip title="Accounts">
-                  <IconButton color="primary" variant="outlined" style={{ marginTop: "16px" }}
-                    onClick={() => this.toggleAccountsModal(true)}>
-                    <SupervisorAccountIcon />
-                  </IconButton>
-                </Tooltip>
-              </Grid>
-            </Grid>
-
           </Grid>
-
-
-
-
-
 
         </Grid>
 
         <Grid item container xs={10}>
-          <Grid item xs={12}>
+          <Grid item container xs={12}>
 
             {this.state.dairy && Object.keys(this.state.dairy).length > 0 ?
               <React.Fragment>
-                <AppBar position="static" style={{ marginBottom: "32px" }} key='homePageAppBar'>
-                  <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
-                    onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='homePageAppBar'>
-                    <Tab label="Dairy" key='homePageAppBarTab0' />
-                    <Tab label="Info" key='homePageAppBarTab1' />
-                    <Tab label="Planted" key='homePageAppBarTab2' />
-                    <Tab label="Harvested" key='homePageAppBarTab3' />
-                    <Tab label="Applications " key='homePageAppBarTab4' />
-                    <Tab label="Exports " key='homePageAppBarTab5' />
-                  </Tabs>
-                </AppBar>
+
+                <Grid item xs={10} sm={11}>
+                  <AppBar position="static" style={{ marginBottom: "32px" }} key='homePageAppBar'>
+                    <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
+                      onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='homePageAppBar'>
+                      <Tab label="Dairy" key='homePageAppBarTab0' />
+                      <Tab label="Info" key='homePageAppBarTab1' />
+                      <Tab label="Planted" key='homePageAppBarTab2' />
+                      <Tab label="Harvested" key='homePageAppBarTab3' />
+                      <Tab label="Applications " key='homePageAppBarTab4' />
+                      <Tab label="Exports " key='homePageAppBarTab5' />
+                    </Tabs>
+                  </AppBar>
+                </Grid>
+
+                <Grid item xs={2} sm={1}>
+                  <UserIcon toggleTheme={this.props.toggleTheme} />
+                </Grid>
 
                 {
                   this.state.tabs[0] === "show" ?

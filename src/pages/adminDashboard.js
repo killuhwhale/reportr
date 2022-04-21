@@ -12,6 +12,10 @@ import { get } from '../utils/requests'
 import { BASE_URL } from '../utils/environment'
 import { ROLES } from '../utils/constants'
 import { CompanyUtil } from '../utils/company/company'
+import { withStyles } from '@material-ui/styles'
+import FlareIcon from '@material-ui/icons/Flare'
+import NightsStayIcon from '@material-ui/icons/NightsStay'
+import RemoveRedEyeIcon from '@material-ui/icons/RemoveRedEye';
 
 /**
  * CRUD  companies
@@ -22,17 +26,32 @@ import { CompanyUtil } from '../utils/company/company'
  */
 
 
+const CoolBGGrid = withStyles({
+    root: {
+        background: '#373B44',  /* fallback for old browsers */
+        background: '-webkit-linear-gradient(to right, #2980b9, #6dd5fa, #ffffff)',  /* Chrome 10-25, Safari 5.1-6 */
+        background: 'linear-gradient(to right, #2980b9, #6dd5fa, #ffffff)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        marginTop: '8px',
+        borderRadius: '4px'
+    }
+})(Grid);
+
+
+
+
 const CompanyRow = (props) => {
     const company = props.company
     return (
-        <Grid container item xs={12}>
+        <Grid container item alignItems='center' justifyContent='center' alignContent='center' xs={12} >
             <Grid item xs={10}>
-                {company.title} ({company.pk})
+                <Typography variant='subtitle1'>
+                    {company.title} ({company.pk})
+                </Typography>
             </Grid>
             <Grid item xs={2}>
                 <Tooltip title='View'>
-                    <IconButton onClick={() => props.showCompanyManagementModal(company.pk)}>
-                        <AddCircleOutline />
+                    <IconButton onClick={() => props.showCompanyManagementModal(company.pk, company.title)}>
+                        <RemoveRedEyeIcon color='primary' />
                     </IconButton>
                 </Tooltip>
             </Grid>
@@ -64,8 +83,8 @@ class AdminDashboard extends Component {
         this.setState({ showCompanyManagementModal: val })
     }
 
-    showCompanyManagementModal(pk) {
-        this.setState({ showCompanyManagementModal: true, managementCompanyID: pk })
+    showCompanyManagementModal(pk, title) {
+        this.setState({ showCompanyManagementModal: true, managementCompanyID: pk, managementTitle: title })
     }
 
     async getAllCompanies() {
@@ -83,64 +102,110 @@ class AdminDashboard extends Component {
 
     }
 
+    onCreateCompany() {
+        this.getAllCompanies()
+    }
+
+    onCompanyDelete() {
+        this.getAllCompanies()
+
+    }
+
     render() {
 
         return (
-            <Grid item container xs={12} align="center" >
-                {
-                    auth.currentUser.account_type === ROLES.HACKER ?
-                        <Fragment>
+            <Grid item xs={12}  >
+                <Grid item container xs={12} align="center" >
+                    {
+                        auth.currentUser.account_type === ROLES.HACKER ?
+                            <Fragment>
 
-                            <Grid item xs={12} >
-                                <Typography variant='h2'>Admin Dashboard</Typography>
-                            </Grid>
+                                <Grid item xs={12} container alignContent='center' justifyContent='center' alignItems='center'>
+                                    <Grid item xs={3}></Grid>
+                                    <Grid item xs={6}>
+                                        <Typography variant='h2'>Admin Dashboard</Typography>
+                                    </Grid>
+                                    <Grid item container xs={3}>
+                                        <Grid item xs={6} align='center'>
+                                            <Tooltip title="Light Theme">
+                                                <IconButton color="primary" variant="outlined" style={{ marginTop: "0px" }}
+                                                    onClick={() => this.props.toggleTheme('Light')}>
+                                                    <FlareIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </Grid>
+                                        <Grid item xs={6} align='center'>
+                                            <Tooltip title="Dark Theme">
+                                                <IconButton color="primary" variant="outlined" style={{ marginTop: "0px" }}
+                                                    onClick={() => this.props.toggleTheme('Dark')}>
+                                                    <NightsStayIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <Grid item container xs={6}>
+                                    <Grid item xs={12} >
+                                        <div style={{ display: 'inline-flex' }}>
+                                            <Typography variant='h4'>Companies </Typography>
+                                            <Tooltip title='Add Company'>
+                                                <IconButton onClick={() => this.toggleShowAddCompanyModal(true)}>
+                                                    <AddCircleOutline />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </div>
+                                    </Grid>
 
-                            <Grid item xs={12} >
-                                <div style={{ display: 'inline-flex' }}>
-                                    <Typography variant='h4'>Companies </Typography>
-                                    <Tooltip title='Add Company'>
-                                        <IconButton onClick={() => this.toggleShowAddCompanyModal(true)}>
-                                            <AddCircleOutline />
-                                        </IconButton>
-                                    </Tooltip>
-                                </div>
-                            </Grid>
+                                    <Grid container item xs={12} >
+                                        <Grid item xs={2}></Grid>
+                                        <Grid item xs={8}>
+                                            {this.state.companies.length > 0 ?
+                                                this.state.companies.map((company, i) => {
+                                                    return (<CoolBGGrid key={`company_row_${i}`}><CompanyRow
+                                                        company={company}
+                                                        showCompanyManagementModal={this.showCompanyManagementModal.bind(this)}
+                                                    /></CoolBGGrid>)
+                                                })
+                                                :
+                                                <Fragment></Fragment>
+                                            }
+                                        </Grid>
+                                        <Grid item xs={2}></Grid>
+                                    </Grid>
 
-                            <Grid item xs={12} >
-                                {this.state.companies.length > 0 ?
-                                    this.state.companies.map((company, i) => {
-                                        return <CompanyRow key={`company_row_${i}`}
-                                            company={company}
-                                            showCompanyManagementModal={this.showCompanyManagementModal.bind(this)}
-                                        />
-                                    })
-                                    :
-                                    <Fragment></Fragment>
-                                }
-                            </Grid>
+                                </Grid>
 
-                            <AddCompanyModal
-                                open={this.state.showAddCompanyModal}
-                                onClose={() => this.toggleShowAddCompanyModal(false)}
-                                modalText='Add Company'
-                                actionText='Add'
-                                cancelText='Cancel'
-                                onAlert={this.props.onAlert}
-                            />
+                                <Grid item container xs={6}>
+                                    <Grid item xs={12} >
+                                        <Typography variant='h4'>Panel Template </Typography>
+                                    </Grid>
+                                </Grid>
 
-                            <CompanyManagementModal
-                                open={this.state.showCompanyManagementModal}
-                                onClose={() => this.toggleShowCompanyManagementModal(false)}
-                                managementCompanyID={this.state.managementCompanyID}
-                                cancelText='Cancel'
-                                onAlert={this.props.onAlert}
-                            />
-                        </Fragment>
+                                <AddCompanyModal
+                                    open={this.state.showAddCompanyModal}
+                                    onClose={() => this.toggleShowAddCompanyModal(false)}
+                                    onCreateCompany={this.onCreateCompany.bind(this)}
+                                    modalText='Add Company'
+                                    actionText='Add'
+                                    cancelText='Cancel'
+                                    onAlert={this.props.onAlert}
+                                />
 
-                        :
-                        <Fragment></Fragment>
-                }
+                                <CompanyManagementModal
+                                    open={this.state.showCompanyManagementModal}
+                                    onClose={() => this.toggleShowCompanyManagementModal(false)}
+                                    onDelete={this.onCompanyDelete.bind(this)}
+                                    managementCompanyID={this.state.managementCompanyID}
+                                    managementTitle={this.state.managementTitle}
+                                    cancelText='Close'
+                                    onAlert={this.props.onAlert}
+                                />
+                            </Fragment>
 
+                            :
+                            <Fragment></Fragment>
+                    }
+                </Grid>
             </Grid>
         )
     }

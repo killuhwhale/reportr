@@ -143,6 +143,9 @@ exports.verifyUserFromCompanyByCompanyID = (req, res, next) => {
     if (!company_id) {
         return res.status(403).json({ error: 'User not a part of company.' })
     }
+
+    if (user.account_type === ROLES.HACKER) return next()
+
     if (parseInt(user.company_id) === parseInt(company_id)) {
         return next()
     }
@@ -230,7 +233,7 @@ exports.needsWrite = async (req, res, next) => {
 
 exports.needsDelete = async (req, res, next) => {
     const { user } = req
-    if (user && user.account_type >= ROLES.DELETE) { console.log('User can delete...'); return next() }
+    if (user && user.account_type >= ROLES.DELETE) { return next() }
     res.status(403).json({ error: 'You need permission: DELETE' })
 }
 

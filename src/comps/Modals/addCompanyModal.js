@@ -26,15 +26,16 @@ class AddCompanyModal extends Component {
             return
         }
 
-        const res = await CompanyUtil.addCompany(companyTitle)
+        const res = await CompanyUtil.createCompany(companyTitle)
 
         if (res.error) {
-            this.props.onAlert('Company not created!', 'error')
-        } else {
-            this.props.onAlert('Company created!', 'success')
-
+            return this.props.onAlert('Company not created!', 'error')
         }
+
+
         this.props.onClose()
+        this.props.onAlert('Company created!', 'success')
+        this.props.onCreateCompany()
         return res
     }
 

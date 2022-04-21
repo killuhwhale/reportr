@@ -5,13 +5,50 @@ import { withTheme } from '@material-ui/core/styles';
 import { get, post } from '../../utils/requests';
 import { UserAuth } from '../../utils/users';
 import { AddCircleOutline } from '@material-ui/icons';
+import DeleteIcon from '@material-ui/icons/Delete'
+import { withStyles } from '@material-ui/styles'
 import AddOwnerAccount from './addOwnerAccount';
+import ChangePasswordModal from './changePasswordModal'
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import ActionCancelModal from './actionCancelModal'
+import { CompanyUtil } from '../../utils/company/company';
+
+
+
+const AccountGrid = withStyles({
+    root: {
+        maxHeight: '560px',
+        overflowY: 'auto'
+    }
+})(Grid);
+
 
 const AccountRow = (props) => {
-    const { account } = props
+    const { account, username } = props
+    const { email, pk } = account
     return (
-        <Grid item xs={12}>
-            {account.email}
+        <Grid item container alignContent='center' alignItems='center' justifyContent='center' xs={12} align='left'>
+            <Grid item xs={4} align='left' style={{ paddingLeft: '36px' }}>
+                {username || 'No username'}
+            </Grid>
+            <Grid item xs={4} >
+                {email}
+            </Grid>
+            <Grid item xs={2} align='center'>
+                <Tooltip title='Change Password'>
+                    <IconButton onClick={() => props.onChangePassword(account)}>
+                        <LockOpenIcon color='primary' />
+                    </IconButton>
+                </Tooltip>
+            </Grid>
+            <Grid item xs={2} align='center'>
+                <Tooltip title='Delete Account'>
+                    <IconButton onClick={() => props.onDeleteAccount(account)}>
+                        <DeleteIcon color='error' />
+                    </IconButton>
+                </Tooltip>
+            </Grid>
+
         </Grid>
     )
 }
@@ -23,7 +60,13 @@ class CompanyManagementModal extends Component {
         super(props)
         this.state = {
             accounts: [],
-            showAddAccount: false
+            showAddAccount: false,
+            showChangePasswordModal: false,
+            showConfirmDeleteAccountModal: false,
+            showDeleteCompanyModal: false,
+            changePasswordAccount: {},
+            deletedAccount: {},
+
         }
     }
 
@@ -39,19 +82,76 @@ class CompanyManagementModal extends Component {
             const res = await UserAuth.getAllAccounts(this.props.managementCompanyID)
             if (res.error) {
                 console.log(res)
-                return
-            } console.log("res", res)
+                return this.setState({ accounts: [] })
+            }
 
             this.setState({ accounts: res.data })
 
         } catch (e) {
             console.log(e)
+            return this.setState({ accounts: [] })
         }
+    }
+
+
+
+
+    toggleChangePasswordModal(val) {
+        this.setState({ showChangePasswordModal: val })
     }
 
     toggleShowAddAccount(val) {
         this.setState({ showAddAccount: val })
     }
+    toggleConfirmDeleteAccountModal(val) {
+        this.setState({ showConfirmDeleteAccountModal: val })
+    }
+
+    toggleDeleteCompanyModal(val) {
+        this.setState({ showDeleteCompanyModal: val })
+    }
+
+    onAccountCreated(user) {
+        console.log('Created', user)
+        this.getAccounts()
+    }
+
+    onChangePassword(account) {
+        this.setState({ changePasswordAccount: account, showChangePasswordModal: true })
+    }
+
+    onDeleteAccount(deletedAccount) {
+        this.setState({ deletedAccount, showConfirmDeleteAccountModal: true })
+
+    }
+
+    async deleteAccount() {
+        console.log("Deleting account: ", this.state.deletedAccount)
+        const res = await UserAuth.deleteAccount(this.state.deletedAccount.pk, this.state.deletedAccount.company_id)
+        console.log("Deleted res: ", res)
+        this.toggleConfirmDeleteAccountModal(false)
+        if (res.error) {
+            console.log(res.error)
+            return this.props.onAlert('Failed to delete account.', 'error')
+        }
+        this.props.onAlert('Account deleted', 'success')
+        this.getAccounts()
+    }
+
+    async deleteCompany() {
+        console.log("Deleting company with ID: ", this.props.managementCompanyID)
+        const res = await CompanyUtil.deleteCompany(this.props.managementCompanyID)
+        this.props.onClose()
+        this.toggleConfirmDeleteAccountModal(false)
+        if (res.error) {
+            console.log(res.error)
+            return this.props.onAlert('Failed to delete company.', 'error')
+        }
+        this.props.onAlert('Company deleted', 'success')
+        this.props.onDelete()
+    }
+
+
 
     render() {
         return (
@@ -74,32 +174,61 @@ class CompanyManagementModal extends Component {
                     >
                         <Paper style={{ height: "90vh", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                             <Grid item container xs={12}>
-                                <Grid item xs={12}>
-                                    <Typography style={{ marginTop: "32px" }}>
-                                        Details for ({this.props.managementCompanyID})
-                                    </Typography>
-                                </Grid>
 
-                                <Grid item xs={12} align='center'>
-                                    <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-                                        <Typography variant="h6">
-                                            Create Account for Company
+                                <Grid item container alignContent='center' alignItems='center' justifyContent='center' xs={12}>
+
+                                    <Grid item xs={4}></Grid>
+                                    <Grid item xs={4}>
+                                        <Typography variant='h5' style={{ marginTop: "32px" }}>
+                                            {this.props.managementTitle}
                                         </Typography>
-                                        <Tooltip title='Create Admin Account'>
+                                    </Grid>
+                                    <Grid item xs={2} align='right'>
+                                        <Tooltip title={`Create Admin Account for ${this.props.managementTitle}`}>
                                             <IconButton onClick={() => this.toggleShowAddAccount(true)}>
-                                                <AddCircleOutline />
+                                                <AddCircleOutline color='primary' />
                                             </IconButton>
                                         </Tooltip>
-                                    </div>
+                                    </Grid>
+                                    <Grid item xs={2} align='right'>
+                                        <Tooltip title='Delete Company'>
+                                            <IconButton onClick={() => this.toggleDeleteCompanyModal(true)} style={{ marginRight: '8px' }}>
+                                                <DeleteIcon color='error' />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Grid>
                                 </Grid>
 
-                                <Grid item xs={12}>
+                                <Grid item xs={12} align='left' style={{ paddingLeft: '36px' }}>
+                                    <Typography variant='h6' > Accounts </Typography>
+                                </Grid>
+                                <Grid item container alignContent='center' alignItems='center'
+                                    justifyContent='center' xs={12} align='left'>
+                                    <Grid item xs={4} align='left' style={{ paddingLeft: '36px' }}>
+                                        <Typography variant='subtitle1'> Username </Typography>
+                                    </Grid>
+                                    <Grid item xs={4} >
+                                        <Typography variant='subtitle1'> E-mail </Typography>
+                                    </Grid>
+                                    <Grid item xs={2} align='center'>
+                                        <Typography variant='subtitle1'> Change Password </Typography>
+                                    </Grid>
+                                    <Grid item xs={2} align='center'>
+                                        <Typography variant='subtitle1'> Delete Account </Typography>
+                                    </Grid>
+
+                                </Grid>
+
+                                <AccountGrid item container xs={12}>
+                                    {/* Header Row */}
                                     {
                                         this.state.accounts.length > 0 ?
                                             this.state.accounts.map((account, i) => {
                                                 return (
                                                     <AccountRow
                                                         key={`account_company_detail_${i}`}
+                                                        onDeleteAccount={this.onDeleteAccount.bind(this)}
+                                                        onChangePassword={this.onChangePassword.bind(this)}
                                                         account={account}
                                                     />
                                                 )
@@ -107,24 +236,42 @@ class CompanyManagementModal extends Component {
                                             :
                                             <Fragment></Fragment>
                                     }
-                                </Grid>
+                                </AccountGrid>
 
 
-                                <Grid item xs={12}>
-                                    <Button
-                                        variant="outlined"
-                                        onClick={() => { this.props.onClose() }}>
-                                        {this.props.cancelText}
-                                    </Button>
-                                </Grid>
+
 
                                 <AddOwnerAccount
                                     open={this.state.showAddAccount}
                                     onClose={() => this.toggleShowAddAccount(false)}
                                     modalText='Add Account'
                                     companyID={this.props.managementCompanyID}
+                                    onAccountCreated={this.onAccountCreated.bind(this)}
                                     actionText='Add'
                                     cancelText='Cancel'
+                                />
+                                <ChangePasswordModal
+                                    open={this.state.showChangePasswordModal}
+                                    account={this.state.changePasswordAccount}
+                                    onAlert={this.props.onAlert}
+                                    onClose={() => this.toggleChangePasswordModal(false)}
+                                />
+
+                                <ActionCancelModal
+                                    open={this.state.showConfirmDeleteAccountModal}
+                                    actionText="Delete"
+                                    cancelText="Cancel"
+                                    modalText={`Delete Account: ${this.state.deletedAccount.email}?`}
+                                    onAction={this.deleteAccount.bind(this)}
+                                    onClose={() => this.toggleConfirmDeleteAccountModal(false)}
+                                />
+                                <ActionCancelModal
+                                    open={this.state.showDeleteCompanyModal}
+                                    actionText="Delete"
+                                    cancelText="Cancel"
+                                    modalText={`Delete Company: ${this.props.managementTitle}?`}
+                                    onAction={this.deleteCompany.bind(this)}
+                                    onClose={() => this.toggleDeleteCompanyModal(false)}
                                 />
                             </Grid>
                         </Paper>

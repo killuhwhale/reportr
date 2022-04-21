@@ -11,8 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.72.0",
     "axios": "^0.21.1",
     "bcrypt": "^5.0.1",
+    "dotenv": "^16.0.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "express-winston": "^4.2.0",
@@ -21,6 +23,7 @@
     "install": "^0.13.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.95.11",
+    "multer": "^1.4.4",
     "nodemon": "^2.0.4",
     "pg": "^8.6.0",
     "pg-format": "^1.0.4",

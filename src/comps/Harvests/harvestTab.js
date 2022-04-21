@@ -286,6 +286,7 @@ class HarvestTab extends Component {
           actionText="Upload"
           cancelText="Cancel"
           modalText={`Upload Production Records TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.uploadTSV.bind(this)}
           onChange={this.onCSVChange.bind(this)}

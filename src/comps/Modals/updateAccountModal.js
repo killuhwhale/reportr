@@ -99,6 +99,11 @@ class UpdateAccountModal extends Component {
                     <Grid item align="center" xs={12}>
                         <Paper style={{ height: "50vh", justifyContent: "center" }}>
                             <Grid item container xs={12}>
+                                <Grid item xs={12}>
+                                    <Typography variant="h6" style={{ marginTop: "32px" }}>
+                                        Update Account {this.state.accountInfo.email}
+                                    </Typography>
+                                </Grid>
                                 <Grid item xs={12} style={{ marginTop: '32px' }}>
                                     <TextField
                                         label='Username'
@@ -154,12 +159,15 @@ class UpdateAccountModal extends Component {
                                 <Grid item xs={12}>
                                     <TextField select
                                         label='Access Level'
-                                        // value={this.state.accountInfo.account_type}
                                         value={this.state.accountInfo.account_type ?? 1}
                                         name='account_type'
+                                        defaultValue={ROLES[ROLES.READ]}
                                         type='text'
                                         onChange={this.onChange.bind(this)}
                                         style={{ width: '50%', marginTop: '12px' }}
+                                        SelectProps={{
+                                            native: true,
+                                        }}
                                     >
                                         {
                                             Object.keys(ROLES).filter(role => ROLES[role] <= ROLES.ADMIN).map(role => {

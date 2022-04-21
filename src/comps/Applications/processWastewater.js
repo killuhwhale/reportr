@@ -644,6 +644,7 @@ class ProcessWastewater extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Process Wastewater TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.onUploadFieldCropAppProcessWastewaterTSV.bind(this)}
           onChange={this.onUploadFieldCropAppProcessWastewaterTSVModalChange.bind(this)}

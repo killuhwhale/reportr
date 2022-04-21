@@ -404,6 +404,7 @@ class Drain extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Drain TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.onUploadFieldCropAppDrainTSV.bind(this)}
           onChange={this.onUploadFieldCropAppDrainTSVModalChange.bind(this)}

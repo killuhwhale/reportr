@@ -233,9 +233,12 @@ export default class App extends React.Component {
                   }
                 />
                 <Route path="/adminDashboard">
-                  <AdminDashboard
-                    onAlert={this.onAlert.bind(this)}
-                  />
+                  <BackgroundGrid container direction="column" alignItems="center">
+                    <AdminDashboard
+                      onAlert={this.onAlert.bind(this)}
+                      toggleTheme={this.toggleTheme.bind(this)}
+                    />
+                  </BackgroundGrid>
                 </Route>
 
               </Switch>

@@ -681,6 +681,7 @@ class Fertilizer extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Fertilizer TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.onUploadFieldCropAppFreshwateTSV.bind(this)}
           onChange={this.onUploadFieldCropAppFreshwateTSVModalChange.bind(this)}

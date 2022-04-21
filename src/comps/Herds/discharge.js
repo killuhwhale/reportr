@@ -307,6 +307,7 @@ class Discharge extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Discharge TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.onUploadFieldCropAppDischargeTSV.bind(this)}
           onChange={this.onUploadFieldCropAppDischargeTSVModalChange.bind(this)}

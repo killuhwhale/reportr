@@ -58,6 +58,9 @@ const appTheme = (blkOrWhite, backgroundColor, primaryColor, secondaryColor, app
             black: "#000",
             white: "#fff"
          },
+         profilePaper: {
+            backgroundColor: blkOrWhite === '#fff' ? '#1d1d1d' : '#f6f6f6'
+         },
          background: {
             paper: backgroundColor,
             default: "rgba(48, 48, 48, 1)"

@@ -27,6 +27,7 @@ import XLSX from 'xlsx'
 import { BASE_URL } from '../../utils/environment';
 import { Field } from '../../utils/fields/fields'
 import { Dairy } from '../../utils/dairy/dairy';
+import { auth } from '../../utils/users';
 
 const ReportingPeriod = (props) => {
   // onUpdate
@@ -134,8 +135,11 @@ class DairyTab extends Component {
 
   generatePDF() {
     let area = document.getElementById('chartArea')
-    generatePDF(area, this.state.dairy.pk)
+    generatePDF(area, this.state.dairy.pk, auth.currentUser.company_id)
       .then(res => {
+        // Peformance tests, draw red background when data is done loading.
+        // Measure onClick event to red draw or alert() message appears.
+        // document.getElementById("genPDFBtn").style.backgroundColor = 'red'
         console.log(res)
         this.props.onAlert('Generating PDF!', 'success')
       })
@@ -257,6 +261,7 @@ class DairyTab extends Component {
                       actionText="Add"
                       cancelText="Cancel"
                       modalText={`Upload XLSX`}
+                      fileType="csv"
                       uploadedFilename={this.state.uploadedFilename}
                       onAction={this.onUploadXLSX.bind(this)}
                       onChange={this.onUploadXLSXModalChange.bind(this)}
@@ -266,7 +271,7 @@ class DairyTab extends Component {
 
                   <Grid item xs={4} align='center'>
                     <Tooltip title="Generate Annual Report">
-                      <IconButton onClick={this.generatePDF.bind(this)} >
+                      <IconButton id='genPDFBtn' onClick={this.generatePDF.bind(this)} >
                         <AssessmentIcon color='primary' />
                       </IconButton>
                     </Tooltip>

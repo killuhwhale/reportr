@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require("express");
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
@@ -8,6 +9,8 @@ const app = express(); // create express app
 var http = require('http').createServer(app)
 const db = require('./db/index')
 const { ALLOWED_ORIGINS, REQUEST_LIMIT, FILE_SIZE_LIMIT } = require("./specific")
+
+
 
 // Setup
 app.use(express.json({ limit: REQUEST_LIMIT }))

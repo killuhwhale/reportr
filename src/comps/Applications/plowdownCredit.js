@@ -344,6 +344,7 @@ class PlowdownCredit extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Plowdown Credit TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.onUploadFieldCropAppPlowdownCreditTSV.bind(this)}
           onChange={this.onUploadFieldCropAppPlowdownCreditTSVModalChange.bind(this)}

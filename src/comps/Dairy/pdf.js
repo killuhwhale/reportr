@@ -1,5 +1,5 @@
 import { formatDate, formatFloat, formatInt, naturalSort, naturalSortBy, percentageAsMGKG } from "../../utils/format"
-import { B64_LOGO, } from "../../specific"
+import { Logo } from "../../utils/Logo/logo"
 import { round } from "mathjs"
 
 const gray = "#eeeeee"
@@ -7649,7 +7649,7 @@ const getDateTime = () => {
   return `${curDate.getUTCMonth() + 1}/${curDate.getUTCDate()}/${curDate.getUTCFullYear()} ${curDate.getUTCHours()}:${curDate.getUTCMinutes()}:${curDate.getUTCSeconds()}`
 }
 
-export default function dd(props, images) {
+export default function dd(props, images, logo) {
   const curDateTime = getDateTime()
   const dairyInfo = props && props.dairyInformationA ? props.dairyInformationA : {}
   const footerTitle = `${dairyInfo.title} | ${dairyInfo.street} | ${dairyInfo.city}, ${dairyInfo.city_state} ${dairyInfo.city_zip} | ${dairyInfo.county} | ${dairyInfo.basin_plan}`
@@ -7657,10 +7657,7 @@ export default function dd(props, images) {
   const periodEnd = dairyInfo.period_end ? formatDate(dairyInfo.period_end.split("T")[0]) : ''
   const reportingPeriod = `Reporting peroid ${periodStart} to ${periodEnd}.`
 
-
-  // DEPENDS ON COMPANY -- CHANGEABLE -- SWAPPABLE
-
-  const footerImg = image(B64_LOGO, 100, 30)
+  const footerImg = image(logo, 100, 30)
 
   const body = [
     dairyInformationA(props.dairyInformationA),

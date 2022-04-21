@@ -1249,6 +1249,7 @@ class ExportTab extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Manure TSV`}
+          fileType="csv"
           uploadedFilename={this.state.manureUploadedFilename}
           onAction={this.onUploadExportManureTSV.bind(this)}
           onChange={this.onUploadManureTSVModalChange.bind(this)}
@@ -1260,6 +1261,7 @@ class ExportTab extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Wastewater TSV`}
+          fileType="csv"
           uploadedFilename={this.state.wastewaterUploadedFilename}
           onAction={this.onUploadExportWastewaterTSV.bind(this)}
           onChange={this.onUploadWastewaterTSVModalChange.bind(this)}

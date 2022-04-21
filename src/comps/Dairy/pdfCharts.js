@@ -5,6 +5,7 @@ import pdfFonts from "pdfmake/build/vfs_fonts"
 import { getAnnualReportData } from "./pdfDB"
 
 import { formatInt } from "../../utils/format"
+import { Logo } from "../../utils/Logo/logo"
 import { toFloat } from "../../utils/convertCalc"
 
 export default function mTea() { }
@@ -417,7 +418,7 @@ const createBarChart = (canvas, config) => {
 
 
 
-const generatePDF = (area, dairy_id) => {
+const generatePDF = (area, dairy_id, company_id) => {
 
 
 
@@ -426,10 +427,23 @@ const generatePDF = (area, dairy_id) => {
       .then(arPDFData => {
         const props = arPDFData
         createCharts([props.nutrientBudgetB.allEvents, props.naprbalA], area)
-          .then(images => {
-            // pdfMake.createPdf(dd(props)).download();
-            pdfMake.createPdf(dd(props, images)).open()
-            resolve('Success')
+          .then(async (images) => {
+            // grab company logo
+            try {
+              const logo = await Logo.getLogo(company_id)
+              if (logo.error) {
+                return console.log(logo)
+              }
+              // pdfMake.createPdf(dd(props)).download();
+              pdfMake.createPdf(dd(props, images, logo)).open()
+              resolve('Success')
+
+            } catch (e) {
+              console.log(e)
+              return { error: e }
+            }
+
+
           })
           .catch(err => {
             console.log(err)

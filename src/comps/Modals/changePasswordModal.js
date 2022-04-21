@@ -83,7 +83,7 @@ class ChangePasswordModal extends Component {
                         <Paper style={{ height: "50vh", justifyContent: "center" }}>
                             <Grid item container xs={12}>
                                 <Grid item xs={12} style={{ marginTop: '32px' }}>
-                                    <Typography variant="subtitle1">Change account for {this.props.account.email}</Typography>
+                                    <Typography variant="h6">Change password for {this.props.account.email}</Typography>
                                 </Grid>
                                 <Grid item xs={12}>
                                     <TextField

@@ -508,6 +508,7 @@ class Soil extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Soil TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.onUploadFieldCropAppSoilTSV.bind(this)}
           onChange={this.onUploadFieldCropAppSoilTSVModalChange.bind(this)}

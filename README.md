@@ -164,6 +164,12 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 # Goals:
 
+  # Settings Panel
+   - Default theme, light or dark.
+
+   # State Management
+    - Avoid so many requests...
+
 # Features:
   - Single Click Generate All TSVs and PDFS for ea Dairy
     * Just click and get a folder to drag onto flash drive or open and print! **

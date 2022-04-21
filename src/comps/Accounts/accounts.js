@@ -6,6 +6,7 @@ import { auth, UserAuth } from '../../utils/users'
 import Delete from "@material-ui/icons/Delete";
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import AddIcon from '@material-ui/icons/Add';
+
 import { naturalSortBy } from "../../utils/format";
 import CreateAccountModal from '../Modals/createAccountModal'
 import UpdateAccountModal from '../Modals/updateAccountModal'
@@ -25,10 +26,10 @@ const AccountRow = (props) => {
                     <Grid item xs={12} align='right'>
                         <Typography variant='caption'>{account_type >= ROLES.ADMIN ? "Owner" : "Emp"} {account_type >= ROLES.ADMIN ? "" : account_type == ROLES.DELETE ? "(Del)" : account_type === ROLES.WRITE ? "(Write)" : "(Read)"}  </Typography>
                     </Grid>
-                    <Grid item xs={12} align='center'>
+                    <Grid item xs={12} align='left'>
                         <Typography variant='caption'>{account.email} </Typography>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} align='left'>
                         <Typography variant='caption'> {account.username ? account.username : 'No username'} </Typography>
                     </Grid>
                 </CardContent>
@@ -276,7 +277,6 @@ class Accounts extends Component {
                                 <ChangePasswordModal
                                     open={this.state.showChangePasswordModal}
                                     account={this.state.changePasswordAccount}
-                                    changePasswordAccount={this.state.changePasswordAccount}
                                     onAlert={this.props.onAlert}
                                     onClose={() => this.toggleChangePasswordModal(false)}
                                 />
@@ -291,7 +291,7 @@ class Accounts extends Component {
                                     open={this.state.showConfirmDeleteAccountModal}
                                     actionText="Delete"
                                     cancelText="Cancel"
-                                    modalText={`Delete Accounts for ${this.state.deletedAccount.email}?`}
+                                    modalText={`Delete Account ${this.state.deletedAccount.email}?`}
                                     onAction={this.deleteAccount.bind(this)}
                                     onClose={() => this.toggleConfirmDeleteAccountModal(false)}
                                 />
