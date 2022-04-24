@@ -240,7 +240,6 @@ module.exports = (app) => {
 
         db.getDairyBase(company_id,
             (err, result) => {
-                console.log("rows", result.rows)
                 if (!err) {
                     return res.json(result.rows)
                 }
@@ -282,17 +281,12 @@ module.exports = (app) => {
             res.json({ "error": "Updated dairy_base unsuccessful" });
         })
     });
-    app.post("/api/dairy_base/delete", verifyToken, verifyUserFromCompanyByDairyBaseID, needsDelete, (req, res) => {
-        console.log("Deleting.... dairy_base", req.body.pk)
-        db.rmDairyBase(req.body.pk, (err, result) => {
-
-            if (!err) {
-                res.json({ "error": "Deleted dairy_base successfully" });
-                return;
-            }
-            console.log(err)
-            res.json({ "error": "Deleted dairy_base unsuccessful" });
-        })
+    app.post("/api/dairy_base/delete", verifyToken, verifyUserFromCompanyByDairyBaseID, needsDelete, async (req, res) => {
+        try {
+            return res.json(await db.rmDairyBase(req.body.dairyBaseID))
+        } catch (e) {
+            return res.json({ error: "Deleted dairy_base unsuccessful", err: e })
+        }
     });
     app.get("/api/dairies/dairyBaseID/:dairyBaseID", verifyToken, verifyUserFromCompanyByDairyBaseID, needsRead, async (req, res) => {
         try {
@@ -515,7 +509,7 @@ module.exports = (app) => {
     });
 
     app.post("/api/operators/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, async (req, res) => {
-        console.log("Creating....", req.body)
+        console.log("Creating operator....", req.body)
         const { dairy_id, title, primary_phone, secondary_phone, street, city,
             city_state, city_zip, is_owner, is_operator, is_responsible } = req.body
         try {
@@ -2443,8 +2437,7 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Updated agreement successfully" });
-                return;
+                return res.json({ data: "Updated agreement successfully" });
             }
             console.log(err)
             res.json({ "error": "Updated agreement unsuccessful" });
@@ -2575,16 +2568,17 @@ module.exports = (app) => {
     });
 
     app.get("/api/search/certification/:no_val/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.searchCertification(
-            [
-                req.params.dairy_id,
-            ],
+        console.log("Searching for certification!@#!#%&^!%#^&@%^&@%&^@%$&^%@&")
+        console.log("W/ dairy id: ", req.params.dairy_id)
+        db.searchCertification(req.params.dairy_id,
             (err, result) => {
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    if (result.rows[0]) {
+                        return res.json(result.rows[0])
+                    }
+                    return res.json({})
                 }
-                console.log(err)
+                console.log('Error searching for certifications ', err)
                 res.json({ "error": "Search all certifications unsuccessful" });
             })
     });

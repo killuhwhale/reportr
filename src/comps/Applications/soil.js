@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip, TextField,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -10,7 +10,7 @@ import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { formatDate, formatFloat, groupByKeys, naturalSortBy } from "../../utils/format"
+import { formatDate, formatFloat, groupByKeys, naturalSortBy, splitDate } from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
@@ -20,7 +20,7 @@ import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selec
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import {
-  SOIL, TSV_INFO, readTSV, uploadNutrientApp, uploadTSVToDB
+  SOIL, TSVUtil
 } from "../../utils/TSV"
 import { DatePicker } from '@material-ui/pickers'
 
@@ -167,15 +167,14 @@ class Soil extends Component {
       dairy_id: props.dairy_id,
       field_crop_app_soil: {},
       field_crop_app_soil_analysis: {},
-      tsvType: TSV_INFO[SOIL].tsvType,
-      numCols: TSV_INFO[SOIL].numCols,
+      tsvType: SOIL,
       showAddSoilModal: false,
       showConfirmDeleteSoilModal: false,
       showConfirmDeleteSoilAnalysisModal: false,
       showUploadFieldCropAppSoilTSVModal: false,
       deleteSoilObj: {},
       deleteSoilAnalysisObj: {},
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: "",
       toggleShowDeleteAllModal: false,
 
@@ -292,36 +291,48 @@ class Soil extends Component {
   toggleShowUploadFieldCropAppSoilTSVModal(val) {
     this.setState({
       showUploadFieldCropAppSoilTSVModal: val,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: ""
     })
   }
   onUploadFieldCropAppSoilTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
+
     }
   }
-  onUploadFieldCropAppSoilTSV() {
+  async onUploadFieldCropAppSoilTSV() {
     // 24 columns from TSV
-    let dairy_pk = this.state.dairy_id
-    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
-      .then(res => {
-        console.log("Completed uploading Process Wastewater TSV", res)
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.toggleShowUploadFieldCropAppSoilTSVModal(false)
-        this.getFieldCropAppSoils()
-        this.getFieldCropAppSoilAnalyses()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        console.log(err)
-        this.props.onAlert('Failed uploading', 'error')
-      })
+    let dairy_id = this.state.dairy_id
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      console.log("Upload TSV result: ", this.state.tsvType, result)
+      this.toggleShowUploadFieldCropAppSoilTSVModal(false)
+      this.getFieldCropAppSoils()
+      this.getFieldCropAppSoilAnalyses()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
+
+
+    // uploadNutrientApp(this.state.tsvFile, this.state.tsvType, dairy_pk)
+    //   .then(res => {
+    //     console.log("Completed uploading Process Wastewater TSV", res)
+    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
+    //     this.toggleShowUploadFieldCropAppSoilTSVModal(false)
+    //     this.getFieldCropAppSoils()
+    //     this.getFieldCropAppSoilAnalyses()
+    //     this.props.onAlert('Success!', 'success')
+    //   })
+    //   .catch(err => {
+    //     console.log("Error with all promises")
+    //     console.log(err)
+    //     this.props.onAlert('Failed uploading', 'error')
+    //   })
   }
 
   toggleViewTSVsModal(val) {
@@ -470,7 +481,10 @@ class Soil extends Component {
           open={this.state.showConfirmDeleteSoilModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Soil for ${this.state.deleteSoilObj.fieldtitle} - ${this.state.deleteSoilObj.app_date}?`}
+          modalText={`Delete Soil for: 
+            ${this.state.deleteSoilObj.fieldtitle} - 
+            ${formatDate(splitDate(this.state.deleteSoilObj.app_date))}?
+          `}
 
           onAction={this.onSoilDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteSoilModal(false)}
@@ -489,7 +503,10 @@ class Soil extends Component {
           open={this.state.showConfirmDeleteSoilAnalysisModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Soil Analysis for ${this.state.deleteSoilAnalysisObj.sample_desc} - ${this.state.deleteSoilAnalysisObj.sample_date}?`}
+          modalText={`Delete Soil Analysis for: 
+            ${this.state.deleteSoilAnalysisObj.sample_desc} - 
+            ${formatDate(splitDate(this.state.deleteSoilAnalysisObj.sample_date))}?
+            `}
           onAction={this.onSoilAnalysisDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteSoilAnalysisModal(false)}
         />

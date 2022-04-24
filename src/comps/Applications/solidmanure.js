@@ -19,11 +19,9 @@ import AddSolidmanureModal from "../Modals/addSolidmanureModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
-import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
+import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from "../../utils/format"
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
-import {
-  readTSV, uploadNutrientApp, uploadTSVToDB
-} from "../../utils/TSV"
+import { TSVUtil } from "../../utils/TSV"
 import { DatePicker } from '@material-ui/pickers'
 
 
@@ -215,7 +213,7 @@ class Solidmanure extends Component {
       deleteSolidmanureAnalysisObj: {},
       deleteSolidmanureObj: {},
       showUploadFieldCropAppSolidmanureTSVModal: false,
-      tsvText: '',
+      tsvFile: '',
       uploadedFilename: '',
       showViewTSVsModal: false,
       windowWidth: window.innerWidth,
@@ -459,36 +457,49 @@ class Solidmanure extends Component {
   toggleShowUploadFieldCropAppSolidmanureTSVModal(val) {
     this.setState({
       showUploadFieldCropAppSolidmanureTSVModal: val,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: ""
     })
   }
   onUploadFieldCropAppFreshwateTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
+
     }
   }
-  onUploadFieldCropAppFreshwateTSV() {
+  async onUploadFieldCropAppFreshwateTSV() {
     // 24 columns from TSV
-    let dairy_pk = this.state.dairy_id
-    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
-      .then(res => {
-        console.log("Completed uploading Solidmanure TSV")
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.toggleShowUploadFieldCropAppSolidmanureTSVModal(false)
-        this.getFieldCropAppSolidmanure()
-        this.getFieldCropAppSolidmanureAnalysis()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        console.log(err)
-        this.props.onAlert('Failed uploading!', 'error')
-      })
+    let dairy_id = this.state.dairy_id
+
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      console.log("Upload TSV result: ", this.state.tsvType, result)
+      this.toggleShowUploadFieldCropAppSolidmanureTSVModal(false)
+      this.getFieldCropAppSolidmanure()
+      this.getFieldCropAppSolidmanureAnalysis()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
+
+
+    // uploadNutrientApp(this.state.tsvFile, this.state.tsvType, dairy_pk)
+    //   .then(res => {
+    //     console.log("Completed uploading Solidmanure TSV")
+    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
+    //     this.toggleShowUploadFieldCropAppSolidmanureTSVModal(false)
+    //     this.getFieldCropAppSolidmanure()
+    //     this.getFieldCropAppSolidmanureAnalysis()
+    //     this.props.onAlert('Success!', 'success')
+    //   })
+    //   .catch(err => {
+    //     console.log("Error with all promises")
+    //     console.log(err)
+    //     this.props.onAlert('Failed uploading!', 'error')
+    //   })
   }
 
   toggleViewTSVsModal(val) {
@@ -700,7 +711,10 @@ class Solidmanure extends Component {
           open={this.state.showConfirmDeleteSolidmanureAnalysisModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Solidmanure Analysis for ${this.state.deleteSolidmanureAnalysisObj.sample_date} - ${this.state.deleteSolidmanureAnalysisObj.sample_desc}?`}
+          modalText={`Delete Solidmanure Analysis for: 
+            ${formatDate(splitDate(this.state.deleteSolidmanureAnalysisObj.sample_date))} - 
+            ${this.state.deleteSolidmanureAnalysisObj.sample_desc}?
+          `}
 
           onAction={this.onSolidmanureAnalysisDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteSolidmanureAnalysisModal(false)}
@@ -709,7 +723,7 @@ class Solidmanure extends Component {
           open={this.state.showConfirmDeleteSolidmanureModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Solidmanure for ${this.state.deleteSolidmanureObj.app_date}?`}
+          modalText={`Delete Solidmanure for: ${formatDate(splitDate(this.state.deleteSolidmanureObj.app_date))}?`}
 
           onAction={this.onSolidmanureDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteSolidmanureModal(false)}

@@ -127,8 +127,7 @@ export default class App extends React.Component {
     super(props)
     this.state = {
       user: {},
-      // theme: darkTheme,
-      theme: LightTheme,
+      theme: DarkTheme,
       showAlert: false,
       alertSeverity: '',
       alertMsg: '',

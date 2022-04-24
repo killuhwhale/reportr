@@ -11,7 +11,7 @@ import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
+import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from "../../utils/format"
 // import { VariableSizeList as List } from "react-window";
 import {
   DatePicker
@@ -24,9 +24,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
-import {
-  readTSV, uploadNutrientApp, uploadTSVToDB
-} from "../../utils/TSV"
+import { TSVUtil } from "../../utils/TSV"
 
 
 
@@ -248,7 +246,7 @@ class ProcessWastewater extends Component {
       showConfirmDeleteProcessWastewaterModal: false,
       showUploadFieldCropAppProcessWastewateTSVModal: false,
       deleteProcessWastewaterObj: {},
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: "",
       toggleShowDeleteAllModal: false,
       windowWidth: window.innerWidth,
@@ -395,36 +393,49 @@ class ProcessWastewater extends Component {
   toggleShowUploadFieldCropAppProcessWastewaterTSVModal(val) {
     this.setState({
       showUploadFieldCropAppProcessWastewateTSVModal: val,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: ""
     })
   }
   onUploadFieldCropAppProcessWastewaterTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
     }
   }
-  onUploadFieldCropAppProcessWastewaterTSV() {
+  async onUploadFieldCropAppProcessWastewaterTSV() {
     // 24 columns from TSV
-    let dairy_pk = this.state.dairy_id
-    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
-      .then(res => {
-        console.log("Completed uploading Process Wastewater TSV")
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
-        this.getFieldCropAppEvents()
-        this.getFieldCropAppProcessWastewater()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        console.log(err)
-        this.props.onAlert('Failed uploading', 'error')
-      })
+    let dairy_id = this.state.dairy_id
+
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      console.log("Upload TSV result: ", this.state.tsvType, result)
+      this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
+      this.getFieldCropAppEvents()
+      this.getFieldCropAppProcessWastewater()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
+
+
+
+    // uploadNutrientApp(this.state.tsvFile, this.state.tsvType, dairy_pk)
+    //   .then(res => {
+    //     console.log("Completed uploading Process Wastewater TSV")
+    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
+    //     this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
+    //     this.getFieldCropAppEvents()
+    //     this.getFieldCropAppProcessWastewater()
+    //     this.props.onAlert('Success!', 'success')
+    //   })
+    //   .catch(err => {
+    //     console.log("Error with all promises")
+    //     console.log(err)
+    //     this.props.onAlert('Failed uploading', 'error')
+    //   })
   }
 
   toggleViewTSVsModal(val) {
@@ -601,7 +612,10 @@ class ProcessWastewater extends Component {
           open={this.state.showConfirmDeleteProcessWastewaterModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Process Wastewater for ${this.state.deleteProcessWastewaterObj.fieldtitle} - ${this.state.deleteProcessWastewaterObj.app_date}?`}
+          modalText={`Delete Process Wastewater for 
+            ${this.state.deleteProcessWastewaterObj.fieldtitle} - 
+            ${formatDate(splitDate(this.state.deleteProcessWastewaterObj.app_date))}?
+          `}
 
           onAction={this.onProcessWastewaterDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteProcessWastewaterModal(false)}
@@ -639,6 +653,7 @@ class ProcessWastewater extends Component {
           onClose={() => this.toggleViewTSVsModal(false)}
           BASE_URL={this.props.BASE_URL}
         />
+
         <UploadTSVModal
           open={this.state.showUploadFieldCropAppProcessWastewateTSVModal}
           actionText="Add"

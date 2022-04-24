@@ -122,6 +122,17 @@ const naturalCollator = new Intl.Collator(undefined, {
   sensitivity: 'base'
 })
 
+const splitDate = (date) => {
+  try {
+    const ans = date.split('T')[0]
+    if (ans)
+      return ans
+  } catch (e) {
+    console.log("Failed to split date: ", e)
+  }
+  return ''
+}
+
 const formatDate = (date) => {
   const _date = new Date(`${date}T00:00`)
   const day = _date.getDate()
@@ -159,4 +170,7 @@ const sortByKeys = (a, b, keys) => {
 }
 
 
-export { naturalSortByKeys, sortByKeys, nestedGroupBy, groupBySortBy, groupByKeys, formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, percentageAsMGKG }
+export {
+  naturalSortByKeys, sortByKeys, nestedGroupBy, groupBySortBy, groupByKeys,
+  formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, splitDate, percentageAsMGKG
+}

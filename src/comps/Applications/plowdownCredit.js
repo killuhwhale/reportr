@@ -12,7 +12,7 @@ import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { formatFloat, groupByKeys, naturalSortBy } from "../../utils/format"
+import { formatDate, formatFloat, naturalSortBy, splitDate } from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
@@ -21,9 +21,7 @@ import { naturalSort, nestedGroupBy } from "../../utils/format"
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
-import {
-  PLOWDOWN_CREDIT, TSV_INFO, readTSV, uploadNutrientApp, uploadTSVToDB
-} from "../../utils/TSV"
+import { PLOWDOWN_CREDIT, TSVUtil } from "../../utils/TSV"
 import { DatePicker } from '@material-ui/pickers'
 
 
@@ -92,13 +90,12 @@ class PlowdownCredit extends Component {
     this.state = {
       dairy_id: props.dairy_id,
       field_crop_app_plowdown_credit: {},
-      tsvType: TSV_INFO[PLOWDOWN_CREDIT].tsvType,
-      numCols: TSV_INFO[PLOWDOWN_CREDIT].numCols,
+      tsvType: PLOWDOWN_CREDIT,
       showAddPlowdownCreditModal: false,
       showConfirmDeletePlowdownCreditModal: false,
       showUploadFieldCropAppPlowdownCreditTSVModal: false,
       deletePlowdownCreditObj: {},
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: "",
       toggleShowDeleteAllModal: false,
       windowWidth: window.innerWidth,
@@ -172,35 +169,45 @@ class PlowdownCredit extends Component {
   toggleShowUploadFieldCropAppPlowdownCreditTSVModal(val) {
     this.setState({
       showUploadFieldCropAppPlowdownCreditTSVModal: val,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: ""
     })
   }
   onUploadFieldCropAppPlowdownCreditTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
     }
   }
-  onUploadFieldCropAppPlowdownCreditTSV() {
+  async onUploadFieldCropAppPlowdownCreditTSV() {
     // 24 columns from TSV
-    let dairy_pk = this.state.dairy_id
-    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
-      .then(res => {
-        console.log("Completed uploading Plowdown Credit TSV", res)
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.toggleShowUploadFieldCropAppPlowdownCreditTSVModal(false)
-        this.getFieldCropAppPlowdownCredits()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        console.log(err)
-        this.props.onAlert('Failed uploading', 'error')
-      })
+    let dairy_id = this.state.dairy_id
+
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      console.log("Upload TSV result: ", this.state.tsvType, result)
+      this.toggleShowUploadFieldCropAppPlowdownCreditTSVModal(false)
+      this.getFieldCropAppPlowdownCredits()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
+
+    // uploadNutrientApp(this.state.tsvFile, this.state.tsvType, dairy_pk)
+    //   .then(res => {
+    //     console.log("Completed uploading Plowdown Credit TSV", res)
+    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
+    //     this.toggleShowUploadFieldCropAppPlowdownCreditTSVModal(false)
+    //     this.getFieldCropAppPlowdownCredits()
+    //     this.props.onAlert('Success!', 'success')
+    //   })
+    //   .catch(err => {
+    //     console.log("Error with all promises")
+    //     console.log(err)
+    //     this.props.onAlert('Failed uploading', 'error')
+    //   })
   }
   toggleViewTSVsModal(val) {
     this.setState({ showViewTSVsModal: val })
@@ -316,7 +323,10 @@ class PlowdownCredit extends Component {
           open={this.state.showConfirmDeletePlowdownCreditModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete PlowdownCredit for ${this.state.deletePlowdownCreditObj.fieldtitle} - ${this.state.deletePlowdownCreditObj.app_date}?`}
+          modalText={`Delete PlowdownCredit for: 
+            ${this.state.deletePlowdownCreditObj.fieldtitle} - 
+            ${formatDate(splitDate(this.state.deletePlowdownCreditObj.app_date))}?
+          `}
           onAction={this.onPlowdownCreditDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeletePlowdownCreditModal(false)}
         />

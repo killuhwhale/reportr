@@ -102,9 +102,9 @@ CREATE TABLE IF NOT EXISTS operators(
   city VARCHAR(30),
   city_state VARCHAR(3) DEFAULT 'CA',
   city_zip VARCHAR(20) ,
-  is_owner BOOLEAN,
-  is_operator BOOLEAN,
-  is_responsible BOOLEAN, -- responsible for paying permit fees.
+  is_owner BOOLEAN default 'f',
+  is_operator BOOLEAN default 'f',
+  is_responsible BOOLEAN default 'f', -- responsible for paying permit fees.
 
   UNIQUE(dairy_id, title, primary_phone),
   CONSTRAINT fk_dairy
@@ -851,9 +851,9 @@ CREATE TABLE IF NOT EXISTS note(
 CREATE TABLE IF NOT EXISTS certification(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
-  owner_id INT NOT NULL,
+  owner_id INT,
   operator_id INT,
-  responsible_id INT NOT NULL,
+  responsible_id INT ,
 
   UNIQUE(dairy_id),
    CONSTRAINT fk_dairy

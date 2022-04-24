@@ -11,7 +11,7 @@ import CompanyManagementModal from '../comps/Modals/companyManagementModal'
 import { get } from '../utils/requests'
 import { BASE_URL } from '../utils/environment'
 import { ROLES } from '../utils/constants'
-import { CompanyUtil } from '../utils/company/company'
+import { Company } from '../utils/company/company'
 import { withStyles } from '@material-ui/styles'
 import FlareIcon from '@material-ui/icons/Flare'
 import NightsStayIcon from '@material-ui/icons/NightsStay'
@@ -89,7 +89,7 @@ class AdminDashboard extends Component {
 
     async getAllCompanies() {
         try {
-            const res = await CompanyUtil.getAllCompanies()
+            const res = await Company.getAllCompanies()
             if (res.error) {
                 console.log(res)
                 return
@@ -150,7 +150,7 @@ class AdminDashboard extends Component {
                                             <Typography variant='h4'>Companies </Typography>
                                             <Tooltip title='Add Company'>
                                                 <IconButton onClick={() => this.toggleShowAddCompanyModal(true)}>
-                                                    <AddCircleOutline />
+                                                    <AddCircleOutline color='secondary' />
                                                 </IconButton>
                                             </Tooltip>
                                         </div>

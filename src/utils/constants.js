@@ -12,6 +12,14 @@ export const ROLES = {
   HACKER: 5
 }
 
+export const ROLE_LABELS = {
+  1: 'READ',
+  2: 'WRITE',
+  3: 'DELETE',
+  4: 'ADMIN',
+  5: 'HACKER',
+}
+
 export const COUNTIES = ['Amador', 'Butte', 'Colusa', 'Fresno', 'Glenn', 'Kern', 'Kings', 'Lassen', 'Madera', 'Merced', 'Modoc', 'Placer', 'Sacramento', 'San Joaquin', 'Shasta', 'Solano', 'Stanislaus', 'Sutter', 'Tehama', 'Tulare', 'Yolo', 'Yuba']
 export const BASINS = ["Sacramento River Basin", "San Joaquin River Basin", 'Tulare Basin']
 export const BREEDS = ['Ayrshire', 'Brown Swiss', 'Guernsey', 'Holstein', 'Jersey', 'Jersey-Holstein Cross', 'Milking Shorthorn', 'Other']

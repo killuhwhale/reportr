@@ -4,7 +4,7 @@ import fs from 'fs'
 import { postXLSX } from '../../../utils/requests'
 import { UserAuth, auth } from '../../../utils/users'
 import { HACKER_EMAIL, HACKER_PASSWORD } from '../../../specific'
-import { CompanyUtil } from '../../../utils/company/company'
+import { Company } from '../../../utils/company/company'
 import { Herds } from '../../../utils/herds/herds'
 import { Field } from '../../../utils/fields/fields'
 
@@ -56,8 +56,8 @@ const isIDPK = (key) => {
 describe('Create Accounts', () => {
     test('Create 2 companies and admins', async () => {
         await auth.login(HACKER_EMAIL, HACKER_PASSWORD)
-        const { data: { pk: company_id, title } } = await CompanyUtil.createCompany('Pharmz') // pk2
-        const { data: { pk: company_id_a } } = await CompanyUtil.createCompany('Growz') //pk3
+        const { data: { pk: company_id, title } } = await Company.createCompany('Pharmz') // pk2
+        const { data: { pk: company_id_a } } = await Company.createCompany('Growz') //pk3
         let adminRes = null
         expect(title).toEqual('Pharmz')
 
@@ -161,25 +161,25 @@ describe('Test Accounts permissions', () => {
     test('ADMIN Role Cannot Create Company', async () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
-        const res = await CompanyUtil.createCompany('PharmzTest')
+        const res = await Company.createCompany('PharmzTest')
         expect(res.error).toBeTruthy()
     })
     test('WRITE Role Cannot Create Company', async () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
-        const res = await CompanyUtil.createCompany('PharmzTest')
+        const res = await Company.createCompany('PharmzTest')
         expect(res.error).toBeTruthy()
     })
     test('READ Role Cannot Create Company', async () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
-        const res = await CompanyUtil.createCompany('PharmzTest')
+        const res = await Company.createCompany('PharmzTest')
         expect(res.error).toBeTruthy()
     })
     test('DELETE Role Cannot Create Company', async () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
-        const res = await CompanyUtil.createCompany('PharmzTest')
+        const res = await Company.createCompany('PharmzTest')
         expect(res.error).toBeTruthy()
     })
 })

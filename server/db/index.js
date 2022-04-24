@@ -162,7 +162,7 @@ module.exports = {
     return pool.query(
       `SELECT db.company_id
         FROM dairies d 
-        JOIN dairy_base db 
+        LEFT JOIN dairy_base db 
         ON d.dairy_base_id = db.pk
         WHERE d.pk=$1; 
       `,
@@ -186,12 +186,8 @@ module.exports = {
       callback
     )
   },
-  rmDairyBase: (id, callback) => {
-    return pool.query(
-      format("DELETE FROM dairy_base where pk = %L", id),
-      [],
-      callback
-    )
+  rmDairyBase: (id) => {
+    return queryPromiseByFormat(format("DELETE FROM dairy_base where pk = %L", id))
   },
   getCompanyIDByDairyBaseID: (dairyBaseID, callback) => {
     return pool.query(
@@ -347,13 +343,13 @@ module.exports = {
         
         FROM field_parcel fp
 
-        JOIN fields f
+        LEFT JOIN fields f
         ON fp.field_id = f.pk
         
-        JOIN parcels p
+        LEFT JOIN parcels p
         ON fp.parcel_id = p.pk
         
-        JOIN dairies d
+        LEFT JOIN dairies d
         ON fp.dairy_id = d.pk
         
         WHERE fp.dairy_id = %L
@@ -389,6 +385,7 @@ module.exports = {
     is_operator,
     is_responsible) => {
 
+    console.log("Inserting operator is_operator: ", is_operator)
     const formattedSQL = format(
       `INSERT INTO operators(
       dairy_id,
@@ -517,9 +514,9 @@ module.exports = {
         f.title as fieldTitle,
         c.title as cropTitle 
       FROM field_crop fc
-      JOIN crops c
+      LEFT JOIN crops c
       ON c.pk = fc.crop_id
-      JOIN fields f
+      LEFT JOIN fields f
       ON f.pk = fc.field_id
       WHERE fc.dairy_id = %L
       `, dairy_id))
@@ -623,11 +620,11 @@ module.exports = {
        fc.salt as typical_salt
 
     FROM field_crop_harvest fch
-    JOIN field_crop fc
+    LEFT JOIN field_crop fc
     ON fc.pk = fch.field_crop_id
-    JOIN fields f
+    LEFT JOIN fields f
     ON f.pk = fc.field_id
-    JOIN crops c
+    LEFT JOIN crops c
     ON c.pk = fc.crop_id
     WHERE 
       fch.dairy_id = %L
@@ -749,11 +746,11 @@ module.exports = {
            fc.salt as typical_salt
 
         FROM field_crop_app fca
-        JOIN field_crop fc
+        LEFT JOIN field_crop fc
         ON fc.pk = fca.field_crop_id
-        JOIN fields f
+        LEFT JOIN fields f
         ON f.pk = fc.field_id
-        JOIN crops c
+        LEFT JOIN crops c
         ON c.pk = fc.crop_id
         WHERE 
           fca.dairy_id = %L
@@ -920,20 +917,20 @@ module.exports = {
 
       FROM field_crop_app_process_wastewater fcapww
       
-      JOIN field_crop_app fca
+      LEFT JOIN field_crop_app fca
       ON fca.pk = fcapww.field_crop_app_id
 
-      JOIN field_crop_app_process_wastewater_analysis fcapwwa
+      LEFT JOIN field_crop_app_process_wastewater_analysis fcapwwa
       ON fcapwwa.pk = fcapww.field_crop_app_process_wastewater_analysis_id
       
-      JOIN field_crop fc
+      LEFT JOIN field_crop fc
       ON fc.pk = fca.field_crop_id
 
       
-      JOIN fields f
+      LEFT JOIN fields f
       ON f.pk = fc.field_id
       
-      JOIN crops c
+      LEFT JOIN crops c
       ON c.pk = fc.crop_id
       WHERE 
       fcapww.dairy_id = %L
@@ -1041,7 +1038,7 @@ module.exports = {
 
 
       FROM field_crop_app_freshwater_analysis fcafwa
-      JOIN field_crop_app_freshwater_source fcafws
+      LEFT JOIN field_crop_app_freshwater_source fcafws
       ON fcafws.pk = fcafwa.fresh_water_source_id
 
       WHERE 
@@ -1125,22 +1122,22 @@ module.exports = {
       
       FROM field_crop_app_freshwater fcfw
 
-      JOIN field_crop_app fca
+      LEFT JOIN field_crop_app fca
       ON fca.pk = fcfw.field_crop_app_id
 
-      JOIN field_crop_app_freshwater_analysis fcafwa
+      LEFT JOIN field_crop_app_freshwater_analysis fcafwa
       ON fcafwa.pk = fcfw.field_crop_app_freshwater_analysis_id
 
-      JOIN field_crop_app_freshwater_source fcafws
+      LEFT JOIN field_crop_app_freshwater_source fcafws
       ON fcafws.pk = fcafwa.fresh_water_source_id
 
-      JOIN field_crop fc
+      LEFT JOIN field_crop fc
       ON fc.pk = fca.field_crop_id
 
-      JOIN fields f
+      LEFT JOIN fields f
       ON f.pk = fc.field_id
 
-      JOIN crops c
+      LEFT JOIN crops c
       ON c.pk = fc.crop_id
 
       WHERE 
@@ -1281,20 +1278,20 @@ module.exports = {
       
       FROM field_crop_app_solidmanure fcasm
 
-      JOIN field_crop_app fca
+      LEFT JOIN field_crop_app fca
       ON fca.pk = fcasm.field_crop_app_id
 
-      JOIN field_crop_app_solidmanure_analysis fcasma
+      LEFT JOIN field_crop_app_solidmanure_analysis fcasma
       ON fcasma.pk = fcasm.field_crop_app_solidmanure_analysis_id
 
 
-      JOIN field_crop fc
+      LEFT JOIN field_crop fc
       ON fc.pk = fca.field_crop_id
 
-      JOIN fields f
+      LEFT JOIN fields f
       ON f.pk = fc.field_id
 
-      JOIN crops c
+      LEFT JOIN crops c
       ON c.pk = fc.crop_id
 
 
@@ -1438,20 +1435,20 @@ module.exports = {
 
       FROM field_crop_app_fertilizer fcaf
 
-      JOIN field_crop_app fca
+      LEFT JOIN field_crop_app fca
       ON fca.pk = fcaf.field_crop_app_id
 
-      JOIN nutrient_import ni
+      LEFT JOIN nutrient_import ni
       ON ni.pk = fcaf.nutrient_import_id
 
 
-      JOIN field_crop fc
+      LEFT JOIN field_crop fc
       ON fc.pk = fca.field_crop_id
 
-      JOIN fields f
+      LEFT JOIN fields f
       ON f.pk = fc.field_id
 
-      JOIN crops c
+      LEFT JOIN crops c
       ON c.pk = fc.crop_id
 
 
@@ -1509,7 +1506,7 @@ module.exports = {
       f.pk as field_pk
       FROM field_crop_app_soil_analysis fcasa
 
-      JOIN fields f
+      LEFT JOIN fields f
       ON f.pk = fcasa.field_id
 
       WHERE 
@@ -1592,25 +1589,25 @@ module.exports = {
 
       FROM field_crop_app_soil fcas
 
-      JOIN field_crop_app fca
+      LEFT JOIN field_crop_app fca
       on fca.pk = fcas.field_crop_app_id
 
-      JOIN field_crop fc
+      LEFT JOIN field_crop fc
       ON fc.pk = fca.field_crop_id
 
-      JOIN fields f
+      LEFT JOIN fields f
       ON f.pk = fc.field_id
 
-      JOIN crops c
+      LEFT JOIN crops c
       ON c.pk = fc.crop_id
 
-      JOIN field_crop_app_soil_analysis fcasa_one
+      LEFT JOIN field_crop_app_soil_analysis fcasa_one
       ON fcasa_one.pk = fcas.analysis_one
       
-      JOIN field_crop_app_soil_analysis fcasa_two
+      LEFT JOIN field_crop_app_soil_analysis fcasa_two
       ON fcasa_two.pk = fcas.analysis_two
       
-      JOIN field_crop_app_soil_analysis fcasa_three
+      LEFT JOIN field_crop_app_soil_analysis fcasa_three
       ON fcasa_three.pk = fcas.analysis_three
       
       WHERE 
@@ -1674,16 +1671,16 @@ module.exports = {
 
       FROM field_crop_app_plowdown_credit fcapc
 
-      JOIN field_crop_app fca
+      LEFT JOIN field_crop_app fca
       on fca.pk = fcapc.field_crop_app_id
 
-      JOIN field_crop fc
+      LEFT JOIN field_crop fc
       ON fc.pk = fca.field_crop_id
 
-      JOIN fields f
+      LEFT JOIN fields f
       ON f.pk = fc.field_id
 
-      JOIN crops c
+      LEFT JOIN crops c
       ON c.pk = fc.crop_id
 
 
@@ -1769,7 +1766,7 @@ module.exports = {
       // nitrateN, totalP, totalK, totalTDS
       `SELECT *
       FROM drain_analysis da
-      JOIN drain_source ds
+      LEFT JOIN drain_source ds
       ON ds.pk = da.drain_source_id
       WHERE 
       da.dairy_id = %L
@@ -1964,7 +1961,7 @@ module.exports = {
 
         FROM export_dest ed
 
-        JOIN export_recipient er
+        LEFT JOIN export_recipient er
         ON er.pk =  ed.export_recipient_id
 
         
@@ -2114,19 +2111,19 @@ module.exports = {
 
         FROM export_manifest em
 
-        JOIN export_contact ec
+        LEFT JOIN export_contact ec
         ON ec.pk = em.export_contact_id
         
-        JOIN operators op
+        LEFT JOIN operators op
         ON op.pk = em.operator_id
         
-        JOIN export_dest ed
+        LEFT JOIN export_dest ed
         ON ed.pk = em.export_dest_id
         
-        JOIN export_recipient er
+        LEFT JOIN export_recipient er
         ON er.pk = ed.export_recipient_id
 
-        JOIN export_hauler eh
+        LEFT JOIN export_hauler eh
         ON eh.pk = em.export_hauler_id
 
 
@@ -2211,19 +2208,19 @@ module.exports = {
 
       FROM export_manifest em
 
-      JOIN export_contact ec
+      LEFT JOIN export_contact ec
       ON ec.pk = em.export_contact_id
       
-      JOIN operators op
+      LEFT JOIN operators op
       ON op.pk = em.operator_id
       
-      JOIN export_dest ed
+      LEFT JOIN export_dest ed
       ON ed.pk = em.export_dest_id
       
-      JOIN export_recipient er
+      LEFT JOIN export_recipient er
       ON er.pk = ed.export_recipient_id
 
-      JOIN export_hauler eh
+      LEFT JOIN export_hauler eh
       ON eh.pk = em.export_hauler_id
 
 
@@ -2307,19 +2304,19 @@ module.exports = {
 
     FROM export_manifest em
 
-    JOIN export_contact ec
+    LEFT JOIN export_contact ec
     ON ec.pk = em.export_contact_id
     
-    JOIN operators op
+    LEFT JOIN operators op
     ON op.pk = em.operator_id
     
-    JOIN export_dest ed
+    LEFT JOIN export_dest ed
     ON ed.pk = em.export_dest_id
     
-    JOIN export_recipient er
+    LEFT JOIN export_recipient er
     ON er.pk = ed.export_recipient_id
 
-    JOIN export_hauler eh
+    LEFT JOIN export_hauler eh
     ON eh.pk = em.export_hauler_id
 
 
@@ -2472,10 +2469,10 @@ module.exports = {
 
       FROM certification c
 
-      JOIN operators owner
+      LEFT JOIN operators owner
       ON owner.pk = c.owner_id
       
-      JOIN operators operator
+      LEFT JOIN operators operator
       ON operator.pk = c.operator_id
 
 
@@ -2501,7 +2498,7 @@ module.exports = {
       callback
     )
   },
-  searchCertification: (values, callback) => {
+  searchCertification: (dairy_id, callback) => {
     return pool.query(
       `SELECT 
       c.pk,
@@ -2514,14 +2511,14 @@ module.exports = {
 
       FROM certification c
 
-      JOIN operators owner
+      LEFT JOIN operators owner
       ON owner.pk = c.owner_id
       
-      JOIN operators operator
+      LEFT JOIN operators operator
       ON operator.pk = c.operator_id
 
       where c.dairy_id = $1`,
-      values,
+      [dairy_id],
       callback
     )
   },

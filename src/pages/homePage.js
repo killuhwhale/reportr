@@ -4,10 +4,6 @@ import {
 } from '@material-ui/core'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew'
-import FlareIcon from '@material-ui/icons/Flare'
-import NightsStayIcon from '@material-ui/icons/NightsStay'
-import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount'
 
 import DairyTab from "../comps/Dairy/dairyTab"
 import HerdTab from "../comps/Herds/herdTab"
@@ -24,8 +20,10 @@ import { get, post } from "../utils/requests"
 import { Dairy } from '../utils/dairy/dairy'
 import { ALPHA_LOGO } from "../specific"
 import { COUNTIES, BASINS, BREEDS } from '../utils/constants'
+import { Company } from '../utils/company/company'
 import UploadLogo from '../comps/Logo/uploadLogo'
 import UserIcon from '../comps/Accounts/userIcon'
+import Delete from '@material-ui/icons/Delete'
 
 
 class HomePage extends Component {
@@ -33,6 +31,7 @@ class HomePage extends Component {
     super(props)
     this.state = {
       user: props.user,
+      company: { title: '', pk: 0 },
       baseDairies: [],
       checkedForBaseDairies: false,
       baseDairiesIdx: 0,
@@ -46,6 +45,7 @@ class HomePage extends Component {
       createDairyTitle: "",
       updateDairyObj: {},
       toggleShowLogoutModal: false,
+      showDeleteDairyBaseModal: false,
       tabs: {
         0: "show",
         1: "hide",
@@ -63,8 +63,15 @@ class HomePage extends Component {
 
   componentDidMount() {
     this.getBaseDairies()
+    this.getCompany()
   }
 
+  async getCompany() {
+    const company = await Company.getCompany(auth.currentUser.company_id)
+    console.log('comapny::::', company)
+    if (company.error) return console.log("Error w/ company: ", company)
+    this.setState({ company })
+  }
 
   getBaseDairies() {
 
@@ -196,6 +203,8 @@ class HomePage extends Component {
     }
   }
 
+
+
   onDairyIdxChange(ev) {
     const { name, value: dairyIdx } = ev.target
     const dairy = this.state.dairies[dairyIdx]
@@ -215,10 +224,6 @@ class HomePage extends Component {
     this.confirmLogout(false)
   }
 
-
-
-
-
   refreshAfterXLSXUpload() {
     console.log("Calling getBaseDairies()")
     this.getBaseDairies()
@@ -237,6 +242,28 @@ class HomePage extends Component {
     } catch (e) {
       console.log(e)
     }
+  }
+
+
+  toggleDeleteDairyBaseModal(val) {
+    this.setState({ showDeleteDairyBaseModal: val })
+  }
+
+  async deleteDairyBase() {
+    const dairyBase = this.state.baseDairies[this.state.baseDairiesIdx]
+    const dairyBaseID = dairyBase && dairyBase.pk ? dairyBase.pk : null
+    if (!dairyBaseID) {
+      return console.log("No dairy base ID to delete.")
+
+    }
+    try {
+      const res = await Dairy.deleteDairyBase(dairyBaseID)
+      console.log(res)
+      this.getBaseDairies()
+    } catch (e) {
+      console.log(e)
+    }
+    console.log("Deleteing dairy base: ", dairyBaseID)
   }
 
   render() {
@@ -339,94 +366,107 @@ class HomePage extends Component {
         <Grid item container xs={10}>
           <Grid item container xs={12}>
 
+
+
+            <Grid item xs={10} sm={11}>
+              <AppBar position="static" style={{ marginBottom: "32px" }} key='homePageAppBar'>
+                <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
+                  onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='homePageAppBar'>
+                  <Tab label="Dairy" key='homePageAppBarTab0' />
+                  <Tab label="Info" key='homePageAppBarTab1' />
+                  <Tab label="Planted" key='homePageAppBarTab2' />
+                  <Tab label="Harvested" key='homePageAppBarTab3' />
+                  <Tab label="Applications " key='homePageAppBarTab4' />
+                  <Tab label="Exports " key='homePageAppBarTab5' />
+                </Tabs>
+              </AppBar>
+            </Grid>
+
+            <Grid item xs={2} sm={1}>
+              <UserIcon toggleTheme={this.props.toggleTheme} company={this.state.company} />
+            </Grid>
+
             {this.state.dairy && Object.keys(this.state.dairy).length > 0 ?
-              <React.Fragment>
 
-                <Grid item xs={10} sm={11}>
-                  <AppBar position="static" style={{ marginBottom: "32px" }} key='homePageAppBar'>
-                    <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
-                      onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='homePageAppBar'>
-                      <Tab label="Dairy" key='homePageAppBarTab0' />
-                      <Tab label="Info" key='homePageAppBarTab1' />
-                      <Tab label="Planted" key='homePageAppBarTab2' />
-                      <Tab label="Harvested" key='homePageAppBarTab3' />
-                      <Tab label="Applications " key='homePageAppBarTab4' />
-                      <Tab label="Exports " key='homePageAppBarTab5' />
-                    </Tabs>
-                  </AppBar>
+              this.state.tabs[0] === "show" ?
+                <Grid item xs={12} className={`${this.state.tabs[0]}`} key='DairyTab'>
+                  <DairyTab
+                    dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx] : {}}
+                    BASINS={BASINS}
+                    COUNTIES={COUNTIES}
+
+                    onDairyDeleted={this.getBaseDairies.bind(this)}
+                    onChange={this.onDairyChange.bind(this)}
+                    onUpdate={this.updateDairy.bind(this)}
+                    BASE_URL={this.props.BASE_URL}
+                    onAlert={this.props.onAlert}
+                    refreshAfterXLSXUpload={this.refreshAfterXLSXUpload.bind(this)}
+                  />
                 </Grid>
 
-                <Grid item xs={2} sm={1}>
-                  <UserIcon toggleTheme={this.props.toggleTheme} />
-                </Grid>
-
-                {
-                  this.state.tabs[0] === "show" ?
-                    <Grid item xs={12} className={`${this.state.tabs[0]}`} key='DairyTab'>
-                      <DairyTab
+                : this.state.tabs[1] === "show" ?
+                  <Grid item xs={12} key='HerdTab'>
+                    <HerdTab
+                      dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx] : {}}
+                      BASE_URL={this.props.BASE_URL}
+                      BREEDS={BREEDS}
+                      onAlert={this.props.onAlert}
+                    />
+                  </Grid>
+                  : this.state.tabs[2] === "show" ?
+                    <Grid item xs={12} key='CropTab'>
+                      <CropTab
                         dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx] : {}}
-                        BASINS={BASINS}
-                        COUNTIES={COUNTIES}
-
-                        onDairyDeleted={this.getBaseDairies.bind(this)}
-                        onChange={this.onDairyChange.bind(this)}
-                        onUpdate={this.updateDairy.bind(this)}
                         BASE_URL={this.props.BASE_URL}
                         onAlert={this.props.onAlert}
-                        refreshAfterXLSXUpload={this.refreshAfterXLSXUpload.bind(this)}
                       />
                     </Grid>
-
-                    : this.state.tabs[1] === "show" ?
-                      <Grid item xs={12} key='HerdTab'>
-                        <HerdTab
-                          dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx] : {}}
+                    : this.state.tabs[3] === "show" ?
+                      <Grid item xs={12} key='HarvestTab'>
+                        <HarvestTab
+                          dairy={this.state.dairy}
                           BASE_URL={this.props.BASE_URL}
-                          BREEDS={BREEDS}
                           onAlert={this.props.onAlert}
                         />
                       </Grid>
-                      : this.state.tabs[2] === "show" ?
-                        <Grid item xs={12} key='CropTab'>
-                          <CropTab
-                            dairy={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx] : {}}
+                      : this.state.tabs[4] === "show" ?
+                        <Grid item xs={12} key='NutrientTab'>
+                          <NutrientApplicationTab
+                            dairy={this.state.dairies[this.state.dairyIdx]}
                             BASE_URL={this.props.BASE_URL}
                             onAlert={this.props.onAlert}
                           />
                         </Grid>
-                        : this.state.tabs[3] === "show" ?
-                          <Grid item xs={12} key='HarvestTab'>
-                            <HarvestTab
-                              dairy={this.state.dairy}
+                        : this.state.tabs[5] === "show" ?
+                          <Grid item xs={12} key='NutrientTab'>
+                            <ExportTab
+                              dairy={this.state.dairies[this.state.dairyIdx]}
                               BASE_URL={this.props.BASE_URL}
                               onAlert={this.props.onAlert}
                             />
                           </Grid>
-                          : this.state.tabs[4] === "show" ?
-                            <Grid item xs={12} key='NutrientTab'>
-                              <NutrientApplicationTab
-                                dairy={this.state.dairies[this.state.dairyIdx]}
-                                BASE_URL={this.props.BASE_URL}
-                                onAlert={this.props.onAlert}
-                              />
-                            </Grid>
-                            : this.state.tabs[5] === "show" ?
-                              <Grid item xs={12} key='NutrientTab'>
-                                <ExportTab
-                                  dairy={this.state.dairies[this.state.dairyIdx]}
-                                  BASE_URL={this.props.BASE_URL}
-                                  onAlert={this.props.onAlert}
-                                />
-                              </Grid>
-                              :
-                              <React.Fragment></React.Fragment>
-                }
+                          :
+                          <React.Fragment></React.Fragment>
 
 
-              </React.Fragment>
+
+
               : this.state.baseDairies.length > 0 ?
-                <Grid item xs={12}>
-                  "We have at least one base dairy, but no dairy for reporting year allow to create a new one...."
+                <Grid item container alignContent='center' alignItems='center' justifyContent='center' xs={12}>
+                  <Grid item xs={10}>
+                    <Typography variant='subtitle2'>
+                      Reporting periods for dairy not found. Please create.
+                    </Typography>
+                  </Grid>
+
+                  <Grid item xs={2}>
+                    <Tooltip title='Delete dairy base'>
+                      <IconButton color='primary' onClick={() => this.toggleDeleteDairyBaseModal(true)} size='small'>
+                        <Delete color='error' />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+
                 </Grid>
                 :
                 <React.Fragment>Loading....</React.Fragment>
@@ -474,6 +514,15 @@ class HomePage extends Component {
           modalText={`Are you sure you want to logout and leave?`}
           onAction={this.logout.bind(this)}
           onClose={() => this.confirmLogout(false)}
+        />
+
+        <ActionCancelModal
+          open={this.state.showDeleteDairyBaseModal}
+          actionText="Delete"
+          cancelText="Cancel"
+          modalText={`Are you sure you want to delete the base for: ${this.state.baseDairies[this.state.baseDairiesIdx] ? this.state.baseDairies[this.state.baseDairiesIdx].title : ''}?`}
+          onAction={this.deleteDairyBase.bind(this)}
+          onClose={() => this.toggleDeleteDairyBaseModal(false)}
         />
 
       </Grid>

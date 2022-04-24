@@ -11,6 +11,8 @@ const { uploadTSVToDB } = require('./uploadTSVFile')
 const { REPORTING_METHODS } = require('../constants')
 const { lazyGet } = require('./lazyGet')
 
+const { naturalSortBy } = require('../utils/format')
+
 const api = 'tsv'
 
 // Each Tab/Sheet Name is linked to a TSV Type
@@ -26,6 +28,82 @@ const DRAIN = 'Tile Drainage Systems'
 const DISCHARGE = 'Discharges'
 const MANURE = 'SM Exports'
 const WASTEWATER = 'WW Exports'
+const SHEET_NAMES = [
+    HARVEST, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, MANURE, WASTEWATER,
+]
+
+const TSV_INFO = {
+    [DISCHARGE]: {
+        tsvType: DISCHARGE,
+        template: dischargeTemplate,
+        aliases: [DISCHARGE],
+    },
+    [DRAIN]: {
+        tsvType: DRAIN,
+        template: tiledrainageTemplate,
+        aliases: [DRAIN],
+    },
+    [PLOWDOWN_CREDIT]: {
+        tsvType: PLOWDOWN_CREDIT,
+        template: plowdownTemplate,
+        aliases: [PLOWDOWN_CREDIT],
+    },
+    [SOIL]: {
+        tsvType: SOIL,
+        template: soilTemplate,
+        aliases: [SOIL],
+    },
+    [HARVEST]: {
+        tsvType: HARVEST,
+        template: harvestTemplate,
+        aliases: [HARVEST],
+    },
+    [PROCESS_WASTEWATER]: {
+        tsvType: PROCESS_WASTEWATER,
+        aliases: [PROCESS_WASTEWATER],
+        template: wwTemplate,
+    },
+    [FRESHWATER]: {
+        tsvType: FRESHWATER,
+        aliases: [FRESHWATER],
+        template: fwTemplate,
+    },
+    [SOLIDMANURE]: {
+        tsvType: SOLIDMANURE,
+        aliases: [SOLIDMANURE],
+        template: smTemplate,
+    },
+    [FERTILIZER]: {
+        tsvType: FERTILIZER,
+        aliases: [FERTILIZER],
+        template: cfTemplate,
+    },
+    [MANURE]: { // exports
+        tsvType: MANURE,
+        aliases: [MANURE, "Manure Calculation records table"],
+        template: smExportTemplate,
+    },
+    [WASTEWATER]: { // exports
+        tsvType: WASTEWATER,
+        aliases: [WASTEWATER, "WasteWater Collection Sheet"],
+        template: wwExportTemplate,
+    }
+}
+
+const convertAliasesToArrayOfObjects = () => {
+    const allAliases = []
+    console.log(SHEET_NAMES)
+    for (let sheetName of SHEET_NAMES) {
+        for (let alias of TSV_INFO[sheetName].aliases) {
+            allAliases.push({
+                title: alias,
+                tsvType: TSV_INFO[sheetName].tsvType
+            })
+        }
+    }
+    return allAliases.sort((a, b) => naturalSortBy(a, b, 'title'))
+}
+const ALL_ALIASES = convertAliasesToArrayOfObjects()
 
 
 module.exports = (app) => {
@@ -41,11 +119,22 @@ module.exports = (app) => {
             .catch(err => {
                 logger.info('Failure')
                 logger.info(err)
-                res.json(...err)
+                res.json({ error: err })
             })
 
     })
 
+    app.post(`/${api}/uploadTSV/:tsv_type/:uploadedFilename/:dairy_id`, verifyToken, verifyUserFromCompanyByDairyID, async (req, res) => {
+        const { tsv_type, uploadedFilename, dairy_id } = req.params
+        try {
+            const tsvText = await readTSV(req.body)
+            const result = uploadSheet(dairy_id, tsvText, tsv_type, uploadedFilename)
+            return res.json({ data: result })
+        } catch (e) {
+            console.log("Error reading TSV text", e)
+            return res.json({ err: `Error uploading TSV File.`, err: e.toString() })
+        }
+    })
 }
 
 const toFloat = (num) => {
@@ -58,82 +147,135 @@ const toFloat = (num) => {
     return float
 }
 
-const SHEET_NAMES = [
-    HARVEST, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, MANURE, WASTEWATER,
-]
-
-const TSV_INFO = {
-    [DISCHARGE]: {
-        numCols: 10,
-        tsvType: DISCHARGE,
-        template: dischargeTemplate,
-    },
-    [DRAIN]: {
-        numCols: 14,
-        tsvType: DRAIN,
-        template: tiledrainageTemplate,
-    },
-    [PLOWDOWN_CREDIT]: {
-        numCols: 16,
-        tsvType: PLOWDOWN_CREDIT,
-        template: plowdownTemplate,
-    },
-    [SOIL]: {
-        numCols: 57,
-        tsvType: SOIL,
-        template: soilTemplate,
-    },
-    [HARVEST]: {
-        numCols: 26, // 32 columns in process_wastewater spreadsheet/ TSV
-        tsvType: HARVEST,
-        template: harvestTemplate,
-    },
-    [PROCESS_WASTEWATER]: {
-        numCols: 54, // 32 columns in process_wastewater spreadsheet/ TSV
-        tsvType: PROCESS_WASTEWATER,
-        template: wwTemplate,
-    },
-    [FRESHWATER]: {
-        numCols: 45,
-        tsvType: FRESHWATER,
-        template: fwTemplate,
-    },
-    [SOLIDMANURE]: {
-        numCols: 42,
-        tsvType: SOLIDMANURE,
-        template: smTemplate,
-    },
-    [FERTILIZER]: {
-        numCols: 27,
-        tsvType: FERTILIZER,
-        template: cfTemplate,
-    },
-    [MANURE]: { // exports
-        numCols: 50,
-        tsvType: MANURE,
-        template: smExportTemplate,
-    },
-    [WASTEWATER]: { // exports
-        numCols: 51,
-        tsvType: WASTEWATER,
-        template: wwExportTemplate,
+const uploadTSVType = (tsvText, tsvType, dairy_id) => {
+    const nutrientAppTypes = [PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT]
+    let promise = null
+    if (tsvType === MANURE || tsvType === WASTEWATER) {
+        promise = uploadExportTSV(tsvText, tsvType, dairy_id)
     }
+    if (tsvType === HARVEST) {
+        promise = uploadHarvestTSV(tsvText, tsvType, dairy_id)
+    }
+    if (tsvType === DISCHARGE) {
+        promise = uploadDischargeTSV(tsvText, tsvType, dairy_id)
+    }
+    if (tsvType === DRAIN) {
+        promise = uploadTileDrainage(tsvText, tsvType, dairy_id)
+    }
+    if (nutrientAppTypes.indexOf(tsvType) >= 0) {
+        promise = uploadNutrientApp(tsvText, tsvType, dairy_id)
+    }
+    return promise
 }
 
-
-
-
-/** Uploads TSV file to DB by dairy_id and TSV type
- *  Updates TSV text
- *  - Each Dairy per reporting year, will have a TSV file for Production Records(Harvests), Nutrient Applications, Imports/Exports
- */
-
+// Handles upload of any sheet.
+// TODO
 /**
- * where callback == (ev) => {
-    const { result } = ev.target
-    this.setState({ tsvText: result, uploadedFilename: file.name })
-  }
+ * - 
+ * 
  */
+const uploadSheet = (dairy_id, tsvText, tsvType, uploadedFilename) => {
+
+    let promise = uploadTSVType(tsvText, tsvType, dairy_id)
+
+    return new Promise((resolve, reject) => {
+        promise.then(res => {
+            console.log("Done uploading: ", tsvType)
+            uploadTSVToDB(uploadedFilename, tsvText, dairy_id, tsvType)
+                .then(res => {
+                    resolve("Complete")
+                })
+                .catch(uploadTSVToDBErr => {
+                    reject({ uploadTSVToDBErr, err: 'Upload tsv file error', tsvType, uploadedFilename })
+                })
+        })
+            .catch(error => {
+                reject({ tsvType, uploadedFilename, error })
+            })
+    })
+}
+
+const binarySearch = (arr, target) => {
+    let start = 0
+    let end = arr.length - 1
+
+    while (start <= end) {
+        let half = parseInt(start + ((end - start) / 2))
+        const val = arr[half].title
+        console.log(`t: ${target}, Val ${val} , Half: ${half} `)
+        if (val === target) {
+            return half
+        }
+        else if (target < val) {
+            end = half - 1
+        } else {
+            start = half + 1
+        }
+
+    }
+
+
+}
+const getTsvTypeByAlias = (alias) => {
+
+    const idx = binarySearch(ALL_ALIASES, alias)
+    if (idx >= 0 || idx < ALL_ALIASES.length) {
+        return ALL_ALIASES[idx].tsvType
+    }
+    return { error: `TsvType not found: ${alias}` }
+}
+
+const uploadXLSX = (workbook, dairy_id) => {
+    const sheets = workbook && workbook.Sheets ? workbook.Sheets : null
+
+    return new Promise((resolve, reject) => {
+        if (!sheets) {
+            return reject("No sheets found.")
+        }
+
+        let promises = []
+        // Given some random Sheet name, alias, known to belong to some tsvType
+        // Find the tsvType based on the alias    
+        workbook.SheetNames.forEach(sheetName => {
+            const tsvType = getTsvTypeByAlias(sheetName)
+            if (tsvType.error) return console.log(tsvType.error)
+
+            // const tsvType = TSV_INFO[sheetName].tsvType
+            const tsvText = XLSX.utils.sheet_to_csv(sheets[sheetName], { FS: '\t', blankrows: false })
+            console.log("Uploading ", tsvType)
+            promises.push(
+                uploadSheet(dairy_id, tsvText, tsvType, sheetName)
+            )
+        })
+        Promise.all(promises)
+            .then((res) => {
+                console.log("Done uploading")
+                resolve(res)
+            })
+            .catch(err => {
+                console.log("Error uploading")
+                console.log(err)
+                reject(err)
+            })
+    })
+}
+
+//  ------------------------------------------------------------------------------------------------
+const readTSV = (file) => {
+    const sheet = XLSX.read(file).Sheets.Sheet1
+    return XLSX.utils.sheet_to_csv(sheet, { FS: '\t', blankrows: false })
+}
+
+const checkEmpty = (val) => {
+    // If value is empty, return 0 to avoid error in DB.
+    let f = 0
+    try {
+        f = toFloat(val)
+    } catch (err) {
+        logger.info(`Failed w/ val: ${val}`)
+    }
+    return f
+}
 
 const createHeaderMap = (headerRow, indexAsKey = true) => {
     const header = {}
@@ -150,6 +292,7 @@ const createHeaderMap = (headerRow, indexAsKey = true) => {
     })
     return header
 }
+
 const mapsColToTemplate = (cols, headerMap, template) => {
     const rowTemplate = { ...template }
     cols.forEach((item, i) => {
@@ -185,7 +328,6 @@ const processTSVTextAsMap = (tsvText, tsvType) => {
     return rows
 }
 
-
 const createFieldSetFromMap = (rows) => {
     /**
      * Returns list of list where each list is [title, acres, planted] the minimum required info
@@ -206,7 +348,6 @@ const createFieldSetFromMap = (rows) => {
     })
     return fields
 }
-
 
 const getCropByTitle = async (title) => {
     try {
@@ -243,6 +384,7 @@ const prepareFieldCrop = (field_title, crop_title, cropable, acres, dairy_id) =>
             })
     })
 }
+
 const getFieldCropFromMap = (commonRowData, dairy_id, tsvType) => {
     const field_title = commonRowData['Field']
     const acres_planted = commonRowData['Acres Planted']
@@ -301,6 +443,7 @@ const getFieldCropFromMap = (commonRowData, dairy_id, tsvType) => {
             })
     })
 }
+
 const getFieldCropAppFromMap = (commonRowData, dairy_id, tsvType) => {
     const app_date = commonRowData['Application Date']
     const precip_before = commonRowData['Rain Day Prior to Event']
@@ -338,86 +481,7 @@ const getFieldCropAppFromMap = (commonRowData, dairy_id, tsvType) => {
     })
 }
 
-// Handles upload of any sheet.
-// TODO
-/**
- * - 
- * 
- */
-const onUploadXLSX = (dairy_id, tsvText, numCols, tsvType, uploadedFilename) => {
-    const nutrientAppTypes = [PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT]
-    let promise = null
-    if (tsvType === MANURE || tsvType === WASTEWATER) {
-        // return createDataFromManureExportTSVListRow(row, i, dairy_id)
-        promise = uploadExportTSV(tsvText, tsvType, dairy_id)
-    }
-    if (tsvType === HARVEST) {
-        promise = uploadHarvestTSV(tsvText, tsvType, dairy_id)
-        // return createDataFromHarvestTSVListRow(row, i, dairy_id)
-    }
-    if (tsvType === DISCHARGE) {
-        promise = uploadDischargeTSV(tsvText, tsvType, dairy_id)
-    }
-    if (tsvType === DRAIN) {
-        promise = uploadTileDrainage(tsvText, tsvType, dairy_id)
-    }
-    if (nutrientAppTypes.indexOf(tsvType) >= 0) {
-        promise = uploadNutrientApp(tsvText, tsvType, dairy_id)
-    }
-
-    return new Promise((resolve, reject) => {
-        promise.then(res => {
-            console.log("Done uploading: ", tsvType)
-            uploadTSVToDB(uploadedFilename, tsvText, dairy_id, tsvType)
-                .then(res => {
-                    resolve("Complete")
-                })
-                .catch(uploadTSVToDBErr => {
-                    reject({ uploadTSVToDBErr, err: 'Upload tsv file error', tsvType, uploadedFilename })
-                })
-        })
-            .catch(error => {
-                reject({ tsvType, uploadedFilename, error })
-            })
-    })
-}
-
-const uploadXLSX = (workbook, dairy_id) => {
-    const sheets = workbook && workbook.Sheets ? workbook.Sheets : null
-
-    return new Promise((resolve, reject) => {
-        if (!sheets) {
-            reject("No sheets found.")
-            return
-        }
-
-        // For Each Sheet, feed to onUploadXLSX
-        let promises = []
-
-        workbook.SheetNames.forEach(sheetName => {
-            if (SHEET_NAMES.indexOf(sheetName) >= 0) {
-                const numCols = TSV_INFO[sheetName].numCols
-                const tsvType = TSV_INFO[sheetName].tsvType
-                const tsvText = XLSX.utils.sheet_to_csv(sheets[sheetName], { FS: '\t' })
-                console.log("Uploading ", tsvType)
-                promises.push(
-                    onUploadXLSX(dairy_id, tsvText, numCols, tsvType, sheetName)
-                )
-            }
-        })
-        Promise.all(promises)
-            .then((res) => {
-                console.log("Done uploading")
-                resolve(res)
-            })
-            .catch(err => {
-                console.log("Error uploading")
-                console.log(err)
-                reject(err)
-            })
-    })
-}
-
+//  ------------------------------------------------------------------------------------------------
 /** Creates field_crop_harvest by creating or finding the data for each row
  * // Typically creates teh field_crop
  */
@@ -545,16 +609,6 @@ const createDataFromHarvestTSVListRowMap = (row, i, dairy_id) => {
 
 }
 
-const checkEmpty = (val) => {
-    // If value is empty, return 0 to avoid error in DB.
-    let f = 0
-    try {
-        f = toFloat(val)
-    } catch (err) {
-        logger.info(`Failed w/ val: ${val}`)
-    }
-    return f
-}
 /** Harvest
  * 
  * 
@@ -579,12 +633,11 @@ const createHarvestTSVFromMap = (tsvText, tsvType, dairy_id) => {
             })
     })
 }
+
 const uploadHarvestTSV = (tsvText, tsvType, dairy_id) => {
     // return createHarvestTSV(tsvText, tsvType, dairy_id)
     return createHarvestTSVFromMap(tsvText, tsvType, dairy_id)
 }
-
-
 
 /**
  *     Nutrient Applications
@@ -731,7 +784,6 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id
     })
 }
 
-
 const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
 
@@ -871,7 +923,6 @@ const createFreshwaterApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
 }
 
-
 const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
     const sample_date = row['Sample Date']
@@ -979,7 +1030,6 @@ const createSolidmanureApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
 
 }
-
 
 const createFertilizerApplicationFromMap = (row, field_crop_app, dairy_id) => {
     const import_desc = row['Import Description']
@@ -1234,7 +1284,6 @@ const createSoilApplicationFromMap = (row, field_crop_app, dairy_id) => {
     })
 }
 
-
 const createPlowdownCreditApplicationFromMap = (row, field_crop_app, dairy_id) => {
 
     const fieldTitle = row['Field']
@@ -1371,7 +1420,6 @@ const createDataFromTSVListRowMap = (row, i, dairy_id, tsvType) => {
     })
 }
 
-
 // Handles an upload of tsv data for a nutrient application
 // Entry point for single upload of nutrient app
 const uploadNutrientApp = (tsvText, tsvType, dairy_id) => {
@@ -1404,6 +1452,8 @@ const uploadNutrientApp = (tsvText, tsvType, dairy_id) => {
     })
 
 }
+//  ------------------------------------------------------------------------------------------------
+
 
 /**
  *     Exports
@@ -1424,6 +1474,7 @@ const _lazyGetExportDestFromMap = (row, dairy_id) => {
     const op_city_state = row["Operator State"]
     const op_city_zip = row["Operator Zip"]
     const op_is_owner = row["Operator Is Owner"]
+    const op_is_operator = row["Operator Is Operator"]
     const op_is_responsible = row["Operator Responsible for Fees"]
     const contact_first_name = row["Contact First"]
     const contact_primary_phone = row["Contact Phone"]
@@ -1466,6 +1517,7 @@ const _lazyGetExportDestFromMap = (row, dairy_id) => {
         city_state: op_city_state,
         city_zip: op_city_zip,
         is_owner: op_is_owner,
+        is_operator: op_is_operator,
         is_responsible: op_is_responsible
     }
     promises.push(lazyGet('operators', opSearchURL, createOperatorData, dairy_id))
@@ -1746,7 +1798,7 @@ const uploadExportTSV = (tsvText, tsvType, dairy_id) => {
     })
 
 }
-
+//  ------------------------------------------------------------------------------------------------
 
 
 /** Tile Drainage
@@ -1840,7 +1892,7 @@ const uploadTileDrainage = (tsvText, tsvType, dairy_id) => {
     // return createTileDrainage(tsvText, tsvType, dairy_id)
     return createTileDrainageFromMap(tsvText, tsvType, dairy_id)
 }
-
+//  ------------------------------------------------------------------------------------------------
 
 /** Discharge
  * 
@@ -1917,3 +1969,4 @@ const uploadDischargeTSV = (tsvText, tsvType, dairy_id) => {
     // return ceateDischargeTSVFromMap(tsvText, tsvType, dairy_id)
     return ceateDischargeTSVFromMap(tsvText, tsvType, dairy_id)
 }
+//  ------------------------------------------------------------------------------------------------

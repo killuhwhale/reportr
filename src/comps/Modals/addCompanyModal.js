@@ -4,7 +4,7 @@ import { Grid, Paper, Button, Typography, Modal, TextField, CircularProgress } f
 import { withTheme } from '@material-ui/core/styles';
 import { get, post } from '../../utils/requests';
 import { BASE_URL } from '../../utils/environment';
-import { CompanyUtil } from '../../utils/company/company'
+import { Company } from '../../utils/company/company'
 
 class AddCompanyModal extends Component {
 
@@ -26,7 +26,7 @@ class AddCompanyModal extends Component {
             return
         }
 
-        const res = await CompanyUtil.createCompany(companyTitle)
+        const res = await Company.createCompany(companyTitle)
 
         if (res.error) {
             return this.props.onAlert('Company not created!', 'error')

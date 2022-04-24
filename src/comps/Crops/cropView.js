@@ -372,7 +372,7 @@ class CropView extends Component {
           open={this.state.showDeleteFieldCropModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Are you sure you want to delete: ${this.state.delFieldCropObj.fieldtitle} / ${this.state.delFieldCropObj.croptitle}`}
+          modalText={`Are you sure you want to delete: ${this.state.delFieldCropObj.fieldtitle} - ${this.state.delFieldCropObj.croptitle}`}
           onAction={() => {
 
             this.props.onDeleteFieldCrop(this.state.delFieldCropObj)

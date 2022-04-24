@@ -11,7 +11,7 @@ import { CloudUpload } from '@material-ui/icons'
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { get, post, postXLSX } from '../../utils/requests'
+import { get, post, postXLSX, getImage, getFile } from '../../utils/requests'
 import ParcelAndFieldView from "../Parcel/parcelAndFieldView"
 import OperatorView from "../Operators/operatorView"
 
@@ -79,6 +79,7 @@ class DairyTab extends Component {
     super(props)
     this.state = {
       dairy: props.dairy,
+      operators: [],
       showAddParcelModal: false,
       showAddFieldModal: false,
       toggleShowDeleteAllModal: false,
@@ -95,6 +96,7 @@ class DairyTab extends Component {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
   componentDidMount() {
+    this.getAllOperators()
     this.getAllFields()
     this.getAllParcels()
     this.getDaysInPeriod()
@@ -182,6 +184,7 @@ class DairyTab extends Component {
   }
 
   onUploadXLSX() {
+    console.log(`Uploading XLSX to dairy: ${this.state.dairy.pk}`)
 
     const file = this.state.rawFileForServer
     postXLSX(`${BASE_URL}/tsv/uploadXLSX/${this.state.dairy.pk}`, file)
@@ -199,31 +202,42 @@ class DairyTab extends Component {
         this.toggleShowUploadXLSX(false)
         this.props.refreshAfterXLSXUpload()
         this.getAllFields()
+        this.getAllOperators()
+
         this.props.onAlert('Success!', 'success')
       })
       .catch(err => {
         console.log(err)
       })
-
-    // Client side upload
-    // const workbook = this.state.uploadedFileData
-    // uploadXLSX(workbook, this.state.dairy.pk)
-    //   .then(res => {
-    //     console.log("Completed! C-engineer voice")
-    //     this.toggleShowUploadXLSX(false)
-    //     this.props.refreshAfterXLSXUpload()
-    //     this.getAllFields()
-    //     this.props.onAlert('Success!', 'success')
-    //   })
-    //   .catch(err => {
-    //     console.log('Failure! SSBM Voice', err)
-    //     this.props.onAlert('Failed to Upload Workbook', 'error')
-    //   })
-
   }
 
   toggleShowUploadXLSX(val) {
     this.setState({ showUploadXLSX: val })
+  }
+
+
+  getAllOperators() {
+    get(`${this.props.BASE_URL}/api/operators/${this.state.dairy.pk}`)
+      .then(res => {
+        this.setState({ operators: res })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+
+  async generateServerPDF() {
+    try {
+      const res = await getFile(`${BASE_URL}/annualReportPDF/dairy/${this.state.dairy.pk}`)
+      console.log('Res', res)
+      const blob = new Blob([res], { type: 'application/pdf' })
+      window.open(URL.createObjectURL(blob))
+
+    } catch (e) {
+      console.log('Err Res', e)
+
+    }
   }
 
   render() {
@@ -252,6 +266,13 @@ class DairyTab extends Component {
                     <Tooltip title='Upload XLSX Workbook'>
                       <IconButton color="primary" variant="outlined"
                         onClick={() => this.toggleShowUploadXLSX(true)}
+                      >
+                        <CloudUpload />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title='Get PDF'>
+                      <IconButton color="secondary" variant="outlined"
+                        onClick={() => this.generateServerPDF()}
                       >
                         <CloudUpload />
                       </IconButton>
@@ -440,6 +461,8 @@ class DairyTab extends Component {
             <Grid item xs={12} style={{ marginTop: '64px' }}>
               <OperatorView
                 dairy={this.state.dairy}
+                operators={this.state.operators}
+                refreshOperators={() => this.getAllOperators()}
                 onAlert={this.props.onAlert}
                 BASE_URL={this.props.BASE_URL}
               />

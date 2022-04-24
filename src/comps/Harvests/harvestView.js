@@ -17,7 +17,7 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { MG_KG, KG_MG } from '../../utils/convertCalc'
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from '../Applications/selectButtonGrid'
-import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy, percentageAsMGKG } from '../../utils/format'
+import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, percentageAsMGKG, splitDate } from '../../utils/format'
 
 /** Displays field_crop_harvest entries
  *      -includes fields and field_crop information
@@ -176,7 +176,11 @@ class HarvestView extends Component {
           open={this.state.showDeleteFieldCropHarvestModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Are you sure you want to delete: ${this.state.delFieldCropHarvestObj.harvest_date} / ${this.state.delFieldCropHarvestObj.fieldtitle} / ${this.state.delFieldCropHarvestObj.croptitle}`}
+          modalText={`Are you sure you want to delete: 
+            ${this.state.delFieldCropHarvestObj.fieldtitle} - 
+            ${this.state.delFieldCropHarvestObj.croptitle} - 
+            ${formatDate(splitDate(this.state.delFieldCropHarvestObj.harvest_date))}
+          `}
           onAction={() => {
             this.deleteFieldCropHarvest()
             this.toggleShowDeleteFieldCropHarvestModal(false)

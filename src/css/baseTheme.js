@@ -59,7 +59,7 @@ const appTheme = (blkOrWhite, backgroundColor, primaryColor, secondaryColor, app
             white: "#fff"
          },
          profilePaper: {
-            backgroundColor: blkOrWhite === '#fff' ? '#1d1d1d' : '#f6f6f6'
+            backgroundColor: blkOrWhite === '#fff' ? '#2d2e30' : '#f6f6f6'
          },
          background: {
             paper: backgroundColor,

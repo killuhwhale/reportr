@@ -11,7 +11,7 @@ import AddOwnerAccount from './addOwnerAccount';
 import ChangePasswordModal from './changePasswordModal'
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import ActionCancelModal from './actionCancelModal'
-import { CompanyUtil } from '../../utils/company/company';
+import { Company } from '../../utils/company/company';
 
 
 
@@ -140,7 +140,7 @@ class CompanyManagementModal extends Component {
 
     async deleteCompany() {
         console.log("Deleting company with ID: ", this.props.managementCompanyID)
-        const res = await CompanyUtil.deleteCompany(this.props.managementCompanyID)
+        const res = await Company.deleteCompany(this.props.managementCompanyID)
         this.props.onClose()
         this.toggleConfirmDeleteAccountModal(false)
         if (res.error) {

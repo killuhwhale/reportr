@@ -24,11 +24,10 @@ import UploadTSVModal from "../Modals/uploadTSVModal"
 
 import { get, post } from '../../utils/requests';
 import {
-  TSV_INFO, checkEmpty, readTSV, uploadTSVToDB, MANURE, WASTEWATER,
-  uploadExportTSV
+  checkEmpty, MANURE, WASTEWATER, TSVUtil
 } from '../../utils/TSV'
 import { getAvailableNutrientsG } from '../Dairy/pdfDB'
-import { formatFloat, groupBySortBy } from '../../utils/format'
+import { formatDate, formatFloat, groupBySortBy, splitDate } from '../../utils/format'
 import { REPORTING_METHODS } from '../../utils/constants'
 
 
@@ -268,9 +267,9 @@ class ExportTab extends Component {
       showUploadWastewaterTSVModal: false,
       showViewManureTSVsModal: false,
       showViewWastewaterTSVsModal: false,
-      manureTsvText: '',
+      manureTsvFile: '',
       manureUploadedFilename: '',
-      wastewaterTsvText: '',
+      wastewaterTsvFile: '',
       wastewaterUploadedFilename: '',
       tsvType: MANURE,
       numCols: '',
@@ -733,61 +732,105 @@ class ExportTab extends Component {
     }
   }
 
-  onUploadExportManureTSV() {
+  async onUploadExportManureTSV() {
     let dairy_id = this.state.dairy.pk
-    uploadExportTSV(this.state.manureTsvText, MANURE, dairy_id)
-      .then(result => {
-        uploadTSVToDB(this.state.manureUploadedFilename, this.state.manureTsvText, this.state.dairy.pk, TSV_INFO[MANURE].tsvType)
-          .then(tsvUploadRes => {
-            this.toggleShowUploadManureTSVModal(false)
-            this.getExportContact()
-            this.getOperators()
-            this.getExportHaulers()
-            this.getExportRecipients()
-            this.getExportDests()
-            this.getExportManifests()
-            this.props.onAlert('Success!', 'success')
-          })
-          .catch(err => {
-            console.log(err)
-            this.toggleShowUploadManureTSVModal(false)
-            this.props.onAlert('Failed uploading.', 'error')
-          })
-      })
-      .catch(err => {
-        console.log(err)
-        this.toggleShowUploadManureTSVModal(false)
-        this.props.onAlert('Failed uploading.', 'error')
-      })
+
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.manureTsvFile, MANURE, this.state.uploadedFilename, dairy_id)
+      console.log("TSV upload result: ", result)
+      this.toggleShowUploadManureTSVModal(false)
+      this.getExportContact()
+      this.getOperators()
+      this.getExportHaulers()
+      this.getExportRecipients()
+      this.getExportDests()
+      this.getExportManifests()
+      this.props.onAlert('Success!', 'success')
+    } catch (e) {
+
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+      this.toggleShowUploadManureTSVModal(false)
+
+    }
+
+
+
+
+    // uploadExportTSV(this.state.manureTsvFile, MANURE, dairy_id)
+    //   .then(result => {
+    //     uploadTSVToDB(this.state.manureUploadedFilename, this.state.manureTsvFile, this.state.dairy.pk, TSV_INFO[MANURE].tsvType)
+    //       .then(tsvUploadRes => {
+    //         this.toggleShowUploadManureTSVModal(false)
+    //         this.getExportContact()
+    //         this.getOperators()
+    //         this.getExportHaulers()
+    //         this.getExportRecipients()
+    //         this.getExportDests()
+    //         this.getExportManifests()
+    //         this.props.onAlert('Success!', 'success')
+    //       })
+    //       .catch(err => {
+    //         console.log(err)
+    //         this.toggleShowUploadManureTSVModal(false)
+    //         this.props.onAlert('Failed uploading.', 'error')
+    //       })
+    //   })
+    //   .catch(err => {
+    //     console.log(err)
+    //     this.toggleShowUploadManureTSVModal(false)
+    //     this.props.onAlert('Failed uploading.', 'error')
+    //   })
   }
 
-  onUploadExportWastewaterTSV() {
+  async onUploadExportWastewaterTSV() {
     let dairy_id = this.state.dairy.pk
-    uploadExportTSV(this.state.wastewaterTsvText, WASTEWATER, dairy_id)
-      .then(result => {
-        uploadTSVToDB(this.state.wastewaterUploadedFilename, this.state.wastewaterTsvText, this.state.dairy.pk, TSV_INFO[WASTEWATER].tsvType)
-          .then(tsvUploadRes => {
-            console.log("Uploaded TSV to DB")
-            this.toggleShowUploadWastewaterTSVModal(false)
-            this.getExportContact()
-            this.getOperators()
-            this.getExportHaulers()
-            this.getExportRecipients()
-            this.getExportDests()
-            this.getExportManifests()
-            this.props.onAlert('Success!', 'success')
-          })
-          .catch(err => {
-            console.log(err)
-            this.toggleShowUploadWastewaterTSVModal(false)
-            this.props.onAlert('Failed uploading', 'error')
-          })
-      })
-      .catch(err => {
-        console.log(err)
-        this.toggleShowUploadWastewaterTSVModal(false)
-        this.props.onAlert('Failed uploading', 'error')
-      })
+
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.wastewaterTsvFile, WASTEWATER, this.state.uploadedFilename, dairy_id)
+      console.log("TSV upload result: ", result)
+      this.toggleShowUploadWastewaterTSVModal(false)
+
+      this.getExportContact()
+      this.getOperators()
+      this.getExportHaulers()
+      this.getExportRecipients()
+      this.getExportDests()
+      this.getExportManifests()
+      this.props.onAlert('Success!', 'success')
+    } catch (e) {
+
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+      this.toggleShowUploadWastewaterTSVModal(false)
+
+    }
+
+    // uploadExportTSV(this.state.wastewaterTsvFile, WASTEWATER, dairy_id)
+    //   .then(result => {
+    //     uploadTSVToDB(this.state.wastewaterUploadedFilename, this.state.wastewaterTsvFile, this.state.dairy.pk, TSV_INFO[WASTEWATER].tsvType)
+    //       .then(tsvUploadRes => {
+    //         console.log("Uploaded TSV to DB")
+    //         this.toggleShowUploadWastewaterTSVModal(false)
+    //         this.getExportContact()
+    //         this.getOperators()
+    //         this.getExportHaulers()
+    //         this.getExportRecipients()
+    //         this.getExportDests()
+    //         this.getExportManifests()
+    //         this.props.onAlert('Success!', 'success')
+    //       })
+    //       .catch(err => {
+    //         console.log(err)
+    //         this.toggleShowUploadWastewaterTSVModal(false)
+    //         this.props.onAlert('Failed uploading', 'error')
+    //       })
+    //   })
+    //   .catch(err => {
+    //     console.log(err)
+    //     this.toggleShowUploadWastewaterTSVModal(false)
+    //     this.props.onAlert('Failed uploading', 'error')
+    //   })
 
 
 
@@ -796,7 +839,7 @@ class ExportTab extends Component {
   toggleShowUploadManureTSVModal(val) {
     this.setState({
       showUploadManureTSVModal: val,
-      manureTsvText: "",
+      manureTsvFile: "",
       manureUploadedFilename: ""
     })
   }
@@ -804,7 +847,7 @@ class ExportTab extends Component {
   toggleShowUploadWastewaterTSVModal(val) {
     this.setState({
       showUploadWastewaterTSVModal: val,
-      wastewaterTsvText: "",
+      wastewaterTsvFile: "",
       wastewaterUploadedFilename: ""
     })
   }
@@ -906,8 +949,8 @@ class ExportTab extends Component {
   deleteAllFromTable() {
     Promise.all([
       post(`${this.props.BASE_URL}/api/export_manifest/deleteAll`, { dairy_id: this.state.dairy.pk }),
-      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[MANURE].tsvType }),
-      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[WASTEWATER].tsvType }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: MANURE }),
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: WASTEWATER }),
     ])
       .then(res => {
         this.getExportContact()
@@ -927,19 +970,13 @@ class ExportTab extends Component {
   onUploadManureTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ manureTsvText: result, manureUploadedFilename: files[0].name })
-      })
+      this.setState({ manureTsvFile: files[0], manureUploadedFilename: files[0].name })
     }
   }
   onUploadWastewaterTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ wastewaterTsvText: result, wastewaterUploadedFilename: files[0].name })
-      })
+      this.setState({ wastewaterTsvFile: files[0], wastewaterUploadedFilename: files[0].name })
     }
   }
 
@@ -1209,7 +1246,7 @@ class ExportTab extends Component {
           actionText={"" /* no action text*/}
           cancelText="Close"
           dairy_id={this.state.dairy.pk}
-          tsvType={TSV_INFO[MANURE].tsvType}
+          tsvType={MANURE}
           onClose={() => this.toggleShowViewManureTSVModal(false)}
           BASE_URL={this.props.BASE_URL}
         />
@@ -1218,7 +1255,7 @@ class ExportTab extends Component {
           actionText={"" /* no action text*/}
           cancelText="Close"
           dairy_id={this.state.dairy.pk}
-          tsvType={TSV_INFO[WASTEWATER].tsvType}
+          tsvType={WASTEWATER}
           onClose={() => this.toggleShowViewWastewaterTSVModal(false)}
           BASE_URL={this.props.BASE_URL}
         />
@@ -1374,7 +1411,7 @@ class ExportTab extends Component {
           open={this.state.showConfirmDeleteExportManifestModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Export Manifest from ${this.state.deleteExportManifestObj.last_date_hauled && this.state.deleteExportManifestObj.last_date_hauled.split('T')[0]}?`}
+          modalText={`Delete Export Manifest from ${formatDate(splitDate(this.state.deleteExportManifestObj.last_date_hauled))}?`}
           onAction={this.onExportManifestDelete.bind(this)}
           onClose={() => this.setState({ showConfirmDeleteExportManifestModal: false })}
         />

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip, TextField,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -13,7 +13,7 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 
 // import { VariableSizeList as List } from "react-window"
-import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
+import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from "../../utils/format"
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
@@ -26,9 +26,7 @@ import { checkEmpty } from '../../utils/TSV'
 import { FRESHWATER_SOURCE_TYPES } from '../../utils/constants'
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 
-import {
-  readTSV, uploadTSVToDB, uploadNutrientApp
-} from "../../utils/TSV"
+import { TSVUtil } from "../../utils/TSV"
 import { DatePicker } from '@material-ui/pickers'
 
 const SOURCE_OF_ANALYSES = [
@@ -258,7 +256,7 @@ class Freshwater extends Component {
       deleteFreshwaterAnalysisObj: {},
       deleteFreshwaterObj: {},
       showUploadFieldCropAppFreshwateTSVModal: false,
-      tsvText: '',
+      tsvFile: '',
       uploadedFilename: '',
       showViewTSVsModal: false,
       windowWidth: window.innerWidth,
@@ -565,36 +563,48 @@ class Freshwater extends Component {
   toggleShowUploadFieldCropAppFreshwateTSVModal(val) {
     this.setState({
       showUploadFieldCropAppFreshwateTSVModal: val,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: ""
     })
   }
   onUploadFieldCropAppFreshwateTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
+
     }
   }
-  onUploadFieldCropAppFreshwateTSV() {
+  async onUploadFieldCropAppFreshwateTSV() {
     // 24 columns from TSV
-    let dairy_pk = this.state.dairy_id
-    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
-      .then(res => {
-        console.log("Completed uploading Freshwater TSV")
-        // uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.toggleShowUploadFieldCropAppFreshwateTSVModal(false)
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.getFieldCropAppFreshwater()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        console.log(err)
-        this.props.onAlert('Failed uploading.', 'error')
-      })
+    let dairy_id = this.state.dairy_id
+
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      console.log("Upload TSV result: ", this.state.tsvType, result)
+      this.toggleShowUploadFieldCropAppFreshwateTSVModal(false)
+      this.getFieldCropAppFreshwater()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
+
+
+    // uploadNutrientApp(this.state.tsvFile, this.state.tsvType, dairy_pk)
+    //   .then(res => {
+    //     console.log("Completed uploading Freshwater TSV")
+    //     // uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
+    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
+    //     this.toggleShowUploadFieldCropAppFreshwateTSVModal(false)
+    //     this.getFieldCropAppFreshwater()
+    //     this.props.onAlert('Success!', 'success')
+    //   })
+    //   .catch(err => {
+    //     console.log("Error with all promises")
+    //     console.log(err)
+    //     this.props.onAlert('Failed uploading.', 'error')
+    //   })
   }
 
   toggleViewTSVsModal(val) {
@@ -877,7 +887,7 @@ class Freshwater extends Component {
           open={this.state.showConfirmDeleteFreshwaterSourceModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Freshwater source ${this.state.deleteFreshwaterSourceObj.src_desc} - ${this.state.deleteFreshwaterSourceObj.src_type}?`}
+          modalText={`Delete Freshwater Source: ${this.state.deleteFreshwaterSourceObj.src_desc} - ${this.state.deleteFreshwaterSourceObj.src_type}?`}
 
           onAction={this.onFreshwaterSourceDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteFreshwaterSourceModal(false)}
@@ -886,7 +896,10 @@ class Freshwater extends Component {
           open={this.state.showConfirmDeleteFreshwaterAnalysisModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Freshwater for ${this.state.deleteFreshwaterAnalysisObj.sample_date} - ${this.state.deleteFreshwaterAnalysisObj.sample_desc}?`}
+          modalText={`Delete Freshwater for: 
+            ${formatDate(splitDate(this.state.deleteFreshwaterAnalysisObj.sample_date))} - 
+            ${this.state.deleteFreshwaterAnalysisObj.sample_desc}?
+          `}
 
           onAction={this.onFreshwaterAnalysisDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteFreshwaterAnalysisModal(false)}
@@ -895,7 +908,7 @@ class Freshwater extends Component {
           open={this.state.showConfirmDeleteFreshwaterModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Freshwater for ${this.state.deleteFreshwaterObj.app_date}?`}
+          modalText={`Delete Freshwater for ${formatDate(splitDate(this.state.deleteFreshwaterObj.app_date))}?`}
 
           onAction={this.onFreshwaterDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteFreshwaterModal(false)}

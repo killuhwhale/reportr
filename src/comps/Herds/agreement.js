@@ -51,6 +51,7 @@ class Agreement extends Component {
     this.getNotes()
     this.getCertification()
   }
+
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.dairy_id !== this.state.dairy_id) {
       this.getAgreements()
@@ -58,31 +59,6 @@ class Agreement extends Component {
       this.getCertification()
     }
   }
-
-  getNotes() {
-    get(`${this.props.BASE_URL}/api/note/${this.state.dairy_id}`)
-      .then((note) => {
-        if (note && typeof note === typeof [] && note.length > 0) {
-          this.setState({ note: note[0] })
-        } else {
-          post(`${this.props.BASE_URL}/api/note/create`, {
-            dairy_id: this.state.dairy_id,
-            note: 'No notes.',
-          })
-            .then(res => {
-              res = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
-              this.setState({ note: res })
-            })
-            .catch(err => {
-              console.log(err)
-            })
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
 
   getAgreements() {
     // Lazy get
@@ -114,98 +90,60 @@ class Agreement extends Component {
       })
   }
 
-  onChange(ev) {
-    const { name, checked } = ev.target
-    let agreement = this.state.agreement
-    agreement[name] = checked
-
-    this.setState({ agreement })
-  }
-
-  onUpdate() {
-    if (Object.keys(this.state.agreement).length !== 6) {
-      console.log(this.state.agreement)
-      alert("Incorrect amount of keys for agreement")
-      return
-    }
-
-    console.log("Updating: ", this.state.agreement)
-    post(`${this.props.BASE_URL}/api/agreement/update`, { ...this.state.agreement, dairy_id: this.state.dairy_id })
-      .then(res => {
-        console.log(res)
+  getNotes() {
+    get(`${this.props.BASE_URL}/api/note/${this.state.dairy_id}`)
+      .then((note) => {
+        if (note && typeof note === typeof [] && note.length > 0) {
+          this.setState({ note: note[0] })
+        } else {
+          post(`${this.props.BASE_URL}/api/note/create`, {
+            dairy_id: this.state.dairy_id,
+            note: 'No notes.',
+          })
+            .then(res => {
+              res = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
+              this.setState({ note: res })
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
       })
       .catch(err => {
-        console.log("Error updating agreement: ", err)
+        console.log(err)
       })
-  }
-
-  onNoteChange(ev) {
-    const { name, value } = ev.target
-    let note = this.state.note
-    note.note = value
-    this.setState({ note })
-  }
-  onUpdateNote() {
-
-    if (!this.state.note || Object.keys(this.state.note).length !== 3 || this.state.note.pk < 0) {
-      console.log(Object.keys(this.state.note).length)
-      // If note obj is invalid
-      return
-    }
-
-
-    post(`${this.props.BASE_URL}/api/note/update`, { ...this.state.note, dairy_id: this.state.dairy_id })
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.log("Error updating note: ", err)
-      })
-  }
-
-
-  onCertificationChange(ev) {
-    const { name, value } = ev.target
-    this.setState({ [name]: value })
-  }
-
-
-  searchByPK(list, id) {
-    let idx = 0
-    list.map((el, i) => {
-      if (el.pk === id) {
-        idx = i
-      }
-    })
-    return idx
   }
 
   getCertification() {
     let newCertification = {
       dairy_id: this.state.dairy_id,
-      owner_id: 0,
-      operator_id: 0,
-      responsible_id: 0
+      owner_id: null,
+      operator_id: null,
+      responsible_id: null
     }
 
 
     lazyGet('certification', `noSearchValueNeeded`, newCertification, this.state.dairy_id)
-      .then(([certification]) => {
+      .then((certification) => {
+        console.log("Certficiation ::::", certification)
+
         if (!certification) {
           console.log("Certficiation not found", certification)
         }
+
         // Get Owner Oeprators
         get(`${this.props.BASE_URL}/api/operators/${this.state.dairy_id}`)
           .then(ownerOperators => {
-            let owners = ownerOperators.filter(el => el.is_owner)
-            let operators = ownerOperators.filter(el => el.is_operator)
+            const owners = ownerOperators.filter(el => el.is_owner)
+            const operators = [{ title: 'No operator', }, ...ownerOperators.filter(el => el.is_operator)]
 
 
             // Certification in DB possibly not created.
-            let owner_idx = certification ? this.searchByPK(owners, certification.owner_id) : 0
-            let operator_idx = certification ? this.searchByPK(operators, certification.operator_id) : 0
-            let responsible_idx = certification ? this.searchByPK(ownerOperators, certification.responsible_id) : 0
-            let certification_id = certification ? certification.pk : -1
+            const owner_idx = certification ? this.searchByPK(owners, certification.owner_id) : 0
+            const operator_idx = certification ? this.searchByPK(operators, certification.operator_id) : 0
+            const responsible_idx = certification ? this.searchByPK(ownerOperators, certification.responsible_id) : 0
+            const certification_id = certification ? certification.pk : -1
+
             this.setState({
               ownerOperators, owners, operators,
               owner_idx,
@@ -223,6 +161,67 @@ class Agreement extends Component {
       })
   }
 
+  onAgreementChange(ev) {
+    const { name, checked } = ev.target
+    let agreement = this.state.agreement
+    agreement[name] = checked
+
+    this.setState({ agreement })
+  }
+
+  onNoteChange(ev) {
+    const { name, value } = ev.target
+    let note = this.state.note
+    note.note = value
+    this.setState({ note })
+  }
+
+  onCertificationChange(ev) {
+    const { name, value } = ev.target
+    this.setState({ [name]: value })
+  }
+
+  onUpdateAgreement() {
+    if (Object.keys(this.state.agreement).length !== 6) {
+      console.log(this.state.agreement)
+      alert("Incorrect amount of keys for agreement")
+      return
+    }
+
+    console.log("Updating: ", this.state.agreement)
+    post(`${this.props.BASE_URL}/api/agreement/update`, { ...this.state.agreement, dairy_id: this.state.dairy_id })
+      .then(res => {
+        console.log(res)
+        if (res.error) return this.props.onAlert('Error updating agreement', 'error')
+        this.props.onAlert('Updated agreement!', 'success')
+      })
+      .catch(err => {
+        console.log("Error updating agreement: ", err)
+        this.props.onAlert('Error updating agreement', 'error')
+
+      })
+  }
+
+  onUpdateNote() {
+
+    if (!this.state.note || Object.keys(this.state.note).length !== 3 || this.state.note.pk < 0) {
+      console.log(Object.keys(this.state.note).length)
+      // If note obj is invalid
+      return
+    }
+
+
+    post(`${this.props.BASE_URL}/api/note/update`, { ...this.state.note, dairy_id: this.state.dairy_id })
+      .then(res => {
+        console.log(res)
+        this.props.onAlert('Updated notes!', 'success')
+      })
+      .catch(err => {
+        console.log("Error updating note: ", err)
+        this.props.onAlert('Error updating notes', 'error')
+      })
+  }
+
   onUpdateCertification() {
     let owner = this.state.owners[this.state.owner_idx]
     let operator = this.state.operators[this.state.operator_idx]
@@ -233,34 +232,46 @@ class Agreement extends Component {
       return
     }
 
-    let certification = {
+    const certification = {
       dairy_id: this.state.dairy_id,
       owner_id: owner.pk,
-      operator_id: operator.pk,
       responsible_id: responsible.pk,
       pk: this.state.certification_id
     }
 
+    if (operator.pk) {
+      certification['operator_id'] = operator.pk
+    }
+
+    /** Valid combos
+     *  Fields:     owner /            operator         / owner_operator_responsible_for_fees
+     *           required / optional(unique from owner) /         required
+     *    
+     */
     // Owner and operator cannot be the same pk
     if (certification.owner_id !== certification.operator_id) {
       // If certiciation is created already, its pk will be stored and not -1
+      console.log("Cert ID: ", this.state.certification_id)
       if (this.state.certification_id !== -1) {
         post(`${this.props.BASE_URL}/api/certification/update`, { ...certification, dairy_id: this.state.dairy_id })
           .then((res => {
             console.log("Updated", res)
+            this.props.onAlert("Updated certification.", 'success')
+
           }))
           .catch(err => {
             console.log(err)
+            this.props.onAlert("Failed to update certification.", 'error')
           })
       } else {
         post(`${this.props.BASE_URL}/api/certification/create`, certification)
           .then((res => {
             console.log("Updated", res)
-            this.props.onAlert("Updated", 'success')
+            this.props.onAlert("Created certification.", 'success')
           }))
           .catch(err => {
             console.log(err)
-            this.props.onAlert("Failed to update.", 'error')
+            this.props.onAlert("Failed to create certification.", 'error')
           })
       }
 
@@ -268,6 +279,16 @@ class Agreement extends Component {
       console.log("Owner and operator cannot be the same")
       this.props.onAlert("Owner and operator cannot be the same", 'error')
     }
+  }
+
+  searchByPK(list, id) {
+    let idx = 0
+    list.map((el, i) => {
+      if (el.pk === id) {
+        idx = i
+      }
+    })
+    return idx
   }
 
   render() {
@@ -278,7 +299,7 @@ class Agreement extends Component {
         </Typography>
         <Grid item xs={12} align='right'>
           <Tooltip title="Update Agreements">
-            <IconButton onClick={this.onUpdate.bind(this)}>
+            <IconButton onClick={this.onUpdateAgreement.bind(this)}>
               <CloudUpload color='primary' />
             </IconButton>
           </Tooltip>
@@ -293,7 +314,7 @@ class Agreement extends Component {
           <Grid item xs={2}>
             <Switch
               name='nmp_updated'
-              onChange={this.onChange.bind(this)}
+              onChange={this.onAgreementChange.bind(this)}
               checked={this.state.agreement.nmp_updated}
             />
           </Grid>
@@ -308,7 +329,7 @@ class Agreement extends Component {
           <Grid item xs={2}>
             <Switch
               name='nmp_developed'
-              onChange={this.onChange.bind(this)}
+              onChange={this.onAgreementChange.bind(this)}
               checked={this.state.agreement.nmp_developed}
             />
           </Grid>
@@ -323,7 +344,7 @@ class Agreement extends Component {
           <Grid item xs={2}>
             <Switch
               name='nmp_approved'
-              onChange={this.onChange.bind(this)}
+              onChange={this.onAgreementChange.bind(this)}
               checked={this.state.agreement.nmp_approved}
             />
           </Grid>
@@ -342,7 +363,7 @@ class Agreement extends Component {
           <Grid item xs={2}>
             <Switch
               name='new_agreements'
-              onChange={this.onChange.bind(this)}
+              onChange={this.onAgreementChange.bind(this)}
               checked={this.state.agreement.new_agreements}
             />
           </Grid>

@@ -176,8 +176,14 @@ exports.verifyUserFromCompanyByDairyID = async (req, res, next) => {
             }
             return res.status(403).json({ error: 'Permission denied: user not apart of company.', status: 403 })
         } else {
-            console.log("No dbRes getCompanyIDByDairyID: ", dbRes)
-            res.status(403).json({ error: 'Permission denied: user not apart of company, no results', status: 403 })
+            const errObj = {
+                error: 'Permission denied (ByDairyID): user not apart of company, no results',
+                status: 403,
+                sit: `User from comapny ${company_id} looking for dairyID ${dairy_id}`
+            }
+
+            console.log("No dbRes getCompanyIDByDairyID: ", dbRes, errObj)
+            res.status(403).json(errObj)
         }
     })
 
@@ -207,11 +213,15 @@ exports.verifyUserFromCompanyByUserID = async (req, res, next) => {
             }
             return res.status(403).json({ error: 'Permission denied: user not apart of company.', status: 403 })
         } else {
-            console.log("No dbRes getCompanyIDByUserID: ", dbRes)
-            res.status(403).json({ error: 'Permission denied: user not apart of company, no results', status: 403 })
+            const errObj = {
+                error: 'Permission denied (ByUserID): user not apart of company, no results',
+                status: 403,
+                sit: `User from company ${company_id} looking for userID ${user_id}`
+            }
+            console.log("No dbRes getCompanyIDByUserID: ", dbRes, errObj)
+            res.status(403).json(errObj)
         }
     })
-
 }
 
 // TODO Add a couple more verifyUserFromCompanyBy.... 

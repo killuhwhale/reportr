@@ -82,7 +82,7 @@ class JoinedView extends Component {
           actionText="Delete"
           cancelText="Cancel"
           modalText={`Are you sure you want to delete: 
-                          ${this.state.curDeleteFieldParcel.title} /
+                          ${this.state.curDeleteFieldParcel.title} -
                            ${this.state.curDeleteFieldParcel.pnumber}`}
           onAction={this.deleteJoinedFieldParcel.bind(this)}
           onClose={() => this.toggleDeletejJoinFieldParcel(false)}

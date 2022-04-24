@@ -35,7 +35,8 @@ app.use(cors({
 const accountsAPI = require(`./accounts/account`)(app);
 const companyAPI = require(`./company/company`)(app);
 const companyLogoAPI = require(`./logo/logo`)(app);
-const pdfAPI = require(`./pdf/pdf`)(app);
+const annualReportDataAPI = require(`./pdf/annualReportData`)(app);
+const annualReportPDFAPI = require(`./pdf/pdf`)(app);
 const tsvAPI = require(`./tsv/serverTsv`)(app);
 const API = require(`./dairy/dairy`)(app);
 

@@ -13,13 +13,10 @@ import AddFieldCropHarvestModal from '../Modals/addFieldCropHarvestModal'
 import UploadTSVModal from '../Modals/uploadTSVModal'
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 import { get, post } from '../../utils/requests'
-import { TSV_INFO } from "../../utils/TSV"
+import { TSVUtil, HARVEST } from "../../utils/TSV"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
-import {
-  readTSV, uploadHarvestTSV, uploadTSVToDB, HARVEST
-} from "../../utils/TSV"
 import { REPORTING_METHODS, SOURCE_OF_ANALYSES } from '../../utils/constants'
 
 
@@ -36,7 +33,7 @@ class HarvestTab extends Component {
       fieldCropHarvests: [],
       showAddFieldCropHarvestModal: false,
       showUploadTSV: false,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: "",
       updateFieldCropHarvestObj: {}, // PK: {all data for field_crop harvest that is updatable...}
       showViewTSVsModal: false,
@@ -146,32 +143,25 @@ class HarvestTab extends Component {
   onCSVChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (ev) => {
-        const { result } = ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
     }
   }
 
   // Triggered when user presses Add btn in Modal
-  uploadTSV() {
+  async uploadTSV() {
     const dairy_id = this.state.dairy.pk
 
-
-    uploadHarvestTSV(this.state.tsvText, HARVEST, dairy_id)
-      .then(res => {
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy.pk, HARVEST) // remove this when done testing, do this after the data was successfully create in DB
-        this.toggleShowUploadTSV(false)
-        this.getAllFieldCropHarvests()
-        this.props.onAlert('Uploaded!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        console.log(err)
-        this.props.onAlert('Failed uploading!', 'error')
-      })
-
-
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, HARVEST, this.state.uploadedFilename, dairy_id)
+      console.log("Upload TSV result: ", HARVEST, result)
+      this.toggleShowUploadTSV(false)
+      this.getAllFieldCropHarvests()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
   }
 
   toggleShowTSVsModal(val) {
@@ -185,7 +175,7 @@ class HarvestTab extends Component {
     Promise.all([
       post(`${this.props.BASE_URL}/api/field_crop/deleteAll`, { dairy_id: this.state.dairy.pk }),
       post(`${this.props.BASE_URL}/api/field_crop_harvest/deleteAll`, { dairy_id: this.state.dairy.pk }),
-      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: TSV_INFO[HARVEST].tsvType })
+      post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: HARVEST })
     ])
       .then(res => {
         console.log(res)
@@ -267,7 +257,7 @@ class HarvestTab extends Component {
           actionText="Upload"
           cancelText="Close"
           dairy_id={this.state.dairy.pk}
-          tsvType={TSV_INFO[HARVEST].tsvType}
+          tsvType={HARVEST}
           onClose={() => this.toggleShowTSVsModal(false)}
           BASE_URL={this.props.BASE_URL}
         />

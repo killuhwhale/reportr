@@ -59,13 +59,44 @@ const getImage = (url) => {
       .then(async res => {
         const { errorData, needsRefresh } = await checkForRefresh(res)
         if (needsRefresh) {
-          const ogRes = await refreshToken(url, {}, 'get')
+          const ogRes = await refreshToken(url, {}, 'getImage')
           resolve(ogRes)
         } else if (res.status === 403) {
           resolve(errorData)
         }
         else {
           resolve(res.json())
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        reject(err)
+      })
+  })
+}
+
+const getFile = (url) => {
+  const token = localStorage.getItem(ACCESS_TOKEN_KEY)
+  const company_id = localStorage.getItem(COMPANY_ID_KEY)
+  return new Promise((resolve, reject) => {
+    fetch(url, {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Authorization": `Bearer ${token}`,
+        "Authorization-CompanyID": `ID ${company_id}`
+      },
+    })
+      .then(res => res.arrayBuffer())
+      .then(async res => {
+        const { errorData, needsRefresh } = await checkForRefresh(res)
+        if (needsRefresh) {
+          const ogRes = await refreshToken(url, {}, 'getFile')
+          resolve(ogRes)
+        } else if (res.status === 403) {
+          resolve(errorData)
+        }
+        else {
+          resolve(res)
         }
       })
       .catch(err => {
@@ -115,9 +146,17 @@ const refreshToken = (url, data, method) => {
         // Make request again on behalf of original request and return results
         if (method === 'post') {
           post(url, data).then(ogRes => resolve(ogRes))
-        } else if (method === "get") {
+        }
+        else if (method === "get") {
           get(url).then(ogRes => resolve(ogRes))
-        } else if (method === "postXLSX") {
+        }
+        else if (method === "getImage") {
+          getImage(url).then(ogRes => resolve(ogRes))
+        }
+        else if (method === "getFile") {
+          getFile(url).then(ogRes => resolve(ogRes))
+        }
+        else if (method === "postXLSX") {
           postXLSX(url, data).then(ogRes => resolve(ogRes))
         } else if (method === 'postImage') {
           postImage(url, data).then(ogRes => resolve(ogRes))
@@ -243,4 +282,4 @@ const postImage = (url, data) => {
       }
     })
 }
-export { get, getImage, post, postXLSX, postImage }
+export { get, getImage, getFile, post, postXLSX, postImage }

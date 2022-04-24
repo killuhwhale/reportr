@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip, TextField,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -15,7 +15,7 @@ import { withTheme } from '@material-ui/core/styles'
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
-import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
+import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from "../../utils/format"
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import AddNutrientImportModal from "../Modals/addNutrientImportModal"
 import AddFertilizerModal from "../Modals/addFertilizerModal"
@@ -23,11 +23,9 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
 import { VariableSizeList as List } from "react-window";
-import { groupBySortBy } from "../../utils/format"
 
-import {
-  readTSV, uploadTSVToDB, uploadNutrientApp
-} from "../../utils/TSV"
+
+import { TSVUtil } from "../../utils/TSV"
 import { DatePicker } from '@material-ui/pickers'
 
 
@@ -301,7 +299,7 @@ class Fertilizer extends Component {
       deleteNutrientImportObj: {},
       deleteFertilizerObj: {},
       showUploadFieldCropAppFertilizerTSVModal: false,
-      tsvText: '',
+      tsvFile: '',
       uploadedFilename: '',
       showViewTSVsModal: false,
       windowWidth: window.innerWidth,
@@ -522,36 +520,49 @@ class Fertilizer extends Component {
   toggleShowUploadFieldCropAppFertilizerTSVModal(val) {
     this.setState({
       showUploadFieldCropAppFertilizerTSVModal: val,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: ""
     })
   }
   onUploadFieldCropAppFreshwateTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
+
     }
   }
-  onUploadFieldCropAppFreshwateTSV() {
+  async onUploadFieldCropAppFreshwateTSV() {
     // 24 columns from TSV
-    let dairy_pk = this.state.dairy_id
-    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
-      .then(res => {
-        console.log("Completed uploading Fertilizer TSV")
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)
-        this.getFieldCropAppFertilizer()
-        this.getNutrientImport()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        console.log(err)
-        this.props.onAlert('Failed uploading.', 'error')
-      })
+    let dairy_id = this.state.dairy_id
+
+
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      console.log("Upload TSV result: ", this.state.tsvType, result)
+      this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)
+      this.getFieldCropAppFertilizer()
+      this.getNutrientImport()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
+
+    // uploadNutrientApp(this.state.tsvFile, this.state.tsvType, dairy_pk)
+    //   .then(res => {
+    //     console.log("Completed uploading Fertilizer TSV")
+    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
+    //     this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)
+    //     this.getFieldCropAppFertilizer()
+    //     this.getNutrientImport()
+    //     this.props.onAlert('Success!', 'success')
+    //   })
+    //   .catch(err => {
+    //     console.log("Error with all promises")
+    //     console.log(err)
+    //     this.props.onAlert('Failed uploading.', 'error')
+    //   })
   }
 
 
@@ -752,7 +763,10 @@ class Fertilizer extends Component {
           open={this.state.showConfirmDeleteNutrientImportModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Nutrient Import for ${this.state.deleteNutrientImportObj.import_date} - ${this.state.deleteNutrientImportObj.import_desc}?`}
+          modalText={`Delete Nutrient Import for: 
+            ${formatDate(splitDate(this.state.deleteNutrientImportObj.import_date))} - 
+            ${this.state.deleteNutrientImportObj.import_desc}?
+          `}
           onAction={this.onNutrientImportDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteNutrientImportModal(false)}
         />
@@ -769,7 +783,7 @@ class Fertilizer extends Component {
           open={this.state.showConfirmDeleteFertilizerModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Fertilizer for ${this.state.deleteFertilizerObj.app_date}?`}
+          modalText={`Delete Fertilizer for: ${formatDate(splitDate(this.state.deleteFertilizerObj.app_date))}?`}
           onAction={this.onFertilizerDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteFertilizerModal(false)}
         />

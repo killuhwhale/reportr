@@ -118,57 +118,53 @@ Github is private, the only passwords visible in code is for the DB and that is 
   # Missing Crucial Tests   
    - getReportingPeriodDays
 
-   - Account Tests
-    - Ensure Accounts are Created, Updated and Deleted by the correct Account.
-      - Admins should only be able to create, update or delete other accounts
-      - Accounts can update themselves
-
 
 # Todo:
+  # Download Zip File with PDF report & All TSVs for that Dairy.
+    - Process
+      1. User sends request with dairy_id..... 
+      2. Server gets request and fetches data for AR and ea TSV 
+      3. Server takes ea tsv text and creates a file
+      4. server generates PDF File (PDF is generated client side.....)
 
-  # Sequelize ORM the DB..
-    - each db file, instead of pool.query.... we use the ORM to make the query...
-    - maybe for now we can just use raw queries since theyre already written but for future updates/ addtiions.
-      the ORM will help make migrations much easier.
-  # Deleting Users
-
-  # Images - Company Logo
-    - Display Company Logo
-    - Upload Images Modals
-    - Store Images in Digital Ocean Spaces
-    1. Look for Logo for Company,
-    2. If no Company logo, show upload modal,
-    3. else show logo with delete feature
-
-    - Use in:
-      - Header on main site
-      - PDF report
-      - TSV print footer
+      5. Server Zips File and sends to Client
+      6. CLient downloads Zip. 
 
 
-  - Nutrient Application Analyses should be shown and be able to be deleted
+
+      Currently,
+      1. Client gets data from server
+      2. Client generates images with Chart.js based on data
+      3. W/ imgages and data send to PDF maker thing...
+
+      Instead, once server has data, instead of returning it to client
+      1. Take the data and use Chart.js and canvas on nodejs to run same code client side.
+      2. Now we have images and data
+      3. USe the PDF make to make the pdf and return it to the client for download.
+
+
+
+
+
+       
+  - Create a spread sheet with the difference between each sheet
+    - Just copy and past each set into one sheet... comparing 2 rows  
   
+  # Tests
+    - Test if PDF report is generated correctly, downloadFile maybe in the tests.... 
 
-  # Admin Dashboard
-    Ensure only accounts with lvl 5 can access that page
-
-    List of Companies
-      - Delete, update title
-    
-    - Company Management Modal
-      - Account list
-        - Delete, change password, update username
-    
+  # UI
+    - Nutrient Application Analyses should be shown and be able to be deleted
   
 
 
 # Goals:
-
-  # Settings Panel
-   - Default theme, light or dark.
-
    # State Management
-    - Avoid so many requests...
+    Caching or State Management
+    - Avoid multiple requests each time user goes to a new tab
+    - Redux to store responses and check there first
+    - Find another caching solution
+
 
 # Features:
   - Single Click Generate All TSVs and PDFS for ea Dairy
@@ -189,14 +185,6 @@ Github is private, the only passwords visible in code is for the DB and that is 
         }
       }
   
-  - 
-  
-
-  Caching or State Management
-    - Avoid multiple requests each time user goes to a new tab
-    - Redux to store responses and check there first
-    - Find another caching solution
-  
   Setup Testing Execution before commiting to Github
  
   Dockerize React and Express Apps
@@ -209,8 +197,8 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 # Problems   
 
-  (Dashboard)
-  Need a way to create a reportrr admin account to create company admin accounts.
+  # Generate PDF if herds are empty, pdf DD has an error.
+    - Just check the doc and show an empty value if herds are not there...
 
   - Upload TSV process 
     - Ensure there are rows of data bfore uploading.
@@ -219,9 +207,7 @@ Github is private, the only passwords visible in code is for the DB and that is 
   - Dates are slightly off due to timezone.... (I think)
     - Creating a date inititally for a dairy, days should be jan 1st to dec 31st 
       - Currently, the dates are created as dec 31st to dec 30th (1 day off)
-      
-  - Delete Dairy base
-    - No way to delete dairy base
+    
   
 
 ##### Rosies website notes.
