@@ -10,6 +10,7 @@ import formats, { groupByKeys } from "../../utils/format"
 import { get, post } from '../../utils/requests'
 
 import { lazyGet } from '../../utils/TSV'
+import { CertAgreementNotes } from '../../utils/certAgreementNotes/certAgreementNotes'
 
 
 const Q1 = "Was the facility's NMP updated in the reporting period?"
@@ -60,101 +61,46 @@ class Agreement extends Component {
     }
   }
 
-  getAgreements() {
-    // Lazy get
-    get(`${this.props.BASE_URL}/api/agreement/${this.state.dairy_id}`)
-      .then((agreement) => {
-        // Should only have 1 agreement per dairy
-        if (agreement && typeof agreement == typeof [] && agreement.length > 0) {
-          this.setState({ agreement: agreement[0] })
-        } else {
-          // Agreement doesnt exist for dairy, create it here.
-          post(`${this.props.BASE_URL}/api/agreement/create`, {
-            dairy_id: this.state.dairy_id,
-            nmp_developed: false,
-            nmp_approved: false,
-            nmp_updated: false,
-            new_agreements: false
-          })
-            .then(res => {
-              res = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
-              this.setState({ agreement: res })
-            })
-            .catch(err => {
-              console.log(err)
-            })
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
+  async getAgreements() {
+    const agreement = await CertAgreementNotes.getAgreements(this.state.dairy_id)
+    if (agreement.error) return console.log(agreement)
+    console.log(agreement)
+    this.setState({ agreement: agreement[0] })
   }
 
-  getNotes() {
-    get(`${this.props.BASE_URL}/api/note/${this.state.dairy_id}`)
-      .then((note) => {
-        if (note && typeof note === typeof [] && note.length > 0) {
-          this.setState({ note: note[0] })
-        } else {
-          post(`${this.props.BASE_URL}/api/note/create`, {
-            dairy_id: this.state.dairy_id,
-            note: 'No notes.',
-          })
-            .then(res => {
-              res = res && typeof res === typeof [] && res.length > 0 ? res[0] : {}
-              this.setState({ note: res })
-            })
-            .catch(err => {
-              console.log(err)
-            })
-        }
-      })
-      .catch(err => {
-        console.log(err)
-      })
+  async getNotes() {
+    const note = await CertAgreementNotes.getNotes(this.state.dairy_id)
+    if (note.error) return console.log(note.error)
+    this.setState({ note: note[0] })
+
+
   }
 
-  getCertification() {
-    let newCertification = {
-      dairy_id: this.state.dairy_id,
-      owner_id: null,
-      operator_id: null,
-      responsible_id: null
-    }
+  async getCertification() {
+    const _certification = await CertAgreementNotes.getCertification(this.state.dairy_id)
+    if (_certification.error) return console.log(_certification.error)
+    const certification = _certification[0]
+
+    // Get Owner Oeprators
+    get(`${this.props.BASE_URL}/api/operators/${this.state.dairy_id}`)
+      .then(ownerOperators => {
+        const owners = ownerOperators.filter(el => el.is_owner)
+        const operators = [{ title: 'No operator', }, ...ownerOperators.filter(el => el.is_operator)]
 
 
-    lazyGet('certification', `noSearchValueNeeded`, newCertification, this.state.dairy_id)
-      .then((certification) => {
-        console.log("Certficiation ::::", certification)
+        // Certification in DB possibly not created.
+        const owner_idx = certification ? this.searchByPK(owners, certification.owner_id) : 0
+        const operator_idx = certification ? this.searchByPK(operators, certification.operator_id) : 0
+        const responsible_idx = certification ? this.searchByPK(ownerOperators, certification.responsible_id) : 0
+        const certification_id = certification ? certification.pk : -1
 
-        if (!certification) {
-          console.log("Certficiation not found", certification)
-        }
-
-        // Get Owner Oeprators
-        get(`${this.props.BASE_URL}/api/operators/${this.state.dairy_id}`)
-          .then(ownerOperators => {
-            const owners = ownerOperators.filter(el => el.is_owner)
-            const operators = [{ title: 'No operator', }, ...ownerOperators.filter(el => el.is_operator)]
-
-
-            // Certification in DB possibly not created.
-            const owner_idx = certification ? this.searchByPK(owners, certification.owner_id) : 0
-            const operator_idx = certification ? this.searchByPK(operators, certification.operator_id) : 0
-            const responsible_idx = certification ? this.searchByPK(ownerOperators, certification.responsible_id) : 0
-            const certification_id = certification ? certification.pk : -1
-
-            this.setState({
-              ownerOperators, owners, operators,
-              owner_idx,
-              operator_idx,
-              responsible_idx,
-              certification_id
-            })
-          })
-          .catch(err => {
-            console.log(err)
-          })
+        this.setState({
+          ownerOperators, owners, operators,
+          owner_idx,
+          operator_idx,
+          responsible_idx,
+          certification_id
+        })
       })
       .catch(err => {
         console.log(err)
@@ -181,104 +127,27 @@ class Agreement extends Component {
     this.setState({ [name]: value })
   }
 
-  onUpdateAgreement() {
-    if (Object.keys(this.state.agreement).length !== 6) {
-      console.log(this.state.agreement)
-      alert("Incorrect amount of keys for agreement")
-      return
-    }
+  async onUpdateAgreement() {
+    const res = await CertAgreementNotes.onUpdateAgreement(this.state.agreement, this.state.dairy_id)
+    if (res.error) return this.props.onAlert('Error updating agreement', 'error')
+    this.props.onAlert('Updated agreement!', 'success')
 
-    console.log("Updating: ", this.state.agreement)
-    post(`${this.props.BASE_URL}/api/agreement/update`, { ...this.state.agreement, dairy_id: this.state.dairy_id })
-      .then(res => {
-        console.log(res)
-        if (res.error) return this.props.onAlert('Error updating agreement', 'error')
-        this.props.onAlert('Updated agreement!', 'success')
-      })
-      .catch(err => {
-        console.log("Error updating agreement: ", err)
-        this.props.onAlert('Error updating agreement', 'error')
-
-      })
   }
 
-  onUpdateNote() {
-
-    if (!this.state.note || Object.keys(this.state.note).length !== 3 || this.state.note.pk < 0) {
-      console.log(Object.keys(this.state.note).length)
-      // If note obj is invalid
-      return
-    }
-
-
-    post(`${this.props.BASE_URL}/api/note/update`, { ...this.state.note, dairy_id: this.state.dairy_id })
-      .then(res => {
-        console.log(res)
-        this.props.onAlert('Updated notes!', 'success')
-      })
-      .catch(err => {
-        console.log("Error updating note: ", err)
-        this.props.onAlert('Error updating notes', 'error')
-      })
+  async onUpdateNote() {
+    const res = await CertAgreementNotes.onUpdateNote(this.state.note, this.state.dairy_id)
+    if (res.error) return this.props.onAlert('Error updating note', 'error')
+    this.props.onAlert('Updated note!', 'success')
   }
 
-  onUpdateCertification() {
+  async onUpdateCertification() {
     let owner = this.state.owners[this.state.owner_idx]
     let operator = this.state.operators[this.state.operator_idx]
     let responsible = this.state.ownerOperators[this.state.responsible_idx]
-    if (!owner || !operator || !responsible) {
-      let msg = `${!owner ? 'Owner' : !operator ? 'Operator' : !responsible ? 'Responsible party' : 'Error:'} not found.`
-      this.props.onAlert(msg, 'error')
-      return
-    }
 
-    const certification = {
-      dairy_id: this.state.dairy_id,
-      owner_id: owner.pk,
-      responsible_id: responsible.pk,
-      pk: this.state.certification_id
-    }
-
-    if (operator.pk) {
-      certification['operator_id'] = operator.pk
-    }
-
-    /** Valid combos
-     *  Fields:     owner /            operator         / owner_operator_responsible_for_fees
-     *           required / optional(unique from owner) /         required
-     *    
-     */
-    // Owner and operator cannot be the same pk
-    if (certification.owner_id !== certification.operator_id) {
-      // If certiciation is created already, its pk will be stored and not -1
-      console.log("Cert ID: ", this.state.certification_id)
-      if (this.state.certification_id !== -1) {
-        post(`${this.props.BASE_URL}/api/certification/update`, { ...certification, dairy_id: this.state.dairy_id })
-          .then((res => {
-            console.log("Updated", res)
-            this.props.onAlert("Updated certification.", 'success')
-
-          }))
-          .catch(err => {
-            console.log(err)
-            this.props.onAlert("Failed to update certification.", 'error')
-          })
-      } else {
-        post(`${this.props.BASE_URL}/api/certification/create`, certification)
-          .then((res => {
-            console.log("Updated", res)
-            this.props.onAlert("Created certification.", 'success')
-          }))
-          .catch(err => {
-            console.log(err)
-            this.props.onAlert("Failed to create certification.", 'error')
-          })
-      }
-
-    } else {
-      console.log("Owner and operator cannot be the same")
-      this.props.onAlert("Owner and operator cannot be the same", 'error')
-    }
+    const res = await CertAgreementNotes.onUpdateCertification(owner, operator, responsible, this.state.dairy_id)
+    if (res.error) return this.props.onAlert('Error updating cert', 'error')
+    this.props.onAlert('Updated cert!', 'success')
   }
 
   searchByPK(list, id) {

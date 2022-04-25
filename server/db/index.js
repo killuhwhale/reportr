@@ -681,12 +681,8 @@ module.exports = {
       callback
     )
   },
-  getTSVs: (dairy_id, tsvType, callback) => {
-    return pool.query(
-      "SELECT * FROM TSVs where dairy_id = $1 and tsvType = $2",
-      [dairy_id, tsvType],
-      callback
-    )
+  getTSVs: (dairy_id, tsvType) => {
+    return queryPromiseByValues("SELECT * FROM TSVs where dairy_id = $1 and tsvType = $2", [dairy_id, tsvType])
   },
   rmTSV: (id, callback) => {
     return pool.query(
@@ -917,20 +913,20 @@ module.exports = {
 
       FROM field_crop_app_process_wastewater fcapww
       
-      LEFT JOIN field_crop_app fca
+      JOIN field_crop_app fca
       ON fca.pk = fcapww.field_crop_app_id
 
-      LEFT JOIN field_crop_app_process_wastewater_analysis fcapwwa
+      JOIN field_crop_app_process_wastewater_analysis fcapwwa
       ON fcapwwa.pk = fcapww.field_crop_app_process_wastewater_analysis_id
       
-      LEFT JOIN field_crop fc
+      JOIN field_crop fc
       ON fc.pk = fca.field_crop_id
 
       
-      LEFT JOIN fields f
+      JOIN fields f
       ON f.pk = fc.field_id
       
-      LEFT JOIN crops c
+      JOIN crops c
       ON c.pk = fc.crop_id
       WHERE 
       fcapww.dairy_id = %L
@@ -2304,19 +2300,19 @@ module.exports = {
 
     FROM export_manifest em
 
-    LEFT JOIN export_contact ec
+    JOIN export_contact ec
     ON ec.pk = em.export_contact_id
     
-    LEFT JOIN operators op
+    JOIN operators op
     ON op.pk = em.operator_id
     
-    LEFT JOIN export_dest ed
+    JOIN export_dest ed
     ON ed.pk = em.export_dest_id
     
-    LEFT JOIN export_recipient er
+    JOIN export_recipient er
     ON er.pk = ed.export_recipient_id
 
-    LEFT JOIN export_hauler eh
+    JOIN export_hauler eh
     ON eh.pk = em.export_hauler_id
 
 
@@ -2493,34 +2489,42 @@ module.exports = {
       owner_id = $1,
       operator_id = $2,
       responsible_id = $3
-      WHERE pk=$4`,
+      WHERE dairy_id=$4`,
       values,
       callback
     )
   },
-  searchCertification: (dairy_id, callback) => {
-    return pool.query(
-      `SELECT 
-      c.pk,
-      c.owner_id,
-      c.operator_id,
-      c.responsible_id,
+  searchCertification: (dairy_id) => {
+    return queryPromiseByValues(`
+    SELECT 
+    c.pk,
+    c.owner_id,
+    c.operator_id,
+    c.responsible_id,
+  
+    owner.title as ownertitle,
+    operator.title as operatortitle
+
+    FROM certification c
+
+    LEFT JOIN operators owner
+    ON owner.pk = c.owner_id
     
-      owner.title as ownertitle,
-      operator.title as operatortitle
+    LEFT JOIN operators operator
+    ON operator.pk = c.operator_id
 
-      FROM certification c
-
-      LEFT JOIN operators owner
-      ON owner.pk = c.owner_id
-      
-      LEFT JOIN operators operator
-      ON operator.pk = c.operator_id
-
-      where c.dairy_id = $1`,
-      [dairy_id],
-      callback
-    )
+    where c.dairy_id = $1`,
+      [dairy_id])
+  },
+  searchNote: (dairy_id) => {
+    return queryPromiseByValues(`
+    SELECT * FROM note WHERE dairy_id = $1`,
+      [dairy_id])
+  },
+  searchAgreement: (dairy_id) => {
+    return queryPromiseByValues(`
+    SELECT * FROM agreement WHERE dairy_id = $1`,
+      [dairy_id])
   },
 
 

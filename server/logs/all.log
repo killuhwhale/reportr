@@ -2770,3 +2770,192 @@
 {"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
 {"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
 {"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1767)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1795)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:120) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:121)","service":"user-service","tsvType":"WW Exports","uploadedFilename":"WW Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1767)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1687)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1795)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1687)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1687)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1795)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:120) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:121)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1767)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1795)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1767)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1687)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1687)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1795)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:120) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:121)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1687)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1767)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1795)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1767)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1687)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1795)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:120) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:121)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1767)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1795)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1687)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1767)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1687)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1795)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:120) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:121)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1767)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1795)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1687)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"315","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1767)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:116)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}

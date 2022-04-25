@@ -12,10 +12,11 @@ import AddParcelModal from "../Modals/addParcelModal"
 import AddFieldModal from "../Modals/addFieldModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 
-import { get, post } from "../../utils/requests"
+import { post } from "../../utils/requests"
 import { AddCircleOutline, ImportExport } from '@material-ui/icons'
 import { naturalSortBy } from '../../utils/format'
 import { Field } from '../../utils/fields/fields'
+import { Parcels } from '../../utils/parcels/parcels'
 
 class ParcelView extends Component {
   constructor(props) {
@@ -63,16 +64,8 @@ class ParcelView extends Component {
     })
   }
   updateParcelNumbers() {
-    console.log("Send Parcels for Update")
-    console.log(this.state.curUpdateParcels)
-    let updates = []
-    Object.keys(this.state.curUpdateParcels).map((parcel_pk, i) => {
-      updates.push(post(
-        `${this.props.BASE_URL}/api/parcels/update`,
-        {
-          data: { ...this.state.curUpdateParcels[parcel_pk], dairy_id: this.state.dairy.pk }
-        }
-      ))
+    let updates = Object.keys(this.state.curUpdateParcels).map((parcel_pk, i) => {
+      updates.push(Parcels.updateParcel(this.state.curUpdateParcels[parcel_pk], this.state.dairy.pk))
     })
 
     Promise.all(updates)
@@ -119,13 +112,11 @@ class ParcelView extends Component {
       })
   }
 
-  getAllFieldParcels() {
-    get(`${this.props.BASE_URL}/api/field_parcel/${this.state.dairy.pk}`)
-      .then(res => {
-        // console.log(res)
-        this.setState({ field_parcels: res })
-      })
-      .catch(err => { console.log(err) })
+  async getAllFieldParcels() {
+    const fieldParcels = await Parcels.getFieldParcels(this.state.dairy.pk)
+    if (fieldParcels.error) return this.props.onAlert(fieldParcels.error, 'error')
+    console.log("FieldPArcels: ", fieldParcels)
+    this.setState({ field_parcels: fieldParcels })
   }
 
   toggleShowJoinFieldParcelModal(val) {
@@ -137,28 +128,16 @@ class ParcelView extends Component {
     console.log(name, value)
     this.setState({ [name]: value })
   }
-  createJoinFieldParcel() {
+  async createJoinFieldParcel() {
     let field_id = this.state.fields[this.state.curJoinFieldIdx].pk
     let parcel_id = this.state.parcels[this.state.curJoinParcelIdx].pk
+    const res = await Parcels.createFieldParcel(field_id, parcel_id, this.state.dairy.pk)
+    this.toggleShowJoinFieldParcelModal(false)
 
-    post(`${this.props.BASE_URL}/api/field_parcel/create`, {
-      dairy_id: this.state.dairy.pk,
-      field_id: field_id,
-      parcel_id: parcel_id
-    })
-      .then(res => {
-        this.toggleShowJoinFieldParcelModal(false)
-        if (res['test']) {
-          this.props.onAlert('Error, duplicate entry.', 'error')
-          return
-        }
-        this.getAllFieldParcels()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log(err)
-        this.props.onAlert('Failed to create!', 'error')
-      })
+    if (res.error) return this.props.onAlert(res.error, 'error')
+    this.getAllFieldParcels()
+    this.props.onAlert('Created Field Parcel!', 'success')
+
   }
 
 
@@ -175,14 +154,14 @@ class ParcelView extends Component {
     this.setState({ showDeleteFieldModal: true, curDelField: field })
   }
 
-  deleteParcel() {
+  async deleteParcel() {
     console.log("Deleting parcel", this.state.curDelParcel)
-    post(`${this.props.BASE_URL}/api/parcels/delete`, { pk: this.state.curDelParcel.pk, dairy_id: this.state.dairy.pk })
-      .then(res => {
-        console.log(res)
-        this.props.onParcelDelete()
-        this.toggleDeleteParcelModal(false)
-      })
+    const res = await Parcels.deleteParcel(this.state.curDelParcel.pk, this.state.dairy.pk)
+    this.toggleDeleteParcelModal(false)
+
+    if (res.error) return this.props.onAlert(res.error, 'error')
+    this.props.onParcelDelete()
+
   }
 
   deleteField() {
@@ -213,20 +192,13 @@ class ParcelView extends Component {
   }
 
 
-  createParcel(pnumber) {
-    post(`${this.props.BASE_URL}/api/parcels/create`, {
-      pnumber, dairy_id: this.state.dairy.pk
-    })
-      .then(res => {
-        this.toggleParcelModal(false)
-        this.props.getAllParcels()
-        this.props.onAlert('Created parcel!', 'success')
-      })
-      .catch(err => {
-        console.log(err)
-        this.toggleParcelModal(false)
-        this.props.onAlert('Failed creating parcel!', 'error')
-      })
+  async createParcel(pnumber) {
+    const res = await Parcels.createParcel(pnumber, this.state.dairy.pk)
+    this.toggleParcelModal(false)
+    if (res.error) return this.props.onAlert(res.error, 'error')
+
+    this.props.getAllParcels()
+    this.props.onAlert('Created parcel!', 'success')
   }
 
   createField(field) {

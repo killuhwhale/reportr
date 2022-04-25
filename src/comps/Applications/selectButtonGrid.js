@@ -57,9 +57,6 @@ const renderCropButtons = (appEventObj, viewFieldKey, that) => {
             <Grid item xs={12}><Typography variant='h6'>Plant dates</Typography> </Grid>
             {
                 Object.keys(appEventObj[viewFieldKey]).sort(naturalSort).map(key => {
-                    console.log("Raw key value: ", key)
-
-                    console.log("Nesting.... Nested Key", key, typeof (key), key.toLocaleString(),)
                     const dateKey = key.indexOf("T") > 0 ? formatDate(key.split("T")[0]) : ''
 
                     return (

@@ -123,6 +123,7 @@ const naturalCollator = new Intl.Collator(undefined, {
 })
 
 const splitDate = (date) => {
+  if (date == undefined) return ''
   try {
     const ans = date.split('T')[0]
     if (ans)

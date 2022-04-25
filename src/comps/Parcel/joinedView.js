@@ -6,9 +6,8 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import Delete from '@material-ui/icons/Delete'
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { post } from "../../utils/requests"
 import { naturalSortByKeys } from '../../utils/format'
-
+import { Parcels } from '../../utils/parcels/parcels'
 
 class JoinedView extends Component {
   constructor(props) {
@@ -37,17 +36,14 @@ class JoinedView extends Component {
     })
   }
 
-  deleteJoinedFieldParcel() {
+  async deleteJoinedFieldParcel() {
     if (Object.keys(this.state.curDeleteFieldParcel).length > 0) {
       let pk = this.state.curDeleteFieldParcel.pk
-      post(`${this.props.BASE_URL}/api/field_parcel/delete`, { pk, dairy_id: this.state.dairy.pk })
-        .then(res => {
-          this.toggleDeletejJoinFieldParcel(false)
-          this.props.onDelete()
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      const res = await Parcels.deleteFieldParcel(pk, this.state.dairy.pk)
+      this.toggleDeletejJoinFieldParcel(false)
+      if (res.error) return this.props.onAlert(res.error, 'error')
+      this.props.onDelete()
+
     }
   }
 

@@ -1,11 +1,10 @@
 import { Component } from 'react'
-import { get } from '../../utils/requests'
 import { Grid, Typography, withTheme } from '@material-ui/core'
 import { getNutrientBudgetInfo } from '../Dairy/pdfDB'
+import { createBarChart, barChartConfig } from '../Dairy/pdfCharts'
 import { withRouter } from "react-router-dom"
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import { formatDate, formatFloat, groupByKeys, naturalSort, naturalSortBy } from "../../utils/format"
-import { createBarChart, barChartConfig } from '../Dairy/pdfCharts'
 import { opArrayByPos, toFloat } from '../../utils/convertCalc';
 import { withStyles } from '@material-ui/styles'
 

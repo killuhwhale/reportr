@@ -11,7 +11,6 @@ const db = require('./db/index')
 const { ALLOWED_ORIGINS, REQUEST_LIMIT, FILE_SIZE_LIMIT } = require("./specific")
 
 
-
 // Setup
 app.use(express.json({ limit: REQUEST_LIMIT }))
 app.use(bodyParser.raw({ limit: FILE_SIZE_LIMIT })) // Sneding TSV to server
@@ -35,8 +34,9 @@ app.use(cors({
 const accountsAPI = require(`./accounts/account`)(app);
 const companyAPI = require(`./company/company`)(app);
 const companyLogoAPI = require(`./logo/logo`)(app);
+const filesAPI = require(`./files/files`)(app);
 const annualReportDataAPI = require(`./pdf/annualReportData`)(app);
-const annualReportPDFAPI = require(`./pdf/pdf`)(app);
+const annualReportPDFAPI = require(`./pdf/annualReportPDF`)(app);
 const tsvAPI = require(`./tsv/serverTsv`)(app);
 const API = require(`./dairy/dairy`)(app);
 

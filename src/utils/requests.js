@@ -83,7 +83,8 @@ const getFile = (url) => {
       headers: {
         "Content-Type": "application/pdf",
         "Authorization": `Bearer ${token}`,
-        "Authorization-CompanyID": `ID ${company_id}`
+        "Authorization-CompanyID": `ID ${company_id}`,
+        'cache': 'no-cache'
       },
     })
       .then(res => res.arrayBuffer())

@@ -128,7 +128,8 @@ class HarvestView extends Component {
   }
   onDeleteFieldCropHarvest(harvest) {
     console.log("Deleting Field Crop Harvest", harvest)
-    this.setState({ delFieldCropHarvestObj: harvest, showDeleteFieldCropHarvestModal: true })
+    const formattedHarvestDate = formatDate(splitDate(harvest.harvest_date))
+    this.setState({ delFieldCropHarvestObj: { ...harvest, harvest_date: formattedHarvestDate }, showDeleteFieldCropHarvestModal: true })
   }
   deleteFieldCropHarvest() {
     console.log("Deleting field crop harvest obj", this.state.delFieldCropHarvestObj)
@@ -179,7 +180,7 @@ class HarvestView extends Component {
           modalText={`Are you sure you want to delete: 
             ${this.state.delFieldCropHarvestObj.fieldtitle} - 
             ${this.state.delFieldCropHarvestObj.croptitle} - 
-            ${formatDate(splitDate(this.state.delFieldCropHarvestObj.harvest_date))}
+            ${this.state.delFieldCropHarvestObj.harvest_date}
           `}
           onAction={() => {
             this.deleteFieldCropHarvest()

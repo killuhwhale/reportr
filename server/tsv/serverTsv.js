@@ -28,6 +28,9 @@ const DRAIN = 'Tile Drainage Systems'
 const DISCHARGE = 'Discharges'
 const MANURE = 'SM Exports'
 const WASTEWATER = 'WW Exports'
+
+
+
 const SHEET_NAMES = [
     HARVEST, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, MANURE, WASTEWATER,
 ]
@@ -136,6 +139,18 @@ module.exports = (app) => {
         }
     })
 }
+module.exports.SHEET_NAMES = SHEET_NAMES
+module.exports.HARVEST = HARVEST
+module.exports.PROCESS_WASTEWATER = PROCESS_WASTEWATER
+module.exports.FRESHWATER = FRESHWATER
+module.exports.SOLIDMANURE = SOLIDMANURE
+module.exports.FERTILIZER = FERTILIZER
+module.exports.SOIL = SOIL
+module.exports.PLOWDOWN_CREDIT = PLOWDOWN_CREDIT
+module.exports.DRAIN = DRAIN
+module.exports.DISCHARGE = DISCHARGE
+module.exports.MANURE = MANURE
+module.exports.WASTEWATER = WASTEWATER
 
 const toFloat = (num) => {
     const float = num && typeof (num) === typeof ('') && num.length > 0 ? parseFloat(num.replaceAll(',', '')) : typeof (num) === typeof (0) || typeof (num) === typeof (0.0) ? num : 0
@@ -292,7 +307,7 @@ const createHeaderMap = (headerRow, indexAsKey = true) => {
     })
     return header
 }
-
+module.exports.createHeaderMap = createHeaderMap
 const mapsColToTemplate = (cols, headerMap, template) => {
     const rowTemplate = { ...template }
     cols.forEach((item, i) => {

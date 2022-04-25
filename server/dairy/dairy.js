@@ -186,16 +186,13 @@ module.exports = (app) => {
             res.json({ "error": "Inserted TSV unsuccessful", existsErr: err.code === '23505' });
         })
     });
-    app.get("/api/tsv/:dairy_id/:tsvType", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        db.getTSVs(req.params.dairy_id, req.params.tsvType,
-            (err, result) => {
-                if (!err) {
+    app.get("/api/tsv/:dairy_id/:tsvType", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.getTSVs(req.params.dairy_id, req.params.tsvType))
+        } catch (e) {
+            return res.json({ error: "Get all TSVs unsuccessful", err: e })
+        }
 
-                    res.json(result.rows)
-                    return;
-                }
-                res.json({ "error": "Get all TSVs unsuccessful" });
-            })
     });
     app.post("/api/tsv/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting TSV w/ pk: ", req.body.pk)
@@ -384,7 +381,7 @@ module.exports = (app) => {
         const {
             street, cross_street, county, city, city_state, title, city_zip, basin_plan, began, period_start, period_end, dairy_id
         } = req.body
-        const updated = await updateDairy(street, cross_street, county, city, city_state, title, city_zip, basin_plan, began, period_start, period_end, dairy_id)
+        const updated = await updateDairy(street, cross_street, county, city, city_state, city_zip, title, basin_plan, began, period_start, period_end, dairy_id)
 
         if (updated.error) return res.json({ error: updated.error })
         return res.json(updated)
@@ -460,7 +457,7 @@ module.exports = (app) => {
         db.updateParcel([pnumber, pk], (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Updated parcel successfully" });
+                res.json({ data: "Updated parcel successfully" });
                 return;
             }
             console.log(err)
@@ -472,7 +469,7 @@ module.exports = (app) => {
         db.rmParcel(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted parcel successfully" });
+                res.json({ data: "Deleted parcel successfully" });
                 return;
             }
             console.log(err)
@@ -500,7 +497,7 @@ module.exports = (app) => {
         db.rmFieldParcel(pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_parcel successfully" });
+                res.json({ data: "Deleted field_parcel successfully" });
                 return;
             }
             console.log(err)
@@ -2550,12 +2547,12 @@ module.exports = (app) => {
         const {
             owner_id,
             operator_id,
-            responsible_id, pk
+            responsible_id, dairy_id
         } = req.body
         db.updateCertification([
             owner_id,
             operator_id,
-            responsible_id, pk
+            responsible_id, dairy_id
         ], (err, result) => {
 
             if (!err) {
@@ -2567,313 +2564,29 @@ module.exports = (app) => {
         })
     });
 
-    app.get("/api/search/certification/:no_val/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
-        console.log("Searching for certification!@#!#%&^!%#^&@%^&@%&^@%$&^%@&")
-        console.log("W/ dairy id: ", req.params.dairy_id)
-        db.searchCertification(req.params.dairy_id,
-            (err, result) => {
-                if (!err) {
-                    if (result.rows[0]) {
-                        return res.json(result.rows[0])
-                    }
-                    return res.json({})
-                }
-                console.log('Error searching for certifications ', err)
-                res.json({ "error": "Search all certifications unsuccessful" });
-            })
+    app.get("/api/search/certification/:no_val/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.searchCertification(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Search all certifications unsuccessful" });
+        }
     });
 
+    app.get("/api/search/note/:no_val/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.searchNote(req.params.dairy_id))
+        } catch (e) {
+            res.json({ "error": "Search all notes unsuccessful" });
+        }
+    });
 
-
-
-
-
-    /** Not needed anymore, used during client side TSV upload lazyGets
-     * 
-     * 
-     */
-    // Search used for lazy gets. 
-    // app.get("/api/search/fields/:title/:dairy_id", (req, res) => {
-    //     db.searchFieldsByTitle([req.params.title, req.params.dairy_id],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Get all fields by Title unsuccessful" });
-    //         })
-    // });
-    // app.get("/api/search/parcels/:pnumber/:dairy_id", (req, res) => {
-    //     db.searchParcelsByPnum([req.params.pnumber, req.params.dairy_id],
-    //         (err, result) => {
-    //             if (!err) {
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Get all parcels by pnumber unsuccessful" });
-    //         })
-    // });
-    // app.get("/api/search/field_crop/:field_id/:crop_id/:plant_date/:dairy_id", (req, res) => {
-    //     db.searchFieldCropsByFieldCropPlantdate([
-    //         req.params.field_id, req.params.crop_id, req.params.plant_date],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Get all searchFieldCropsByFieldCropPlantdate unsuccessful" });
-    //         })
-    // });
-    // app.get("/api/search/field_crop_app/:field_crop_id/:app_date/:app_method/:dairy_pk", (req, res) => {
-    //     db.searchFieldCropApplicationsByFieldCropIDAppDate(
-    //         [
-    //             req.params.field_crop_id,
-    //             req.params.app_date,
-    //             req.params.app_method,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all searchFieldCropApplicationsByFieldCropIDAppDate unsuccessful" });
-    //         })
-    // });
-    // app.get("/api/search/field_crop_app_process_wastewater_analysis/:sample_date/:sample_desc/:dairy_pk", (req, res) => {
-    //     db.searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc(
-    //         [
-    //             req.params.sample_date,
-    //             req.params.sample_desc,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all searchFieldCropAppProcessWastewaterAnalysisBySampleDateSampleDesc unsuccessful" });
-    //         })
-    // });
-    // app.get("/api/search/field_crop_app_freshwater_source/:src_desc/:src_type/:dairy_pk", (req, res) => {
-    //     db.searchFieldCropAppFreshwaterSource(
-    //         [
-    //             req.params.src_desc,
-    //             req.params.src_type,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all searchFieldCropAppFreshwaterSource unsuccessful" });
-    //         })
-    // });
-    // app.get("/api/search/field_crop_app_freshwater_analysis/:sample_date/:sample_desc/:src_of_analysis/:fresh_water_source_id/:dairy_pk", (req, res) => {
-    //     db.searchFieldCropAppFreshwaterAnalysis(
-    //         [
-    //             req.params.sample_date,
-    //             req.params.sample_desc,
-    //             req.params.src_of_analysis,
-    //             req.params.fresh_water_source_id,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all searchFieldCropAppFreshwaterAnalysis unsuccessful" });
-    //         })
-    // });
-    // app.get("/api/search/field_crop_app_solidmanure_analysis/:sample_date/:sample_desc/:src_of_analysis/:dairy_pk", (req, res) => {
-    //     db.searchFieldCropAppSolidmanureAnalysis(
-    //         [
-    //             req.params.sample_date,
-    //             req.params.sample_desc,
-    //             req.params.src_of_analysis,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all searchFieldCropAppSolidmanureAnalysis unsuccessful" });
-    //         })
-    // });
-    // // import_date, material_type, import_desc
-    // app.get("/api/search/nutrient_import/:import_date/:material_type/:import_desc/:dairy_pk", (req, res) => {
-    //     db.searchNutrientImport(
-    //         [
-    //             req.params.import_date,
-    //             req.params.material_type,
-    //             req.params.import_desc,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all nutrient_import unsuccessful" });
-    //         })
-    // });
-
-    // //Exports 
-    // // title, primary_phone
-    // app.get("/api/search/operators/:title/:primary_phone/:dairy_pk", (req, res) => {
-    //     db.searchOperators(
-    //         [
-    //             req.params.title,
-    //             req.params.primary_phone,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all operators unsuccessful" });
-    //         })
-    // });
-    // // title, first_name, primary_phone, street, city_zip
-    // app.get("/api/search/export_hauler/:title/:first_name/:primary_phone/:street/:city_zip/:dairy_pk", (req, res) => {
-    //     db.searchExportHauler(
-    //         [
-    //             req.params.title,
-    //             req.params.first_name,
-    //             req.params.primary_phone,
-    //             req.params.street,
-    //             req.params.city_zip,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all export_hauler unsuccessful" });
-    //         })
-    // });
-    // app.get("/api/search/export_contact/:first_name/:primary_phone/:dairy_pk", (req, res) => {
-    //     db.searchExportContact(
-    //         [
-    //             req.params.first_name,
-    //             req.params.primary_phone,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all searchExportContact unsuccessful" });
-    //         })
-    // });
-
-    // //title, street, city_zip, primary_phone
-    // app.get("/api/search/export_recipient/:title/:street/:city_zip/:primary_phone/:dairy_pk", (req, res) => {
-    //     db.searchExportRecipient(
-    //         [
-    //             req.params.title,
-    //             req.params.street,
-    //             req.params.city_zip,
-    //             req.params.primary_phone,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all searchExportRecipient unsuccessful" });
-    //         })
-    // });
-
-    // // export_recipient_id, pnumber, street, city_zip
-    // app.get("/api/search/export_dest/:export_recipient_id/:pnumber/:street/:city_zip/:dairy_pk", (req, res) => {
-    //     db.searchExportDest(
-    //         [
-    //             req.params.export_recipient_id,
-    //             req.params.pnumber === "*" ? "" : req.params.pnumber,
-    //             req.params.street,
-    //             req.params.city_zip,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all searchExportDest unsuccessful" });
-    //         })
-    // });
-    // ////////////////////////////////
-
-    // app.get("/api/search/field_crop_app_soil_analysis/:field_id/:sample_date/:sample_desc/:dairy_pk", (req, res) => {
-    //     db.searchFieldCropApplicationSoilAnalysis(
-    //         [
-    //             req.params.field_id,
-    //             req.params.sample_date,
-    //             req.params.sample_desc,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all searchFieldCropApplicationSoilAnalysis unsuccessful" });
-    //         })
-    // });
-
-
-    // app.get("/api/search/drain_source/:src_desc/:dairy_pk", (req, res) => {
-    //     db.searchDrainSource(
-    //         [
-    //             req.params.src_desc,
-    //             req.params.dairy_pk,
-    //         ],
-    //         (err, result) => {
-    //             if (!err) {
-
-    //                 res.json(result.rows)
-    //                 return;
-    //             }
-    //             console.log(err)
-    //             res.json({ "error": "Search all drain_source unsuccessful" });
-    //         })
-    // });
-
+    app.get("/api/search/agreement/:no_val/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
+        try {
+            return res.json(await db.searchAgreement(req.params.dairy_id))
+        } catch (e) {
+            console.log('Search all agreements unsuccessful', e)
+            res.json({ "error": "Search all agreements unsuccessful", err: e });
+        }
+    });
 
 }

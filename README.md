@@ -15,6 +15,12 @@
     pass: mostdope
     // sudo kill -9 $(sudo lsof -t -i:3001)
 
+  # NodeJS Version
+  - Current:          Local v15.8.0 / Digital ocean "node": "15.x"
+  - Chartjs:          15.x req
+  - Null coalescing:  14.x min
+  - 
+
 # Deployment:
   Backend:
     github -> digital ocean
@@ -74,52 +80,70 @@ Github is private, the only passwords visible in code is for the DB and that is 
 # Testing:
   # Current Test Converagessss
   Create Accounts
-    ✓ Create 2 companies and admins (419 ms)
-    ✓ Create READ, WRITE, DELETE Accounts with admin For First Company (265 ms)
+    ✓ Create 2 companies and admins (355 ms)
+    ✓ Create READ, WRITE, DELETE Accounts with admin For First Company (326 ms)
   Create 2 Dairies for ea  company
-    ✓ Create Dairies (101 ms)
+    ✓ Create Dairies (141 ms)
   Create and Update a herd for a company
-    ✓ Insert and Upate Herd Information (171 ms)
+    ✓ Insert and Upate Herd Information (236 ms)
   Test Accounts permissions
-    ✓ ADMIN Role Cannot Create Company (79 ms)
-    ✓ WRITE Role Cannot Create Company (66 ms)
-    ✓ READ Role Cannot Create Company (64 ms)
-    ✓ DELETE Role Cannot Create Company (65 ms)
-    ✓ WRITE Role can create company data (78 ms)
-    ✓ READ Role can access company data (69 ms)
-    ✓ DELETE Roles can remove company data (88 ms)
-    ✓ Role permission sub/ super role check (294 ms)
-    ✓ Test that non-hacker roles cannot create Admin accounts  (273 ms)
-    ✓ Test Roles cant alter other accounts (308 ms)
-    ✓ Test Accounts...  (340 ms)
+    ✓ ADMIN Role Cannot Create Company (95 ms)
+    ✓ WRITE Role Cannot Create Company (79 ms)
+    ✓ READ Role Cannot Create Company (78 ms)
+    ✓ DELETE Role Cannot Create Company (81 ms)
+    ✓ WRITE Role can create company data (92 ms)
+    ✓ READ Role can access company data (83 ms)
+    ✓ DELETE Roles can remove company data (95 ms)
+    ✓ Role permission sub/ super role check (363 ms)
+    ✓ Test that non-hacker roles cannot create Admin accounts  (341 ms)
+    ✓ Test Roles cant alter other accounts (405 ms)
+    ✓ Test Accounts...  (324 ms)
   Test Accounts cross-company restrictions
-    ✓ READ role can't access other company data (65 ms)
-    ✓ WRITE role can't create other company data (67 ms)
-    ✓ DELETE role can't remove other company data (70 ms)
+    ✓ READ role can't access other company data (87 ms)
+    ✓ WRITE role can't create other company data (86 ms)
+    ✓ DELETE role can't remove other company data (96 ms)
   Test middleware verifyUserFromCompanyBy*
-    ✓ Test *ByDairyBaseID (72 ms)
-    ✓ Test *ByCompanyID (72 ms)
-    ✓ Test *ByDairyID (71 ms)
-    ✓ Test *ByUserID (72 ms)
+    ✓ Test *ByDairyBaseID (124 ms)
+    ✓ Test *ByCompanyID (94 ms)
+    ✓ Test *ByDairyID (92 ms)
+    ✓ Test *ByUserID (103 ms)
   Test upload XLSX
-    ✓ Upload XLSX. (241 ms)
+    ✓ Upload XLSX and Create Parcels, Field Parcels, Agreements, Notes, Certificaiton. (400 ms)
   Test pdfDB
-    ✓ A. LIST OF LAND APPLICATION AREAS. (6 ms)
-    ✓ B. APPLICATION AREAS Crops and Harvests. (3 ms)
+    ✓ A. DAIRY FACILITY INFORMATION (Address and Parcels) (6 ms)
+    ✓ BC. Operators/ Owners (2 ms)
+    ✓ AB. AVAILABLE NUTRIENTS HERD INFORMATION:MANURE GENERATED (1 ms)
+    ✓ C. Process Wastewater Generated (3 ms)
+    ✓ F. NUTRIENT IMPORTS (1 ms)
+    ✓ G. NUTRIENT EXPORTS  (2 ms)
+    ✓ A. LIST OF LAND APPLICATION AREAS. (10 ms)
+    ✓ B. APPLICATION AREAS Crops and Harvests. (1 ms)
     ✓ Nutrient Budget A. LAND APPLICATIONS are calculated and totaled correctly. (4 ms)
-    ✓ Nutrient Budget B, NaprbalABC(Summary) Info is calculated accurately. (18 ms)
-    ✓ AB. HERD INFORMATION:MANURE GENERATED
-    ✓ C. Process Wastewater Generated (1 ms)
-    ✓ F. NUTRIENT IMPORTS
-    ✓ G. NUTRIENT EXPORTS  (1 ms)
-    ✓ A. NUTRIENT ANALYSES  (2 ms)
-    ✓ ABC. Exception Reporting 
+    ✓ Nutrient Budget B(Single for ea field), NaprbalABC(Summary/ Charts) Info is calculated accurately. (7 ms)
+    ✓ ABCDEF. NUTRIENT ANALYSES  (3 ms)
+    ✓ ABC. Exception Reporting / Discharges
+    ✓ AB. NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS
+    ✓ A. ADDITIONAL NOTES
+    ✓ A. CERTIFICATION (1 ms)
   
   # Missing Crucial Tests   
    - getReportingPeriodDays
+   
 
 
 # Todo:
+
+  # Tests
+    
+    - Reporting period
+      - Unit test, ensure it updates correctly....
+    - Logo upload 
+
+
+  # src/pdfDB
+   - getAvailableNutrientsG 
+    - Create End point to fetch data and format instead of multiple requests
+
   # Download Zip File with PDF report & All TSVs for that Dairy.
     - Process
       1. User sends request with dairy_id..... 
@@ -197,7 +221,12 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 # Problems   
 
-  # Generate PDF if herds are empty, pdf DD has an error.
+
+  # Notes on PDF are not showing up....
+    - Notes, Certification, and Agreements are not shwoing in PDF report....
+    - Client side is working, data is in db but somewhere from db -> PDF it is not showing.
+
+  # Generate PDF if herds are empty, pdf DD has an error. (This might be fixed with server side....)
     - Just check the doc and show an empty value if herds are not there...
 
   - Upload TSV process 

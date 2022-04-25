@@ -11,11 +11,11 @@ import { CloudUpload } from '@material-ui/icons'
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { get, post, postXLSX, getImage, getFile } from '../../utils/requests'
+import { get, postXLSX, getFile } from '../../utils/requests'
 import ParcelAndFieldView from "../Parcel/parcelAndFieldView"
 import OperatorView from "../Operators/operatorView"
 
-import { generatePDF } from './pdfCharts';
+
 import ActionCancelModal from "../Modals/actionCancelModal"
 import UploadTSVModal from "../Modals/uploadTSVModal"
 
@@ -27,7 +27,8 @@ import XLSX from 'xlsx'
 import { BASE_URL } from '../../utils/environment';
 import { Field } from '../../utils/fields/fields'
 import { Dairy } from '../../utils/dairy/dairy';
-import { auth } from '../../utils/users';
+import { Parcels } from '../../utils/parcels/parcels'
+import { Files } from '../../utils/files/files';
 
 const ReportingPeriod = (props) => {
   // onUpdate
@@ -118,13 +119,11 @@ class DairyTab extends Component {
   }
 
 
-  getAllParcels() {
-    get(`${this.props.BASE_URL}/api/parcels/${this.state.dairy.pk}`)
-      .then(res => {
-        console.log(res)
-        if (res && res.length > 0) this.setState({ parcels: res })
-      })
-      .catch(err => { console.log(err) })
+  async getAllParcels() {
+    const res = await Parcels.getParcels(this.state.dairy.pk)
+    if (res.error) return this.props.onAlert(res.error, 'error')
+    this.setState({ parcels: res })
+
   }
   getAllFields() {
     Field.getField(this.state.dairy.pk)
@@ -133,22 +132,6 @@ class DairyTab extends Component {
         this.setState({ fields: res })
       })
       .catch(err => { console.log(err) })
-  }
-
-  generatePDF() {
-    let area = document.getElementById('chartArea')
-    generatePDF(area, this.state.dairy.pk, auth.currentUser.company_id)
-      .then(res => {
-        // Peformance tests, draw red background when data is done loading.
-        // Measure onClick event to red draw or alert() message appears.
-        // document.getElementById("genPDFBtn").style.backgroundColor = 'red'
-        console.log(res)
-        this.props.onAlert('Generating PDF!', 'success')
-      })
-      .catch(err => {
-        console.log(err)
-        this.props.onAlert('Information not found.', 'error')
-      })
   }
 
   confirmDeleteAllFromTable(val) {
@@ -240,6 +223,12 @@ class DairyTab extends Component {
     }
   }
 
+  async getFiles() {
+    const res = await Files.getFiles(this.state.dairy.pk)
+    console.log("FIles res: ", res)
+
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -270,13 +259,14 @@ class DairyTab extends Component {
                         <CloudUpload />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title='Get PDF'>
+                    <Tooltip title='Get Files'>
                       <IconButton color="secondary" variant="outlined"
-                        onClick={() => this.generateServerPDF()}
+                        onClick={() => this.getFiles()}
                       >
                         <CloudUpload />
                       </IconButton>
                     </Tooltip>
+
                     <UploadTSVModal
                       open={this.state.showUploadXLSX}
                       actionText="Add"
@@ -292,7 +282,7 @@ class DairyTab extends Component {
 
                   <Grid item xs={4} align='center'>
                     <Tooltip title="Generate Annual Report">
-                      <IconButton id='genPDFBtn' onClick={this.generatePDF.bind(this)} >
+                      <IconButton id='genPDFBtn' onClick={this.generateServerPDF.bind(this)} >
                         <AssessmentIcon color='primary' />
                       </IconButton>
                     </Tooltip>

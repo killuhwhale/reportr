@@ -7,13 +7,14 @@ import { HACKER_EMAIL, HACKER_PASSWORD } from '../../../specific'
 import { Company } from '../../../utils/company/company'
 import { Herds } from '../../../utils/herds/herds'
 import { Field } from '../../../utils/fields/fields'
-
+import { CertAgreementNotes } from '../../../utils/certAgreementNotes/certAgreementNotes'
+import { Dairy } from '../../../utils/dairy/dairy'
+import { Parcels } from '../../../utils/parcels/parcels'
 
 import { getAnnualReportData } from '../../../comps/Dairy/pdfDB'
 import { naturalSortBy, naturalSortByKeys, sortByKeys } from '../../../utils/format';
 
 import { BASE_URL } from "../../../utils/environment"
-import { Dairy } from '../../../utils/dairy/dairy';
 const dairy_id = 1
 const TEST_USER_EMAIL_A = 'z@g.com'
 const TEST_USER_PASSWORD_A = 'abc123'
@@ -439,11 +440,44 @@ describe('Test middleware verifyUserFromCompanyBy*', () => {
 
 // --------------- Upload XLSX and Test PDF report data calculations ---------------------------
 describe('Test upload XLSX', () => {
-    test('Upload XLSX.', async () => {
+    test('Upload XLSX and Create Parcels, Field Parcels, Agreements, Notes, Certificaiton.', async () => {
         try {
             let xlsxURL = `tsv/uploadXLSX/1`
             const data = fs.readFileSync('./src/tests/comps/Dairy/Test Sheet.xlsx').buffer
             const res = await postXLSX(`${BASE_URL}/${xlsxURL}`, data)
+
+            await Dairy.updateDairy('123 Fake St', 'Cross St', "Merced", 'Turlock', 'CA', '95382', 'Pharmz', 'Tulare River Basin', '1/1/2000', '1/1/2020', '12/31/2020', dairy_id)
+
+            // Insert Parcels - Create Parcel Util Class
+            // 1. user here to create a parcel for dairy
+            // Update test A land Applications to include parcel numbers on each field.
+            // 2. Replace existing parcel code with Class...
+            const fieldRes = await Field.getField(dairy_id)
+            const filteredFields = fieldRes.filter(field => field.title === 'Field 1')
+            await Parcels.createParcel('0000000000000420', dairy_id)
+            await Parcels.createFieldParcel(filteredFields[0].pk, 1, dairy_id)
+
+
+            // Lazyget - creates 
+            await CertAgreementNotes.getAgreements(dairy_id)
+            await CertAgreementNotes.getCertification(dairy_id)
+            await CertAgreementNotes.getNotes(dairy_id)
+
+            await CertAgreementNotes.onUpdateAgreement({
+                nmp_developed: true,
+                nmp_updated: true,
+                nmp_approved: false,
+                new_agreements: true,
+                pk: 1
+            }, dairy_id)
+            await CertAgreementNotes.onUpdateCertification({ pk: 1 }, {}, { pk: 1 }, dairy_id)
+            await CertAgreementNotes.onUpdateNote({
+                dairy_id,
+                note: 'No notes.'
+            }, dairy_id)
+
+
+
         } catch (e) {
             console.log("Upload XLSX error", e)
         }
@@ -462,6 +496,479 @@ describe('Test pdfDB', () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
         ARD = await getAnnualReportData(dairy_id)
+        console.log("ARD: ", ARD)
+    })
+
+    test('A. DAIRY FACILITY INFORMATION (Address and Parcels)', async () => {
+        // Get dairy info and check  address is good to go
+        // Insert dairy info and ({[{({[[{parcels}]]})}]}) before (just after uploading XLSX)
+        const { dairyInformationA } = ARD
+        console.log(dairyInformationA)
+
+        const expected = {
+            pk: 1,
+            dairy_base_id: 1,
+            reporting_yr: 2020,
+            period_start: '2020-01-01T08:00:00.000Z',
+            period_end: '2020-12-31T08:00:00.000Z',
+            street: '123 Fake St',
+            cross_street: 'Cross St',
+            county: 'Merced',
+            city: 'Turlock',
+            city_state: 'CA',
+            city_zip: '95382',
+            title: 'Pharmz',
+            basin_plan: 'Tulare River Basin',
+            began: '2000-01-01T08:00:00.000Z',
+            parcels: [{
+                "dairy_id": 1,
+                "pk": 1,
+                "pnumber": "0000000000000420",
+            }]
+        }
+
+        expect(dairyInformationA).toEqual(expected)
+    })
+    test('BC. Operators/ Owners', async () => {
+        // Check operator was created and has correct attrs, is_owner, is_operator, is_responsible
+        // Expecting Spencer Nylund, created for Exports Tab Upload 
+        const { dairyInformationB, dairyInformationC } = ARD
+        console.log(dairyInformationB)
+        console.log(dairyInformationC)
+
+
+        const expectedB = {
+            operators: [
+                {
+                    pk: 1,
+                    dairy_id: 1,
+                    title: 'Spencer Nylund',
+                    primary_phone: '(209) 634-7520',
+                    secondary_phone: '',
+                    street: 'P.O. Box 1029',
+                    city: 'Hilmar',
+                    city_state: 'CA',
+                    city_zip: '95324',
+                    is_owner: true,
+                    is_operator: true,
+                    is_responsible: true
+                }
+            ]
+        }
+
+        const expectedC = {
+            owners: [
+                {
+                    pk: 1,
+                    dairy_id: 1,
+                    title: 'Spencer Nylund',
+                    primary_phone: '(209) 634-7520',
+                    secondary_phone: '',
+                    street: 'P.O. Box 1029',
+                    city: 'Hilmar',
+                    city_state: 'CA',
+                    city_zip: '95324',
+                    is_owner: true,
+                    is_operator: true,
+                    is_responsible: true
+                }
+            ]
+        }
+
+        expect(dairyInformationB).toEqual(expectedB)
+        expect(dairyInformationC).toEqual(expectedC)
+
+    })
+
+    test('AB. AVAILABLE NUTRIENTS HERD INFORMATION:MANURE GENERATED', async () => {
+        // const { availableNutrientsAB } = await getAvailableNutrientsAB(dairy_id)
+        const { availableNutrientsAB } = ARD
+
+        Object.keys(availableNutrientsAB.herdInfo).map(key => {
+            if (isIDPK(key)) {
+                delete availableNutrientsAB.herdInfo[key]
+            }
+        })
+
+        const expectedResult = {
+            herdInfo: {
+                milk_cows: [1, 1, 2, 1, 1, 1],
+                dry_cows: [1, 1, 2, 1, 5000],
+                bred_cows: [1, 1, 2, 1, 1],
+                cows: [1, 1, 2, 1, 1],
+                calf_young: [1, 1, 2, 1],
+                calf_old: [1, 1, 2, 1],
+                p_breed: "Ayrshire", // Default option
+                p_breed_other: "",
+            },
+
+            herdCalc: ['67.83', '705.93', '101.02', '146.58', '702.72']
+        }
+
+        expect(availableNutrientsAB).toEqual(expectedResult)
+
+    })
+
+    test('C. Process Wastewater Generated', async () => {
+        const { availableNutrientsC } = ARD
+
+        availableNutrientsC
+        availableNutrientsC.applied = availableNutrientsC.applied.map(el => round(el, 3)),
+            availableNutrientsC.exported = availableNutrientsC.exported.map(el => round(el, 3)),
+            availableNutrientsC.imported = availableNutrientsC.imported.map(el => round(el, 3)),
+            availableNutrientsC.generated = availableNutrientsC.generated.map(el => round(el, 3))
+        const expectedResult = {
+            applied: [4860000, 18474.8286, 860.7433560000002, 16711.363200000003, 320658.29400000005].map(el => round(el, 3)),
+            exported: [840000, 3392.7432000000003, 504.0046200000001, 6988.770600000001, 61686.240000000005].map(el => round(el, 3)),
+            imported: [0, 0, 0, 0, 0].map(el => round(el, 3)),
+            generated: [5700000, 21867.571800000005, 1364.747976, 23700.1338, 382344.534].map(el => round(el, 3))
+        }
+
+        expect(availableNutrientsC).toEqual(expectedResult)
+    })
+
+    test('F. NUTRIENT IMPORTS', async () => {
+        // const { availableNutrientsF } = await getAvailableNutrientsF(dairy_id)
+        const { availableNutrientsF } = ARD
+
+        availableNutrientsF.dry.map(item => {
+            Object.keys(item).map(key => {
+                if (isIDPK(key)) {
+                    delete item[key]
+                }
+            })
+        })
+
+        availableNutrientsF.process.map(item => {
+            Object.keys(item).map(key => {
+                if (isIDPK(key)) {
+                    delete item[key]
+                }
+            })
+        })
+
+        availableNutrientsF.commercial.map(item => {
+            Object.keys(item).map(key => {
+                if (isIDPK(key)) {
+                    delete item[key]
+                }
+            })
+        })
+
+        const expectedResult = {
+            dry: [{
+                import_desc: 'UN32',
+                import_date: '2020-05-09T07:00:00.000Z',
+                material_type: 'Dry manure: Separator solids',
+                amount_imported: '41.61',
+                method_of_reporting: 'dry-weight',
+                moisture: '56.00',
+                n_con: '1.94',
+                p_con: '0.53',
+                k_con: '2.18',
+                salt_con: '0.00'
+            }],
+            process: [],
+            commercial: [{
+                import_desc: 'UN32',
+                import_date: '2020-05-09T07:00:00.000Z',
+                material_type: 'Commercial fertilizer/ Other: Solid commercial fertilizer',
+                amount_imported: '41.61',
+                method_of_reporting: 'dry-weight',
+                moisture: '0.00',
+                n_con: '32.00',
+                p_con: '0.00',
+                k_con: '0.00',
+                salt_con: '0.00'
+            }],
+            dryTotals: [710.3659199999998, 194.06904, 798.24624, 0],
+            processTotals: [0, 0, 0, 0],
+            commercialTotals: [26603.769600000003, 0, 0, 0],
+            total: [27314.135520000003, 194.06904, 798.24624, 0]
+        }
+
+        expect(availableNutrientsF).toEqual(expectedResult)
+    })
+
+    test('G. NUTRIENT EXPORTS ', async () => {
+        const { availableNutrientsG } = ARD
+
+        availableNutrientsG.dry.map(item => {
+            Object.keys(item).map(key => {
+                if (isIDPK(key)) {
+                    delete item[key]
+                }
+            })
+        })
+        availableNutrientsG.process.map(item => {
+            Object.keys(item).map(key => {
+                if (isIDPK(key)) {
+                    delete item[key]
+                }
+            })
+        })
+
+        availableNutrientsG.dry.sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled']))
+        availableNutrientsG.process.sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled']))
+        const expectedResult = {
+            dry: [{
+                last_date_hauled: '2020-03-05T08:00:00.000Z',
+                amount_hauled: 1898,
+                material_type: 'Dry manure: Corral solids',
+                amount_hauled_method: 'IDK boss',
+                reporting_method: 'dry-weight',
+                moisture: '56.00',
+                n_con_mg_kg: 19400,
+                p_con_mg_kg: 5280,
+                k_con_mg_kg: 21800,
+                tfs: '0.0000',
+                ec_umhos_cm: '0.0000',
+                salt_lbs_rm: null,
+                n_lbs_rm: null,
+                p_lbs_rm: null,
+                k_lbs_rm: null,
+                kn_con_mg_l: '0.0000',
+                nh4_con_mg_l: '0.0000',
+                nh3_con_mg_l: '0.0000',
+                no3_con_mg_l: '0.0000',
+                p_con_mg_l: '0.0000',
+                k_con_mg_l: '0.0000',
+                tds: '0',
+                pnumber: '',
+                dest_street: '23464 Turner Ave.',
+                dest_cross_street: '',
+                dest_county: 'Merced',
+                dest_city: 'Hilmar',
+                dest_city_state: 'CA',
+                dest_city_zip: '95324',
+                dest_type: 'Farmer',
+                recipient_title: 'Caetano Ranch',
+                recipient_primary_phone: '(209) 564-6329',
+                recipient_street: '23464 Turner Ave.',
+                recipient_cross_street: '',
+                recipient_county: 'Merced',
+                recipient_city: 'Hilmar',
+                recipient_city_state: 'CA',
+                recipient_city_zip: '95324',
+                contact_first_name: 'Spencer',
+                contact_primary_phone: '(209) 634-7520',
+                operator_title: 'Spencer Nylund',
+                operator_primary_phone: '(209) 634-7520',
+                operator_secondary_phone: '',
+                operator_street: 'P.O. Box 1029',
+                operator_city: 'Hilmar',
+                operator_city_state: 'CA',
+                operator_city_zip: '95324',
+                operator_is_owner: true,
+                operator_is_responsible: true,
+                hauler_title: 'Cardoza Farm Service',
+                hauler_first_name: 'Linda ',
+                hauler_primary_phone: '(209) 564-6329',
+                hauler_street: 'P.O. Box 60',
+                hauler_cross_street: '',
+                hauler_county: 'Merced',
+                hauler_city: 'Hilmar',
+                hauler_city_state: 'CA',
+                hauler_city_zip: '95324'
+            },
+            {
+                last_date_hauled: '2020-05-08T07:00:00.000Z',
+                amount_hauled: 1839,
+                material_type: 'Dry manure: Corral solids',
+                amount_hauled_method: 'Ya got me',
+                reporting_method: 'dry-weight',
+                moisture: '35.60',
+                n_con_mg_kg: 24000,
+                p_con_mg_kg: 10000,
+                k_con_mg_kg: 48000,
+                tfs: '0.0000',
+                ec_umhos_cm: '0.0000',
+                salt_lbs_rm: null,
+                n_lbs_rm: null,
+                p_lbs_rm: null,
+                k_lbs_rm: null,
+                kn_con_mg_l: '0.0000',
+                nh4_con_mg_l: '0.0000',
+                nh3_con_mg_l: '0.0000',
+                no3_con_mg_l: '0.0000',
+                p_con_mg_l: '0.0000',
+                k_con_mg_l: '0.0000',
+                tds: '0',
+                pnumber: '',
+                dest_street: '24665 Swensen Ave.',
+                dest_cross_street: '',
+                dest_county: 'Merced',
+                dest_city: 'Hilmar',
+                dest_city_state: 'CA',
+                dest_city_zip: '95324',
+                dest_type: 'Farmer',
+                recipient_title: 'Jeff Maciel',
+                recipient_primary_phone: '(209) 614-0283',
+                recipient_street: '24665 Swensen Ave.',
+                recipient_cross_street: '',
+                recipient_county: 'Merced',
+                recipient_city: 'Hilmar',
+                recipient_city_state: 'CA',
+                recipient_city_zip: '95324',
+                contact_first_name: 'Spencer',
+                contact_primary_phone: '(209) 634-7520',
+                operator_title: 'Spencer Nylund',
+                operator_primary_phone: '(209) 634-7520',
+                operator_secondary_phone: '',
+                operator_street: 'P.O. Box 1029',
+                operator_city: 'Hilmar',
+                operator_city_state: 'CA',
+                operator_city_zip: '95324',
+                operator_is_owner: true,
+                operator_is_responsible: true,
+                hauler_title: 'Silva & Sons Manure Spreading',
+                hauler_first_name: 'Frank',
+                hauler_primary_phone: '(209) 678-2047',
+                hauler_street: '23616 Williams AVE',
+                hauler_cross_street: '',
+                hauler_county: 'Merced',
+                hauler_city: 'Hilmar',
+                hauler_city_state: 'CA',
+                hauler_city_zip: '95324'
+            }].sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled'])),
+            process: [{
+                last_date_hauled: '2020-02-12T08:00:00.000Z',
+                amount_hauled: 420000,
+                material_type: 'Process wastewater',
+                amount_hauled_method: 'Flow Meter',
+                reporting_method: '',
+                moisture: "0.00",
+                n_con_mg_kg: '0.0000',
+                p_con_mg_kg: "0.0000",
+                k_con_mg_kg: '0.0000',
+                tfs: "0.0000",
+                ec_umhos_cm: '8000.0000',
+                salt_lbs_rm: null,
+                n_lbs_rm: null,
+                p_lbs_rm: null,
+                k_lbs_rm: null,
+                kn_con_mg_l: '484.0000',
+                nh4_con_mg_l: null,
+                nh3_con_mg_l: null,
+                no3_con_mg_l: null,
+                p_con_mg_l: '71.9000',
+                k_con_mg_l: '997.0000',
+                tds: '8800',
+                pnumber: '045-200-024',
+                dest_street: '21304 Williams Ave.',
+                dest_cross_street: '',
+                dest_county: 'Merced',
+                dest_city: 'Hilmar',
+                dest_city_state: 'CA',
+                dest_city_zip: '95324',
+                dest_type: 'Farmer',
+                recipient_title: 'Johnson',
+                recipient_primary_phone: '(209) 634-1485',
+                recipient_street: '21304 Williams Ave.',
+                recipient_cross_street: '',
+                recipient_county: 'Merced',
+                recipient_city: 'Hilmar',
+                recipient_city_state: 'CA',
+                recipient_city_zip: '95324',
+                contact_first_name: 'Spencer',
+                contact_primary_phone: '(209) 634-7520',
+                operator_title: 'Spencer Nylund',
+                operator_primary_phone: '(209) 634-7520',
+                operator_secondary_phone: '',
+                operator_street: 'P.O. Box 1029',
+                operator_city: 'Hilmar',
+                operator_city_state: 'CA',
+                operator_city_zip: '95324',
+                operator_is_owner: true,
+                operator_is_responsible: true,
+                hauler_title: 'Pipeline',
+                hauler_first_name: 'Spencer',
+                hauler_primary_phone: '(209) 632-7520',
+                hauler_street: '20710 Geer RD',
+                hauler_cross_street: '',
+                hauler_county: 'Merced',
+                hauler_city: 'Hilmar',
+                hauler_city_state: 'CA',
+                hauler_city_zip: '95324'
+            },
+            {
+                last_date_hauled: '2020-01-25T08:00:00.000Z',
+                amount_hauled: 420000,
+                material_type: 'Process wastewater',
+                amount_hauled_method: 'Flow Meter',
+                reporting_method: '',
+                moisture: '0.00',
+                n_con_mg_kg: '0.0000',
+                p_con_mg_kg: "0.0000",
+                k_con_mg_kg: '0.0000',
+                tfs: "0.0000",
+                ec_umhos_cm: '8000.0000',
+                salt_lbs_rm: null,
+                n_lbs_rm: null,
+                p_lbs_rm: null,
+                k_lbs_rm: null,
+                kn_con_mg_l: '484.0000',
+                nh4_con_mg_l: null,
+                nh3_con_mg_l: null,
+                no3_con_mg_l: null,
+                p_con_mg_l: '71.9000',
+                k_con_mg_l: '997.0000',
+                tds: '8800',
+                pnumber: '17-092-022',
+                dest_street: '21189 W. American Ave.',
+                dest_cross_street: '',
+                dest_county: 'Merced',
+                dest_city: 'Hilmar',
+                dest_city_state: 'CA',
+                dest_city_zip: '95324',
+                dest_type: 'Farmer',
+                recipient_title: 'Petterson',
+                recipient_primary_phone: '(209) 667-5888',
+                recipient_street: '21189 W. American Ave.',
+                recipient_cross_street: '',
+                recipient_county: 'Merced',
+                recipient_city: 'Hilmar',
+                recipient_city_state: 'CA',
+                recipient_city_zip: '95324',
+                contact_first_name: 'Spencer',
+                contact_primary_phone: '(209) 634-7520',
+                operator_title: 'Spencer Nylund',
+                operator_primary_phone: '(209) 634-7520',
+                operator_secondary_phone: '',
+                operator_street: 'P.O. Box 1029',
+                operator_city: 'Hilmar',
+                operator_city_state: 'CA',
+                operator_city_zip: '95324',
+                operator_is_owner: true,
+                operator_is_responsible: true,
+                hauler_title: 'Pipeline',
+                hauler_first_name: 'Spencer',
+                hauler_primary_phone: '(209) 632-7520',
+                hauler_street: '20710 Geer RD',
+                hauler_cross_street: '',
+                hauler_county: 'Merced',
+                hauler_city: 'Hilmar',
+                hauler_city_state: 'CA',
+                hauler_city_zip: '95324'
+            }].sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled'])),
+            manureExported: 3737,
+            wastewaterExported: 840000,
+            dryTotal: [89249.824, 32505.1872, 150105.56799999997, 0],
+            processTotal: [
+                3392.7432000000003,
+                504.0046200000001,
+                6988.770600000001,
+                61686.240000000005
+            ],
+            total: [
+                92642.56719999999,
+                33009.19182,
+                157094.33859999996,
+                61686.240000000005
+            ]
+        }
+
+        expect(availableNutrientsG).toEqual(expectedResult)
     })
 
 
@@ -487,7 +994,7 @@ describe('Test pdfDB', () => {
                     cropable: '22.00',
                     harvest_count: 2,
                     waste_type: 'process wastewater',
-                    parcels: []
+                    parcels: ['0000000000000420']
                 },
                 {
                     title: 'Field 17',
@@ -1729,7 +2236,7 @@ describe('Test pdfDB', () => {
         expect(allEvents).toEqual(expectedEvents)
     })
 
-    test('Nutrient Budget B, NaprbalABC(Summary) Info is calculated accurately.', async () => {
+    test('Nutrient Budget B(Single for ea field), NaprbalABC(Summary/ Charts) Info is calculated accurately.', async () => {
         /**
         *  {
                nutrientBudgetB: {
@@ -2060,403 +2567,7 @@ describe('Test pdfDB', () => {
         })
     })
 
-
-
-    test('AB. HERD INFORMATION:MANURE GENERATED', async () => {
-        // const { availableNutrientsAB } = await getAvailableNutrientsAB(dairy_id)
-        const { availableNutrientsAB } = ARD
-
-        Object.keys(availableNutrientsAB.herdInfo).map(key => {
-            if (isIDPK(key)) {
-                delete availableNutrientsAB.herdInfo[key]
-            }
-        })
-
-        const expectedResult = {
-            herdInfo: {
-                milk_cows: [1, 1, 2, 1, 1, 1],
-                dry_cows: [1, 1, 2, 1, 5000],
-                bred_cows: [1, 1, 2, 1, 1],
-                cows: [1, 1, 2, 1, 1],
-                calf_young: [1, 1, 2, 1],
-                calf_old: [1, 1, 2, 1],
-                p_breed: "Ayrshire", // Default option
-                p_breed_other: "",
-            },
-
-            herdCalc: ['67.83', '705.93', '101.02', '146.58', '702.72']
-        }
-
-        expect(availableNutrientsAB).toEqual(expectedResult)
-
-    })
-
-    test('C. Process Wastewater Generated', async () => {
-        // const { availableNutrientsC } = await getAvailableNutrientsC(dairy_id)
-        const { availableNutrientsC } = ARD
-
-
-        availableNutrientsC
-        availableNutrientsC.applied = availableNutrientsC.applied.map(el => round(el, 3)),
-            availableNutrientsC.exported = availableNutrientsC.exported.map(el => round(el, 3)),
-            availableNutrientsC.imported = availableNutrientsC.imported.map(el => round(el, 3)),
-            availableNutrientsC.generated = availableNutrientsC.generated.map(el => round(el, 3))
-        const expectedResult = {
-            applied: [4860000, 18474.8286, 860.7433560000002, 16711.363200000003, 320658.29400000005].map(el => round(el, 3)),
-            exported: [840000, 3392.7432000000003, 504.0046200000001, 6988.770600000001, 61686.240000000005].map(el => round(el, 3)),
-            imported: [0, 0, 0, 0, 0].map(el => round(el, 3)),
-            generated: [5700000, 21867.571800000005, 1364.747976, 23700.1338, 382344.534].map(el => round(el, 3))
-        }
-
-        expect(availableNutrientsC).toEqual(expectedResult)
-    })
-
-    test('F. NUTRIENT IMPORTS', async () => {
-        // const { availableNutrientsF } = await getAvailableNutrientsF(dairy_id)
-        const { availableNutrientsF } = ARD
-
-        availableNutrientsF.dry.map(item => {
-            Object.keys(item).map(key => {
-                if (isIDPK(key)) {
-                    delete item[key]
-                }
-            })
-        })
-
-        availableNutrientsF.process.map(item => {
-            Object.keys(item).map(key => {
-                if (isIDPK(key)) {
-                    delete item[key]
-                }
-            })
-        })
-
-        availableNutrientsF.commercial.map(item => {
-            Object.keys(item).map(key => {
-                if (isIDPK(key)) {
-                    delete item[key]
-                }
-            })
-        })
-
-        const expectedResult = {
-            dry: [{
-                import_desc: 'UN32',
-                import_date: '2020-05-09T07:00:00.000Z',
-                material_type: 'Dry manure: Separator solids',
-                amount_imported: '41.61',
-                method_of_reporting: 'dry-weight',
-                moisture: '56.00',
-                n_con: '1.94',
-                p_con: '0.53',
-                k_con: '2.18',
-                salt_con: '0.00'
-            }],
-            process: [],
-            commercial: [{
-                import_desc: 'UN32',
-                import_date: '2020-05-09T07:00:00.000Z',
-                material_type: 'Commercial fertilizer/ Other: Solid commercial fertilizer',
-                amount_imported: '41.61',
-                method_of_reporting: 'dry-weight',
-                moisture: '0.00',
-                n_con: '32.00',
-                p_con: '0.00',
-                k_con: '0.00',
-                salt_con: '0.00'
-            }],
-            dryTotals: [710.3659199999998, 194.06904, 798.24624, 0],
-            processTotals: [0, 0, 0, 0],
-            commercialTotals: [26603.769600000003, 0, 0, 0],
-            total: [27314.135520000003, 194.06904, 798.24624, 0]
-        }
-
-        expect(availableNutrientsF).toEqual(expectedResult)
-    })
-
-    test('G. NUTRIENT EXPORTS ', async () => {
-        // const { availableNutrientsG } = await getAvailableNutrientsG(dairy_id)
-        const { availableNutrientsG } = ARD
-
-        availableNutrientsG.dry.map(item => {
-            Object.keys(item).map(key => {
-                if (isIDPK(key)) {
-                    delete item[key]
-                }
-            })
-        })
-        availableNutrientsG.process.map(item => {
-            Object.keys(item).map(key => {
-                if (isIDPK(key)) {
-                    delete item[key]
-                }
-            })
-        })
-
-        availableNutrientsG.dry.sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled']))
-        availableNutrientsG.process.sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled']))
-        const expectedResult = {
-            dry: [{
-                last_date_hauled: '2020-03-05T08:00:00.000Z',
-                amount_hauled: 1898,
-                material_type: 'Dry manure: Corral solids',
-                amount_hauled_method: 'IDK boss',
-                reporting_method: 'dry-weight',
-                moisture: '56.00',
-                n_con_mg_kg: 19400,
-                p_con_mg_kg: 5280,
-                k_con_mg_kg: 21800,
-                tfs: '0.0000',
-                ec_umhos_cm: '0.0000',
-                salt_lbs_rm: null,
-                n_lbs_rm: null,
-                p_lbs_rm: null,
-                k_lbs_rm: null,
-                kn_con_mg_l: '0.0000',
-                nh4_con_mg_l: '0.0000',
-                nh3_con_mg_l: '0.0000',
-                no3_con_mg_l: '0.0000',
-                p_con_mg_l: '0.0000',
-                k_con_mg_l: '0.0000',
-                tds: '0',
-                pnumber: '',
-                dest_street: '23464 Turner Ave.',
-                dest_cross_street: '',
-                dest_county: 'Merced',
-                dest_city: 'Hilmar',
-                dest_city_state: 'CA',
-                dest_city_zip: '95324',
-                dest_type: 'Farmer',
-                recipient_title: 'Caetano Ranch',
-                recipient_primary_phone: '(209) 564-6329',
-                recipient_street: '23464 Turner Ave.',
-                recipient_cross_street: '',
-                recipient_county: 'Merced',
-                recipient_city: 'Hilmar',
-                recipient_city_state: 'CA',
-                recipient_city_zip: '95324',
-                contact_first_name: 'Spencer',
-                contact_primary_phone: '(209) 634-7520',
-                operator_title: 'Spencer Nylund',
-                operator_primary_phone: '(209) 634-7520',
-                operator_secondary_phone: '',
-                operator_street: 'P.O. Box 1029',
-                operator_city: 'Hilmar',
-                operator_city_state: 'CA',
-                operator_city_zip: '95324',
-                operator_is_owner: true,
-                operator_is_responsible: true,
-                hauler_title: 'Cardoza Farm Service',
-                hauler_first_name: 'Linda ',
-                hauler_primary_phone: '(209) 564-6329',
-                hauler_street: 'P.O. Box 60',
-                hauler_cross_street: '',
-                hauler_county: 'Merced',
-                hauler_city: 'Hilmar',
-                hauler_city_state: 'CA',
-                hauler_city_zip: '95324'
-            },
-            {
-                last_date_hauled: '2020-05-08T07:00:00.000Z',
-                amount_hauled: 1839,
-                material_type: 'Dry manure: Corral solids',
-                amount_hauled_method: 'Ya got me',
-                reporting_method: 'dry-weight',
-                moisture: '35.60',
-                n_con_mg_kg: 24000,
-                p_con_mg_kg: 10000,
-                k_con_mg_kg: 48000,
-                tfs: '0.0000',
-                ec_umhos_cm: '0.0000',
-                salt_lbs_rm: null,
-                n_lbs_rm: null,
-                p_lbs_rm: null,
-                k_lbs_rm: null,
-                kn_con_mg_l: '0.0000',
-                nh4_con_mg_l: '0.0000',
-                nh3_con_mg_l: '0.0000',
-                no3_con_mg_l: '0.0000',
-                p_con_mg_l: '0.0000',
-                k_con_mg_l: '0.0000',
-                tds: '0',
-                pnumber: '',
-                dest_street: '24665 Swensen Ave.',
-                dest_cross_street: '',
-                dest_county: 'Merced',
-                dest_city: 'Hilmar',
-                dest_city_state: 'CA',
-                dest_city_zip: '95324',
-                dest_type: 'Farmer',
-                recipient_title: 'Jeff Maciel',
-                recipient_primary_phone: '(209) 614-0283',
-                recipient_street: '24665 Swensen Ave.',
-                recipient_cross_street: '',
-                recipient_county: 'Merced',
-                recipient_city: 'Hilmar',
-                recipient_city_state: 'CA',
-                recipient_city_zip: '95324',
-                contact_first_name: 'Spencer',
-                contact_primary_phone: '(209) 634-7520',
-                operator_title: 'Spencer Nylund',
-                operator_primary_phone: '(209) 634-7520',
-                operator_secondary_phone: '',
-                operator_street: 'P.O. Box 1029',
-                operator_city: 'Hilmar',
-                operator_city_state: 'CA',
-                operator_city_zip: '95324',
-                operator_is_owner: true,
-                operator_is_responsible: true,
-                hauler_title: 'Silva & Sons Manure Spreading',
-                hauler_first_name: 'Frank',
-                hauler_primary_phone: '(209) 678-2047',
-                hauler_street: '23616 Williams AVE',
-                hauler_cross_street: '',
-                hauler_county: 'Merced',
-                hauler_city: 'Hilmar',
-                hauler_city_state: 'CA',
-                hauler_city_zip: '95324'
-            }].sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled'])),
-            process: [{
-                last_date_hauled: '2020-02-12T08:00:00.000Z',
-                amount_hauled: 420000,
-                material_type: 'Process wastewater',
-                amount_hauled_method: 'Flow Meter',
-                reporting_method: '',
-                moisture: "0.00",
-                n_con_mg_kg: '0.0000',
-                p_con_mg_kg: "0.0000",
-                k_con_mg_kg: '0.0000',
-                tfs: "0.0000",
-                ec_umhos_cm: '8000.0000',
-                salt_lbs_rm: null,
-                n_lbs_rm: null,
-                p_lbs_rm: null,
-                k_lbs_rm: null,
-                kn_con_mg_l: '484.0000',
-                nh4_con_mg_l: null,
-                nh3_con_mg_l: null,
-                no3_con_mg_l: null,
-                p_con_mg_l: '71.9000',
-                k_con_mg_l: '997.0000',
-                tds: '8800',
-                pnumber: '045-200-024',
-                dest_street: '21304 Williams Ave.',
-                dest_cross_street: '',
-                dest_county: 'Merced',
-                dest_city: 'Hilmar',
-                dest_city_state: 'CA',
-                dest_city_zip: '95324',
-                dest_type: 'Farmer',
-                recipient_title: 'Johnson',
-                recipient_primary_phone: '(209) 634-1485',
-                recipient_street: '21304 Williams Ave.',
-                recipient_cross_street: '',
-                recipient_county: 'Merced',
-                recipient_city: 'Hilmar',
-                recipient_city_state: 'CA',
-                recipient_city_zip: '95324',
-                contact_first_name: 'Spencer',
-                contact_primary_phone: '(209) 634-7520',
-                operator_title: 'Spencer Nylund',
-                operator_primary_phone: '(209) 634-7520',
-                operator_secondary_phone: '',
-                operator_street: 'P.O. Box 1029',
-                operator_city: 'Hilmar',
-                operator_city_state: 'CA',
-                operator_city_zip: '95324',
-                operator_is_owner: true,
-                operator_is_responsible: true,
-                hauler_title: 'Pipeline',
-                hauler_first_name: 'Spencer',
-                hauler_primary_phone: '(209) 632-7520',
-                hauler_street: '20710 Geer RD',
-                hauler_cross_street: '',
-                hauler_county: 'Merced',
-                hauler_city: 'Hilmar',
-                hauler_city_state: 'CA',
-                hauler_city_zip: '95324'
-            },
-            {
-                last_date_hauled: '2020-01-25T08:00:00.000Z',
-                amount_hauled: 420000,
-                material_type: 'Process wastewater',
-                amount_hauled_method: 'Flow Meter',
-                reporting_method: '',
-                moisture: '0.00',
-                n_con_mg_kg: '0.0000',
-                p_con_mg_kg: "0.0000",
-                k_con_mg_kg: '0.0000',
-                tfs: "0.0000",
-                ec_umhos_cm: '8000.0000',
-                salt_lbs_rm: null,
-                n_lbs_rm: null,
-                p_lbs_rm: null,
-                k_lbs_rm: null,
-                kn_con_mg_l: '484.0000',
-                nh4_con_mg_l: null,
-                nh3_con_mg_l: null,
-                no3_con_mg_l: null,
-                p_con_mg_l: '71.9000',
-                k_con_mg_l: '997.0000',
-                tds: '8800',
-                pnumber: '17-092-022',
-                dest_street: '21189 W. American Ave.',
-                dest_cross_street: '',
-                dest_county: 'Merced',
-                dest_city: 'Hilmar',
-                dest_city_state: 'CA',
-                dest_city_zip: '95324',
-                dest_type: 'Farmer',
-                recipient_title: 'Petterson',
-                recipient_primary_phone: '(209) 667-5888',
-                recipient_street: '21189 W. American Ave.',
-                recipient_cross_street: '',
-                recipient_county: 'Merced',
-                recipient_city: 'Hilmar',
-                recipient_city_state: 'CA',
-                recipient_city_zip: '95324',
-                contact_first_name: 'Spencer',
-                contact_primary_phone: '(209) 634-7520',
-                operator_title: 'Spencer Nylund',
-                operator_primary_phone: '(209) 634-7520',
-                operator_secondary_phone: '',
-                operator_street: 'P.O. Box 1029',
-                operator_city: 'Hilmar',
-                operator_city_state: 'CA',
-                operator_city_zip: '95324',
-                operator_is_owner: true,
-                operator_is_responsible: true,
-                hauler_title: 'Pipeline',
-                hauler_first_name: 'Spencer',
-                hauler_primary_phone: '(209) 632-7520',
-                hauler_street: '20710 Geer RD',
-                hauler_cross_street: '',
-                hauler_county: 'Merced',
-                hauler_city: 'Hilmar',
-                hauler_city_state: 'CA',
-                hauler_city_zip: '95324'
-            }].sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled'])),
-            manureExported: 3737,
-            wastewaterExported: 840000,
-            dryTotal: [89249.824, 32505.1872, 150105.56799999997, 0],
-            processTotal: [
-                3392.7432000000003,
-                504.0046200000001,
-                6988.770600000001,
-                61686.240000000005
-            ],
-            total: [
-                92642.56719999999,
-                33009.19182,
-                157094.33859999996,
-                61686.240000000005
-            ]
-        }
-
-        expect(availableNutrientsG).toEqual(expectedResult)
-    })
-
-    test('A. NUTRIENT ANALYSES ', async () => {
+    test('ABCDEF. NUTRIENT ANALYSES ', async () => {
         // const { nutrientAnalysis } = await getNutrientAnalysisA(dairy_id)
         const { nutrientAnalysis } = ARD
 
@@ -2499,6 +2610,8 @@ describe('Test pdfDB', () => {
                 })
             })
         })
+
+
 
         Object.keys(nutrientAnalysis.harvests).forEach(key => {
             const fieldPlant = nutrientAnalysis.harvests[key]
@@ -2974,9 +3087,93 @@ describe('Test pdfDB', () => {
         expect(nutrientAnalysis).toEqual(expectedResult)
     })
 
-    test('ABC. Exception Reporting ', async () => {
-        // const res = await getExceptionReportingABC(dairy_id)
-        // console.log(res)
+    test('ABC. Exception Reporting / Discharges', async () => {
+        const { exceptionReportingABC } = ARD
+        const [landApp] = exceptionReportingABC['Land application']
+        const [manureWastewater] = exceptionReportingABC['Manure/process wastewater']
+        const [storm] = exceptionReportingABC['Storm water']
+
+        delete landApp['pk']
+        delete manureWastewater['pk']
+        delete storm['pk']
+
+        const expected = [
+            {
+                dairy_id: 1,
+                discharge_type: 'Land application',
+                discharge_datetime: '2019-10-11T00:30:00.000Z',
+                discharge_loc: 'Sumwhere',
+                vol: 1337,
+                vol_unit: 'gals',
+                duration_of_discharge: 20,
+                discharge_src: 'Storm water',
+                method_of_measuring: 'Eyeball',
+                sample_location_reason: 'It was wet there.',
+                ref_number: '133769420'
+            },
+            {
+                dairy_id: 1,
+                discharge_type: 'Manure/process wastewater',
+                discharge_datetime: '2019-10-11T00:30:00.000Z',
+                discharge_loc: 'Sumwhere',
+                vol: 1337,
+                vol_unit: 'cubic yd',
+                duration_of_discharge: 20,
+                discharge_src: 'Wastewater',
+                method_of_measuring: 'Eyeball',
+                sample_location_reason: 'It was wet there.',
+                ref_number: '133769420'
+            },
+            {
+                dairy_id: 1,
+                discharge_type: 'Storm water',
+                discharge_datetime: '2019-10-11T00:30:00.000Z',
+                discharge_loc: 'Sumwhere',
+                vol: 1337,
+                vol_unit: 'gals',
+                duration_of_discharge: 20,
+                discharge_src: 'Storm water',
+                method_of_measuring: 'Eyeball',
+                sample_location_reason: 'It was wet there.',
+                ref_number: '133769420'
+            }
+        ]
+        expect([landApp, manureWastewater, storm]).toEqual(expected)
+    })
+
+    test('AB. NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS', async () => {
+        // Insert AB. NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS
+        const { nmpeaStatementsAB } = ARD
+        expect(nmpeaStatementsAB).toEqual({
+            pk: 1,
+            dairy_id: 1,
+            nmp_updated: true,
+            nmp_developed: true,
+            nmp_approved: false,
+            new_agreements: true
+        })
+
+    })
+    test('A. ADDITIONAL NOTES', async () => {
+        // Insert A. ADDITIONAL NOTES
+        const { notesA } = ARD
+
+        expect(notesA).toEqual({ pk: 1, dairy_id: 1, note: 'No notes.' })
+
+    })
+    test('A. CERTIFICATION', async () => {
+        // Insert A. CERTIFICATION
+
+        const { certificationA } = ARD
+
+        expect(certificationA).toEqual({
+            pk: 1,
+            owner_id: 1,
+            operator_id: null,
+            responsible_id: 1,
+            ownertitle: 'Spencer Nylund',
+            operatortitle: null
+        })
     })
 
 

@@ -19,7 +19,7 @@ const CROP_TITLE_MAP = { 'Alfalfa Haylage': 'Alfalfa Haylage', 'Alfalfa hay': 'A
 
 // List of nums to use
 
-const tsvPrintCols = {
+const TSV_PRINT_COLS = {
   [PROCESS_WASTEWATER]:
     [
       "Application Date",
@@ -40,7 +40,6 @@ const tsvPrintCols = {
       'P (Lbs/ Acre)',
       'K (Lbs/ Acre)',
     ],
-  // [PROCESS_WASTEWATER]: [0, 1, 2, 5, 12, 14, 18, 19, 27, 28, 47, 48, 49, 50, 51, 52, 53, 54],
   [FRESHWATER]:
     [
       "Application Date",
@@ -298,7 +297,7 @@ class TSVPrint extends Component {
     let headerMap = {}
 
     let splitText = tsvText.split('\n')
-    let printCols = tsvPrintCols[this.state.tsvType]  // List of ints representing indices to print from TSV
+    let printCols = TSV_PRINT_COLS[this.state.tsvType]  // List of ints representing indices to print from TSV
 
     splitText.forEach((row, i) => {
       // Need a function to extract the cols I need

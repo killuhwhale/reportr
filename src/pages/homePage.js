@@ -143,7 +143,7 @@ class HomePage extends Component {
     } = dairyInfo
 
     Dairy.updateDairy(
-      street, cross_street, county, city, city_state, title, city_zip,
+      street, cross_street, county, city, city_state, city_zip, title,
       basin_plan, began, period_start, period_end, dairy_id
     )
       .then(res => {
