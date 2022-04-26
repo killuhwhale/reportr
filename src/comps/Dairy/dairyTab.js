@@ -29,6 +29,7 @@ import { Field } from '../../utils/fields/fields'
 import { Dairy } from '../../utils/dairy/dairy';
 import { Parcels } from '../../utils/parcels/parcels'
 import { Files } from '../../utils/files/files';
+import { formatDate, splitDate } from '../../utils/format';
 
 const ReportingPeriod = (props) => {
   // onUpdate
@@ -223,9 +224,25 @@ class DairyTab extends Component {
     }
   }
 
+  saveAs(url, fileName) {
+    const a = document.createElement("a");
+
+
+    a.href = url;
+    a.download = fileName;
+    a.click();
+
+  }
+
   async getFiles() {
     const res = await Files.getFiles(this.state.dairy.pk)
     console.log("FIles res: ", res)
+    var blob = new Blob([res], { type: "application/zip" });
+    var objectUrl = URL.createObjectURL(blob);
+    // window.open(objectUrl);
+    console.log(this.state.dairy)
+    this.saveAs(objectUrl, `${this.state.dairy.title}_${formatDate(splitDate(this.state.dairy.period_start))}_to_${formatDate(splitDate(this.state.dairy.period_end))}`)
+
 
   }
 
