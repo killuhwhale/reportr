@@ -5,7 +5,10 @@ const groupBySortBy = (list, groupBy, sortBy) => {
   if (!list || !groupBy) {
     throw `Parameter null or undefined:  ${list}, ${groupBy}, ${sortBy}`
   }
-
+  if (!(list instanceof Array)) {
+    console.log('List is not a list: ', list)
+    return grouped
+  }
   list.forEach(item => {
     let key = item[groupBy]
     if (!key || key.length === 0) {
@@ -36,6 +39,10 @@ const groupByKeys = (list, groupKeys) => {
   if (!groupKeys || !list) {
     throw "List is null or undefined"
   }
+  if (!(list instanceof Array)) {
+    console.log('List is not a list: ', list)
+    return grouped
+  }
   if (groupKeys.length == 0) {
     return grouped
   }
@@ -64,6 +71,11 @@ const nestedGroupBy = (list, groupByKeys) => {
   let grouped = {}
   if (!list || !groupByKeys) {
     throw `Parameter null or undefined:  ${list}, ${groupByKeys}`
+  }
+
+  if (!(list instanceof Array)) {
+    console.log('List is not a list: ', list)
+    return grouped
   }
 
   list.forEach(item => {

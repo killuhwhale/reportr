@@ -124,48 +124,21 @@ Github is private, the only passwords visible in code is for the DB and that is 
     ✓ ABC. Exception Reporting / Discharges
     ✓ AB. NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS
     ✓ A. ADDITIONAL NOTES
-    ✓ A. CERTIFICATION (1 ms)
-  
-  # Missing Crucial Tests   
-   - getReportingPeriodDays
-   
+    ✓ A. CERTIFICATION (1 ms)   
 
 
 # Todo:
-
   # Tests
     
     - Reporting period
       - Unit test, ensure it updates correctly....
     - Logo upload 
 
-
-  # src/pdfDB
-   - getAvailableNutrientsG 
-    - Create End point to fetch data and format instead of multiple requests
-
   # Download Zip File with PDF report & All TSVs for that Dairy.
-    - Process
-      1. User sends request with dairy_id..... 
-      2. Server gets request and fetches data for AR and ea TSV 
-      3. Server takes ea tsv text and creates a file
-      4. server generates PDF File (PDF is generated client side.....)
-
-      5. Server Zips File and sends to Client
-      6. CLient downloads Zip. 
-
-
-
-      Currently,
-      1. Client gets data from server
-      2. Client generates images with Chart.js based on data
-      3. W/ imgages and data send to PDF maker thing...
-
-      Instead, once server has data, instead of returning it to client
-      1. Take the data and use Chart.js and canvas on nodejs to run same code client side.
-      2. Now we have images and data
-      3. USe the PDF make to make the pdf and return it to the client for download.
-
+    - TSV Files Issue
+     1. Some files are a bit big (extend horizontally off the page), they need custom formatting
+     2. TSV Files should have the dairy title and tsv type
+     
 
 
 
@@ -174,8 +147,6 @@ Github is private, the only passwords visible in code is for the DB and that is 
   - Create a spread sheet with the difference between each sheet
     - Just copy and past each set into one sheet... comparing 2 rows  
   
-  # Tests
-    - Test if PDF report is generated correctly, downloadFile maybe in the tests.... 
 
   # UI
     - Nutrient Application Analyses should be shown and be able to be deleted
@@ -220,15 +191,6 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 
 # Problems   
-
-
-  # Notes on PDF are not showing up....
-    - Notes, Certification, and Agreements are not shwoing in PDF report....
-    - Client side is working, data is in db but somewhere from db -> PDF it is not showing.
-
-  # Generate PDF if herds are empty, pdf DD has an error. (This might be fixed with server side....)
-    - Just check the doc and show an empty value if herds are not there...
-
   - Upload TSV process 
     - Ensure there are rows of data bfore uploading.
     - Need to avoid updating TSV file in DB with an empty doc...

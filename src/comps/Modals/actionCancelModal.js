@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 // Material UI
-import { Grid, Paper, Button, Typography, Modal } from '@material-ui/core';
+import { Grid, Paper, Button, Typography, Modal, CircularProgress } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
 class ActionCancelModal extends Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			open: props.open
+			open: props.open,
+			loading: false
 		}
 		/*
 		open
@@ -21,6 +22,12 @@ class ActionCancelModal extends Component {
 
 	static getDerivedStateFromProps(props, state) {
 		return props
+	}
+
+	componentDidUpdate(prevProps, prevState) {
+		if (prevState.open != this.state.open) {
+			this.setState({ loading: false })
+		}
 	}
 
 	render() {
@@ -57,12 +64,14 @@ class ActionCancelModal extends Component {
 									</Button>
 								</Grid>
 								<Grid item xs={6}>
-									<Button
-										color="primary"
-										variant="outlined"
-										onClick={() => { this.props.onAction() }}>
-										{this.props.actionText}
-									</Button>
+									{this.state.loading ? <CircularProgress /> :
+										<Button
+											color="primary"
+											variant="outlined"
+											onClick={() => { this.setState({ loading: true }); this.props.onAction(); }}>
+											{this.props.actionText}
+										</Button>
+									}
 								</Grid>
 							</Grid>
 						</Paper>

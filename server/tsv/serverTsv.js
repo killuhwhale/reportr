@@ -93,9 +93,9 @@ const TSV_INFO = {
     }
 }
 
+//Used to search for a tsvType given an alias
 const convertAliasesToArrayOfObjects = () => {
     const allAliases = []
-    console.log(SHEET_NAMES)
     for (let sheetName of SHEET_NAMES) {
         for (let alias of TSV_INFO[sheetName].aliases) {
             allAliases.push({
@@ -122,7 +122,7 @@ module.exports = (app) => {
             .catch(err => {
                 logger.info('Failure')
                 logger.info(err)
-                res.json({ error: err })
+                res.json(err)
             })
 
     })
@@ -205,6 +205,7 @@ const uploadSheet = (dairy_id, tsvText, tsvType, uploadedFilename) => {
                 })
         })
             .catch(error => {
+                console.log("Top lvl serverTSV error: ", error)
                 reject({ tsvType, uploadedFilename, error })
             })
     })
@@ -794,7 +795,7 @@ const createProcessWastewaterApplicationFromMap = (row, field_crop_app, dairy_id
             .catch(err => {
                 logger.info(err)
                 console.log("ASDASDZZZ", err)
-                rej({ error: err })
+                rej(err)
             })
     })
 }

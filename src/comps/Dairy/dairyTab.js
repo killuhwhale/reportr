@@ -8,7 +8,7 @@ import {
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import { CloudUpload } from '@material-ui/icons'
-
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import { get, postXLSX, getFile } from '../../utils/requests'
@@ -85,6 +85,7 @@ class DairyTab extends Component {
       showAddParcelModal: false,
       showAddFieldModal: false,
       toggleShowDeleteAllModal: false,
+      showGenerateDairyFiles: false,
       daysInPeriod: 0,
       fields: [],
       parcels: [],
@@ -173,15 +174,16 @@ class DairyTab extends Component {
     const file = this.state.rawFileForServer
     postXLSX(`${BASE_URL}/tsv/uploadXLSX/${this.state.dairy.pk}`, file)
       .then(res => {
-        console.log(res)
+        console.log("Post res: ", res)
         if (res.error) {
           const { error, tsvType, uploadedFilename } = res
           console.log(error)
-          const errMsg = `${tsvType} ${error.error}`
+          const errMsg = `${tsvType} ${error.error.code}`
           this.toggleShowUploadXLSX(false)
           this.props.onAlert(errMsg, 'error')
           return
         }
+
         console.log("Completed! C-engineer voice")
         this.toggleShowUploadXLSX(false)
         this.props.refreshAfterXLSXUpload()
@@ -226,8 +228,6 @@ class DairyTab extends Component {
 
   saveAs(url, fileName) {
     const a = document.createElement("a");
-
-
     a.href = url;
     a.download = fileName;
     a.click();
@@ -235,15 +235,24 @@ class DairyTab extends Component {
   }
 
   async getFiles() {
-    const res = await Files.getFiles(this.state.dairy.pk)
-    console.log("FIles res: ", res)
-    var blob = new Blob([res], { type: "application/zip" });
-    var objectUrl = URL.createObjectURL(blob);
-    // window.open(objectUrl);
-    console.log(this.state.dairy)
-    this.saveAs(objectUrl, `${this.state.dairy.title}_${formatDate(splitDate(this.state.dairy.period_start))}_to_${formatDate(splitDate(this.state.dairy.period_end))}`)
+    try {
+      const res = await Files.getFiles(this.state.dairy.title, this.state.dairy.pk)
+      console.log("FIles res: ", res)
+      var blob = new Blob([res], { type: "application/zip" });
+      var objectUrl = URL.createObjectURL(blob);
+      this.saveAs(objectUrl, `${this.state.dairy.title} ${formatDate(splitDate(this.state.dairy.period_start))} to ${formatDate(splitDate(this.state.dairy.period_end))}`)
+
+    } catch (e) {
+      console.log(e)
+    }
+
+    this.toggleShowGenerateDairyFiles(false)
+
+  }
 
 
+  toggleShowGenerateDairyFiles(val) {
+    this.setState({ showGenerateDairyFiles: val })
   }
 
   render() {
@@ -268,17 +277,10 @@ class DairyTab extends Component {
               </Grid>
               <Grid item container xs={5}>
                 <Grid item container xs={12}>
-                  <Grid item xs={4} align='left'>
+                  <Grid item xs={3} align='left'>
                     <Tooltip title='Upload XLSX Workbook'>
                       <IconButton color="primary" variant="outlined"
                         onClick={() => this.toggleShowUploadXLSX(true)}
-                      >
-                        <CloudUpload />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title='Get Files'>
-                      <IconButton color="secondary" variant="outlined"
-                        onClick={() => this.getFiles()}
                       >
                         <CloudUpload />
                       </IconButton>
@@ -296,8 +298,28 @@ class DairyTab extends Component {
                       onClose={() => this.toggleShowUploadXLSX(false)}
                     />
                   </Grid>
+                  <Grid item xs={3} align='center'>
+                    <Tooltip title='Get Files'>
+                      <IconButton color="secondary" variant="outlined"
+                        onClick={() => this.toggleShowGenerateDairyFiles(true)}
+                      >
+                        <FileCopyIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <ActionCancelModal
+                      open={this.state.showGenerateDairyFiles}
+                      actionText="Generate"
+                      cancelText="Close"
+                      modalText={`Generate all files for  ${this.state.dairy.title} - ${this.state.dairy.reporting_yr}?`}
+                      onAction={this.getFiles.bind(this)}
+                      onClose={() => this.toggleShowGenerateDairyFiles(false)}
+                    />
 
-                  <Grid item xs={4} align='center'>
+
+
+                  </Grid>
+
+                  <Grid item xs={3} align='center'>
                     <Tooltip title="Generate Annual Report">
                       <IconButton id='genPDFBtn' onClick={this.generateServerPDF.bind(this)} >
                         <AssessmentIcon color='primary' />
@@ -305,7 +327,7 @@ class DairyTab extends Component {
                     </Tooltip>
                   </Grid>
 
-                  <Grid item xs={4} align='right'>
+                  <Grid item xs={3} align='right'>
                     <Tooltip title='Delete Dairy'>
                       <IconButton onClick={() => this.confirmDeleteAllFromTable(true)}>
                         <DeleteSweepIcon color='error' />

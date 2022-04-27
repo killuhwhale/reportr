@@ -3102,3 +3102,522 @@
 {"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
 {"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
 {"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1810)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1810)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 TDS must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:795)","service":"user-service"}
+{"error":{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437 TDS must be between 1 and 20,000."},"level":"info","message":"(tsv/serverTsv.js:1459)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1291) Get all fca_soil_analysis","service":"user-service"}
+{"error":"Soil Analysis 11/12/2019 Soil Sample A Lab Analysis Phosphorus: 20 needs to be between above 50 DL","level":"info","message":"(tsv/serverTsv.js:1459)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1810)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1810)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1291) Get all fca_soil_analysis","service":"user-service"}
+{"error":"Soil Analysis 11/12/2019 Soil Sample A Lab Analysis Phosphorus: 20 needs to be between above 50 DL","level":"info","message":"(tsv/serverTsv.js:1459)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1810)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1810)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 9080 TDS must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:795)","service":"user-service"}
+{"error":{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 9080 TDS must be between 1 and 20,000."},"level":"info","message":"(tsv/serverTsv.js:1459)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1291) Get all fca_soil_analysis","service":"user-service"}
+{"error":"Soil Analysis 11/12/2019 Soil Sample A Lab Analysis Phosphorus: 20 needs to be between above 50 DL","level":"info","message":"(tsv/serverTsv.js:1459)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1810)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1810)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1291) Get all fca_soil_analysis","service":"user-service"}
+{"error":"Soil Analysis 11/12/2019 Soil Sample A Lab Analysis Phosphorus: 20 needs to be between above 50 DL","level":"info","message":"(tsv/serverTsv.js:1459)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1810)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1810)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1702)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1782)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:795)","service":"user-service"}
+{"error":{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000."},"level":"info","message":"(tsv/serverTsv.js:1459)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:796)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:1460)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:796)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:1460)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"WW Exports","uploadedFilename":"WW Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:796)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:1460)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:796)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:1460)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:796)","service":"user-service"}
+{"error":"ProcessWastewaterAnalysis 05/18/2020 Lagoon 437: 0 TDS DL must be between 1 and 20,000.","level":"info","message":"(tsv/serverTsv.js:1460)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"}},"level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1703)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1811)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/serverTsv.js:1783)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":"Server laztGet TSV upload error - operators: undefined -- undefined","level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:796) Server laztGet TSV upload error - field_crop_app_process_wastewater_analysis: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1460) Server laztGet TSV upload error - field_crop_app_process_wastewater_analysis: undefined -- undefined","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":"Server laztGet TSV upload error - operators: 22P02 -- boolin","level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: 22P02 -- boolin","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":"Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":"Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: invalid input syntax for type boolean: \"\" -- boolin","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":"Server laztGet TSV upload error - operators: undefined -- boolin","level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":"Server laztGet TSV upload error - operators: undefined -- boolin","level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:123) Failure","service":"user-service"}
+{"error":"Server laztGet TSV upload error - operators: undefined -- boolin","level":"info","message":"(tsv/serverTsv.js:124)","service":"user-service","tsvType":"SM Exports","uploadedFilename":"SM Exports"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1811) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1703) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"error":{"code":"22P02","file":"bool.c","length":95,"line":"154","name":"error","position":"316","routine":"boolin","severity":"ERROR"},"level":"info","message":"(tsv/lazyGet.js:721)","service":"user-service"}
+{"level":"info","message":"(tsv/serverTsv.js:1783) Server laztGet TSV upload error - operators: undefined -- boolin","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:119)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"0":"Complete","1":"Complete","10":"Complete","2":"Complete","3":"Complete","4":"Complete","5":"Complete","6":"Complete","7":"Complete","8":"Complete","9":"Complete","level":"info","message":"(tsv/serverTsv.js:119)","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Dev db.","service":"user-service"}

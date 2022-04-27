@@ -124,17 +124,17 @@ exports.validProcessWastewaterAnalysis = (values) => {
     ] = values
     const ERROR_TAG = `ProcessWastewaterAnalysis ${sample_date} ${sample_desc} ${kn_con}`
     if (!validTDS(tds)) {
-        return { code: '1000', msg: `${ERROR_TAG} TDS must be between 0 and 20,000.` }
+        return { code: '1000', msg: `${ERROR_TAG}: ${tds} TDS must be between 0 and 20,000.` }
     }
 
     if (tds > 0.0) {
         if (!validTDSDL(tds_dl)) {
-            return { code: '1000', msg: `${ERROR_TAG} TDS must be between 1 and 20,000.` }
+            return { code: '1000', msg: `${ERROR_TAG}: ${tds_dl} TDS DL must be between 1 and 20,000.` }
         }
     }
 
     if (!validPH(ph)) {
-        return { code: '1000', msg: `${ERROR_TAG} pH must be between 0 and 14.` }
+        return { code: '1000', msg: `${ERROR_TAG}: ${ph} pH must be between 0 and 14.` }
     }
 
 
