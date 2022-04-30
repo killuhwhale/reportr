@@ -128,6 +128,8 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 
 # Todo:
+Tests for Files and Reporting peroid
+THen, UI update Sources, Analyses,
   # Tests
     
     - Reporting period
@@ -136,13 +138,8 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
   # Download Zip File with PDF report & All TSVs for that Dairy.
     - TSV Files Issue
-     1. Some files are a bit big (extend horizontally off the page), they need custom formatting
-     2. TSV Files should have the dairy title and tsv type
      
-
-
-
-
+  
        
   - Create a spread sheet with the difference between each sheet
     - Just copy and past each set into one sheet... comparing 2 rows  
@@ -191,6 +188,15 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 
 # Problems   
+
+  # When 403 error 
+  - after refresh token is expired many things many when there is a bad request.
+      Need to find all these places and make sure that something expecting a list doesnt get an error object.
+
+  # PDF AR Report
+    - A. Notes
+          [object Object] instead of that actual notes or 'No notes'
+
   - Upload TSV process 
     - Ensure there are rows of data bfore uploading.
     - Need to avoid updating TSV file in DB with an empty doc...

@@ -237,17 +237,14 @@ class DairyTab extends Component {
   async getFiles() {
     try {
       const res = await Files.getFiles(this.state.dairy.title, this.state.dairy.pk)
-      console.log("FIles res: ", res)
       var blob = new Blob([res], { type: "application/zip" });
       var objectUrl = URL.createObjectURL(blob);
       this.saveAs(objectUrl, `${this.state.dairy.title} ${formatDate(splitDate(this.state.dairy.period_start))} to ${formatDate(splitDate(this.state.dairy.period_end))}`)
-
     } catch (e) {
       console.log(e)
     }
 
     this.toggleShowGenerateDairyFiles(false)
-
   }
 
 

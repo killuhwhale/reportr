@@ -8,6 +8,8 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import { CloudUpload } from '@material-ui/icons' // uploadTSV
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import { VariableSizeList as List } from "react-window";
@@ -22,19 +24,14 @@ import { checkEmpty } from '../../utils/TSV'
 import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from "../../utils/format"
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import { TSVUtil } from "../../utils/TSV"
-import { DatePicker } from '@material-ui/pickers'
+import { FixedPageSize } from '../utils/FixedPageSize'
 
-
-//Move to appnutrient and pass as prop
-const SOURCE_OF_ANALYSES = [
-  'Lab Analysis',
-  'Other/ Estimated',
-]
 
 /** View for Process Wastewater Entry in DB */
 const SolidmanureAppEvent = (props) => {
   return (
-    <Grid item container xs={12} style={props.style}>
+
+    <FixedPageSize container item xs={12} height='375px' style={props.style}>
       {
         props.solidmanures.sort((a, b) => naturalSortBy(a, b, 'app_date')).map((manure, i) => {
           return (
@@ -47,150 +44,163 @@ const SolidmanureAppEvent = (props) => {
           )
         })
       }
-    </Grid>
+    </FixedPageSize>
   )
 }
 
-const OldEvent = (props) => {
-  const solidmanure = props.solidmanure
-  const i = 0
-  return (
-    <Grid item container xs={12} key={`fwmainview${i}`}>
-      <Grid item xs={6}>
-        <Typography variant="subtitle1">{solidmanure.croptitle}</Typography>
-      </Grid>
-      <Grid item xs={6} align="center">
-        <DatePicker
-          value={solidmanure.plant_date}
-          label='Planted'
-        />
-
-      </Grid>
-      <Grid item xs={6}>
-        <Typography variant="subtitle2">{solidmanure.sample_desc} | {solidmanure.src_desc}</Typography>
-      </Grid>
-      <Grid item xs={6} align="center">
-        <DatePicker
-          value={solidmanure.app_date}
-          label='applied'
-        />
-
-      </Grid>
-      <Grid item container xs={10}>
-        <Grid item xs={3}>
-          <TextField
-            label="Amount Applied"
-            value={solidmanure.amount_applied}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            label="Nitrogen lbs / acre"
-            value={solidmanure.n_lbs_acre}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            label="Phosphorus lbs / acre"
-            value={solidmanure.p_lbs_acre}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            label="Potassium lbs / acre"
-            value={solidmanure.k_lbs_acre}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            label="Salt lbs / acre"
-            value={solidmanure.salt_lbs_acre}
-          />
-        </Grid>
-      </Grid>
-      <Grid item container xs={2} justifyContent="center" >
-        <Tooltip title="Delete Solidmanure Event">
-          <IconButton onClick={() => props.onDelete(solidmanure)}>
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Tooltip>
-      </Grid>
-
-    </Grid>
-  )
-}
-
-
-const SolidmanureAppEventCard = (props) => {
+const SolidmanureAppEventCard = withTheme((props) => {
   let {
     app_method, material_type, n_con, p_con,
-    k_con, amount_applied, app_date, croptitle, plant_date
+    k_con, amount_applied, app_date, croptitle, plant_date, moisture
   } = props.manure
+  console.log(props.manure)
   return (
-    <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
-      <CardContent>
-        <Typography>
-          {croptitle} - {app_method}
-        </Typography>
-        <DatePicker label="App Date"
-          value={app_date}
-          open={false}
-        />
-        <Grid item xs={12}>
-          <Typography variant='caption'>
-            {`N ${formatFloat(n_con)} P ${formatFloat(p_con)} K ${formatFloat(k_con)}`}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant='caption'>
-            {`Amount ${formatFloat(amount_applied)}`}
-          </Typography>
-        </Grid>
-      </CardContent>
-      <CardActions>
-        <Tooltip title="Delete Solid Manure">
-          <IconButton className='showOnHover'
-            onClick={() => props.onDelete(props.manure)}
-          >
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Tooltip>
-      </CardActions>
-    </Card>
+    <Grid item xs={12} md={4} lg={3}>
+      <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+        <CardContent>
+          <Grid item xs={12} align='right'>
+            <Typography variant='caption' >
+              <Tooltip title='Sample date' placement="top">
+                <span style={{ color: props.theme.palette.secondary.main }}>
+                  {` ${formatDate(splitDate(app_date))}`}
+                </span>
+              </Tooltip>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.primary.main }}>
+                {` ${croptitle}: ${app_method}`}
+              </span>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.secondary.main }}>
+                {` ${material_type}`}
+              </span>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+
+              N: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(n_con)} `}
+              </span>
+              P: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(p_con)} `}
+              </span>
+              K: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(k_con)} `}
+              </span>
+            </Typography>
+            <Typography variant='caption'>
+              Moisture: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(moisture)}`}
+              </span>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+
+            <Typography variant='caption'>
+              Amount: <span style={{ color: props.theme.palette.secondary.main }}>
+                {` ${formatFloat(amount_applied)}`}
+              </span>
+            </Typography>
+          </Grid>
+
+
+        </CardContent>
+        <CardActions>
+          <Grid item xs={2}>
+            <Tooltip title="Delete Wastewater Analysis">
+              <IconButton className='showOnHover' size='small'
+                onClick={() => props.onDelete(props.manure)}
+              >
+                <DeleteIcon color="error" />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        </CardActions>
+      </Card>
+    </Grid>
+
   )
-}
+})
 
-const SolidmanureAnalysis = (props) => {
-
+const SolidmanureAnalysis = withTheme((props) => {
+  const { n_con, p_con, k_con, moisture } = props.analysis
   return (
-    <Grid item container xs={6} className='showOnHoverParent'>
-      <Grid item container xs={10}>
-        <Grid item xs={6}>
-          <DatePicker
-            fullWidth
-            value={props.analysis.sample_date}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <TextField
-            fullWidth
-            value={props.analysis.sample_desc}
-          />
-        </Grid>
-      </Grid>
-      <Grid item xs={2}>
-        <Tooltip title="Delete Solidmanure Source">
-          <IconButton className='showOnHover'
-            onClick={() => props.onConfirmSolidmanureAnalysisDelete(props.analysis)}
-          >
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Tooltip>
-      </Grid>
+    <Grid item xs={12} md={4} lg={3}>
+      <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+        <CardContent>
+          <Grid item xs={12} align='right'>
+            <Typography variant='caption' >
+              <Tooltip title='Sample date' placement="top">
+                <span style={{ color: props.theme.palette.secondary.main }}>
+                  {` ${formatDate(splitDate(props.analysis.sample_date))}`}
+                </span>
+              </Tooltip>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.primary.main }}>
+                {`${props.analysis.sample_desc} ${props.analysis.material_type}`}
+              </span>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='subtitle2' >
+              <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${props.analysis.src_of_analysis} ${props.analysis.method_of_reporting} `}
+              </span>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+
+              N: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(n_con)} `}
+              </span>
+              P: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(p_con)} `}
+              </span>
+              K: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(k_con)} `}
+              </span>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+
+              Moisture: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(moisture)} `}
+              </span>
+            </Typography>
+          </Grid>
+
+        </CardContent>
+        <CardActions>
+          <Grid item xs={2}>
+            <Tooltip title="Delete Solid Manure Analysis">
+              <IconButton className='showOnHover' size='small'
+                onClick={() => props.onConfirmSolidmanureAnalysisDelete(props.analysis)}
+              >
+                <DeleteIcon color="error" />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        </CardActions>
+      </Card>
     </Grid>
   )
 
-}
+})
 
 
 class Solidmanure extends Component {
@@ -210,6 +220,7 @@ class Solidmanure extends Component {
       showAddSolidmanureModal: false,
       showConfirmDeleteSolidmanureAnalysisModal: false,
       showConfirmDeleteSolidmanureModal: false,
+      showAnalyses: 'none',
       deleteSolidmanureAnalysisObj: {},
       deleteSolidmanureObj: {},
       showUploadFieldCropAppSolidmanureTSVModal: false,
@@ -484,22 +495,6 @@ class Solidmanure extends Component {
       console.log(e)
       this.props.onAlert('Failed uploading!', 'error')
     }
-
-
-    // uploadNutrientApp(this.state.tsvFile, this.state.tsvType, dairy_pk)
-    //   .then(res => {
-    //     console.log("Completed uploading Solidmanure TSV")
-    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
-    //     this.toggleShowUploadFieldCropAppSolidmanureTSVModal(false)
-    //     this.getFieldCropAppSolidmanure()
-    //     this.getFieldCropAppSolidmanureAnalysis()
-    //     this.props.onAlert('Success!', 'success')
-    //   })
-    //   .catch(err => {
-    //     console.log("Error with all promises")
-    //     console.log(err)
-    //     this.props.onAlert('Failed uploading!', 'error')
-    //   })
   }
 
   toggleViewTSVsModal(val) {
@@ -559,7 +554,9 @@ class Solidmanure extends Component {
         console.log(err)
       })
   }
-
+  toggleShowAnalyses() {
+    this.setState({ showAnalyses: this.state.showAnalyses === 'none' ? 'flex' : this.state.showAnalyses === 'flex' ? 'none' : 'flex' })
+  }
   render() {
     return (
       <Grid item xs={12} container >
@@ -651,8 +648,18 @@ class Solidmanure extends Component {
         <Grid item xs={12}>
           {this.state.fieldCropAppSolidmanureAnalyses.length > 0 ?
             <React.Fragment>
-              <Typography variant="h5">Analyses</Typography>
-              <Grid item container xs={12}>
+              <Grid item xs={12} >
+                <div style={{ display: 'flex' }}>
+                  <Typography variant="h5" style={{ alignSelf: 'center' }} >Analyses</Typography>
+                  <Tooltip title='Show' placement='top'>
+                    <IconButton onClick={this.toggleShowAnalyses.bind(this)}>
+                      <ExpandMoreIcon color='primary' />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+
+              </Grid>
+              <FixedPageSize container item xs={12} height='375px' style={{ display: this.state.showAnalyses }}>
                 {
                   this.state.fieldCropAppSolidmanureAnalyses.map((analysis, i) => {
                     return (
@@ -663,7 +670,7 @@ class Solidmanure extends Component {
                     )
                   })
                 }
-              </Grid>
+              </FixedPageSize>
             </React.Fragment>
             :
             <React.Fragment></React.Fragment>

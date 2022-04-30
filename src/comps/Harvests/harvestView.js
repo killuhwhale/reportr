@@ -1,23 +1,21 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
-import AddIcon from '@material-ui/icons/Add'
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import { VariableSizeList as List } from "react-window";
-import {
-  DatePicker
-} from '@material-ui/pickers'
+
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { MG_KG, KG_MG } from '../../utils/convertCalc'
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from '../Applications/selectButtonGrid'
 import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, percentageAsMGKG, splitDate } from '../../utils/format'
+import { FixedPageSize } from '../utils/FixedPageSize'
+
 
 /** Displays field_crop_harvest entries
  *      -includes fields and field_crop information
@@ -25,25 +23,46 @@ import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, per
  *  - Delete field_crop_harvest
  *
  */
-const HarvestEventCard = (props) => {
+const HarvestEventCard = withTheme((props) => {
   const { croptitle, harvest_date, actual_n, actual_p, actual_k, tfs } = props.harvest
   return (
-    <Grid item xs={3} className='showOnHoverParent'>
+
+    <Grid item xs={12} md={4} lg={3} className='showOnHoverParent'>
       <Card variant="outlined" key={`pwwaer${props.index}`}>
         <CardContent>
-          <Typography>
-            {croptitle}
-          </Typography>
-          <DatePicker label="Harvest Date"
-            value={harvest_date}
-            open={false}
-          />
+          <Grid item xs={12} align='right'>
+            <Typography variant='caption'>
+              <Tooltip title='Application date' placement="top">
+                <span style={{ color: props.theme.palette.secondary.main }}>
+                  {` ${formatDate(splitDate(harvest_date))}`}
+                </span>
+              </Tooltip>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.primary.main }}>
+                {` ${croptitle}`}
+              </span>
+            </Typography>
+          </Grid>
+
+
+
           <Grid item xs={12}>
             <Typography variant='caption'>
-              {`N ${formatFloat(percentageAsMGKG(actual_n))} P ${formatFloat(percentageAsMGKG(actual_p))}`}
-            </Typography><br />
-            <Typography variant='caption'>
-              {` K ${formatFloat(percentageAsMGKG(actual_k))} TFS ${formatFloat(tfs)} `}
+              N: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(actual_n)} `}
+              </span>
+              P: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(actual_p)} `}
+              </span>
+              K: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(actual_k)} `}
+              </span>
+              TFS: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(tfs)} `}
+              </span>
             </Typography>
           </Grid>
         </CardContent>
@@ -59,7 +78,7 @@ const HarvestEventCard = (props) => {
       </Card>
     </Grid>
   )
-}
+})
 
 const HarvestEvent = (props) => {
   return (
@@ -162,14 +181,16 @@ class HarvestView extends Component {
             />
           </Grid>
 
-          {this.getAppEventsByViewKeys().length > 0 ?
-            <HarvestEvent
-              harvests={this.getAppEventsByViewKeys()}
-              onDelete={this.onDeleteFieldCropHarvest.bind(this)}
-            />
-            :
-            <React.Fragment></React.Fragment>
-          }
+          <FixedPageSize container item xs={12} height='375px' >
+            {this.getAppEventsByViewKeys().length > 0 ?
+              <HarvestEvent
+                harvests={this.getAppEventsByViewKeys()}
+                onDelete={this.onDeleteFieldCropHarvest.bind(this)}
+              />
+              :
+              <React.Fragment></React.Fragment>
+            }
+          </FixedPageSize>
         </Grid>
 
 

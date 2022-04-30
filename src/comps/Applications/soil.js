@@ -8,6 +8,8 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { CloudUpload } from '@material-ui/icons'
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import { formatDate, formatFloat, groupByKeys, naturalSortBy, splitDate } from "../../utils/format"
@@ -22,7 +24,7 @@ import { get, post } from '../../utils/requests'
 import {
   SOIL, TSVUtil
 } from "../../utils/TSV"
-import { DatePicker } from '@material-ui/pickers'
+import { FixedPageSize } from '../utils/FixedPageSize'
 
 
 
@@ -46,7 +48,7 @@ const SoilView = (props) => {
   )
 }
 
-const SoilViewCard = (props) => {
+const SoilViewCard = withTheme((props) => {
   let {
     app_method, n_con_0, p_con_0, k_con_0,
     n_con_1, p_con_1, k_con_1, n_con_2, p_con_2, k_con_2,
@@ -55,109 +57,174 @@ const SoilViewCard = (props) => {
   } = props.soil
 
   return (
-    <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
-      <CardContent>
-        <Typography>
-          {croptitle} - {app_method}
-        </Typography>
-        <DatePicker label="App Date"
-          value={app_date}
-          open={false}
-        />
-        <Grid item xs={12}>
-          <Typography variant='caption'>
-            {`Lvl 1: Sample date ${sample_date_0 ? formatDate(sample_date_0.split("T")[0]) : ' '} N ${formatFloat(n_con_0)} P ${formatFloat(p_con_0)} K ${formatFloat(k_con_0)}`}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant='caption'>
-            {`Lvl 2: Sample date ${sample_date_1 ? formatDate(sample_date_1.split("T")[0]) : ' '} N ${formatFloat(n_con_1)} P ${formatFloat(p_con_1)} K ${formatFloat(k_con_1)}`}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant='caption'>
-            {`Lvl 3: Sample date ${sample_date_2 ? formatDate(sample_date_2.split("T")[0]) : ' '} N ${formatFloat(n_con_2)} P ${formatFloat(p_con_2)} K ${formatFloat(k_con_2)}`}
-          </Typography>
-        </Grid>
+    <Grid item xs={12} md={4} lg={3}>
+      <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+        <CardContent>
+          <Grid item xs={12} align='right'>
+            <Typography variant='caption' >
+              <Tooltip title='Sample date' placement="top">
+                <span style={{ color: props.theme.palette.secondary.main }}>
+                  {` ${formatDate(splitDate(app_date))}`}
+                </span>
+              </Tooltip>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.primary.main }}>
+                {` ${croptitle}: ${app_method}`}
+              </span>
+            </Typography>
+          </Grid>
 
-      </CardContent>
-      <CardActions>
-        <Tooltip title="Delete Soil">
-          <IconButton className='showOnHover'
-            onClick={() => props.onDelete(props.soil)}
-          >
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Tooltip>
-      </CardActions>
-    </Card>
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              Sample date: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatDate(splitDate(sample_date_0))} `}
+              </span>
+              N: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(n_con_0)} `}
+              </span>
+
+              P: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(p_con_0)} `}
+              </span>
+              K: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(k_con_0)} `}
+              </span>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              Sample date: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatDate(splitDate(sample_date_1))} `}
+              </span>
+              N: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(n_con_1)} `}
+              </span>
+
+              P: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(p_con_1)} `}
+              </span>
+              K: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(k_con_1)} `}
+              </span>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              Sample date: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatDate(splitDate(sample_date_2))} `}
+              </span>
+              N: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(n_con_2)} `}
+              </span>
+
+              P: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(p_con_2)} `}
+              </span>
+              K: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(k_con_2)} `}
+              </span>
+            </Typography>
+          </Grid>
+
+        </CardContent>
+        <CardActions>
+          <Grid item xs={2}>
+            <Tooltip title="Delete Wastewater Analysis">
+              <IconButton className='showOnHover' size='small'
+                onClick={() => props.onDelete(props.soil)}
+              >
+                <DeleteIcon color="error" />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        </CardActions>
+      </Card>
+    </Grid>
   )
-}
+})
 
-const SoilAnalysisView = (props) => {
+const SoilAnalysisView = withTheme((props) => {
   const analyses = props && props.analyses ? props.analyses : []
   const headerInfo = analyses && analyses.length > 0 ? analyses[0] : {}
   return (
-    <Grid container item xs={12} className='showOnHoverParent'>
+
+    <Grid item xs={12} >
       <Grid item xs={12}>
         <Typography variant='h6'>
           {headerInfo.title}
         </Typography>
       </Grid>
-      {analyses.map((analysis, i) => {
-        return (
-          <Grid item container key={`savrowview${i}`} xs={12}>
-            <Grid item xs={3}>
-              <TextField
-                value={analysis.sample_desc}
-                label='Sample description'
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <TextField
-                value={analysis.sample_date ? analysis.sample_date.split('T')[0] : ''}
-                label='Sample date'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={analysis.n_con}
-                label='N mg/kg'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={analysis.p_con}
-                label='P mg/kg'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={analysis.k_con}
-                label='K mg/kg'
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                value={analysis.ec}
-                label='EC μmhos/cm'
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <Tooltip title='Delete Soil Analysis'>
-                <IconButton className='showOnHover'
-                  onClick={() => props.onDelete(analysis)}
-                >
-                  <DeleteIcon color='error' />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-          </Grid>
-        )
-      })}
+      <div style={{ display: 'flex' }}>
+        {analyses.map((analysis, i) => {
+          return (
+            <Card variant="outlined" key={`pwwaer_${props.index}_${i}`} className='showOnHoverParent'>
+              <CardContent>
+                <Grid item xs={12} align='right'>
+                  <Typography variant='caption' >
+                    <Tooltip title='Sample date' placement="top">
+                      <span style={{ color: props.theme.palette.secondary.main }}>
+                        {` ${formatDate(splitDate(analysis.sample_date))}`}
+                      </span>
+                    </Tooltip>
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant='subtitle1' >
+                    <span style={{ color: props.theme.palette.primary.main }}>
+                      {` ${analysis.sample_desc}`}
+                    </span>
+                  </Typography>
+                </Grid>
+
+
+                <Grid item xs={12}>
+                  <Typography variant='caption'>
+
+                    N: <span style={{ color: props.theme.palette.secondary.main }}>
+                      {`${formatFloat(analysis.kn_con)} `}
+                    </span>
+                    P: <span style={{ color: props.theme.palette.secondary.main }}>
+                      {`${formatFloat(analysis.p_con)} `}
+                    </span>
+                    K: <span style={{ color: props.theme.palette.secondary.main }}>
+                      {`${formatFloat(analysis.k_con)} `}
+                    </span>
+                    EC: <span style={{ color: props.theme.palette.secondary.main }}>
+                      {`${formatFloat(analysis.ec)} `}
+                    </span>
+
+
+
+                  </Typography>
+                </Grid>
+
+              </CardContent>
+              <CardActions>
+                <Grid item xs={2}>
+                  <Tooltip title="Delete Soil Analysis">
+                    <IconButton className='showOnHover' size='small'
+                      onClick={() => props.onDelete(analysis)}
+                    >
+                      <DeleteIcon color="error" />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              </CardActions>
+            </Card>
+          )
+        })}
+
+      </div>
     </Grid>
   )
-}
+})
+
+
 
 
 class Soil extends Component {
@@ -172,6 +239,7 @@ class Soil extends Component {
       showConfirmDeleteSoilModal: false,
       showConfirmDeleteSoilAnalysisModal: false,
       showUploadFieldCropAppSoilTSVModal: false,
+      showAnalyses: 'none',
       deleteSoilObj: {},
       deleteSoilAnalysisObj: {},
       tsvFile: "",
@@ -400,6 +468,10 @@ class Soil extends Component {
       })
   }
 
+  toggleShowAnalyses() {
+    this.setState({ showAnalyses: this.state.showAnalyses === 'none' ? 'flex' : this.state.showAnalyses === 'flex' ? 'none' : 'flex' })
+  }
+
   render() {
     return (
       <Grid item xs={12} container >
@@ -429,16 +501,28 @@ class Soil extends Component {
           </Tooltip>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant='h3'>Analyses</Typography>
+          <Grid item xs={12} >
+            <div style={{ display: 'flex' }}>
+              <Typography variant="h5" style={{ alignSelf: 'center' }} >Analyses</Typography>
+              <Tooltip title='Show'>
+                <IconButton onClick={this.toggleShowAnalyses.bind(this)}>
+                  <ExpandMoreIcon color='primary' />
+                </IconButton>
+              </Tooltip>
+            </div>
+
+          </Grid>
           {this.getSoilAnalysisSortedKeys().length > 0 ?
-            <List
-              height={250}
-              itemCount={this.getSoilAnalysisSortedKeys().length}
-              itemSize={this.getSoilAnalysisSize.bind(this)}
-              width={this.state.windowWidth * (.82)}
-            >
-              {this.renderSoilAnalysis.bind(this)}
-            </List>
+            <FixedPageSize item xs={12} height='375px' style={{ display: this.state.showAnalyses }}>
+              <List
+                height={250}
+                itemCount={this.getSoilAnalysisSortedKeys().length}
+                itemSize={this.getSoilAnalysisSize.bind(this)}
+                width={this.state.windowWidth * (.82)}
+              >
+                {this.renderSoilAnalysis.bind(this)}
+              </List>
+            </FixedPageSize>
             :
             <React.Fragment></React.Fragment>
           }
@@ -451,14 +535,16 @@ class Soil extends Component {
             viewFieldKey={this.state.viewFieldKey}
             viewPlantDateKey={this.state.viewPlantDateKey}
           />
-          {this.getAppEventsByViewKeys().length > 0 ?
-            <SoilView
-              soils={this.getAppEventsByViewKeys()}
-              onDelete={this.onConfirmSoilDelete.bind(this)}
-            />
-            :
-            <React.Fragment></React.Fragment>
-          }
+          <FixedPageSize container item xs={12} height='375px'>
+            {this.getAppEventsByViewKeys().length > 0 ?
+              <SoilView
+                soils={this.getAppEventsByViewKeys()}
+                onDelete={this.onConfirmSoilDelete.bind(this)}
+              />
+              :
+              <React.Fragment></React.Fragment>
+            }
+          </FixedPageSize>
         </Grid>
         {/* <Grid item xs={12}>
           <Typography variant='h3'>Soil Applications</Typography>

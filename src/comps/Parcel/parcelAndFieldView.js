@@ -239,7 +239,7 @@ class ParcelView extends Component {
           <Grid item container xs={6} alignContent='center' alignItems='center' justifyContent='center'>
             <Grid item xs={12}>
               <div style={{ display: 'flex' }}>
-                <Typography variant="h4" style={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h4" >
                   Parcels
                 </Typography>
                 <Tooltip title="Add parcel to dairy">
@@ -256,7 +256,7 @@ class ParcelView extends Component {
           <Grid item container xs={6} alignItems='center' justifyContent='center'>
             <Grid item xs={10}>
               <div style={{ display: 'flex' }}>
-                <Typography variant="h4" style={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h4" >
                   Fields
                 </Typography>
                 <Tooltip title="Add field to dairy">

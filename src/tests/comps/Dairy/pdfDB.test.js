@@ -15,6 +15,7 @@ import { getAnnualReportData } from '../../../comps/Dairy/pdfDB'
 import { naturalSortBy, naturalSortByKeys, sortByKeys } from '../../../utils/format';
 
 import { BASE_URL } from "../../../utils/environment"
+import { Files } from '../../../utils/files/files';
 const dairy_id = 1
 const TEST_USER_EMAIL_A = 'z@g.com'
 const TEST_USER_PASSWORD_A = 'abc123'
@@ -496,14 +497,12 @@ describe('Test pdfDB', () => {
         await auth.logout()
         await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
         ARD = await getAnnualReportData(dairy_id)
-        console.log("ARD: ", ARD)
     })
 
     test('A. DAIRY FACILITY INFORMATION (Address and Parcels)', async () => {
         // Get dairy info and check  address is good to go
         // Insert dairy info and ({[{({[[{parcels}]]})}]}) before (just after uploading XLSX)
         const { dairyInformationA } = ARD
-        console.log(dairyInformationA)
 
         const expected = {
             pk: 1,
@@ -533,8 +532,6 @@ describe('Test pdfDB', () => {
         // Check operator was created and has correct attrs, is_owner, is_operator, is_responsible
         // Expecting Spencer Nylund, created for Exports Tab Upload 
         const { dairyInformationB, dairyInformationC } = ARD
-        console.log(dairyInformationB)
-        console.log(dairyInformationC)
 
 
         const expectedB = {
@@ -975,7 +972,6 @@ describe('Test pdfDB', () => {
     test('A. LIST OF LAND APPLICATION AREAS.', async () => {
         // TODO replace the rest of the calls to use this global var with the main call to the server.
         const { applicationAreaA } = ARD
-        console.log("appArea", applicationAreaA)
 
         applicationAreaA.fields.forEach(field => {
             Object.keys(field).forEach(key => {
@@ -3178,4 +3174,26 @@ describe('Test pdfDB', () => {
 
 
 
+})
+
+
+describe("Test Files download for a dairy", () => {
+    test('Test Files download is the right mime type and is greater than 670kb', async () => {
+        const res = await Files.getFiles('Pharmz test title', dairy_id)
+        /** res
+         *    ArrayBuffer {
+                [Uint8Contents]: <7b 22 65 72 72 6f 72 22 3a 22 47 65 74 20 61 6c 6c 20 54 53 56 73 20 75 6e 73 75 63 63 65 73 73 66 75 6c 22 2c 22 65 72 72 22 3a 7b 7d 7d>,
+                byteLength: 46
+                }
+         */
+        var blob = new Blob([res], { type: "application/zip" });
+
+        expect(blob.type).toBe('application/zip')
+        /**
+         *  Client Side upload: 1,787,874
+         *  Test        upload:   672,172
+         * 
+         */
+        expect(blob.size).toBeGreaterThanOrEqual(670000) // 671 570, || 756,710 bytes (778 KB on disk) for 13 items
+    })
 })
