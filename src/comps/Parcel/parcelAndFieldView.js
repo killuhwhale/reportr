@@ -18,6 +18,9 @@ import { naturalSortBy } from '../../utils/format'
 import { Field } from '../../utils/fields/fields'
 import { Parcels } from '../../utils/parcels/parcels'
 
+import { MaxPageSize } from '../utils/FixedPageSize'
+
+
 class ParcelView extends Component {
   constructor(props) {
     super(props)
@@ -129,8 +132,12 @@ class ParcelView extends Component {
     this.setState({ [name]: value })
   }
   async createJoinFieldParcel() {
-    let field_id = this.state.fields[this.state.curJoinFieldIdx].pk
-    let parcel_id = this.state.parcels[this.state.curJoinParcelIdx].pk
+    let field = this.state.fields[this.state.curJoinFieldIdx]
+    let parcel = this.state.parcels[this.state.curJoinParcelIdx]
+
+    let field_id = field ? field.pk : 0
+    let parcel_id = parcel ? parcel.pk : 0
+
     const res = await Parcels.createFieldParcel(field_id, parcel_id, this.state.dairy.pk)
     this.toggleShowJoinFieldParcelModal(false)
 
@@ -284,7 +291,7 @@ class ParcelView extends Component {
         </Grid>
 
         <Grid item key="PVparcelNumbermn" xs={6}>
-          <Grid item container xs={12}>
+          <MaxPageSize height='512px'>
             {this.state.parcels.length > 0 ?
               this.state.parcels.sort((a, b) => naturalSortBy(a, b, 'pnumber')).map((parcel, i) => {
                 return (
@@ -314,7 +321,7 @@ class ParcelView extends Component {
                 No Parcels
               </React.Fragment>
             }
-          </Grid>
+          </MaxPageSize>
           {/* No longer editing parcel numbers. 
           <Grid item xs={12} style={{marginTop: "16px"}}>
             <Tooltip title="Update Parcels">
@@ -326,34 +333,40 @@ class ParcelView extends Component {
         </Grid>
 
         <Grid item key="PVfield" xs={6}>
-          {this.state.fields.length > 0 ?
-            this.state.fields.sort((a, b) => naturalSortBy(a, b, 'title')).map((field, i) => {
-              return (
-                <Grid container item xs={12} key={`parcelViewFieldsPV${i}`} className='showOnHoverParent'>
-                  <Grid item xs={11}>
-                    <FieldForm
-                      field={field}
-                      titleEditable={false}
-                      onUpdate={this.onFieldUpdate.bind(this)}
-                    />
+
+          <MaxPageSize height='512px'>
+
+
+            {this.state.fields.length > 0 ?
+              this.state.fields.sort((a, b) => naturalSortBy(a, b, 'title')).map((field, i) => {
+                return (
+                  <Grid container item xs={12} key={`parcelViewFieldsPV${i}`} className='showOnHoverParent'>
+                    <Grid item xs={11}>
+                      <FieldForm
+                        field={field}
+                        titleEditable={false}
+                        onUpdate={this.onFieldUpdate.bind(this)}
+                      />
+                    </Grid>
+                    <Grid item xs={1} container justifyContent='center' alignItems='center'>
+                      <Tooltip title="Delete Field">
+                        <IconButton className='showOnHover'
+                          onClick={() => { this.confirmDeleteField(field) }}
+                        >
+                          <DeleteIcon color="error" />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={1} container justifyContent='center' alignItems='center'>
-                    <Tooltip title="Delete Field">
-                      <IconButton className='showOnHover'
-                        onClick={() => { this.confirmDeleteField(field) }}
-                      >
-                        <DeleteIcon color="error" />
-                      </IconButton>
-                    </Tooltip>
-                  </Grid>
-                </Grid>
-              )
-            })
-            :
-            <React.Fragment key="emptyPVF">
-              No Fields
-            </React.Fragment>
-          }
+                )
+              })
+              :
+              <React.Fragment key="emptyPVF">
+                No Fields
+              </React.Fragment>
+            }
+          </MaxPageSize>
+
         </Grid>
 
         <Grid item container key="PVlistfieldsandparcels" xs={12}>
@@ -373,7 +386,7 @@ class ParcelView extends Component {
           </Grid>
         </Grid>
 
-        <Grid item key="PVjoinView" xs={12}>
+        <MaxPageSize height='512px' item key="PVjoinView" xs={12}>
           <JoinedView
             dairy={this.state.dairy}
             field_parcels={this.state.field_parcels}
@@ -382,7 +395,7 @@ class ParcelView extends Component {
             BASE_URL={this.props.BASE_URL}
           />
 
-        </Grid>
+        </MaxPageSize>
 
         <FieldParcelJoinModal key="PVparcelJoinModal"
           open={this.state.showJoinFieldParcelModal}

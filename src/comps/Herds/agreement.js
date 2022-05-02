@@ -63,7 +63,9 @@ class Agreement extends Component {
 
   async getAgreements() {
     const agreement = await CertAgreementNotes.getAgreements(this.state.dairy_id)
-    if (agreement.error) return console.log(agreement)
+    if (agreement.error) {
+      return console.log(agreement)
+    }
     console.log(agreement)
     this.setState({ agreement: agreement[0] })
   }
@@ -135,9 +137,15 @@ class Agreement extends Component {
   }
 
   async onUpdateNote() {
-    const res = await CertAgreementNotes.onUpdateNote(this.state.note, this.state.dairy_id)
-    if (res.error) return this.props.onAlert('Error updating note', 'error')
-    this.props.onAlert('Updated note!', 'success')
+    try {
+      const res = await CertAgreementNotes.onUpdateNote(this.state.note, this.state.dairy_id)
+      console.log(res)
+      if (res.error) return this.props.onAlert('Error updating note', 'error')
+      this.props.onAlert('Updated note!', 'success')
+
+    } catch (e) {
+      console.log("Error updating note: ", e)
+    }
   }
 
   async onUpdateCertification() {

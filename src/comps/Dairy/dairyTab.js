@@ -31,6 +31,8 @@ import { Parcels } from '../../utils/parcels/parcels'
 import { Files } from '../../utils/files/files';
 import { formatDate, splitDate } from '../../utils/format';
 
+import { MaxPageSize } from '../utils/FixedPageSize'
+
 const ReportingPeriod = (props) => {
   // onUpdate
   // onChange
@@ -205,6 +207,7 @@ class DairyTab extends Component {
   getAllOperators() {
     get(`${this.props.BASE_URL}/api/operators/${this.state.dairy.pk}`)
       .then(res => {
+        if (res.error) return console.log(res.error)
         this.setState({ operators: res })
       })
       .catch(err => {
@@ -485,13 +488,15 @@ class DairyTab extends Component {
             </Grid>
 
             <Grid item xs={12} style={{ marginTop: '64px' }}>
-              <OperatorView
-                dairy={this.state.dairy}
-                operators={this.state.operators}
-                refreshOperators={() => this.getAllOperators()}
-                onAlert={this.props.onAlert}
-                BASE_URL={this.props.BASE_URL}
-              />
+              <MaxPageSize height='768px'>
+                <OperatorView
+                  dairy={this.state.dairy}
+                  operators={this.state.operators}
+                  refreshOperators={() => this.getAllOperators()}
+                  onAlert={this.props.onAlert}
+                  BASE_URL={this.props.BASE_URL}
+                />
+              </MaxPageSize>
             </Grid>
 
 

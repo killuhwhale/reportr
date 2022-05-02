@@ -131,14 +131,9 @@ Github is private, the only passwords visible in code is for the DB and that is 
 Tests for Files and Reporting peroid
 THen, UI update Sources, Analyses,
   # Tests
-    
     - Reporting period
       - Unit test, ensure it updates correctly....
     - Logo upload 
-
-  # Download Zip File with PDF report & All TSVs for that Dairy.
-    - TSV Files Issue
-     
   
        
   - Create a spread sheet with the difference between each sheet
@@ -146,7 +141,8 @@ THen, UI update Sources, Analyses,
   
 
   # UI
-    - Nutrient Application Analyses should be shown and be able to be deleted
+    - Export Tab, Infinite list are seem bad....
+      - UI Should be revamped a little
   
 
 
@@ -189,19 +185,21 @@ THen, UI update Sources, Analyses,
 
 # Problems   
 
-  # When 403 error 
-  - after refresh token is expired many things many when there is a bad request.
-      Need to find all these places and make sure that something expecting a list doesnt get an error object.
+# Reporting period 
 
   # PDF AR Report
     - A. Notes
           [object Object] instead of that actual notes or 'No notes'
+        - Happens when there isn't a note created yet for data base... The response from the lazyGet most likely returing an object or there is an error.
+        - Note is created when the user navigates to Info tab(herds) (client lazy gets the note)
+        - When server is generating report, it is likely lazy getting the note as well... but it isn't returning the value....
+
 
   - Upload TSV process 
     - Ensure there are rows of data bfore uploading.
     - Need to avoid updating TSV file in DB with an empty doc...
 
-  - Dates are slightly off due to timezone.... (I think)
+  - Dates are slightly off due to timezone.... (I think) I see this when I update the adress at late night.....
     - Creating a date inititally for a dairy, days should be jan 1st to dec 31st 
       - Currently, the dates are created as dec 31st to dec 30th (1 day off)
     

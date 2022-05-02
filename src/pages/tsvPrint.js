@@ -9,7 +9,7 @@ import {
   PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, MANURE, WASTEWATER, HARVEST, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, TSV_INFO
 } from '../utils/TSV'
 import { createHeaderMap, mapsColToTemplate } from '../utils/TSV'
-import { TABLE_HEADER_BACKGROUND_COLOR, B64_LOGO, } from "../specific"
+import { TABLE_HEADER_BACKGROUND_COLOR, } from "../specific"
 import { Dairy } from '../utils/dairy/dairy'
 import { Logo } from '../utils/Logo/logo'
 import { auth } from '../utils/users'

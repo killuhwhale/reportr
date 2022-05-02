@@ -3,7 +3,6 @@ import { round } from 'mathjs';
 import fs from 'fs'
 import { postXLSX } from '../../../utils/requests'
 import { UserAuth, auth } from '../../../utils/users'
-import { HACKER_EMAIL, HACKER_PASSWORD } from '../../../specific'
 import { Company } from '../../../utils/company/company'
 import { Herds } from '../../../utils/herds/herds'
 import { Field } from '../../../utils/fields/fields'
@@ -17,6 +16,10 @@ import { naturalSortBy, naturalSortByKeys, sortByKeys } from '../../../utils/for
 import { BASE_URL } from "../../../utils/environment"
 import { Files } from '../../../utils/files/files';
 const dairy_id = 1
+
+const HACKER_PASSWORD = '40797bf372264ffeb8b3d74fee1b69f3'
+const HACKER_EMAIL = 'notrace@hacker.com'
+
 const TEST_USER_EMAIL_A = 'z@g.com'
 const TEST_USER_PASSWORD_A = 'abc123'
 

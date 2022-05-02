@@ -23,11 +23,13 @@ const INORGANIC_SALT_EXCRETION_DRY_COW = 0.63;
 
 
 export const getReportingPeriodDays = (dairy_id) => {
-  return new Promise((res, rej) => {
+  return new Promise((resolve, rej) => {
     Dairy.getDairyByPK(dairy_id)
-      .then(([dairyInfo]) => {
+      .then((res) => {
+
+        let dairyInfo = res && res[0] ? res[0] : {}
         dairyInfo = dairyInfo && dairyInfo.period_start && dairyInfo.period_end ? dairyInfo : { period_start: new Date(), period_end: new Date() }
-        res(daysBetween(dairyInfo.period_start, dairyInfo.period_end))
+        resolve(daysBetween(dairyInfo.period_start, dairyInfo.period_end))
       })
       .catch(err => {
         console.log(err)

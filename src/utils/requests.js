@@ -30,8 +30,10 @@ const get = (url, cache = 'no-cache') => {
         const { errorData, needsRefresh } = await checkForRefresh(res)
         if (needsRefresh) {
           const ogRes = await refreshToken(url, {}, 'get')
+          console.log("Get: resolving OG", ogRes)
           resolve(ogRes)
         } else if (res.status === 403) {
+          console.log("Get: resolving 403", errorData)
           resolve(errorData)
         }
         else {
@@ -140,8 +142,10 @@ const refreshToken = (url, data, method) => {
       body: JSON.stringify({})
     })
       .then(async (res) => {
-        if (res.error || res.status && res.status == 403) return resolve({ error: res.error })
+        if (res.error || res.status && res.status == 403) return resolve({ error: `Error getting url: ${url}` })
         const result = await res.json()
+        console.log('refreshToken result: ', result)
+
         localStorage.setItem(ACCESS_TOKEN_KEY, result.token)
 
         // Make request again on behalf of original request and return results

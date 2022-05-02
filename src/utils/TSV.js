@@ -118,10 +118,12 @@ export const lazyGet = (endpoint, value, data, dairy_id) => {
                                 get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_id}`)
                                     .then(secondResult => {
                                         // Found entry, on second attempt.
+                                        console.log('Found 1st entry resolve: ', res)
                                         resolve(secondResult)
                                     })
                             } else {
                                 // Created entry, returning result
+                                console.log('Created entry resolve: ', res)
                                 resolve(result)
                             }
                         })
@@ -131,6 +133,7 @@ export const lazyGet = (endpoint, value, data, dairy_id) => {
                         })
                 } else {
                     // Found entry, returning result
+                    console.log('Second entry resolve: ', res)
                     resolve(res)
                 }
             })

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Typography, IconButton, Tooltip
+  Grid, Typography, IconButton, Tooltip, Card, CardContent, CardActions
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -9,7 +9,6 @@ import AirlineSeatLegroomReducedIcon from '@material-ui/icons/AirlineSeatLegroom
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import LocalDrinkIcon from '@material-ui/icons/LocalDrink'
-import { VariableSizeList as List } from "react-window"
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
@@ -30,7 +29,7 @@ import { getAvailableNutrientsG } from '../Dairy/pdfDB'
 import { formatDate, formatFloat, groupBySortBy, splitDate } from '../../utils/format'
 import { REPORTING_METHODS } from '../../utils/constants'
 
-
+import { FixedPageSize } from '../utils/FixedPageSize'
 
 
 
@@ -51,6 +50,7 @@ const DEST_TYPES = ['Broker', 'Composting Facility', 'Farmer', 'Other']
 const ContactView = (props) => {
   const contact = props.contact
   return (
+
     <Grid item container xs={12} alignItems='center' style={{ marginTop: '16px' }} className='showOnHoverParent'>
       <Grid item xs={10} >
         <Typography variant="caption">
@@ -67,6 +67,8 @@ const ContactView = (props) => {
         </Tooltip>
       </Grid>
     </Grid>
+
+
   )
 }
 
@@ -143,53 +145,103 @@ const DestView = (props) => {
   )
 }
 
-const ManifestView = (props) => {
+const ManifestView = withTheme((props) => {
   const manifests = props.manifest
   const recipientTitle = manifests[0].recipient_title
   return (
-    <Grid item container xs={12} style={props.style} style={{ marginTop: '16px' }} className='showOnHoverParent'>
+    <Grid item container xs={12} style={props.style} style={{ marginTop: '16px' }} >
       <Grid item xs={12}>
-        <Typography variant="subtitle1">
+        <Typography variant="subtitle1" color='secondary'>
           {recipientTitle}
         </Typography>
       </Grid>
 
       {manifests.map((manifest, i) => {
+        console.log(manifest)
         return (
-          <Grid item container xs={12} key={`mvet${i}`} alignItems='center'>
-            <Grid item container xs={10}>
-              <Grid item xs={6}>
-                <Typography variant="caption">
-                  Date last hauled: {manifest.last_date_hauled.split("T")[0]} {manifest.material_type}
-                </Typography>
-              </Grid>
-              <Grid item xs={2}>
-                <Typography variant="caption">
-                  Amount: {manifest.amount_hauled}
-                </Typography>
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="caption">
-                  N: {manifest.n_con_mg_kg}{manifest.n_con_mg_l} P: {manifest.p_con_mg_kg} {manifest.p_con_mg_l} K: {manifest.k_con_mg_kg} {manifest.k_con_mg_l}
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid item xs={2}>
-              <Tooltip title="Delete manifest">
-                <IconButton className='showOnHover'
-                  onClick={() => props.onConfirmExportManifestDelete(manifest)}
-                >
-                  <DeleteIcon color='error' />
-                </IconButton>
-              </Tooltip>
-            </Grid>
+
+
+          <Grid item xs={12} md={4} lg={3}>
+            <Card variant="outlined" key={`expmani_${i}`} className='showOnHoverParent'>
+              <CardContent>
+                <Grid item xs={12} align='right'>
+                  <Typography variant='caption' >
+                    <Tooltip title='Last hauled' placement="top">
+                      <span style={{ color: props.theme.palette.secondary.main }}>
+                        {` ${formatDate(splitDate(manifest.last_date_hauled))}`}
+                      </span>
+                    </Tooltip>
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant='subtitle1' >
+                    <span style={{ color: props.theme.palette.primary.main }}>
+                      {` ${manifest.material_type} `}
+                    </span>
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Typography variant='caption'>
+
+                    {
+                      /rocess/.test(manifest.material_type) ?
+                        <React.Fragment>
+                          N <span style={{ color: props.theme.palette.primary.main }}>
+                            {` ${formatFloat(manifest.kn_con_mg_l)} mg/L `}
+                          </span>
+                          P <span style={{ color: props.theme.palette.primary.main }}>
+                            {` ${formatFloat(manifest.p_con_mg_l)} mg/L `}
+                          </span>
+                          K <span style={{ color: props.theme.palette.primary.main }}>
+                            {` ${formatFloat(manifest.k_con_mg_l)} mg/L `}
+                          </span>
+                        </React.Fragment>
+                        :
+                        <React.Fragment>
+                          N <span style={{ color: props.theme.palette.primary.main }}>
+                            {` ${formatFloat(manifest.n_con_mg_kg)} mg/kg `}
+                          </span>
+                          P <span style={{ color: props.theme.palette.primary.main }}>
+                            {` ${formatFloat(manifest.p_con_mg_kg)} mg/kg `}
+                          </span>
+                          K <span style={{ color: props.theme.palette.primary.main }}>
+                            {` ${formatFloat(manifest.k_con_mg_kg)} mg/kg `}
+                          </span>
+                        </React.Fragment>
+                    }
+
+
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Typography variant='caption'>
+                    {`Amount hauled ${formatFloat(manifest.amount_hauled)}`}
+                  </Typography>
+                </Grid>
+              </CardContent>
+              <CardActions>
+                <Grid item xs={2}>
+                  <Tooltip title="Delete Export Manifest">
+                    <IconButton className='showOnHover' size='small'
+                      onClick={() => props.onConfirmExportManifestDelete(manifest)}
+                    >
+                      <DeleteIcon color="error" />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+              </CardActions>
+            </Card>
+
           </Grid>
+
         )
       })
       }
     </Grid>
   )
-}
+})
 
 
 const ExportTotals = (props) => {
@@ -384,7 +436,6 @@ class ExportTab extends Component {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
   componentDidMount() {
-    this.setWindowListener()
     this.getExportContact()
     this.getOperators()
     this.getExportHaulers()
@@ -754,33 +805,6 @@ class ExportTab extends Component {
 
     }
 
-
-
-
-    // uploadExportTSV(this.state.manureTsvFile, MANURE, dairy_id)
-    //   .then(result => {
-    //     uploadTSVToDB(this.state.manureUploadedFilename, this.state.manureTsvFile, this.state.dairy.pk, TSV_INFO[MANURE].tsvType)
-    //       .then(tsvUploadRes => {
-    //         this.toggleShowUploadManureTSVModal(false)
-    //         this.getExportContact()
-    //         this.getOperators()
-    //         this.getExportHaulers()
-    //         this.getExportRecipients()
-    //         this.getExportDests()
-    //         this.getExportManifests()
-    //         this.props.onAlert('Success!', 'success')
-    //       })
-    //       .catch(err => {
-    //         console.log(err)
-    //         this.toggleShowUploadManureTSVModal(false)
-    //         this.props.onAlert('Failed uploading.', 'error')
-    //       })
-    //   })
-    //   .catch(err => {
-    //     console.log(err)
-    //     this.toggleShowUploadManureTSVModal(false)
-    //     this.props.onAlert('Failed uploading.', 'error')
-    //   })
   }
 
   async onUploadExportWastewaterTSV() {
@@ -860,88 +884,6 @@ class ExportTab extends Component {
     this.setState({ showViewWastewaterTSVsModal: val })
   }
 
-  setWindowListener() {
-    window.addEventListener('resize', (ev) => {
-
-      this.setState({ windowHeight: window.innerHeight, windowWidth: window.innerWidth })
-    })
-  }
-
-  renderContact({ index, style }) {
-    return (
-      <ContactView key={`etcview${index}`} style={style}
-        contact={this.state.exportContacts[index]}
-        onConfirmExportContactDelete={this.onConfirmExportContactDelete.bind(this)}
-      />
-    )
-  }
-
-  getContactSize(index) {
-    let itemSize = 48
-    return itemSize
-  }
-
-  renderHauler({ index, style }) {
-    return (
-      <HaulerView key={`ethview${index}`} style={style}
-        hauler={this.state.exportHaulers[index]}
-        onConfirmExportHaulerDelete={this.onConfirmExportHaulerDelete.bind(this)}
-      />
-    )
-  }
-
-  getHaulerSize(index) {
-    let itemSize = 60
-    return itemSize
-  }
-
-  renderRecipient({ index, style }) {
-    return (
-      <RecipientView key={`etrview${index}`} style={style}
-        recipient={this.state.exportRecipients[index]}
-        onConfirmExportRecipientDelete={this.onConfirmExportRecipientDelete.bind(this)}
-      />
-    )
-  }
-
-  getRecipientSize(index) {
-    let itemSize = 47.97
-    return itemSize
-  }
-
-  renderDest({ index, style }) {
-    return (
-      <DestView key={`etdview${index}`} style={style}
-        dest={this.state.exportDests[index]}
-        onConfirmExportDestDelete={this.onConfirmExportDestDelete.bind(this)}
-      />
-    )
-  }
-
-  getDestSize(index) {
-    let itemSize = 48
-    return itemSize
-  }
-
-  renderManifest({ index, style }) {
-    let key = Object.keys(this.state.exportManifests)[index]
-    let manifest = this.state.exportManifests[key]
-    return (
-      <ManifestView key={`etcview${index}`} style={style}
-        manifest={manifest}
-        onConfirmExportManifestDelete={this.onConfirmExportManifestDelete.bind(this)}
-      />
-    )
-  }
-
-  getManifestSize(index) {
-    let key = Object.keys(this.state.exportManifests)[index]
-    let numRows = this.state.exportManifests[key].length
-    let headerSize = 40
-    let itemSize = 60
-
-    return headerSize + (itemSize * numRows)
-  }
 
   confirmDeleteAllFromTable(val) {
     this.setState({ toggleShowDeleteAllModal: val })
@@ -981,8 +923,12 @@ class ExportTab extends Component {
   }
 
   async fetchExportTotals() {
-    const { availableNutrientsG: { manureExported, wastewaterExported, total: nutrientsExported } } = await getAvailableNutrientsG(this.props.dairy.pk)
-    this.setState({ manureExported, wastewaterExported, nutrientsExported })
+    try {
+      const { availableNutrientsG: { manureExported, wastewaterExported, total: nutrientsExported } } = await getAvailableNutrientsG(this.props.dairy.pk)
+      this.setState({ manureExported, wastewaterExported, nutrientsExported })
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   getExportTotals() {
@@ -1096,7 +1042,11 @@ class ExportTab extends Component {
               </Grid>
             </Grid>
 
-            <Grid item xs={12} style={{ marginTop: '24px' }}>
+            <Grid item xs={12} style={{
+              marginTop: '24px', marginBottom: '12px', borderBottom: '1px solid',
+              borderColor: this.props.theme.palette.primary.main,
+              borderBottomWidth: 'thick'
+            }}>
               {
                 this.state.nutrientsExported.length > 0 ?
                   <ExportTotals
@@ -1114,18 +1064,16 @@ class ExportTab extends Component {
                 </Typography>
               </Grid>
               {this.state.exportContacts.length > 0 ?
-                <Grid item xs={12}>
-                  <List
-                    style={{ overflowX: 'hidden' }}
-                    height={this.state.windowHeight * 0.3}
-                    itemCount={this.state.exportContacts.length}
-                    itemSize={this.getContactSize.bind(this)}
-                    width={this.state.windowWidth * (.2)}
-                  >
-                    {this.renderContact.bind(this)}
-                  </List>
-                </Grid>
-
+                <FixedPageSize item xs={12} height='256px'>
+                  {this.state.exportContacts.map((contact, i) => {
+                    return (
+                      <ContactView key={`etcview${i}`}
+                        contact={contact}
+                        onConfirmExportContactDelete={this.onConfirmExportContactDelete.bind(this)}
+                      />
+                    )
+                  })}
+                </FixedPageSize>
                 :
                 <Grid item xs={12} align='center'>
                   <Typography variant='subtitle2'>No contacts</Typography>
@@ -1140,17 +1088,18 @@ class ExportTab extends Component {
                 </Typography>
               </Grid>
               {this.state.exportHaulers.length > 0 ?
-                <Grid item container xs={12}>
-                  <List
-                    style={{ overflowX: 'hidden' }}
-                    height={this.state.windowHeight * 0.3}
-                    itemCount={this.state.exportHaulers.length}
-                    itemSize={this.getHaulerSize.bind(this)}
-                    width={this.state.windowWidth * (.2)}
-                  >
-                    {this.renderHauler.bind(this)}
-                  </List>
-                </Grid>
+                <FixedPageSize item xs={12} height='256px'>
+                  {
+                    this.state.exportHaulers.map((hauler, i) => {
+                      return (
+                        <HaulerView key={`ethview${i}`}
+                          hauler={hauler}
+                          onConfirmExportHaulerDelete={this.onConfirmExportHaulerDelete.bind(this)}
+                        />
+                      )
+                    })
+                  }
+                </FixedPageSize>
 
 
                 :
@@ -1165,18 +1114,19 @@ class ExportTab extends Component {
                 Recipients
               </Typography>
               {this.state.exportRecipients.length > 0 ?
-                <Grid item container xs={12}>
-                  <List
-                    style={{ overflowX: 'hidden' }}
-                    height={this.state.windowHeight * 0.3}
-                    itemCount={this.state.exportRecipients.length}
-                    itemSize={this.getRecipientSize.bind(this)}
-                    width={this.state.windowWidth * (.2)}
-                  >
-                    {this.renderRecipient.bind(this)}
-                  </List>
+                <FixedPageSize item xs={12} height='256px'>
+                  {
+                    this.state.exportRecipients.map((recipient, i) => {
+                      return (
+                        <RecipientView key={`etrview${i}`}
+                          recipient={recipient}
+                          onConfirmExportRecipientDelete={this.onConfirmExportRecipientDelete.bind(this)}
+                        />
+                      )
+                    })
+                  }
 
-                </Grid>
+                </FixedPageSize>
 
                 :
                 <Grid item xs={12} align='center'>
@@ -1190,15 +1140,18 @@ class ExportTab extends Component {
                 Destinations
               </Typography>
               {this.state.exportDests.length > 0 ?
-                <List
-                  style={{ overflowX: 'hidden' }}
-                  height={this.state.windowHeight * 0.3}
-                  itemCount={this.state.exportDests.length}
-                  itemSize={this.getDestSize.bind(this)}
-                  width={this.state.windowWidth * (.2)}
-                >
-                  {this.renderDest.bind(this)}
-                </List>
+                <FixedPageSize item xs={12} height='256px'>
+                  {
+                    this.state.exportDests.map((dest, i) => {
+                      return (
+                        <DestView key={`etdview${i}`}
+                          dest={dest}
+                          onConfirmExportDestDelete={this.onConfirmExportDestDelete.bind(this)}
+                        />
+                      )
+                    })
+                  }
+                </FixedPageSize>
 
                 :
                 <Grid item xs={12} align='center'>
@@ -1214,15 +1167,19 @@ class ExportTab extends Component {
                 </Typography>
               </Grid>
               {Object.keys(this.state.exportManifests).length > 0 ?
-                <List
-                  style={{ overflowX: 'hidden' }}
-                  height={this.state.windowHeight * 0.75}
-                  itemCount={Object.keys(this.state.exportManifests).length}
-                  itemSize={this.getManifestSize.bind(this)}
-                  width={this.state.windowWidth * (.82)}
-                >
-                  {this.renderManifest.bind(this)}
-                </List>
+                <FixedPageSize item xs={12} height='512px'>
+
+                  {
+                    Object.keys(this.state.exportManifests).map((manifestKey, i) => {
+                      return (
+                        <ManifestView key={`etcview${i}`}
+                          manifest={this.state.exportManifests[manifestKey]}
+                          onConfirmExportManifestDelete={this.onConfirmExportManifestDelete.bind(this)}
+                        />
+                      )
+                    })
+                  }
+                </FixedPageSize>
                 :
                 <Grid item xs={12} align='center'>
                   <Typography variant='subtitle2'>No manifests</Typography>
@@ -1236,7 +1193,7 @@ class ExportTab extends Component {
           :
           <React.Fragment>
             <Grid item xs={12}>
-              <Typography>No dairy selected</Typography>
+              <Typography>None selected</Typography>
             </Grid>
           </React.Fragment>
         }
