@@ -180,7 +180,11 @@ class DairyTab extends Component {
         if (res.error) {
           const { error, tsvType, uploadedFilename } = res
           console.log(error)
-          const errMsg = `${tsvType} ${error.error.code}`
+          // Somtimes error is just a string, lets see if its still an obj....
+          let errMsg = `${tsvType} ${error.msg}`
+          if (/set_var_from_str/.test(error.msg)) {
+            errMsg = `${tsvType} failed to find fields: ${error.value.toString()}`
+          }
           this.toggleShowUploadXLSX(false)
           this.props.onAlert(errMsg, 'error')
           return

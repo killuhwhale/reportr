@@ -84,6 +84,8 @@ const queryPromiseByValues = (formattedSQL, values) => {
   })
 }
 
+
+
 const insertDairyBase = (values, callback) => {
   return pool.query(
     format("INSERT INTO dairy_base(company_id, title) VALUES (%L) RETURNING *", values),
@@ -2672,6 +2674,8 @@ module.exports = {
 
 
 }
+exports.queryPromiseByValues = queryPromiseByValues
+
 
 const resetDB = (pool) => {
   return new Promise((resolve, reject) => {

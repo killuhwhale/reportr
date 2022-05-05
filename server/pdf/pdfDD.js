@@ -1,10 +1,18 @@
-const { formatDate, formatFloat, formatInt, naturalSort, naturalSortBy, percentageAsMGKG } = require("../utils/format")
+const { formatDate, formatFloat, formatInt, naturalSort, naturalSortBy, percentageAsMGKG, splitDate } = require("../utils/format")
 const { round } = require("mathjs")
 
 const gray = "#eeeeee"
 const darkGray = "#cecece"
 
 
+const lightTable = {
+    hLineColor: function (i, node) {
+        return '#AAA';
+    },
+    vLineColor: function (i, node) {
+        return '#AAA';
+    }
+}
 const line = (len) => {
     return {
         table: {
@@ -21,7 +29,7 @@ const line = (len) => {
 
     }
 }
-const longAddressLine = (props) => {
+const longAddressLine = (props, showCityState = false) => {
     return {
         stack: [
             {
@@ -39,7 +47,7 @@ const longAddressLine = (props) => {
                         },
                         {
                             border: [false, false, false, false],
-                            text: { text: props.county, fontSize: 9 }
+                            text: { text: showCityState ? props.cityState : props.county, fontSize: 9 }
                         },
                         {
                             border: [false, false, false, false],
@@ -58,7 +66,7 @@ const longAddressLine = (props) => {
                     body: [
                         [{
                             border: [false, true, false, false],
-                            text: { text: 'Number and Street', fontSize: 8 }
+                            text: { text: showCityState ? 'Mailing Address Number and Street' : 'Number and Street', fontSize: 8 }
                         },
                         {
                             border: [false, true, false, false],
@@ -66,7 +74,7 @@ const longAddressLine = (props) => {
                         },
                         {
                             border: [false, true, false, false],
-                            text: { text: 'County', fontSize: 8 }
+                            text: { text: showCityState ? 'State' : 'County', fontSize: 8 }
                         },
                         {
                             border: [false, true, false, false],
@@ -127,9 +135,9 @@ const image = (img, w, h) => {
 const ownOperatorTable = (key, props, is_owner) => {
     return {
         headlineLevel: key,
+        layout: lightTable,
         table: {
             widths: ["100%"],
-
             body: [
                 [
                     {
@@ -152,7 +160,8 @@ const ownOperatorTable = (key, props, is_owner) => {
                             city: props.city,
                             county: props.county,
                             zipCode: props.city_zip,
-                        })]
+                            cityState: props.city_state,
+                        }, true)]
                     }
                 ],
                 [{
@@ -268,8 +277,11 @@ const dairyInformationA = (props) => {
     }
     const table = {
         margin: [20, 0, 0, 0], // Parcels
+        layout: lightTable,
         stack: [
             {
+
+                layout: lightTable,
                 table: {
                     widths: ['16%', '16%', '16%', '16%', '16%', '16%',],
                     body: parcelTableBody
@@ -436,6 +448,7 @@ const dairyInformationA = (props) => {
                     }
                 },
                 {
+                    layout: lightTable,
                     table: {
                         margin: [0, 0],
                         widths: ['100%'],
@@ -537,13 +550,14 @@ const availableNutrientsA = (props) => {
                 }
             },
             {
+                layout: lightTable,
                 table: {
                     widths: ['100%'],
                     body: [
                         [{// row 1
                             border: [false, false, false, false],
                             text: {
-                                text: 'A. HERD INFORMATION:', bold: true, fontSize: 9,
+                                text: 'A. HERD INFORMATION', bold: true, fontSize: 9,
                             }
                         },
                         ]
@@ -551,6 +565,7 @@ const availableNutrientsA = (props) => {
                 }
             },
             {
+                layout: lightTable,
                 table: {
                     widths: ["25%", "10%", "10%", "15%", "20%", "10%", "*"],
                     // widths: ['*', '*', '*', '*', '*', '*', '*'], // Interesting, if I use the above percents, hella stuff below looks worse....
@@ -1036,7 +1051,7 @@ const availableNutrientsC = (props) => {
                                     {
                                         border: [false],
                                         text: {
-                                            text: 'gallons',
+                                            text: 'lbs',
                                             italics: true,
                                             fontSize: 9,
                                         }
@@ -1060,7 +1075,7 @@ const availableNutrientsC = (props) => {
                                     {
                                         border: [false],
                                         text: {
-                                            text: 'gallons',
+                                            text: 'lbs',
                                             italics: true,
                                             fontSize: 9,
                                         }
@@ -1084,7 +1099,7 @@ const availableNutrientsC = (props) => {
                                     {
                                         border: [false],
                                         text: {
-                                            text: 'gallons',
+                                            text: 'lbs',
                                             italics: true,
                                             fontSize: 9,
                                         }
@@ -1108,7 +1123,7 @@ const availableNutrientsC = (props) => {
                                     {
                                         border: [false],
                                         text: {
-                                            text: 'gallons',
+                                            text: 'lbs',
                                             italics: true,
                                             fontSize: 9,
                                         }
@@ -1283,13 +1298,14 @@ const availableNutrientsD = (props) => {
     return {
         stack: [
             {
+
                 table: {
                     widths: ['*'],
                     body: [
                         [{// row 1
                             border: [false, false, false, false],
                             text: {
-                                text: 'D. FRESH WATER SOURCES:', bold: true, fontSize: 9,
+                                text: 'D. FRESH WATER SOURCES', bold: true, fontSize: 9,
                             }
                         },
                         ]
@@ -1299,6 +1315,7 @@ const availableNutrientsD = (props) => {
             },
             {
                 margin: [10, 0, 0, 0],
+                layout: lightTable,
                 table: {
                     widths: ['75%', '*'],
                     body: body
@@ -1359,7 +1376,7 @@ const availableNutrientsE = (props) => {
                         [{// row 1
                             border: [false, false, false, false],
                             text: {
-                                text: 'E. SUBSURFACE (TILE) DRAINAGE SOURCES:', bold: true, fontSize: 9,
+                                text: 'E. SUBSURFACE (TILE) DRAINAGE SOURCES', bold: true, fontSize: 9,
                             }
                         }]
                     ]
@@ -1367,6 +1384,7 @@ const availableNutrientsE = (props) => {
             },
             {
                 margin: [10, 0, 0, 0],
+                layout: lightTable,
                 table: {
                     widths: ['100%', '*'],
                     body: body
@@ -1381,7 +1399,7 @@ const availableNutrientsFTableDryManure = (props) => {
         return [
             {// row 1
                 text: {
-                    text: props.import_date ? formatDate(props.import_date.toISOString().split("T")[0]) : '',
+                    text: props.import_date ? formatDate(splitDate(props.import_date.toISOString())) : '',
                     fontSize: 8,
                 }
             },
@@ -1502,6 +1520,7 @@ const availableNutrientsFTableDryManure = (props) => {
     ]
     const table = {
         margin: [10, 0, 0, 5],
+        layout: lightTable,
         table: {
             widths: ['10%', '25%', '10%', '15%', '7%', '7%', '7%', '7%', '6%', "6%", '*'],
             body: body
@@ -1514,7 +1533,7 @@ const availableNutrientsFTableWastewater = (props) => {
         return [
             {// row 1
                 text: {
-                    text: props.import_date ? props.import_date.toISOString().split("T")[0] : '',
+                    text: props.import_date ? formatDate(splitDate(props.import_date.toISOString())) : '',
                     fontSize: 8,
                 }
             },
@@ -1614,6 +1633,7 @@ const availableNutrientsFTableWastewater = (props) => {
     ]
     const table = {
         margin: [10, 0, 0, 5],
+        layout: lightTable,
         table: {
             widths: ['10%', '25%', '10%', '15%', '10%', '10%', '10%', "10%", '*'],
             body: body
@@ -1630,7 +1650,7 @@ const availableNutrientsFTableFertilizer = (props) => {
         return [
             {// row 1
                 text: {
-                    text: props.import_date ? props.import_date.toISOString().split("T")[0] : '',
+                    text: props.import_date ? formatDate(splitDate(props.import_date.toISOString())) : '',
                     fontSize: 8,
                 }
             },
@@ -1740,6 +1760,7 @@ const availableNutrientsFTableFertilizer = (props) => {
     ]
     const table = {
         margin: [10, 0, 0, 5],
+        layout: lightTable,
         table: {
             widths: ['10%', '25%', '10%', '15%', '8%', '8%', '8%', '8%', '8%', '*'],
             body: body
@@ -1764,7 +1785,7 @@ const availableNutrientsF = (props) => {
                         [{// row 1
                             border: [false, false, false, false],
                             text: {
-                                text: 'F. NUTRIENT IMPORTS:', bold: true, fontSize: 9,
+                                text: 'F. NUTRIENT IMPORTS', bold: true, fontSize: 9,
                             }
                         },
                         ],
@@ -1777,6 +1798,7 @@ const availableNutrientsF = (props) => {
             fertilizerTable,
             {
                 margin: [10, 0, 0, 0],
+                layout: lightTable,
                 table: {
                     widths: ['25%', '10%', '10%', '10%', '10%', '35%',],
                     body: [
@@ -1958,7 +1980,7 @@ const availableNutrientsGSolidTableRow = (props) => {
         {// row 1
             text: {
                 // text: '05/20/2020',
-                text: typeof (props.last_date_hauled) == typeof ('') ? props.last_date_hauled.toISOString().split("T")[0] : '',
+                text: props.last_date_hauled ? formatDate(splitDate(props.last_date_hauled.toISOString())) : '',
                 fontSize: 8,
                 alignment: 'center',
             }
@@ -2049,7 +2071,7 @@ const availableNutrientsGLiquidTableRow = (props) => {
         {// row 1
 
             text: {
-                text: props.last_date_hauled ? props.last_date_hauled.toISOString().split("T")[0] : '',
+                text: props.last_date_hauled ? formatDate(splitDate(props.last_date_hauled.toISOString())) : '',
                 fontSize: 8,
                 alignment: 'center',
             }
@@ -2139,6 +2161,7 @@ const availableNutrientsG = (props) => {
 
     const _solidTable = {
         margin: [10, 5, 0, 0],
+        layout: lightTable,
         table: {
             widths: ['10%', '15%', '10%', '10%', '9%', '15%', '6%', '6%', '6%', '8%', '5%', '*'],
             body: [
@@ -2218,8 +2241,9 @@ const availableNutrientsG = (props) => {
 
     const _liquidTable = {
         margin: [10, 5, 0, 0],
+        layout: lightTable,
         table: {
-            widths: ['10%', '15%', '10%', '10%', '9%', '15%', '6%', '6%', '6%', '8%', '5%', '*'],
+            widths: ['10%', '15%', '15%', '7%', '9%', '10%', '6%', '6%', '6%', '11%', '5%', '*'],
             body: [
                 [
                     {
@@ -2309,7 +2333,7 @@ const availableNutrientsG = (props) => {
                         [{// row 1
                             border: [false, false, false, false],
                             text: {
-                                text: 'G. NUTRIENT EXPORTS:', bold: true, fontSize: 9,
+                                text: 'G. NUTRIENT EXPORTS', bold: true, fontSize: 9,
                             }
                         },
                         ],
@@ -2321,6 +2345,7 @@ const availableNutrientsG = (props) => {
             liquidTable,
             {
                 margin: [10, 5, 5, 10],
+                layout: lightTable,
                 table: {
                     widths: ['25%', '10%', '10%', '10%', '10%', '34%',],
                     body: [
@@ -2427,7 +2452,7 @@ const availableNutrientsG = (props) => {
                             {// row 
                                 fillColor: gray,
                                 text: {
-                                    text: 'Total Import for all materials', fontSize: 9,
+                                    text: 'Total exports for all materials', fontSize: 9,
                                 }
                             },
                             {// row 1
@@ -2503,6 +2528,7 @@ const applicationAreaA = (props) => {
 
     const _table = {
         width: "*",
+        layout: lightTable,
         table: {
             widths: ["25%", "10%", "10%", "10%", "20%", "25%", '*'],
             body: [
@@ -2648,7 +2674,7 @@ const applicationAreaA = (props) => {
                         [{// row 1
                             border: [false, false, false, false],
                             text: {
-                                text: 'A. LIST OF LAND APPLICATION AREAS:', bold: true, fontSize: 9,
+                                text: 'A. LIST OF LAND APPLICATION AREAS', bold: true, fontSize: 9,
                             }
                         },
                         ]
@@ -2750,6 +2776,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
     const subTable = [
         {
             border: [true, false, true, false],
+            layout: lightTable,
             table: {
                 widths: ['10%', '10%', '10%', '12%', '9%', '9%', '10%', '10%', '10%', '9%'],
                 body: [
@@ -2837,7 +2864,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
         margin: [5, 1, 5, 0],
         border: [true, false, true, false],
         colSpan: 2,
-
+        layout: lightTable,
         table: {
             widths: ['98%'],
             body: [
@@ -2853,7 +2880,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                 [
                     {
                         border: [true, false, true, false],
-
+                        layout: lightTable,
                         table: {
                             widths: ['5%', '50%', '10%', '10%', '10%', '10%',],
                             body: [
@@ -2913,6 +2940,7 @@ const applicationAreaBFieldHarvestTableSubTable = (props) => {
                     {
                         margin: [0, 0, 138, 0],
                         border: [true, false, true, true],
+                        layout: lightTable,
                         table: {
                             widths: ['22%', '14%', '14%', '16%', '16%', '16%'],
                             body: [
@@ -3105,6 +3133,7 @@ const applicationAreaBFieldHarvestTable = (props) => {
 
     return {
         margin: [10, 0, 0, 10],
+        layout: lightTable,
         table: {
             widths: ['8%', '90%'],
             body: body
@@ -3173,6 +3202,7 @@ const nutrientBudgetBTable = (props, img, i) => {
         columns: [
             {// Main Table
                 pageBreak: i === 0 ? '' : 'before',
+                layout: lightTable,
                 table: {
                     widths: ['98%'],
                     body: [
@@ -3185,6 +3215,7 @@ const nutrientBudgetBTable = (props, img, i) => {
                         }],
                         [{
                             border: [true, false, true, false],
+                            layout: lightTable,
                             table: {
                                 widths: ['8%', '15%', '5%', '15%', '8%', '15%'],
                                 body: [
@@ -3241,9 +3272,10 @@ const nutrientBudgetBTable = (props, img, i) => {
                                 border: [true, false, true, true],
                                 columns: [
                                     {
-                                        width: "60%",
+                                        width: "65%",
+                                        layout: lightTable,
                                         table: {
-                                            widths: ["40%", "15%", "15%", "15%", "15%"],
+                                            widths: ["32%", "17%", "17%", "17%", "17%"],
                                             body: [
                                                 [
                                                     {
@@ -3678,9 +3710,10 @@ const nutrientBudgetBTable = (props, img, i) => {
                                         }
                                     },
                                     , {
-                                        width: "40%",
+                                        width: "35%",
                                         stack: [
                                             {
+                                                layout: lightTable,
                                                 table: {
                                                     widths: ['40%', '30%'],
                                                     body: [
@@ -3749,6 +3782,7 @@ const nutrientBudgetBTable = (props, img, i) => {
                                                 }
                                             },
                                             {
+                                                layout: lightTable,
                                                 table: {
                                                     widths: ['40%', '30%'],
                                                     body: [
@@ -3818,20 +3852,18 @@ const nutrientBudgetBTable = (props, img, i) => {
                                                 }
                                             },
                                             {
+                                                layout: lightTable,
                                                 table: {
                                                     widths: ['40%', '30%'],
                                                     body: [
                                                         [
                                                             {
                                                                 fillColor: gray,
-                                                                border: [true, true, false, true],
+                                                                colSpan: 2,
+                                                                border: [true, true, true, true],
                                                                 text: {
                                                                     text: 'Total harvests for the crop', fontSize: 8,
                                                                 }
-                                                            },
-                                                            {
-                                                                fillColor: gray,
-                                                                border: [false, true, true, true], text: ''
                                                             }
                                                         ],
                                                         [
@@ -3963,6 +3995,7 @@ const nutrientBudgetA = (props) => {
                 rows.push([// sub table of MainSubTable
                     {
                         colSpan: 5,
+                        layout: lightTable,
                         table: {
                             widths: ['25%', '20%', '10%', '10%', '10%', '10%', '15%'],
                             body: [
@@ -4067,6 +4100,7 @@ const nutrientBudgetA = (props) => {
                     {
                         width: "98%",
                         margin: [10, 0, 0, 0],
+                        layout: lightTable,
                         table: {
                             widths: ["100%"],
                             body: [
@@ -4084,6 +4118,7 @@ const nutrientBudgetA = (props) => {
                                             {
                                                 columns: [
                                                     {
+                                                        layout: lightTable,
                                                         table: {
                                                             widths: ["10%", '65%', '10%', '15%'],
                                                             body: [
@@ -4139,6 +4174,7 @@ const nutrientBudgetA = (props) => {
                                                 columns: [
                                                     {
                                                         margin: [0, 5, 0, 5],
+                                                        layout: lightTable,
                                                         table: {
                                                             widths: ["10%", '30%', '20%', '20%', '20%'],
                                                             body: [
@@ -4158,7 +4194,7 @@ const nutrientBudgetA = (props) => {
                                                                     {
                                                                         fillColor: gray,
                                                                         text: {
-                                                                            text: 'Precipitation 24 hours prior:', fontSize: 8,
+                                                                            text: 'Precipitation 24 hours prior', fontSize: 8,
                                                                         }
                                                                     },
                                                                     {
@@ -4223,13 +4259,14 @@ const nutrientBudgetA = (props) => {
                 columns: [
                     {
                         width: "98%",
+
                         table: {
                             widths: ['100%'],
                             body: [
                                 [{// row 1
                                     border: [false, false, false, false],
                                     text: {
-                                        text: 'A. LAND APPLICATIONS:', bold: true, fontSize: 9,
+                                        text: 'A. LAND APPLICATIONS', bold: true, fontSize: 9,
                                     }
                                 },
                                 ]
@@ -4284,6 +4321,7 @@ const nutrientAnalysisA = (props) => {
     let tables = props.map(analysis => {
         return {
             margin: [10, 0, 0, 5],
+            layout: lightTable,
             table: {
                 widths: ['100%'],
                 body: [
@@ -4291,13 +4329,14 @@ const nutrientAnalysisA = (props) => {
                         {// row 1
                             fillColor: gray,
                             text: {
-                                text: analysis.sample_desc, bold: true, fontSize: 9,
+                                text: analysis.sample_desc, fontSize: 9,
                             }
                         },
                     ],
                     [
                         {
                             border: [true, false, true, false],
+                            layout: lightTable,
                             table: {
                                 widths: ['25%', '75%'],
                                 body: [
@@ -4305,7 +4344,7 @@ const nutrientAnalysisA = (props) => {
                                         {
                                             border: [false, false, false, false],
                                             text: {
-                                                text: "Sample source and description:", fontSize: 8,
+                                                text: "Sample and source description", fontSize: 8,
                                             }
                                         },
                                         {
@@ -4322,6 +4361,7 @@ const nutrientAnalysisA = (props) => {
                     [
                         {
                             border: [true, false, true, false],
+                            layout: lightTable,
                             table: {
                                 widths: ['8%', '10%', '8%', '10%', '13%', '15%', '13%', '15%'],
                                 body: [
@@ -4385,6 +4425,7 @@ const nutrientAnalysisA = (props) => {
                     [
                         {
                             border: [true, false, true, false],
+                            layout: lightTable,
                             table: {
                                 widths: ['5%', '10%'],
                                 body: [
@@ -4410,6 +4451,7 @@ const nutrientAnalysisA = (props) => {
                     [
                         {
                             border: [true, false, true, true],
+                            layout: lightTable,
                             table: {
                                 widths: ['5%', '10%', '10%', '10%', '10%', '10%', '10%', '10%', '10%', '10%', '5%',],
                                 body: [
@@ -4664,6 +4706,7 @@ const nutrientAnalysisB = (props) => {
         return {
             headlineLevel: `processWastewaterAnalyses${i}`,
             margin: [10, 0, 0, 5],
+            layout: lightTable,
             table: {
                 widths: ['100%'],
                 body: [
@@ -4671,13 +4714,14 @@ const nutrientAnalysisB = (props) => {
                         {// row 1
                             fillColor: gray,
                             text: {
-                                text: analysis.sample_desc, bold: true, fontSize: 9,
+                                text: analysis.sample_desc, fontSize: 9,
                             }
                         },
                     ],
                     [
                         {
                             border: [true, false, true, false],
+                            layout: lightTable,
                             table: {
                                 widths: ['25%', '73%'],
                                 body: [
@@ -4685,7 +4729,7 @@ const nutrientAnalysisB = (props) => {
                                         {
                                             border: [false, false, false, false],
                                             text: {
-                                                text: "Sample source and description:", fontSize: 8,
+                                                text: "Sample and source description", fontSize: 8,
                                             }
                                         },
                                         {
@@ -4702,6 +4746,7 @@ const nutrientAnalysisB = (props) => {
                     [
                         {
                             border: [true, false, true, false],
+                            layout: lightTable,
                             table: {
                                 widths: ['8%', '10%', '8%', '20%', '13%', '15%', '8%', '8%'],
                                 body: [
@@ -4765,6 +4810,7 @@ const nutrientAnalysisB = (props) => {
                     [
                         { // 16 cols, 18% dist
                             border: [true, false, true, true],
+                            layout: lightTable,
                             table: {
                                 widths: ['4%', '8%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '5%', '5%', '6%', '6%', '8%', '5%'],
                                 body: [
@@ -4837,7 +4883,7 @@ const nutrientAnalysisB = (props) => {
                                         {
                                             fillColor: gray,
                                             text: {
-                                                text: "Carb, (mg/L)", fontSize: 8, alignment: 'right',
+                                                text: "Carb. (mg/L)", fontSize: 8, alignment: 'right',
                                             }
                                         },
                                         {
@@ -5101,6 +5147,7 @@ const nutrientAnalysisC = (props) => {
             {
 
                 border: [true, false, true, false],
+                layout: lightTable,
                 table: {
                     headlineLevel: `freshWaterAnalyses${i}`,
                     widths: ['20%', '80%'],
@@ -5124,7 +5171,7 @@ const nutrientAnalysisC = (props) => {
                             {
                                 border: [true, false, false, false],
                                 text: {
-                                    text: "Sample source and description:", fontSize: 8, alignment: 'right'
+                                    text: "Sample description", fontSize: 8, alignment: 'right'
                                 }
                             },
                             {
@@ -5139,6 +5186,7 @@ const nutrientAnalysisC = (props) => {
                             {
                                 colSpan: 2,
                                 border: [true, false, true, false],
+                                layout: lightTable,
                                 table: {
                                     widths: ['21%', '10%', '13%', '15%',],
                                     body: [
@@ -5178,6 +5226,7 @@ const nutrientAnalysisC = (props) => {
                             {
                                 colSpan: 2,
                                 border: [true, false, true, true],
+                                layout: lightTable,
                                 table: {
                                     widths: ['4%', '10%', '10%', '11%', '6%', '6%', '6%', '6%', '6%', '6%', '6%', '8%', '8%'],
                                     body: [
@@ -5416,6 +5465,7 @@ const nutrientAnalysisC = (props) => {
         return {
             width: "100%",
             margin: [10, 0, 0, 5],
+            layout: lightTable,
             table: {
                 widths: ['99%'],
                 body: [
@@ -5423,7 +5473,7 @@ const nutrientAnalysisC = (props) => {
                         {// row 1
                             fillColor: gray,
                             text: {
-                                text: headerInfo.src_desc, bold: true, fontSize: 9,
+                                text: headerInfo.src_desc, fontSize: 9,
                             }
                         },
                     ],
@@ -5468,6 +5518,7 @@ const nutrientAnalysisD = (props) => {
         return [
             {
                 border: [true, false, true, false],
+                layout: lightTable,
                 table: {
                     widths: ['20%', '73%'],
                     body: [
@@ -5490,7 +5541,7 @@ const nutrientAnalysisD = (props) => {
                             {
                                 border: [true, false, false, false],
                                 text: {
-                                    text: "Sample source and description:", fontSize: 8, alignment: 'right'
+                                    text: "Sample and source description", fontSize: 8, alignment: 'right'
                                 }
                             },
                             {
@@ -5505,6 +5556,7 @@ const nutrientAnalysisD = (props) => {
                             {
                                 colSpan: 2,
                                 border: [true, false, true, false],
+                                layout: lightTable,
                                 table: {
                                     widths: ['21%', '10%', '13%', '15%',],
                                     body: [
@@ -5544,6 +5596,7 @@ const nutrientAnalysisD = (props) => {
                             {
                                 colSpan: 2,
                                 border: [true, false, true, true],
+                                layout: lightTable,
                                 table: {
                                     widths: ['8%', '14%', '12%', '12%', '12%', '12%', '12%', '12%'],
                                     body: [
@@ -5708,6 +5761,7 @@ const nutrientAnalysisD = (props) => {
         return {
             headlineLevel: `soilAnalyses${i}`,
             margin: [10, 0, 0, 5],
+            layout: lightTable,
             table: {
                 widths: ['98%'],
                 body: [
@@ -5715,7 +5769,7 @@ const nutrientAnalysisD = (props) => {
                         {// row 1
                             fillColor: gray,
                             text: {
-                                text: headerInfo.title, bold: true, fontSize: 9,
+                                text: headerInfo.title, fontSize: 9,
                             }
                         },
                     ],
@@ -5765,6 +5819,7 @@ const nutrientAnalysisE = (props) => {
             return [
                 {
                     border: [true, false, true, false],
+                    layout: lightTable,
                     table: {
                         widths: ['20%', '73%'],
                         body: [
@@ -5787,7 +5842,7 @@ const nutrientAnalysisE = (props) => {
                                 {
                                     border: [true, false, false, false],
                                     text: {
-                                        text: "Sample source and description:", fontSize: 8, alignment: 'right'
+                                        text: "Sample and source description", fontSize: 8, alignment: 'right'
                                     }
                                 },
                                 {
@@ -5802,6 +5857,7 @@ const nutrientAnalysisE = (props) => {
                                 {
                                     colSpan: 2,
                                     border: [true, false, true, false],
+                                    layout: lightTable,
                                     table: {
                                         widths: ['21%', '10%', '13%', '15%', '20%', '20%'],
                                         body: [
@@ -5854,6 +5910,7 @@ const nutrientAnalysisE = (props) => {
                                 {
                                     colSpan: 2,
                                     border: [true, false, true, false],
+                                    layout: lightTable,
                                     table: {
                                         widths: ["20%", '20%', '20%'],
                                         body: [
@@ -5887,6 +5944,7 @@ const nutrientAnalysisE = (props) => {
                                     colSpan: 2,
                                     border: [true, false, true, true],
                                     margin: [10, 0, 0, 0],
+                                    layout: lightTable,
                                     table: {
                                         widths: ['4%', '10%', '10%', '10%', '10%', '10%'],
                                         body: [
@@ -6010,6 +6068,7 @@ const nutrientAnalysisE = (props) => {
         return {
             headlineLevel: `ptAnalyses${i}`,
             margin: [10, 0, 0, 5],
+            layout: lightTable,
             table: {
                 widths: ['98%'],
                 body: [
@@ -6017,8 +6076,8 @@ const nutrientAnalysisE = (props) => {
                         {// row 1
                             fillColor: gray,
                             text: {
-                                text: `${headerInfo.fieldtitle} - ${headerInfo.plant_date}: ${headerInfo.croptitle}`,
-                                bold: true, fontSize: 9,
+                                text: `${headerInfo.fieldtitle} - ${formatDate(splitDate(headerInfo.plant_date.toISOString()))}: ${headerInfo.croptitle}`,
+                                fontSize: 9,
                             }
                         },
                     ],
@@ -6066,6 +6125,7 @@ const nutrientAnalysisF = (props) => {
             return [
                 {
                     border: [true, false, true, false],
+                    layout: lightTable,
                     table: {
                         widths: ['20%', '73%'],
                         body: [
@@ -6088,7 +6148,7 @@ const nutrientAnalysisF = (props) => {
                                 {
                                     border: [true, false, false, false],
                                     text: {
-                                        text: "Sample source and description:", fontSize: 8, alignment: 'right'
+                                        text: "Sample description", fontSize: 8, alignment: 'right'
                                     }
                                 },
                                 {
@@ -6103,6 +6163,7 @@ const nutrientAnalysisF = (props) => {
                                 {
                                     colSpan: 2,
                                     border: [true, false, true, false],
+                                    layout: lightTable,
                                     table: {
                                         widths: ['21%', '10%', '13%', '15%'],
                                         body: [
@@ -6143,6 +6204,7 @@ const nutrientAnalysisF = (props) => {
                                     colSpan: 2,
                                     border: [true, false, true, true],
                                     margin: [10, 0, 0, 0],
+                                    layout: lightTable,
                                     table: {
                                         widths: ['4%', '10%', '10%', '10%', '10%', '10%'],
                                         body: [
@@ -6264,6 +6326,7 @@ const nutrientAnalysisF = (props) => {
         return {
             headlineLevel: `drainAnalyses${i}`,
             margin: [10, 0, 0, 5],
+            layout: lightTable,
             table: {
                 widths: ['98%'],
                 body: [
@@ -6272,7 +6335,7 @@ const nutrientAnalysisF = (props) => {
                             fillColor: gray,
                             text: {
                                 text: headerInfo.src_desc,
-                                bold: true, fontSize: 9,
+                                fontSize: 9,
                             }
                         },
                     ],
@@ -6371,6 +6434,7 @@ const naprbalA = (props) => {
             {
                 width: "98%",
                 margin: [10, 0, 0, 0],
+                layout: lightTable,
                 table: {
                     widths: ['20%', '15%', '15%', '15%', '15%'],
                     body: [
@@ -6862,18 +6926,22 @@ const naprbalC = (props, images) => {
     }
 }
 
-
+const toDateTimeStr = (date) => {
+    const datePortion = date.toLocaleDateString()
+    const time = date.toLocaleTimeString()
+    const timeParts = time.split(":")
+    const amPM = timeParts[2].split(' ')[1]
+    const timePortion = `${timeParts[0]}:${timeParts[1]} ${amPM}`
+    return `${datePortion}  ${timePortion}`
+}
 
 const exceptionReportingATable = (props) => {
     props = props && typeof props === typeof [] ? props : []
     let rows = props.map((row, i) => {
-        const _disDate = row.discharge_datetime.toISOString().split('T')
-        const disDate = _disDate[0]
-        const disTime = _disDate[1].slice(0, -1)
         return [
             {
                 text: {
-                    text: `${disDate} ${disTime}`, fontSize: 8,
+                    text: toDateTimeStr(row.discharge_datetime), fontSize: 8,
                 }
             },
             {
@@ -6948,6 +7016,7 @@ const exceptionReportingATable = (props) => {
 
     let table = {
         margin: [10, 5, 0, 5],
+        layout: lightTable,
         table: {
             widths: ['14%', '20%', '12%', '20%', '20%', '12%'],
             body: body
@@ -6965,13 +7034,10 @@ const exceptionReportingATable = (props) => {
 const exceptionReportingBTable = (props) => {
     props = props && typeof props === typeof [] ? props : []
     let rows = props.map((row, i) => {
-        const _disDate = row.discharge_datetime.toISOString().split('T')
-        const disDate = _disDate[0]
-        const disTime = _disDate[1].slice(0, -1)
         return [
             {
                 text: {
-                    text: `${disDate} ${disTime}`, fontSize: 8,
+                    text: toDateTimeStr(row.discharge_datetime), fontSize: 8,
                 }
             },
             {
@@ -7057,6 +7123,7 @@ const exceptionReportingBTable = (props) => {
 
     let table = {
         margin: [10, 5, 0, 5],
+        layout: lightTable,
         table: {
             widths: ['14%', '14%', '10%', '18%', '18%', '12%', '12%'],
             body: body
@@ -7075,13 +7142,10 @@ const exceptionReportingCTable = (props) => {
     props = props && typeof props === typeof [] ? props : []
     // Generate rows for Report, simple table :)
     let rows = props.map((row, i) => {
-        const _disDate = row.discharge_datetime.toISOString().split('T')
-        const disDate = _disDate[0]
-        const disTime = _disDate[1].slice(0, -1)
         return [
             {
                 text: {
-                    text: row.discharge_datetime ? `${formatDate(disDate)} ${disTime}` : '',
+                    text: toDateTimeStr(row.discharge_datetime),
                     fontSize: 8,
                 }
             },
@@ -7168,6 +7232,7 @@ const exceptionReportingCTable = (props) => {
 
     let table = {
         margin: [10, 10, 0, 10],
+        layout: lightTable,
         table: {
             widths: ['14%', '14%', '10%', '18%', '18%', '12%', '12%'],
             body: body
@@ -7421,7 +7486,7 @@ const certificationA = (props) => {
                         [
                             {
                                 border: [false, false, false, false],
-                                text: { text: 'A. CERTIFICATION', fontSize: 10, bold: true }
+                                text: { text: 'A. OWNER AND/OR OPERATOR CERTIFICATION', fontSize: 10, bold: true }
                             },
                         ],
                         [
@@ -7530,16 +7595,51 @@ const certificationA = (props) => {
     }
 }
 const attachmentsA = (props) => {
-    const s1 = `Provide an Annual Dairy Facility Assessment (an update to the Preliminary Dairy Facility Assessment in Attachment A) for each reporting period. On the PDFA Final
-  page, click on the ADFA Report button to generate an ADFA report after updating information as needed .`
-    const s2 = `Provide copies of all manure/process wastewater tracking manifests for the reporting period, signed by both the owner/operator and the hauler.`
-    const s3 = `Provide records documenting any corrective actions taken to correct deficiencies noted as a result of the inspections required in the Monitoring Requirements of the
-  General Order. Deficiencies not corrected in 30 days must be accompanied by an explanation of the factors preventing immediate correction.`
-    const s4 = `Dischargers that monitor supply wells or subsurface (tile) drainage systems, or that have monitoring well systems must submit monitoring results as directed in the
-  General Order, Groundwater Reporting Section starting on page MRP-13.`
-    const s5 = `Dischargers that are required to monitor storm water more frequently than required in the General Order must submit monitoring results as directed in the General Order,
-  Storm Water Reporting Section on page MRP-14.`
 
+
+    //Annual Dairy Facility Assessment
+    const adfa = `Provide an Annual Dairy Facility Assessment (an update to the Preliminary Dairy Facility Assessment in Attachment A) for each reporting period. On the PDFA Final
+  page, click on the ADFA Report button to generate an ADFA report after updating information as needed .`
+
+    //Manure/Process Wastewater Tracking Manifests
+    const mpwtm = `Provide copies of all manure/process wastewater tracking manifests for the reporting period, signed by both the owner/operator and the hauler.`
+
+    // Written Agreements
+    const wrtnAg = `Provide copies of all new or revised written agreements with each third party that receives solid manure or process wastewater from the Discharger for its own use.`
+
+    //  Corrective Actions Documents
+    const cadocs = `Provide records documenting any corrective actions taken to correct deficiencies noted as a result of the inspections required in the Monitoring Requirements of the
+  General Order. Deficiencies not corrected in 30 days must be accompanied by an explanation of the factors preventing immediate correction.`
+
+    // Discharge Maps
+    const dismaps = `Provide map(s) showing the discharge and sample locations for each discharge or release of waste to land areas (land application areas or otherwise) or surface water.`
+
+    // Discharge Lab Reports
+    const dislabrep = `Provide copies of laboratory analyses of all discharges (manure, process wastewater, or tailwater), surface water (upstream and downstream of a discharge), and storm water, including chain-of-custody forms and laboratory quality assurance/quality control results.`
+
+    //  Groundwater Monitoring
+    const grndmon = `Dischargers that monitor supply wells or subsurface (tile) drainage systems, or that have monitoring well systems must submit monitoring results as directed in the
+  General Order, Groundwater Reporting Section starting on page MRP-13.`
+
+    //  Storm Water Monitoring
+    const strmwtrmon = `Dischargers that are required to monitor storm water more frequently than required in the General Order must submit monitoring results as directed in the General Order,
+  Storm Water Reporting Section on page MRP-14.`
+    const item = (title, text) => {
+        return [
+            {
+                text: {
+                    text: title, fontSize: 10
+                }
+            },
+            line(650),
+            {
+                margin: [5, 0, 0, 5],
+                text: {
+                    text: text, fontSize: 8
+                }
+            },
+        ]
+    }
 
     return {
         pageBreak: 'before',
@@ -7573,64 +7673,27 @@ const attachmentsA = (props) => {
                 stack: [
                     {
                         text: {
-                            text: 'Annual Dairy Facility Assessment', fontSize: 10
-                        }
-                    },
-                    line(650),
-                    {
-                        margin: [5, 0, 0, 5],
-                        text: {
-                            text: s1, fontSize: 8
+                            text: ' ', fontSize: 10
                         }
                     },
                     {
                         text: {
-                            text: 'Manure/Process Wastewater Tracking Manifests', fontSize: 10
-                        }
-                    },
-                    line(650),
-                    {
-                        margin: [5, 0, 0, 5],
-                        text: {
-                            text: s2, fontSize: 8
+                            text: 'The following lists the required documents that should be attached to the Annual Report when submitted .', fontSize: 10
                         }
                     },
                     {
                         text: {
-                            text: 'Corrective Actions Documents', fontSize: 10
+                            text: ' ', fontSize: 10
                         }
                     },
-                    line(650),
-                    {
-                        margin: [5, 0, 0, 5],
-                        text: {
-                            text: s3, fontSize: 8
-                        }
-                    },
-                    {
-                        text: {
-                            text: 'Groundwater Monitoring', fontSize: 10
-                        }
-                    },
-                    line(650),
-                    {
-                        margin: [5, 0, 0, 5],
-                        text: {
-                            text: s4, fontSize: 8
-                        }
-                    },
-                    {
-                        text: {
-                            text: 'Storm Water Monitoring', fontSize: 10
-                        }
-                    },
-                    line(650),
-                    {
-                        margin: [5, 0, 0, 5],
-                        text: {
-                            text: s5, fontSize: 8
-                        }
-                    },
+                    ...item('Annual Dairy Facility Assessment', adfa),
+                    ...item('Manure/Process Wastewater Tracking Manifests', mpwtm),
+                    ...item('Written Agreements', wrtnAg),
+                    ...item('Corrective Actions Documents', cadocs),
+                    ...item('Discharge Maps', dismaps),
+                    ...item('Discharge Lab Reports', dislabrep),
+                    ...item('Groundwater Monitoring', grndmon),
+                    ...item('Storm Water Monitoring', strmwtrmon),
                 ]
             }
         ]

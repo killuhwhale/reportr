@@ -24,6 +24,7 @@ import { Company } from '../utils/company/company'
 import UploadLogo from '../comps/Logo/uploadLogo'
 import UserIcon from '../comps/Accounts/userIcon'
 import Delete from '@material-ui/icons/Delete'
+import { splitDate } from '../utils/format'
 
 
 class HomePage extends Component {
@@ -144,7 +145,7 @@ class HomePage extends Component {
 
     Dairy.updateDairy(
       street, cross_street, county, city, city_state, city_zip, title,
-      basin_plan, began, period_start, period_end, dairy_id
+      basin_plan, splitDate(began), splitDate(period_start), splitDate(period_end), dairy_id
     )
       .then(res => {
         console.log(res)
@@ -259,7 +260,9 @@ class HomePage extends Component {
     try {
       const res = await Dairy.deleteDairyBase(dairyBaseID)
       console.log(res)
+
       this.getBaseDairies()
+      this.toggleDeleteDairyBaseModal(false)
     } catch (e) {
       console.log(e)
     }

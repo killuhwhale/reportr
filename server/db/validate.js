@@ -3,6 +3,8 @@ const { validTDSDL, validTDS, validPH, validMoisture, validValueLarge, validDete
     validValueAboveDL, validValue, validDetectLimit, validTFS, validTFSDL, validImportCon, validOrganicMatter,
     validHarvestYield, validLbsAcrePlowdownCredit, validImportAmount
 } = require("../tsv/validInput")
+const { toFloat } = require('../utils/convertUtil');
+
 
 /** Validates input. Each sheet has certain values that are required and must be within a certain range.
  * 
@@ -10,14 +12,7 @@ const { validTDSDL, validTDS, validPH, validMoisture, validValueLarge, validDete
  */
 
 
-const toFloat = (num) => {
-    const float = num && typeof (num) === typeof ('') && num.length > 0 ? parseFloat(num.replaceAll(',', '')) : typeof (num) === typeof (0) || typeof (num) === typeof (0.0) ? num : 0
 
-    if (isNaN(float)) {
-        throw `${float} is not a number`
-    }
-    return float
-}
 
 
 const checkAnalytes = (analytes, dls, ERROR_TAG) => {
@@ -131,6 +126,10 @@ exports.validProcessWastewaterAnalysis = (values) => {
         if (!validTDSDL(tds_dl)) {
             return { code: '1000', msg: `${ERROR_TAG}: ${tds_dl} TDS DL must be between 1 and 20,000.` }
         }
+
+        if (!validValueAboveDL(tds, tds_dl)) {
+            return { code: '1000', msg: `${ERROR_TAG} TDS ${tds} needs to be above ${tds_dl} DL` }
+        }
     }
 
     if (!validPH(ph)) {
@@ -184,7 +183,11 @@ exports.validFreshwaterAnalysis = (values) => {
 
     if (tds > 0.0) {
         if (!validTDSDL(tds_dl)) {
-            return { code: '1000', msg: `${ERROR_TAG} TDS must be between 1 and 20,000.` }
+            return { code: '1000', msg: `${ERROR_TAG} TDS DL must be between 1 and 20,000.` }
+        }
+
+        if (!validValueAboveDL(tds, tds_dl)) {
+            return { code: '1000', msg: `${ERROR_TAG} TDS ${tds} needs to be above ${tds_dl} DL` }
         }
     }
 
@@ -226,6 +229,10 @@ exports.validSolidmanureAnalysis = (values) => {
     if (tfs > 0.0) {
         if (!validTFSDL(tfs_dl)) {
             return { code: '1000', msg: `${ERROR_TAG} TFS must be between 1 and 20,000.` }
+        }
+
+        if (!validValueAboveDL(tfs, tfs_dl)) {
+            return { code: '1000', msg: `${ERROR_TAG} TFS ${tfs} needs to be above ${tfs_dl} DL` }
         }
     }
 
@@ -307,7 +314,6 @@ exports.validNutrientImport = (values) => {
 
     return result
 }
-
 
 exports.validFertilizer = (values) => {
     const [dairy_id, field_crop_app_id, nutrient_import_id, amount_applied] = values

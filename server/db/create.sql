@@ -876,3 +876,31 @@ CREATE TABLE IF NOT EXISTS certification(
 );
 
 
+
+
+ CREATE TABLE setting_templates (
+	pk serial primary key,
+  dairy_id INT NOT NULL,
+
+  harvestTemplate hstore,
+  wwTemplate hstore,
+  fwTemplate hstore,
+  smTemplate hstore,
+  cfTemplate hstore,
+  smExportTemplate hstore,
+  wwExportTemplate hstore,
+  soilTemplate hstore,
+  plowdownTemplate hstore,
+  tiledrainageTemplate hstore,
+  dischargeTemplate hstore,
+  
+   UNIQUE(dairy_id),
+   CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+
+);
+
+
+

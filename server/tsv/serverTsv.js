@@ -218,7 +218,6 @@ const binarySearch = (arr, target) => {
     while (start <= end) {
         let half = parseInt(start + ((end - start) / 2))
         const val = arr[half].title
-        console.log(`t: ${target}, Val ${val} , Half: ${half} `)
         if (val === target) {
             return half
         }
@@ -1877,7 +1876,7 @@ const createTileDrainageFromMap = (tsvText, tsvType, dairy_id) => {
                             } else if (err.code === '23505') {
                                 resolve(null)
                             } else if (err.code === '1000') {
-                                rej({ error: err.msg })
+                                reject({ error: err.msg })
                             } else {
                                 logger.info(err)
                                 reject({ "error": "Created drain_analysis unsuccessful" });

@@ -1,6 +1,11 @@
 const crypto = require('crypto')
 const { BCRYPT_SALT_ROUNDS } = require("../specific");
 const bcrypt = require('bcrypt');
+var hstore = require('pg-hstore')();
+const {
+    harvestTemplate, wwTemplate, fwTemplate, smTemplate, cfTemplate, smExportTemplate,
+    wwExportTemplate, soilTemplate, plowdownTemplate, tiledrainageTemplate, dischargeTemplate
+} = require('../tsv/serverTsvTemplates')
 
 
 const algorithm = "aes-256-cbc";
@@ -43,31 +48,11 @@ const decrypt = (secret) => {
 //     console.log(`Hash for ${passwordTohash} is ${hash}`)
 // });
 
-const a2021 = [168,
-    160,
-    184,
-    176,
-    168,
-    176,
-    176,
-    176,
-    176,
-    168,
-    176,
-    184,]
-
-const a2022 = [168,
-    160,
-    184,
-    168,
-    176,
-    176,
-    168,
-    184,
-    176,
-    168,
-    168,
-    176]
 
 
-console.log(a2021.reduce((p, c) => p + c))
+[harvestTemplate, wwTemplate, fwTemplate, smTemplate, cfTemplate, smExportTemplate,
+    wwExportTemplate, soilTemplate, plowdownTemplate, tiledrainageTemplate, dischargeTemplate].forEach((template, i) => {
+        hstore.stringify(template, function (result) {
+            console.log(i, result)
+        });
+    })

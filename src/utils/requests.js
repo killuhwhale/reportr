@@ -89,8 +89,9 @@ const getFile = (url) => {
         'cache': 'no-cache'
       },
     })
-      .then(res => res.arrayBuffer())
+      .then()
       .then(async res => {
+        console.log('GetFIle res:', res)
         const { errorData, needsRefresh } = await checkForRefresh(res)
         if (needsRefresh) {
           const ogRes = await refreshToken(url, {}, 'getFile')
@@ -99,7 +100,7 @@ const getFile = (url) => {
           resolve(errorData)
         }
         else {
-          resolve(res)
+          resolve(res.arrayBuffer())
         }
       })
       .catch(err => {
@@ -142,7 +143,7 @@ const refreshToken = (url, data, method) => {
       body: JSON.stringify({})
     })
       .then(async (res) => {
-        if (res.error || res.status && res.status == 403) return resolve({ error: `Error getting url: ${url}` })
+        if (res.error || res.status == 403) return resolve({ error: `Error getting url: ${url}` })
         const result = await res.json()
         console.log('refreshToken result: ', result)
 

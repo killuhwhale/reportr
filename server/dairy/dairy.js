@@ -2556,11 +2556,11 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Updated certification successfully" });
+                res.json({ data: "Updated certification successfully" });
                 return;
             }
             console.log(err)
-            res.json({ "error": "Updated certification unsuccessful" });
+            res.json({ error: "Updated certification unsuccessful" });
         })
     });
 

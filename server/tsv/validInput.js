@@ -1,14 +1,15 @@
-const toFloat = (num) => {
-    const float = num && typeof (num) === typeof ('') && num.length > 0 ? parseFloat(num.replaceAll(',', '')) : typeof (num) === typeof (0) || typeof (num) === typeof (0.0) ? num : 0
+const { toFloat } = require('../utils/convertUtil');
 
-    if (isNaN(float)) {
-        throw `${float} is not a number`
-        // return 0.0001337
-    }
-    return float
-}
+// const valIsBelowDL = (val, dl) => {
+//     // If value if not zero and is less than the detection limit, this is an invalid situation
+//     // When val is 0, false && ....
+//     return toFloat(val) > 0 && toFloat(val) < toFloat(dl)
+// }
+
 // Single Field validation
-exports.validValue = (val) => {
+
+exports.validValue = (val, dl) => {
+    // Value is either 0 or higher than its detection limit. Check if within bounds.
     return toFloat(val) >= 0.00 && toFloat(val) <= 99999.99
 }
 exports.validDetectLimit = (val) => {
@@ -17,14 +18,16 @@ exports.validDetectLimit = (val) => {
 
 // Single Field for Plant Tissue/ Harvest analysis
 // Manure Analysis
-exports.validValueLarge = (val) => {
+exports.validValueLarge = (val, dl) => {
+
     return toFloat(val) >= 0.00 && toFloat(val) <= 999999.99
 }
 exports.validDetectLimitLarge = (val) => {
     return toFloat(val) >= 0.01 && toFloat(val) <= 999999.99
 }
 
-exports.validTDS = (val) => {
+exports.validTDS = (val, dl) => {
+
     return toFloat(val) >= 0 && toFloat(val) <= 20000.00
 }
 

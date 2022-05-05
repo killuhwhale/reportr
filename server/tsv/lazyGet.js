@@ -1219,9 +1219,20 @@ exports.lazyGet = (endpoint, value, data, dairy_id) => {
 
             }
         } catch (e) {
-            const msg = `Server laztGet TSV upload error - ${endpoint}: ${e.error.code} -- ${e.error.routine}`
+            let msg = `Server lazyGet TSV upload error - Endpoint: ${endpoint} val: ${value.toString()}:`
+            if (e.error) {
+                // Error from psql 
+                if (e.error.code && e.error.routine) {
+                    msg = `${msg} ${e.error.code} -- ${e.error.routine}`
+
+                    // Validation error
+                } else if (e.error) {
+                    msg = `${msg}  ${e.error}`
+                }
+            }
             console.log(msg, e)
-            rej(msg)
+            console.log('Value & data', value, data)
+            rej({ msg, endpoint, value, })
         }
 
     })

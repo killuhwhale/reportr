@@ -86,10 +86,6 @@ const barChartConfig = (labels, data, backgroundColor = null) => {
           font: {
             size: 20,
           },
-          // PADding: {
-          //   top: 10,
-          //   bottom: 30
-          // }
         },
         subtitle: {
           display: true,
@@ -97,10 +93,6 @@ const barChartConfig = (labels, data, backgroundColor = null) => {
           font: {
             size: 16,
           },
-          // PADding: {
-          //   top: 10,
-          //   bottom: 30
-          // }
         },
         tooltip: {
           enabled: true

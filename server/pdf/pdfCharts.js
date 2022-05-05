@@ -1,4 +1,6 @@
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
+const { formatInt } = require("../utils/format")
+const { toFloat } = require("../utils/convertUtil")
 
 const HORIBAR_WIDTH = 600
 const HORIBAR_HEIGHT = 300
@@ -30,7 +32,126 @@ class PDFChart {
         this.#height = h
     }
 
-    setVerticalConfig(labels, data, backgroundColor = null) {
+    drawValuesPlugin() {
+        return {
+            id: 'draw_values',
+            afterDraw: (chartInstance) => {
+                var ctx = chartInstance.ctx;
+                // render the value of the chart above the bar
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                chartInstance.data.datasets.forEach((dataset, di) => {
+                    for (var i = 0; i < dataset.data.length; i++) {
+                        if (isNaN(dataset.data[i])) {
+                            console.log("Error num?", dataset.data[i])
+                            console.log(dataset.data)
+                            return
+                        }
+                        // rewrite text if it is too close to edge for hoizontal bar chart
+                        ctx.fillStyle = "#000";
+
+                        let bar = chartInstance._metasets[di].data[i]
+                        let num = formatInt(Math.round(toFloat(dataset.data[i])))
+                        let singleCharLen = 4
+
+                        // Horizontal Chart
+                        if (chartInstance.scales.x.type === "logarithmic") {
+                            if (toFloat(num) >= 1e6) num = `${formatInt(toFloat(num) / 1e6)}M`
+                            let maxX = chartInstance.scales.x.right
+                            let numChars = num.toString().length
+                            singleCharLen = 3
+                            let xOffset = (maxX - bar.x) / maxX < 0.03 ? ((numChars * -singleCharLen) - 10) : 0;
+
+                            ctx.fillText(num, bar.x + xOffset, bar.y);
+
+                            // Veritcal Charts
+                        } else {
+                            /**
+                             *  top: 32,
+                                bottom: 304.6,
+                                left: 0,
+                                right: 98.6,
+                                width: 98.6,
+                                height: 272.6,
+
+
+                                if the top is at 32,
+
+                                a bar y pos of 99 is really tall and 
+                                                110 is smaller,
+                                                the closer to 32, 
+                                                99 - 32 =    67 / 304 ==> .22
+                                                90 - 32 =    58 / 304 ==>  .19
+
+
+                             */
+                            // Vertical bars, when the numbers are too big, they overlap,
+                            let isLargeNum = toFloat(num) >= 1e4
+
+                            let yPos = chartInstance.scales.y
+
+                            let yOffsetCalc = (bar.y - yPos.top) / (yPos.bottom - yPos.top)
+                            let yOffset = yOffsetCalc < 0.10 ? (6 * singleCharLen) : 0;
+
+
+                            console.log(`num: (${num}) yOffsetCalc: ${yOffsetCalc}  bar.y: ${bar.y} yOffset: ${yOffset}`)
+                            // Summary Chart
+                            if (isLargeNum) {
+                                num = `${formatInt(toFloat(num) / 1000)}`
+
+                                // Write num on top of 'K' for large numbers
+                                let numY = bar.y - (singleCharLen * 3) + yOffset
+                                let kY = bar.y + yOffset
+                                ctx.fillText(num, bar.x, numY);
+                                ctx.fillText('K', bar.x, kY);
+
+                                // Field Charts w/ title and subtitle
+                            } else {
+
+                                ctx.fillText(num, bar.x, bar.y + yOffset);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    setChartBackgroundColor() {
+        return {
+            id: 'custom_canvas_background_color',
+            beforeDraw: (chart) => {
+                const ctx = chart.canvas.getContext('2d');
+                ctx.save();
+                ctx.globalCompositeOperation = 'destination-over';
+                ctx.fillStyle = CHART_BACKGROUND_COLOR
+
+                // Top line and top right corner
+                ctx.lineTo(PAD, 0, chart.width - PAD, 0)
+                ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)
+
+                // Right wall and bottom right corner
+                ctx.lineTo(chart.width, PAD, chart.width, chart.height - PAD)
+                ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)
+
+                // Bottom line and bottom left corner
+                ctx.lineTo(chart.width - PAD, chart.height, PAD, chart.height) // right wall
+                ctx.arcTo(0, chart.height, 0, chart.height - PAD, RADIUS)
+
+                // Left wall and top left corner
+                ctx.lineTo(0, chart.height - PAD, 0, PAD) // right wall
+                ctx.arcTo(0, 0, PAD, 0, RADIUS)
+
+                // Close the rectangle....
+                ctx.lineTo(PAD, 0, PAD + 2, 0)
+
+                ctx.fill()
+                ctx.restore();
+            }
+        }
+    }
+
+    setVerticalConfig(labels, data, backgroundColor = null, isTotalSummary = false) {
         this.#config = {
             type: 'bar',
 
@@ -60,29 +181,21 @@ class PDFChart {
                 showDatapoints: true,
                 plugins: {
                     title: {
-                        display: true,
+                        display: !isTotalSummary,
                         text: 'Nutrient Budget',
                         font: {
                             size: 20,
                         },
-                        // PADding: {
-                        //   top: 10,
-                        //   bottom: 30
-                        // }
                     },
                     subtitle: {
-                        display: true,
+                        display: !isTotalSummary,
                         text: 'lbs/ acre',
                         font: {
                             size: 16,
                         },
-                        // PADding: {
-                        //   top: 10,
-                        //   bottom: 30
-                        // }
                     },
                     tooltip: {
-                        enabled: true
+                        enabled: false
                     },
                 },
                 scales: {
@@ -91,7 +204,7 @@ class PDFChart {
                         color: "#0f0",
                         position: 'left', // `axis` is determined by the position as `'y'`
                         title: {
-                            text: "lbs / acre",
+                            text: isTotalSummary ? 'lbs' : "lbs / acre",
                             display: true,
                             font: {
                                 size: 18
@@ -106,47 +219,12 @@ class PDFChart {
                             // position: 'left', // `axis` is determined by the position as `'y'`
 
                         },
-                        // ticks: {
-                        //   // Include a dollar sign in the ticks
-                        //   callback: function (value, index, values) {
-                        //     return `${value} lbs/ton`
-                        //   }
-                        // }
                     }
                 },
             },
             plugins: [
-                {
-                    id: 'custom_canvas_background_color',
-                    beforeDraw: (chart) => {
-                        const ctx = chart.canvas.getContext('2d');
-                        ctx.save();
-                        ctx.globalCompositeOperation = 'destination-over';
-                        ctx.fillStyle = backgroundColor || CHART_BACKGROUND_COLOR;
-
-                        // Top line and top right corner
-                        ctx.lineTo(PAD, 0, chart.width - PAD, 0)
-                        ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)
-
-                        // Right wall and bottom right corner
-                        ctx.lineTo(chart.width, PAD, chart.width, chart.height - PAD)
-                        ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)
-
-                        // Bottom line and bottom left corner
-                        ctx.lineTo(chart.width - PAD, chart.height, PAD, chart.height) // right wall
-                        ctx.arcTo(0, chart.height, 0, chart.height - PAD, RADIUS)
-
-                        // Left wall and top left corner
-                        ctx.lineTo(0, chart.height - PAD, 0, PAD) // right wall
-                        ctx.arcTo(0, 0, PAD, 0, RADIUS)
-
-                        // Close the rectangle....
-                        ctx.lineTo(PAD, 0, PAD + 2, 0)
-
-                        ctx.fill()
-                        ctx.restore();
-                    }
-                }
+                this.setChartBackgroundColor(),
+                this.drawValuesPlugin()
             ]
         }
     }
@@ -223,37 +301,8 @@ class PDFChart {
                 //   },
             },
             plugins: [
-                {
-                    id: 'custom_canvas_background_color',
-                    beforeDraw: (chart) => {
-                        const ctx = chart.canvas.getContext('2d');
-                        ctx.save();
-                        ctx.globalCompositeOperation = 'destination-over';
-                        ctx.fillStyle = CHART_BACKGROUND_COLOR
-
-                        // Top line and top right corner
-                        ctx.lineTo(PAD, 0, chart.width - PAD, 0)
-                        ctx.arcTo(chart.width, 0, chart.width, PAD, RADIUS)
-
-                        // Right wall and bottom right corner
-                        ctx.lineTo(chart.width, PAD, chart.width, chart.height - PAD)
-                        ctx.arcTo(chart.width, chart.height, chart.width - PAD, chart.height, RADIUS)
-
-                        // Bottom line and bottom left corner
-                        ctx.lineTo(chart.width - PAD, chart.height, PAD, chart.height) // right wall
-                        ctx.arcTo(0, chart.height, 0, chart.height - PAD, RADIUS)
-
-                        // Left wall and top left corner
-                        ctx.lineTo(0, chart.height - PAD, 0, PAD) // right wall
-                        ctx.arcTo(0, 0, PAD, 0, RADIUS)
-
-                        // Close the rectangle....
-                        ctx.lineTo(PAD, 0, PAD + 2, 0)
-
-                        ctx.fill()
-                        ctx.restore();
-                    }
-                }
+                this.setChartBackgroundColor(),
+                this.drawValuesPlugin()
             ]
         }
     }
@@ -279,6 +328,7 @@ class PDFChart {
             return await chartJSNodeCanvas.renderToDataURL(this.#config);
 
         } catch (e) {
+            console.log(e)
             return { error: e.toString() }
         }
     }
@@ -378,7 +428,7 @@ class ChartGenerater {
 
 
     async generateSummaryBarCharts() {
-        this.pdfChart.setVerticalConfig(this.nutrientLabels, this.totalNutrientAppAntiHarvestData, null)
+        this.pdfChart.setVerticalConfig(this.nutrientLabels, this.totalNutrientAppAntiHarvestData, null, true)
         const imageBuffer = await this.pdfChart.renderChart()
         this.results['totalNutrientAppAntiHarvestData'] = imageBuffer
     }

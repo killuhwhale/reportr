@@ -101,6 +101,8 @@ module.exports = (app) => {
     app.get(`/${api}/dairy/:dairy_id`, verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
         const dairy_id = req.params.dairy_id
         try {
+
+            // Check cache....
             const pdf = await generateAnnualReportPDF(dairy_id, req.user.company_id, true)
             if (pdf.error) return res.status(500).send(pdf.error)
             res.send(pdf)

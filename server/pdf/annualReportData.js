@@ -8,7 +8,11 @@ const {
     getNutrientImportByWastewater, getFieldCropApplicationFreshwaterSource, getDrainSource,
     getNutrientImportByMaterialType, getExportManifestByMaterialType, getFields, getFieldCropHarvest,
     getFieldParcel, getFieldCropApplicationSolidmanure, getFieldCrop, getFieldCropApplicationSoil,
-    getFieldCropApplicationPlowdownCredit, getFieldCropApplicationFreshwater, getFieldCropApplicationFertilizer, getCropsByTitle, getFieldCropApplicationProcessWastewaterAnalysis, getFieldCropApplicationSolidmanureAnalysis, getDrainAnalysis, getFieldCropApplicationSoilAnalysis, getFieldCropApplicationFreshwaterAnalysis, getDischarge, getAgreement, getNote, getCertification,
+    getFieldCropApplicationPlowdownCredit, getFieldCropApplicationFreshwater, getFieldCropApplicationFertilizer,
+    getCropsByTitle, getFieldCropApplicationProcessWastewaterAnalysis,
+    getFieldCropApplicationSolidmanureAnalysis, getDrainAnalysis, getFieldCropApplicationSoilAnalysis,
+    getFieldCropApplicationFreshwaterAnalysis, getDischarge, getAgreement,
+    getNote, getCertification,
 } = require('../db/index');
 
 const { verifyToken, verifyUserFromCompanyByDairyID, needsRead } = require('../utils/middleware');
@@ -1158,7 +1162,7 @@ const getNmpeaStatementsAB = async (dairy_id) => {
 const getNotesA = async (dairy_id) => {
     try {
         let [note] = await getNote(dairy_id)
-        if (!note || note.error) return { notesA: { 'note': {} } }
+        if (!note || note.error) return { notesA: { note: 'No notes.' } }
 
         note = note ? note : {}
 

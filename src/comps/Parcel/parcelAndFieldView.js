@@ -291,7 +291,7 @@ class ParcelView extends Component {
         </Grid>
 
         <Grid item key="PVparcelNumbermn" xs={6}>
-          <MaxPageSize height='512px'>
+          <MaxPageSize container height='512px'>
             {this.state.parcels.length > 0 ?
               this.state.parcels.sort((a, b) => naturalSortBy(a, b, 'pnumber')).map((parcel, i) => {
                 return (
