@@ -16,9 +16,8 @@ import ExportTab from "../comps/Exports/exportTab"
 import ActionCancelModal from "../comps/Modals/actionCancelModal"
 import Accounts from "../comps/Accounts/accounts"
 import { auth } from '../utils/users'
-import { get, post } from "../utils/requests"
+import { get } from "../utils/requests"
 import { Dairy } from '../utils/dairy/dairy'
-import { ALPHA_LOGO } from "../specific"
 import { COUNTIES, BASINS, BREEDS } from '../utils/constants'
 import { Company } from '../utils/company/company'
 import UploadLogo from '../comps/Logo/uploadLogo'
@@ -386,7 +385,10 @@ class HomePage extends Component {
             </Grid>
 
             <Grid item xs={2} sm={1}>
-              <UserIcon toggleTheme={this.props.toggleTheme} company={this.state.company} />
+              <UserIcon toggleTheme={this.props.toggleTheme}
+                company={this.state.company}
+                dairy_id={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx].pk : 0}
+              />
             </Grid>
 
             {this.state.dairy && Object.keys(this.state.dairy).length > 0 ?

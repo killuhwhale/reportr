@@ -48,9 +48,10 @@ exports.validMoisture = (val) => {
 }
 
 
-// Value is above the detection limit
+// Value is above the detection limit, and DL is greater than zero
+
 exports.validValueAboveDL = (val, dl) => {
-    return toFloat(val) >= toFloat(dl)
+    return toFloat(val) >= toFloat(dl) && toFloat(dl) > 0
 }
 
 // Freshwater && Process wastewater Analysis

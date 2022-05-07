@@ -48,6 +48,8 @@ const checkAnalytes = (analytes, dls, ERROR_TAG) => {
 }
 
 const checkLargeAnalytes = (analytes, dls, ERROR_TAG) => {
+    // item: [label, value] for each analysis
+    // dls: [label, value] for each DL
     analytes.forEach((item, i) => {
 
         if (!validValueLarge(item[1])) {

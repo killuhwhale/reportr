@@ -2674,7 +2674,7 @@ module.exports = {
 
 
 }
-exports.queryPromiseByValues = queryPromiseByValues
+module.exports.queryPromiseByValues = queryPromiseByValues
 
 
 const resetDB = (pool) => {

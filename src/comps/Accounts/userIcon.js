@@ -12,6 +12,7 @@ import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount'
 import ActionCancelModal from '../Modals/actionCancelModal';
 import Accounts from './accounts';
 import { ROLE_LABELS } from '../../utils/constants';
+import TemplateSetting from './templateSettings'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -125,6 +126,8 @@ const ProfilePopper = (props) => {
                                             </IconButton>
                                         </Tooltip>
                                     </Grid>
+
+
                                     <Grid item xs={10} style={{ marginBottom: '16px', paddingLeft: '16px', paddingTop: '8px' }}>
                                         <Typography variant='subtitle2'>
                                             <TextField
@@ -134,8 +137,6 @@ const ProfilePopper = (props) => {
                                             />
                                         </Typography>
                                     </Grid>
-
-
                                     <Grid item xs={2} align='center'>
                                         <Tooltip title="Accounts">
                                             <IconButton color="primary" variant="outlined" style={{ marginTop: "16px" }}
@@ -145,7 +146,25 @@ const ProfilePopper = (props) => {
                                         </Tooltip>
                                     </Grid>
 
+                                    <Grid item xs={10} style={{ marginBottom: '16px', paddingLeft: '16px', paddingTop: '8px' }}>
+                                        <Typography variant='subtitle2'>
+                                            <TextField
+                                                label='Settings'
+                                                value='Change default template values'
+                                                InputProps={{ disableUnderline: true }}
+                                            />
+                                        </Typography>
+                                    </Grid>
 
+
+                                    <Grid item xs={2} align='center'>
+                                        <Tooltip title="Accounts">
+                                            <IconButton color="primary" variant="outlined" style={{ marginTop: "16px" }}
+                                                onClick={() => props.toggleSettingsModal(true)}>
+                                                <SupervisorAccountIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Grid>
 
                                 </Grid>
 
@@ -169,10 +188,14 @@ class UserIcon extends Component {
             iconAnchor: null,
             initClick: true,
             toggleShowLogoutModal: false,
-            showAccountsModal: false
+            showAccountsModal: false,
+            showSettingsModal: false,
+
         }
         this.openingPopper = false
     }
+
+
 
     toggleProfilePopper(ev) {
         const open = this.state.iconAnchor ? true : false
@@ -210,6 +233,13 @@ class UserIcon extends Component {
         this.setState({ showAccountsModal: val })
     }
 
+    toggleSettingsModal(val) {
+        if (val)
+            this.handleClickAway()
+
+        this.setState({ showSettingsModal: val })
+    }
+
 
     render() {
         const open = Boolean(this.state.iconAnchor)
@@ -232,6 +262,7 @@ class UserIcon extends Component {
                     confirmLogout={this.confirmLogout.bind(this)}
                     toggleTheme={this.props.toggleTheme}
                     toggleAccountsModal={this.toggleAccountsModal.bind(this)}
+                    toggleSettingsModal={this.toggleSettingsModal.bind(this)}
                 />
 
                 <ActionCancelModal
@@ -248,6 +279,14 @@ class UserIcon extends Component {
                     open={this.state.showAccountsModal}
                     onAlert={this.props.onAlert}
                     onClose={() => this.toggleAccountsModal(false)}
+                />
+
+                <TemplateSetting
+                    key={'DOESTHISWORKzzz'}
+                    open={this.state.showSettingsModal}
+                    onAlert={this.props.onAlert}
+                    onClose={() => this.toggleSettingsModal(false)}
+                    dairy_id={this.props.dairy_id}
                 />
 
             </Grid>

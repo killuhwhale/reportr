@@ -30,21 +30,12 @@ import { formatDate, formatFloat, groupBySortBy, splitDate } from '../../utils/f
 import { REPORTING_METHODS } from '../../utils/constants'
 
 import { FixedPageSize } from '../utils/FixedPageSize'
+import { DEST_TYPES, EXPORT_MATERIAL_TYPES } from '../../utils/constants'
 
 
 
 // Might need to pull these up from here and appNutrientTab.js to homePage.js
-const MANIFEST_MATERIAL_TYPES = [
-  "Dry manure: Separator solids",
-  "Dry manure: Corral solids",
-  "Dry manure: Scraped material",
-  "Dry manure: Bedding",
-  "Dry manure: Compost",
-  "Process wastewater",
-  "Process wastewater: Process wastewater sludge"
-]
-const DEST_TYPES = ['Broker', 'Composting Facility', 'Farmer', 'Other']
-
+const MANIFEST_MATERIAL_TYPES = EXPORT_MATERIAL_TYPES
 
 
 const ContactView = (props) => {

@@ -49,10 +49,11 @@ const decrypt = (secret) => {
 // });
 
 
-
+// Generates Insert Statement for Template Settings
+// server/db/settings/settings::createSettingTemplate
 [harvestTemplate, wwTemplate, fwTemplate, smTemplate, cfTemplate, smExportTemplate,
     wwExportTemplate, soilTemplate, plowdownTemplate, tiledrainageTemplate, dischargeTemplate].forEach((template, i) => {
         hstore.stringify(template, function (result) {
-            console.log(i, result)
+            console.log(`'${result}',`)
         });
     })

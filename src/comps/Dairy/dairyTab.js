@@ -170,37 +170,41 @@ class DairyTab extends Component {
     }
   }
 
-  onUploadXLSX() {
+  async onUploadXLSX() {
     console.log(`Uploading XLSX to dairy: ${this.state.dairy.pk}`)
+    try {
+      const file = this.state.rawFileForServer
+      const res = await postXLSX(`${BASE_URL}/tsv/uploadXLSX/${this.state.dairy.pk}`, file)
+      console.log("Post res: ", res)
 
-    const file = this.state.rawFileForServer
-    postXLSX(`${BASE_URL}/tsv/uploadXLSX/${this.state.dairy.pk}`, file)
-      .then(res => {
-        console.log("Post res: ", res)
-        if (res.error) {
-          const { error, tsvType, uploadedFilename } = res
-          console.log(error)
-          // Somtimes error is just a string, lets see if its still an obj....
-          let errMsg = `${tsvType} ${error.msg}`
-          if (/set_var_from_str/.test(error.msg)) {
-            errMsg = `${tsvType} failed to find fields: ${error.value.toString()}`
-          }
-          this.toggleShowUploadXLSX(false)
-          this.props.onAlert(errMsg, 'error')
-          return
+      // When res is an array, check ea item for error key.
+      // If error key, show the error to the user,,
+
+      if (res.error) {
+        const { error, tsvType, uploadedFilename } = res
+        console.log(error)
+        // Somtimes error is just a string, lets see if its still an obj....
+        let errMsg = `${tsvType} ${error.msg ? error.msg : error}`
+
+        if (/set_var_from_str/.test(error.msg)) {
+          errMsg = `${tsvType} failed to find fields: ${error.value.toString()}`
         }
-
-        console.log("Completed! C-engineer voice")
         this.toggleShowUploadXLSX(false)
-        this.props.refreshAfterXLSXUpload()
-        this.getAllFields()
-        this.getAllOperators()
+        this.props.onAlert(errMsg, 'error')
+        return
+      }
 
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log(err)
-      })
+      console.log("Completed! C-engineer voice")
+      this.toggleShowUploadXLSX(false)
+      this.props.refreshAfterXLSXUpload()
+      this.getAllFields()
+      this.getAllOperators()
+      this.props.onAlert('Success!', 'success')
+
+    } catch (e) {
+      this.toggleShowUploadXLSX(false)
+      this.props.onAlert(e.toString(), 'error')
+    }
   }
 
   toggleShowUploadXLSX(val) {
