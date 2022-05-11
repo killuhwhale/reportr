@@ -79,54 +79,54 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 # Testing:
   # Current Test Converagessss
-  Create Accounts
-    ✓ Create 2 companies and admins (376 ms)
-    ✓ Create READ, WRITE, DELETE Accounts with admin For First Company (320 ms)
-  Create 2 Dairies for ea  company
-    ✓ Create Dairies (385 ms)
-  Create and Update a herd for a company
-    ✓ Insert and Upate Herd Information (128 ms)
-  Test Accounts permissions
-    ✓ ADMIN Role Cannot Create Company (84 ms)
-    ✓ WRITE Role Cannot Create Company (85 ms)
-    ✓ READ Role Cannot Create Company (86 ms)
-    ✓ DELETE Role Cannot Create Company (86 ms)
-    ✓ WRITE Role can create company data (96 ms)
-    ✓ READ Role can access company data (88 ms)
-    ✓ DELETE Roles can remove company data (102 ms)
-    ✓ Role permission sub/ super role check (363 ms)
-    ✓ Test that non-hacker roles cannot create Admin accounts  (342 ms)
-    ✓ Test Roles cant alter other accounts (427 ms)
-    ✓ Test Accounts...  (315 ms)
-  Test Accounts cross-company restrictions
-    ✓ READ role can't access other company data (88 ms)
-    ✓ WRITE role can't create other company data (116 ms)
-    ✓ DELETE role can't remove other company data (92 ms)
-  Test middleware verifyUserFromCompanyBy*
-    ✓ Test *ByDairyBaseID (95 ms)
-    ✓ Test *ByCompanyID (89 ms)
-    ✓ Test *ByDairyID (106 ms)
-    ✓ Test *ByUserID (99 ms)
-  Test upload XLSX
-    ✓ Upload XLSX and Create Parcels, Field Parcels, Agreements, Notes, Certificaiton. (578 ms)
-  Test pdfDB
-    ✓ A. DAIRY FACILITY INFORMATION (Address and Parcels) (1 ms)
-    ✓ BC. Operators/ Owners
-    ✓ AB. AVAILABLE NUTRIENTS HERD INFORMATION:MANURE GENERATED
-    ✓ C. Process Wastewater Generated (2 ms)
-    ✓ F. NUTRIENT IMPORTS
-    ✓ G. NUTRIENT EXPORTS  (1 ms)
-    ✓ A. LIST OF LAND APPLICATION AREAS. (1 ms)
-    ✓ B. APPLICATION AREAS Crops and Harvests. (1 ms)
-    ✓ Nutrient Budget A. LAND APPLICATIONS are calculated and totaled correctly. (4 ms)
-    ✓ Nutrient Budget B(Single for ea field), NaprbalABC(Summary/ Charts) Info is calculated accurately. (13 ms)
-    ✓ ABCDEF. NUTRIENT ANALYSES  (3 ms)
-    ✓ ABC. Exception Reporting / Discharges
-    ✓ AB. NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS
-    ✓ A. ADDITIONAL NOTES
-    ✓ A. CERTIFICATION
-  Test Files download for a dairy
-    ✓ Test Files download is the right mime type and is greater than 670kb (2888 ms)  
+  - Create Accounts
+    - ✓ Create 2 companies and admins (376 ms)
+    - ✓ Create READ, WRITE, DELETE Accounts with admin For First Company (320 ms)
+  - Create 2 Dairies for ea  company
+    - ✓ Create Dairies (385 ms)
+  - Create and Update a herd for a company
+    - ✓ Insert and Upate Herd Information (128 ms)
+  - Test Accounts permissions
+    - ✓ ADMIN Role Cannot Create Company (84 ms)
+    - ✓ WRITE Role Cannot Create Company (85 ms)
+    - ✓ READ Role Cannot Create Company (86 ms)
+    - ✓ DELETE Role Cannot Create Company (86 ms)
+    - ✓ WRITE Role can create company data (96 ms)
+    - ✓ READ Role can access company data (88 ms)
+    - ✓ DELETE Roles can remove company data (102 ms)
+    - ✓ Role permission sub/ super role check (363 ms)
+    - ✓ Test that non-hacker roles cannot create Admin accounts  (342 ms)
+    - ✓ Test Roles cant alter other accounts (427 ms)
+    - ✓ Test Accounts...  (315 ms)
+  - Test Accounts cross-company restrictions
+    - ✓ READ role can't access other company data (88 ms)
+    - ✓ WRITE role can't create other company data (116 ms)
+    - ✓ DELETE role can't remove other company data (92 ms)
+  - Test middleware verifyUserFromCompanyBy*
+    - ✓ Test *ByDairyBaseID (95 ms)
+    - ✓ Test *ByCompanyID (89 ms)
+    - ✓ Test *ByDairyID (106 ms)
+    - ✓ Test *ByUserID (99 ms)
+  - Test upload XLSX
+    - ✓ Upload XLSX and Create Parcels, Field Parcels, Agreements, Notes, Certificaiton. (578 ms)
+  - Test pdfDB
+    - ✓ A. DAIRY FACILITY INFORMATION (Address and Parcels) (1 ms)
+    - ✓ BC. Operators/ Owners
+    - ✓ AB. AVAILABLE NUTRIENTS HERD INFORMATION:MANURE GENERATED
+    - ✓ C. Process Wastewater Generated (2 ms)
+    - ✓ F. NUTRIENT IMPORTS
+    - ✓ G. NUTRIENT EXPORTS  (1 ms)
+    - ✓ A. LIST OF LAND APPLICATION AREAS. (1 ms)
+    - ✓ B. APPLICATION AREAS Crops and Harvests. (1 ms)
+    - ✓ Nutrient Budget A. LAND APPLICATIONS are calculated and totaled correctly. (4 ms)
+    - ✓ Nutrient Budget B(Single for ea field), NaprbalABC(Summary/ Charts) Info is calculated accurately. (13 ms)
+    - ✓ ABCDEF. NUTRIENT ANALYSES  (3 ms)
+    - ✓ ABC. Exception Reporting / Discharges
+    - ✓ AB. NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS
+    - ✓ A. ADDITIONAL NOTES
+    - ✓ A. CERTIFICATION
+  - Test Files download for a dairy
+    - ✓ Test Files download is the right mime type and is greater than 670kb (2888 ms)  
 
 
 # Todo:
