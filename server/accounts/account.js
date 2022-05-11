@@ -111,6 +111,7 @@ module.exports = (app) => {
                             generateLoginTokens(user)
                                 .then(result => {
                                     const { refreshToken, accessToken } = result
+                                    console.log("Generate login tokens: ", result)
                                     res.json({ "data": { token: accessToken.token, user, accessToken, refreshToken } })
                                 })
                                 .catch(err => {

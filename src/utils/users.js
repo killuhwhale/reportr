@@ -72,6 +72,7 @@ class UserAuth {
         return new Promise((resolve, reject) => {
             post(`${BASE_URL}/accounts/login`, { email, password })
                 .then(res => {
+                    console.log("Login res: ", res)
                     if (res.data) {
                         const accessToken = res.data.accessToken.token;
                         const refreshToken = res.data.refreshToken.token;
