@@ -26,6 +26,7 @@
     "install": "^0.13.0",
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.95.11",
+    "mathjs": "^10.5.3",
     "multer": "^1.4.4",
     "nodemon": "^2.0.4",
     "pdfmake": "^0.2.5",
