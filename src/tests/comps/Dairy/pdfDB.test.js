@@ -97,40 +97,55 @@ describe('Create Accounts', () => {
 })
 
 describe('Create 2 Dairies for ea  company', () => {
+    jest.setTimeout(10000)
     test('Create Dairies', async () => {
-        const reportingYear = 2020
-        const company_id = 2
-        const dairyTitle = 'Pharmz'
+        try {
+            await auth.logout()
+            await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
 
-        const { pk: dairyBaseID, title } = await Dairy.createDairyBase(dairyTitle, company_id)
-        const dairyRes = await Dairy.createDairy(dairyBaseID, dairyTitle, reportingYear, company_id)
+            console.log("Loggin in!")
 
-        // began, by default is a timestamp, constantly changing...
-        expect({ ...dairyRes, began: '' }).toEqual({
-            pk: 1,
-            dairy_base_id: 1,
-            reporting_yr: 2020,
-            period_start: '2020-01-01T08:00:00.000Z',
-            period_end: '2020-12-31T08:00:00.000Z',
-            street: '',
-            cross_street: '',
-            county: null,
-            city: '',
-            city_state: 'CA',
-            city_zip: '',
-            title: 'Pharmz',
-            basin_plan: null,
-            began: ''
-        })
+            const reportingYear = 2020
+            const company_id = 2
+            const dairyTitle = 'Pharmz'
 
-        //////////////
-        // Create a second dairy for the second company
-        ////////////////////////////
-        await auth.logout()
-        await auth.login(TEST_USER_EMAIL_A, TEST_USER_PASSWORD_A)
-        const company_id_a = 3
-        const { pk: dairyBaseID_A, title: title_A } = await Dairy.createDairyBase('GrowzDairy', company_id_a)
-        await Dairy.createDairy(dairyBaseID_A, title_A, reportingYear, company_id_a)
+            console.log("Creating dairy")
+            const dairyBaseRes = await Dairy.createDairyBase(dairyTitle, company_id)
+            const { pk: dairyBaseID, title } = dairyBaseRes[0]
+            console.log("Base dairy created", dairyBaseRes)
+
+            const dairyRes = await Dairy.createDairy(dairyBaseID, dairyTitle, reportingYear, company_id)
+            console.log('1st Dairy Result: ', dairyRes)
+            // began, by default is a timestamp, constantly changing...
+            expect({ ...dairyRes, began: '' }).toEqual({
+                pk: 1,
+                dairy_base_id: 1,
+                reporting_yr: 2020,
+                period_start: '2020-01-01T08:00:00.000Z',
+                period_end: '2020-12-31T08:00:00.000Z',
+                street: '',
+                cross_street: '',
+                county: null,
+                city: '',
+                city_state: 'CA',
+                city_zip: '',
+                title: 'Pharmz',
+                basin_plan: null,
+                began: ''
+            })
+
+            //////////////
+            // Create a second dairy for the second company
+            ////////////////////////////
+            await auth.logout()
+            await auth.login(TEST_USER_EMAIL_A, TEST_USER_PASSWORD_A)
+            const company_id_a = 3
+            const { pk: dairyBaseID_A, title: title_A } = await Dairy.createDairyBase('GrowzDairy', company_id_a)
+            await Dairy.createDairy(dairyBaseID_A, title_A, reportingYear, company_id_a)
+
+        } catch (e) {
+            console.log("Error creating dairies: ", e)
+        }
     })
 })
 
@@ -446,6 +461,8 @@ describe('Test middleware verifyUserFromCompanyBy*', () => {
 describe('Test upload XLSX', () => {
     test('Upload XLSX and Create Parcels, Field Parcels, Agreements, Notes, Certificaiton.', async () => {
         try {
+            await auth.logout()
+            await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
             let xlsxURL = `tsv/uploadXLSX/1`
             const data = fs.readFileSync('./src/tests/comps/Dairy/Test Sheet.xlsx').buffer
             const res = await postXLSX(`${BASE_URL}/${xlsxURL}`, data)
@@ -457,6 +474,7 @@ describe('Test upload XLSX', () => {
             // Update test A land Applications to include parcel numbers on each field.
             // 2. Replace existing parcel code with Class...
             const fieldRes = await Field.getField(dairy_id)
+            console.log('Field Res', fieldRes)
             const filteredFields = fieldRes.filter(field => field.title === 'Field 1')
             await Parcels.createParcel('0000000000000420', dairy_id)
             await Parcels.createFieldParcel(filteredFields[0].pk, 1, dairy_id)
@@ -2660,7 +2678,7 @@ describe('Test pdfDB', () => {
                 na_dl: '100.0000',
                 s_dl: '100.0000',
                 cl_dl: '100.0000',
-                tfs_dl: '50.0000'
+                tfs_dl: '1.0000'
             }],
             wastewaters: [
                 {

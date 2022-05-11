@@ -11,7 +11,7 @@
 -- END $$;
 
 
-
+CREATE EXTENSION IF NOT EXISTS hstore;
 -- Query 
 CREATE TABLE IF NOT EXISTS dairy_base(
   pk SERIAL PRIMARY KEY,
@@ -23,6 +23,41 @@ CREATE TABLE IF NOT EXISTS dairy_base(
     REFERENCES companies(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+
+-- CREATE TABLE IF NOT EXISTS parcel_base(
+--   pk SERIAL PRIMARY KEY,
+--   pnumber VARCHAR(16) NOT NULL,
+--   dairy_base_id INT NOT NULL,
+--   UNIQUE(pnumber, dairy_id),
+--   CONSTRAINT fk_dairy
+--     FOREIGN KEY(dairy_id) 
+-- 	  REFERENCES dairies(pk)
+--     ON UPDATE CASCADE ON DELETE CASCADE
+-- );
+
+
+-- CREATE TABLE IF NOT EXISTS operator_base(
+--   pk SERIAL PRIMARY KEY,
+--   dairy_base_id INT NOT NULL,
+--   title VARCHAR(50) NOT NULL,
+--   primary_phone VARCHAR(40),
+--   secondary_phone VARCHAR(40),
+--   street VARCHAR(100),
+--   city VARCHAR(30),
+--   city_state VARCHAR(3) DEFAULT 'CA',
+--   city_zip VARCHAR(20) ,
+--   is_owner BOOLEAN default 'f',
+--   is_operator BOOLEAN default 'f',
+--   is_responsible BOOLEAN default 'f', -- responsible for paying permit fees.
+
+--   UNIQUE(dairy_id, title, primary_phone),
+--   CONSTRAINT fk_dairy
+--     FOREIGN KEY(dairy_id) 
+-- 	  REFERENCES dairies(pk)
+--     ON UPDATE CASCADE ON DELETE CASCADE
+-- );
+
 
 CREATE TABLE IF NOT EXISTS dairies(
   pk SERIAL PRIMARY KEY,
@@ -664,11 +699,11 @@ CREATE TABLE IF NOT EXISTS export_contact(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
   
-  first_name VARCHAR(30),
+  first_name VARCHAR(30) NOT NULL,
   -- last_name VARCHAR(30),
   -- middle_name VARCHAR(30),
   -- suffix_name VARCHAR(10),
-  primary_phone VARCHAR(20),
+  primary_phone VARCHAR(20) NOT NULL,
   
   UNIQUE(dairy_id, first_name, primary_phone),
 
@@ -878,21 +913,21 @@ CREATE TABLE IF NOT EXISTS certification(
 
 
 
+  -- These names match TSV Types/ Sheet names but in lowercase and spaceToUnderscore.
  CREATE TABLE setting_templates (
 	pk serial primary key,
   dairy_id INT NOT NULL,
-
-  harvest_template hstore,
-  ww_template hstore,
-  fw_template hstore,
-  sm_template hstore,
-  cf_template hstore,
-  sm_export_template hstore,
-  ww_export_template hstore,
-  soil_template hstore,
-  plowdown_template hstore,
-  tiledrainage_template hstore,
-  discharge_template hstore,
+  production_records  hstore,
+  ww_applications  hstore,
+  fw_applications  hstore,
+  sm_applications  hstore,
+  commercial_fertilizer  hstore,
+  soil_analyses  hstore,
+  plowdown_credit  hstore,
+  tile_drainage_systems  hstore,
+  discharges  hstore,
+  sm_exports  hstore,
+  ww_exports  hstore,
   
    UNIQUE(dairy_id),
    CONSTRAINT fk_dairy

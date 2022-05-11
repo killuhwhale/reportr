@@ -57,6 +57,7 @@ const zipTsv = async (zip, ttp, dairy_id, tsvType) => {
     try {
         const tsvRes = await getTSVs(dairy_id, tsvType) // TSV text from DB
         if (tsvRes.error) throw (tsvRes.error)
+        console.log("TSVRes: ", tsvRes)
         if (!tsvRes[0]) throw (`No TSV found for:  ${tsvType}`)
 
         ttp.setTSV(tsvRes[0], tsvType)  // Set TSV data and type

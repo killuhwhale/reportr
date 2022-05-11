@@ -1,94 +1,22 @@
 const XLSX = require('xlsx')
 const { toFloat } = require('../utils/convertUtil');
-const {
-    harvestTemplate, wwTemplate, fwTemplate, smTemplate, cfTemplate, smExportTemplate,
-    wwExportTemplate, soilTemplate, plowdownTemplate, tiledrainageTemplate, dischargeTemplate
-} = require('./serverTsvTemplates')
 const db = require('../db/index')
 const logger = require('../logs/logging')
 const { verifyToken, verifyUserFromCompanyByDairyID } = require('../utils/middleware')
 const { uploadTSVToDB } = require('./uploadTSVFile')
 const { lazyGet } = require('./lazyGet')
+const { naturalSortBy, toLowercaseSpaceToUnderscore } = require('../utils/format');
+const { SHEET_NAMES, TSV_INFO,
+    HARVEST, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, MANURE, WASTEWATER,
+} = require('../constants');
 
-const { naturalSortBy } = require('../utils/format')
+
+
+const { lazyGetTemplate } = require('../settings/settings')
+console.log('Importing lazyGetTemplate from ServerTSV', lazyGetTemplate)
+
 
 const api = 'tsv'
-
-// Each Tab/Sheet Name is linked to a TSV Type
-// When uploading a Workbook, the sheetName determines which TSV Type the sheet represents and must match one of the following
-const HARVEST = 'Production Records'
-const PROCESS_WASTEWATER = 'WW Applications'
-const FRESHWATER = 'FW Applications'
-const SOLIDMANURE = 'SM Applications'
-const FERTILIZER = 'Commercial Fertilizer'
-const SOIL = 'Soil Analyses'
-const PLOWDOWN_CREDIT = 'Plowdown Credit'
-const DRAIN = 'Tile Drainage Systems'
-const DISCHARGE = 'Discharges'
-const MANURE = 'SM Exports'
-const WASTEWATER = 'WW Exports'
-
-const SHEET_NAMES = [
-    HARVEST, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, MANURE, WASTEWATER,
-]
-
-const TSV_INFO = {
-    [DISCHARGE]: {
-        tsvType: DISCHARGE,
-        template: dischargeTemplate,
-        aliases: [DISCHARGE],
-    },
-    [DRAIN]: {
-        tsvType: DRAIN,
-        template: tiledrainageTemplate,
-        aliases: [DRAIN],
-    },
-    [PLOWDOWN_CREDIT]: {
-        tsvType: PLOWDOWN_CREDIT,
-        template: plowdownTemplate,
-        aliases: [PLOWDOWN_CREDIT],
-    },
-    [SOIL]: {
-        tsvType: SOIL,
-        template: soilTemplate,
-        aliases: [SOIL],
-    },
-    [HARVEST]: {
-        tsvType: HARVEST,
-        template: harvestTemplate,
-        aliases: [HARVEST],
-    },
-    [PROCESS_WASTEWATER]: {
-        tsvType: PROCESS_WASTEWATER,
-        aliases: [PROCESS_WASTEWATER],
-        template: wwTemplate,
-    },
-    [FRESHWATER]: {
-        tsvType: FRESHWATER,
-        aliases: [FRESHWATER],
-        template: fwTemplate,
-    },
-    [SOLIDMANURE]: {
-        tsvType: SOLIDMANURE,
-        aliases: [SOLIDMANURE],
-        template: smTemplate,
-    },
-    [FERTILIZER]: {
-        tsvType: FERTILIZER,
-        aliases: [FERTILIZER],
-        template: cfTemplate,
-    },
-    [MANURE]: { // exports
-        tsvType: MANURE,
-        aliases: [MANURE, "Manure Calculation records table"],
-        template: smExportTemplate,
-    },
-    [WASTEWATER]: { // exports
-        tsvType: WASTEWATER,
-        aliases: [WASTEWATER, "WasteWater Collection Sheet"],
-        template: wwExportTemplate,
-    }
-}
 
 //Used to search for a tsvType given an alias
 const convertAliasesToArrayOfObjects = () => {
@@ -135,19 +63,27 @@ const checkEmpty = (val) => {
 
 // Take in TsvText 
 // Parse Text into 2d array of maps, representing the data in the tsv row
+// A single instance should be used for all sheets being uploaded on a single request.
+// Move tsvType and Text to a method like setTsvType(), setTsvText()
+// THen once its set, call getRawData() to produce the required data.
+// This way, we make 1 requst for hte templates and re use the class instance to create the rows interpolated with the template as needed,
+
+
 class SheetParser {
+    #data
+    #template
     #tsvText
     #tsvType
-
-    constructor(tsvText, tsvType) {
+    constructor(template, tsvText, tsvType) {
+        this.#template = template
         this.#tsvText = tsvText
         this.#tsvType = tsvType
-        this.data = null
     }
 
     getRawData() {
+        if (!this.#tsvText || !this.#tsvType) throw `TsvText ${this.#tsvText} or TsvType ${this.#tsvType} not given.`
         this.#processTSVTextAsMap()
-        return this.data
+        return this.#data
     }
 
     #processTSVTextAsMap() {
@@ -155,7 +91,9 @@ class SheetParser {
         let started = false
         let rows = [] // Each row of the TSV file containing data as a Map 
         let headerMap = {} // Maps column index to a String that is the header for that column e.g. '0': "Application Date"
-        const template = TSV_INFO[this.#tsvType].template
+        // const template = TSV_INFO[this.#tsvType].template
+        const template = this.#template // TSVType is the capital letter w/ spaces text...,
+        // templatename are not the same are tsvTypes but they should be.
 
         lines.forEach((line, i) => {
             let cols = line.split("\t")
@@ -170,7 +108,7 @@ class SheetParser {
                 }
             }
         })
-        this.data = rows
+        this.#data = rows
         return this
     }
 
@@ -197,6 +135,7 @@ class SheetParser {
 class XLSXUpload {
     #workbook
     #uploadTSVText
+    #templates
     #filename
     #dairy_id
     #tsvType
@@ -226,6 +165,7 @@ class XLSXUpload {
 
     async uploadTSVSheet() {
         if (!this.#uploadTSVText || !this.#filename || !this.#tsvType) return console.log("Need to setUploadSheet()")
+        await this.#fetchTemplateByDairyID()
         return await this.#uploadSheet(this.#uploadTSVText, this.#tsvType, this.#filename)
     }
 
@@ -238,6 +178,8 @@ class XLSXUpload {
         let promises = []
         // Given some random Sheet name, alias, known to belong to some tsvType
         // Find the tsvType based on the alias    
+        await this.#fetchTemplateByDairyID()
+
         this.#workbook.SheetNames.forEach(sheetName => {
             const tsvType = this.#getTsvTypeByAlias(sheetName)
 
@@ -260,14 +202,24 @@ class XLSXUpload {
         }
     }
 
+
+
+    // Error issue seems to be indicative of an issue with async functions with the same object....
+    // SO lets make the request to get the templates somewhere else before the parser, that way we can make multiple parsers 
+    // to avoid the 'Error init' issue and still only request the templates once......
     async #uploadSheet(tsvText, tsvType, uploadedFilename) {
         try {
-            const parser = new SheetParser(tsvText, tsvType)
+
+
+
+            const template = this.#templates[toLowercaseSpaceToUnderscore(tsvType)]
+            if (!template) throw `Template for ${tsvType} not found`
+            const parser = new SheetParser(template, tsvText, tsvType)
             const rows = parser.getRawData()
             const uploader = new UploadTSVData(rows, tsvType, this.#dairy_id)
             const results = await uploader.uploadTSVByType()
 
-            // Check results here
+            if (results.error) return { tsvType, uploadedFilename, error }
             let error = null
             for (let result of results) {
 
@@ -314,6 +266,13 @@ class XLSXUpload {
             return ALL_ALIASES[idx].tsvType
         }
         return { error: `TsvType not found: ${alias}` }
+    }
+
+    async #fetchTemplateByDairyID() {
+        const res = await lazyGetTemplate(this.#dairy_id)
+        if (res.error) throw (`Failed getting templates: ${this.#dairy_id}`)
+        this.#templates = res[0] ? res[0] : {}
+        return this
     }
 }
 

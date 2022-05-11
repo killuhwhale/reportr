@@ -1,5 +1,9 @@
 const { toFloat } = require("./convertUtil")
 
+const toLowercaseSpaceToUnderscore = (s) => {
+    return s.toLowerCase().replaceAll(' ', '_')
+}
+
 const isDateKey = (key) => {
     return typeof (key) === typeof ({})
 }
@@ -195,6 +199,7 @@ const sortByKeys = (a, b, keys) => {
 
 
 module.exports = {
+    toLowercaseSpaceToUnderscore,
     naturalSortByKeys, sortByKeys, nestedGroupBy, groupBySortBy,
     groupByKeys, formatFloat, formatInt, naturalSort, naturalSortBy,
     formatDate, splitDate, percentageAsMGKG

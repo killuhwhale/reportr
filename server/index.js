@@ -32,13 +32,15 @@ app.use(cors({
 
 
 const accountsAPI = require(`./accounts/account`)(app);
-const settingsAPI = require(`./settings/settings`)(app);
 const companyAPI = require(`./company/company`)(app);
 const companyLogoAPI = require(`./logo/logo`)(app);
 const filesAPI = require(`./files/files`)(app);
 const annualReportDataAPI = require(`./pdf/annualReportData`)(app);
 const annualReportPDFAPI = require(`./pdf/annualReportPDF`)(app);
+console.log("Requiring serverTSV from index.js")
 const tsvAPI = require(`./tsv/serverTsv`)(app);
+console.log("Requiring settings from index.js")
+const settingsAPI = require(`./settings/settings`)(app);
 const API = require(`./dairy/dairy`)(app);
 
 

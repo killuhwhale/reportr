@@ -29,7 +29,9 @@ class Dairy {
             return { error: e }
         }
     }
+
     updateDairyBase() { } // Not used yet 
+
     static async deleteDairyBase(dairyBaseID) {
         try {
             return await post(`${BASE_URL}/api/dairy_base/delete`, { dairyBaseID })

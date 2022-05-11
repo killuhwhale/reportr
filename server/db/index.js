@@ -86,12 +86,8 @@ const queryPromiseByValues = (formattedSQL, values) => {
 
 
 
-const insertDairyBase = (values, callback) => {
-  return pool.query(
-    format("INSERT INTO dairy_base(company_id, title) VALUES (%L) RETURNING *", values),
-    [],
-    callback
-  )
+const insertDairyBase = (values) => {
+  return queryPromiseByFormat(format("INSERT INTO dairy_base(company_id, title) VALUES (%L) RETURNING *", values))
 }
 
 const insertDairy = (dairy_base_id, title, reporting_yr, period_start, period_end) => {
@@ -160,18 +156,17 @@ module.exports = {
   insert: (stmt, values, callback) => {
     return pool.query(format(stmt, values), [], callback)
   },
-  getCompanyIDByDairyID: (dairy_id, callback) => {
-    return pool.query(
-      `SELECT db.company_id
-        FROM dairies d 
-        LEFT JOIN dairy_base db 
-        ON d.dairy_base_id = db.pk
-        WHERE d.pk=$1; 
-      `,
-      [dairy_id], callback)
+
+
+
+  getDairyBaseIDByDairyID: (dairy_id) => {
+    return queryPromiseByValues(`
+      SELECT dairy_base_id 
+      FROM dairies 
+      WHERE pk=$1;
+    `, [dairy_id])
+
   },
-
-
   getDairyBase: (company_id, callback) => {
     return pool.query(
       "SELECT * FROM dairy_base where company_id=$1",
@@ -191,6 +186,87 @@ module.exports = {
   rmDairyBase: (id) => {
     return queryPromiseByFormat(format("DELETE FROM dairy_base where pk = %L", id))
   },
+
+
+  insertParcelBase: (pnumber, dairy_base_id) => {
+    const formattedSQL = format("INSERT INTO parcel_base(pnumber, dairy_base_id) VALUES (%L)  RETURNING *", [pnumber, dairy_base_id])
+    return queryPromiseByFormat(formattedSQL)
+  },
+  getParcelBases: (dairy_base_id) => {
+    return queryPromiseByFormat(format("SELECT * FROM parcel_base where dairy_base_id = %L", dairy_base_id))
+  },
+  updateParcelBase: (values) => {
+    return queryPromiseByValues(`UPDATE parcel_base SET
+    pnumber = $1 
+    WHERE pk=$2`, values)
+  },
+  rmParcelBase: (id) => {
+    return queryPromiseByFormat(format("DELETE FROM parcel_base where pk = %L ", id))
+  },
+
+  insertOperatorBase: (dairy_base_id,
+    title,
+    primary_phone,
+    secondary_phone,
+    street,
+    city,
+    city_state,
+    city_zip,
+    is_owner,
+    is_operator,
+    is_responsible) => {
+
+    const formattedSQL = format(
+      `INSERT INTO operator_base(
+        dairy_base_id,
+      title,
+      primary_phone,
+      secondary_phone,
+      street,
+      city,
+      city_state,
+      city_zip,
+      is_owner, 
+      is_operator,
+      is_responsible
+      ) VALUES (%L) RETURNING *`,
+      [dairy_base_id,
+        title,
+        primary_phone,
+        secondary_phone,
+        street,
+        city,
+        city_state,
+        city_zip,
+        is_owner,
+        is_operator,
+        is_responsible]
+    )
+    return queryPromiseByFormat(formattedSQL)
+  },
+  getOperatorBases: (dairy_base_id) => {
+    return queryPromiseByFormat(format("SELECT * FROM operator_base where dairy_base_id = %L", dairy_base_id))
+  },
+  updateOperatorBase: (values, callback) => {
+    return queryPromiseByValues(`UPDATE operator_base SET
+    title = $1,
+    primary_phone = $2,
+    secondary_phone = $3,
+    street = $4,
+    city = $5, 
+    city_state = 6,
+    city_zip = $7, 
+    is_owner = $8, 
+    is_operator = $9,
+    is_responsible = $10 
+    WHERE pk=$11`, values)
+  },
+  rmOperatorBase: (id, callback) => {
+    return queryPromiseByFormat(format("DELETE FROM operator_base where pk = %L ", id))
+  },
+
+
+
   getCompanyIDByDairyBaseID: (dairyBaseID, callback) => {
     return pool.query(
       "SELECT company_id FROM dairy_base where pk=$1",
@@ -204,6 +280,16 @@ module.exports = {
       [userID],
       callback
     )
+  },
+  getCompanyIDByDairyID: (dairy_id, callback) => {
+    return pool.query(
+      `SELECT db.company_id
+        FROM dairies d 
+        LEFT JOIN dairy_base db 
+        ON d.dairy_base_id = db.pk
+        WHERE d.pk=$1; 
+      `,
+      [dairy_id], callback)
   },
 
   getDairiesByDairyBaseID: (dairyBaseID, callback) => {
@@ -427,18 +513,18 @@ module.exports = {
   },
   updateOperator: (values, callback) => {
     return pool.query(`UPDATE operators SET
-      dairy_id = $1,
-      title = $2,
-      primary_phone = $3,
-      secondary_phone = $4,
-      street = $5,
-      city = $6, 
-      city_state = $7,
-      city_zip = $8, 
-      is_owner = $9, 
-      is_operator = $10,
-      is_responsible = $11 
-      WHERE pk=$12`,
+      
+    title = $1,
+    primary_phone = $2,
+    secondary_phone = $3,
+    street = $4,
+    city = $5, 
+    city_state = 6,
+    city_zip = $7, 
+    is_owner = $8, 
+    is_operator = $9,
+    is_responsible = $10 
+    WHERE pk=$11`,
       values,
       callback
     )

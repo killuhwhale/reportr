@@ -243,21 +243,19 @@ module.exports = (app) => {
                 res.json({ "error": "Get dairy_base unsuccessful", err: err });
             })
     });
-    app.post("/api/dairy_base/create", verifyToken, verifyUserFromCompanyByCompanyID, needsWrite, (req, res) => {
+    app.post("/api/dairy_base/create", verifyToken, verifyUserFromCompanyByCompanyID, needsWrite, async (req, res) => {
         const {
             title,
             company_id
         } = req.body
 
-        db.insertDairyBase([company_id, title], (err, result) => {
-            if (!err) {
-                if (result.rows.length > 0) {
-                    return res.json(result.rows[0]);
-                }
-            }
-            console.log(err)
-            res.json({ "error": "Inserted dairy_base unsuccessful", code: err.code });
-        })
+        try {
+            return res.json(await db.insertDairyBase([company_id, title]))
+        } catch (e) {
+            return res.json({ "error": "Inserted dairy_base unsuccessful", code: e.code })
+        }
+
+        // Once dairy base is created, we need to create the _base parcel and operators
     });
     app.post("/api/dairy_base/update", verifyToken, verifyUserFromCompanyByDairyBaseID, needsWrite, (req, res) => {
         console.log("Updating.... dairy_base", req.body)
@@ -285,6 +283,12 @@ module.exports = (app) => {
             return res.json({ error: "Deleted dairy_base unsuccessful", err: e })
         }
     });
+
+
+
+
+
+
     app.get("/api/dairies/dairyBaseID/:dairyBaseID", verifyToken, verifyUserFromCompanyByDairyBaseID, needsRead, async (req, res) => {
         try {
             return res.json(await getDairiesByDairyBaseID(req.params.dairyBaseID))
@@ -292,13 +296,11 @@ module.exports = (app) => {
             return res.json({ "error": "Get all dairies by base id unsuccessful" });
         }
     });
-
     app.get("/api/dairy/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
         const dairy = await db.getDairy(req.params.dairy_id)
         if (dairy.error) return res.json({ error: 'Get dairy unsuccessful' })
         return res.json(dairy)
     });
-
     app.post("/api/dairies/create", verifyToken, verifyUserFromCompanyByDairyBaseID, needsWrite, async (req, res) => {
         console.log("Inserting dairy: ", req.body)
         const {
@@ -320,6 +322,8 @@ module.exports = (app) => {
 
         try {
             // * 1. Lookup latest dairy by dairyBaseID
+            // Now lookup the _base for dairy, parcels, and operators to populate the new dairy.
+
             const dairies = await getDairiesByDairyBaseID(dairyBaseID)
             if (dairies && dairies.length === 0) {
                 console.log("Creating new reporting year dairy")
@@ -378,13 +382,18 @@ module.exports = (app) => {
         })
     });
     app.post("/api/dairies/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, async (req, res) => {
-        const {
-            street, cross_street, county, city, city_state, title, city_zip, basin_plan, began, period_start, period_end, dairy_id
-        } = req.body
-        const updated = await updateDairy(street, cross_street, county, city, city_state, city_zip, title, basin_plan, began, period_start, period_end, dairy_id)
+        try {
+            const {
+                street, cross_street, county, city, city_state, title, city_zip, basin_plan, began, period_start, period_end, dairy_id
+            } = req.body
 
-        if (updated.error) return res.json({ error: updated.error })
-        return res.json(updated)
+            const updated = await updateDairy(street, cross_street, county, city, city_state, city_zip, title, basin_plan, began, period_start, period_end, dairy_id)
+
+            if (updated.error) return res.json({ error: updated.error })
+            return res.json(updated)
+        } catch (e) {
+            return res.json({ error: e })
+        }
     });
     app.post("/api/dairies/delete", verifyToken, verifyUserFromCompanyByDairyID, needsAdmin, (req, res) => {
 
@@ -445,6 +454,13 @@ module.exports = (app) => {
     });
     app.post("/api/parcels/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, async (req, res) => {
         try {
+            // // TODO() Transaction.. Make sure both insert are valid...
+            // const dairyBaseRes = await db.getDairyBaseIDByDairyID(dairy_id)
+            // if (dairyBaseRes.error) return res.json({ error: dairyBaseRes })
+            // const dairyBaseID = dairyBaseRes[0]
+
+            // const parcelBaseRes = await db.insertParcelBase(req.body.pnumber, dairyBaseID)
+            // if (parcelBaseRes.error) return res.json({ error: parcelBaseRes })
             return res.json(await db.insertParcel(req.body.pnumber, req.body.dairy_id))
         } catch (e) {
             return res.json({ "error": "Inserted parcel unsuccessful", err: e });
@@ -565,7 +581,6 @@ module.exports = (app) => {
             pk
         } = req.body
         db.updateOperator([
-            dairy_id,
             title,
             primary_phone,
             secondary_phone,
