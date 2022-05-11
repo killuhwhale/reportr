@@ -1,24 +1,22 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip, TextField,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 import {
   DatePicker
 } from '@material-ui/pickers';
 import DeleteIcon from '@material-ui/icons/Delete'
-import AddIcon from '@material-ui/icons/Add'
-import { alpha } from '@material-ui/core/styles'
+
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { VariableSizeList as List } from "react-window";
-import { zeroTimeDate } from "../../utils/convertCalc"
+
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from '../Applications/selectButtonGrid'
 import { get, post } from '../../utils/requests';
-import { PollTwoTone, SpeakerGroup } from '@material-ui/icons';
-import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from '../../utils/format';
-
+import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from '../../utils/format';
+import { FixedPageSize } from '../utils/FixedPageSize'
 
 const CropViewTable = withTheme((props) => {
   const fc = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0 ? props.field_crops[0] : {}
@@ -130,7 +128,7 @@ const CropViewTable = withTheme((props) => {
 })
 
 
-const FieldCrop = (props) => {
+const FieldCrop = withTheme((props) => {
   return (
 
 
@@ -140,16 +138,46 @@ const FieldCrop = (props) => {
       return (
         <Card variant="outlined" key={`fieldCrop${props.index}`} className='showOnHoverParent'>
           <CardContent>
-            <Typography>
-              {croptitle}
-            </Typography>
-            <DatePicker label="App Date"
-              value={plant_date}
-              open={false}
-            />
+
+            <Grid item xs={12} align='right'>
+              <Typography variant='caption'>
+                <Tooltip title='Application date' placement="top">
+                  <span style={{ color: props.theme.palette.secondary.main }}>
+                    {` ${formatDate(splitDate(plant_date))}`}
+                  </span>
+                </Tooltip>
+              </Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant='subtitle1' >
+                <span style={{ color: props.theme.palette.primary.main }}>
+                  {` ${croptitle}`}
+                </span>
+              </Typography>
+            </Grid>
+
+
+
             <Grid item xs={12}>
               <Typography variant='caption'>
                 {`N ${formatFloat(n)} P ${formatFloat(p)} K ${formatFloat(k)} TFS ${formatFloat(salt)} `}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant='caption'>
+                N: <span style={{ color: props.theme.palette.secondary.main }}>
+                  {`${formatFloat(n)} `}
+                </span>
+                P: <span style={{ color: props.theme.palette.secondary.main }}>
+                  {`${formatFloat(p)} `}
+                </span>
+                K: <span style={{ color: props.theme.palette.secondary.main }}>
+                  {`${formatFloat(k)} `}
+                </span>
+                TFS: <span style={{ color: props.theme.palette.secondary.main }}>
+                  {`${formatFloat(salt)} `}
+                </span>
               </Typography>
             </Grid>
           </CardContent>
@@ -169,7 +197,7 @@ const FieldCrop = (props) => {
 
 
   )
-}
+})
 
 
 class CropView extends Component {
@@ -263,7 +291,7 @@ class CropView extends Component {
       let field_list = field_crops[field_id] // list of field_crop objects by field_id
       field_list.forEach(field_crop => {
         const { pk, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt } = field_crop
-        const data = { pk, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt }
+        const data = { pk, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt, dairy_id: this.state.dairy.pk }
         promises.push(post(`${this.props.BASE_URL}/api/field_crop/update`, data))
       })
 
@@ -340,14 +368,16 @@ class CropView extends Component {
                   viewPlantDateKey={this.state.viewPlantDateKey}
                 />
               </Grid>
-              {this.getFieldCropsByViewKeys().length > 0 ?
-                <FieldCrop
-                  fieldCrops={this.getFieldCropsByViewKeys()}
-                  onDelete={this.onFieldCropDelete.bind(this)}
-                />
-                :
-                <React.Fragment></React.Fragment>
-              }
+              <FixedPageSize container item xs={12} height='375px' >
+                {this.getFieldCropsByViewKeys().length > 0 ?
+                  <FieldCrop
+                    fieldCrops={this.getFieldCropsByViewKeys()}
+                    onDelete={this.onFieldCropDelete.bind(this)}
+                  />
+                  :
+                  <React.Fragment></React.Fragment>
+                }
+              </FixedPageSize>
             </Grid>
             {/* <Grid item xs={12}>
               {this.getConvertedFieldCropKeys(this.state.convertedFieldCrops).length > 0 ?
@@ -372,7 +402,7 @@ class CropView extends Component {
           open={this.state.showDeleteFieldCropModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Are you sure you want to delete: ${this.state.delFieldCropObj.fieldtitle} / ${this.state.delFieldCropObj.croptitle}`}
+          modalText={`Are you sure you want to delete: ${this.state.delFieldCropObj.fieldtitle} - ${this.state.delFieldCropObj.croptitle}`}
           onAction={() => {
 
             this.props.onDeleteFieldCrop(this.state.delFieldCropObj)

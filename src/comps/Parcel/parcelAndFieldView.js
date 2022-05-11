@@ -12,9 +12,14 @@ import AddParcelModal from "../Modals/addParcelModal"
 import AddFieldModal from "../Modals/addFieldModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 
-import { get, post } from "../../utils/requests"
+import { post } from "../../utils/requests"
 import { AddCircleOutline, ImportExport } from '@material-ui/icons'
 import { naturalSortBy } from '../../utils/format'
+import { Field } from '../../utils/fields/fields'
+import { Parcels } from '../../utils/parcels/parcels'
+
+import { MaxPageSize } from '../utils/FixedPageSize'
+
 
 class ParcelView extends Component {
   constructor(props) {
@@ -62,16 +67,8 @@ class ParcelView extends Component {
     })
   }
   updateParcelNumbers() {
-    console.log("Send Parcels for Update")
-    console.log(this.state.curUpdateParcels)
-    let updates = []
-    Object.keys(this.state.curUpdateParcels).map((parcel_pk, i) => {
-      updates.push(post(
-        `${this.props.BASE_URL}/api/parcels/update`,
-        {
-          data: this.state.curUpdateParcels[parcel_pk]
-        }
-      ))
+    let updates = Object.keys(this.state.curUpdateParcels).map((parcel_pk, i) => {
+      updates.push(Parcels.updateParcel(this.state.curUpdateParcels[parcel_pk], this.state.dairy.pk))
     })
 
     Promise.all(updates)
@@ -84,6 +81,7 @@ class ParcelView extends Component {
         this.props.onAlert('Failed to update.', 'error')
       })
   }
+
   onFieldUpdate(field_pk, field) {
     let fields = this.state.curUpdateFields
     fields[field.pk] = field
@@ -92,6 +90,7 @@ class ParcelView extends Component {
       curUpdateFields: fields
     })
   }
+
   updateFields() {
     console.log("Send Fields for Update")
     console.log(this.state.curUpdateFields)
@@ -100,7 +99,7 @@ class ParcelView extends Component {
       updates.push(post(
         `${this.props.BASE_URL}/api/fields/update`,
         {
-          data: this.state.curUpdateFields[field_pk]
+          data: { ...this.state.curUpdateFields[field_pk], dairy_id: this.state.dairy.pk }
         }
       ))
     })
@@ -116,13 +115,11 @@ class ParcelView extends Component {
       })
   }
 
-  getAllFieldParcels() {
-    get(`${this.props.BASE_URL}/api/field_parcel/${this.state.dairy.pk}`)
-      .then(res => {
-        // console.log(res)
-        this.setState({ field_parcels: res })
-      })
-      .catch(err => { console.log(err) })
+  async getAllFieldParcels() {
+    const fieldParcels = await Parcels.getFieldParcels(this.state.dairy.pk)
+    if (fieldParcels.error) return this.props.onAlert(fieldParcels.error, 'error')
+    console.log("FieldPArcels: ", fieldParcels)
+    this.setState({ field_parcels: fieldParcels })
   }
 
   toggleShowJoinFieldParcelModal(val) {
@@ -134,28 +131,20 @@ class ParcelView extends Component {
     console.log(name, value)
     this.setState({ [name]: value })
   }
-  createJoinFieldParcel() {
-    let field_id = this.state.fields[this.state.curJoinFieldIdx].pk
-    let parcel_id = this.state.parcels[this.state.curJoinParcelIdx].pk
+  async createJoinFieldParcel() {
+    let field = this.state.fields[this.state.curJoinFieldIdx]
+    let parcel = this.state.parcels[this.state.curJoinParcelIdx]
 
-    post(`${this.props.BASE_URL}/api/field_parcel/create`, {
-      dairy_id: this.state.dairy.pk,
-      field_id: field_id,
-      parcel_id: parcel_id
-    })
-      .then(res => {
-        this.toggleShowJoinFieldParcelModal(false)
-        if (res['test']) {
-          this.props.onAlert('Error, duplicate entry.', 'error')
-          return
-        }
-        this.getAllFieldParcels()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log(err)
-        this.props.onAlert('Failed to create!', 'error')
-      })
+    let field_id = field ? field.pk : 0
+    let parcel_id = parcel ? parcel.pk : 0
+
+    const res = await Parcels.createFieldParcel(field_id, parcel_id, this.state.dairy.pk)
+    this.toggleShowJoinFieldParcelModal(false)
+
+    if (res.error) return this.props.onAlert(res.error, 'error')
+    this.getAllFieldParcels()
+    this.props.onAlert('Created Field Parcel!', 'success')
+
   }
 
 
@@ -172,20 +161,31 @@ class ParcelView extends Component {
     this.setState({ showDeleteFieldModal: true, curDelField: field })
   }
 
-  deleteParcel() {
+  async deleteParcel() {
     console.log("Deleting parcel", this.state.curDelParcel)
-    post(`${this.props.BASE_URL}/api/parcels/delete`, { pk: this.state.curDelParcel.pk })
-      .then(res => {
-        console.log(res)
-        this.props.onParcelDelete()
-        this.toggleDeleteParcelModal(false)
-      })
+    const res = await Parcels.deleteParcel(this.state.curDelParcel.pk, this.state.dairy.pk)
+    this.toggleDeleteParcelModal(false)
+
+    if (res.error) return this.props.onAlert(res.error, 'error')
+    this.props.onParcelDelete()
+
   }
+
   deleteField() {
-    post(`${this.props.BASE_URL}/api/fields/delete`, { pk: this.state.curDelField.pk })
+    post(`${this.props.BASE_URL}/api/fields/delete`, { pk: this.state.curDelField.pk, dairy_id: this.state.dairy.pk })
       .then(res => {
         console.log(res)
-        this.props.onFieldDelete()
+        if (res.error) {
+          this.props.onAlert('Failed to delete!', 'error')
+        } else {
+          this.props.onAlert('Deleted!', 'success')
+          this.props.onFieldDelete()
+        }
+        this.toggleDeleteFieldModal(false)
+      })
+      .catch(err => {
+        console.log("error: ", err)
+        this.props.onAlert('Failed to delete!', 'error')
         this.toggleDeleteFieldModal(false)
       })
   }
@@ -199,24 +199,17 @@ class ParcelView extends Component {
   }
 
 
-  createParcel(pnumber) {
-    post(`${this.props.BASE_URL}/api/parcels/create`, {
-      pnumber, dairy_id: this.state.dairy.pk
-    })
-      .then(res => {
-        this.toggleParcelModal(false)
-        this.props.getAllParcels()
-        this.props.onAlert('Created parcel!', 'success')
-      })
-      .catch(err => {
-        console.log(err)
-        this.toggleParcelModal(false)
-        this.props.onAlert('Failed creating parcel!', 'error')
-      })
+  async createParcel(pnumber) {
+    const res = await Parcels.createParcel(pnumber, this.state.dairy.pk)
+    this.toggleParcelModal(false)
+    if (res.error) return this.props.onAlert(res.error, 'error')
+
+    this.props.getAllParcels()
+    this.props.onAlert('Created parcel!', 'success')
   }
 
   createField(field) {
-    post(`${this.props.BASE_URL}/api/fields/create`, { data: { ...field, dairy_id: this.state.dairy.pk } })
+    Field.createField(field, this.state.dairy.pk)
       .then(res => {
         this.toggleFieldModal(false)
         this.props.getAllFields()
@@ -253,7 +246,7 @@ class ParcelView extends Component {
           <Grid item container xs={6} alignContent='center' alignItems='center' justifyContent='center'>
             <Grid item xs={12}>
               <div style={{ display: 'flex' }}>
-                <Typography variant="h4" style={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h4" >
                   Parcels
                 </Typography>
                 <Tooltip title="Add parcel to dairy">
@@ -270,7 +263,7 @@ class ParcelView extends Component {
           <Grid item container xs={6} alignItems='center' justifyContent='center'>
             <Grid item xs={10}>
               <div style={{ display: 'flex' }}>
-                <Typography variant="h4" style={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h4" >
                   Fields
                 </Typography>
                 <Tooltip title="Add field to dairy">
@@ -298,7 +291,7 @@ class ParcelView extends Component {
         </Grid>
 
         <Grid item key="PVparcelNumbermn" xs={6}>
-          <Grid item container xs={12}>
+          <MaxPageSize container height='512px'>
             {this.state.parcels.length > 0 ?
               this.state.parcels.sort((a, b) => naturalSortBy(a, b, 'pnumber')).map((parcel, i) => {
                 return (
@@ -328,7 +321,7 @@ class ParcelView extends Component {
                 No Parcels
               </React.Fragment>
             }
-          </Grid>
+          </MaxPageSize>
           {/* No longer editing parcel numbers. 
           <Grid item xs={12} style={{marginTop: "16px"}}>
             <Tooltip title="Update Parcels">
@@ -340,34 +333,40 @@ class ParcelView extends Component {
         </Grid>
 
         <Grid item key="PVfield" xs={6}>
-          {this.state.fields.length > 0 ?
-            this.state.fields.sort((a, b) => naturalSortBy(a, b, 'title')).map((field, i) => {
-              return (
-                <Grid container item xs={12} key={`parcelViewFieldsPV${i}`} className='showOnHoverParent'>
-                  <Grid item xs={11}>
-                    <FieldForm
-                      field={field}
-                      titleEditable={false}
-                      onUpdate={this.onFieldUpdate.bind(this)}
-                    />
+
+          <MaxPageSize height='512px'>
+
+
+            {this.state.fields.length > 0 ?
+              this.state.fields.sort((a, b) => naturalSortBy(a, b, 'title')).map((field, i) => {
+                return (
+                  <Grid container item xs={12} key={`parcelViewFieldsPV${i}`} className='showOnHoverParent'>
+                    <Grid item xs={11}>
+                      <FieldForm
+                        field={field}
+                        titleEditable={false}
+                        onUpdate={this.onFieldUpdate.bind(this)}
+                      />
+                    </Grid>
+                    <Grid item xs={1} container justifyContent='center' alignItems='center'>
+                      <Tooltip title="Delete Field">
+                        <IconButton className='showOnHover'
+                          onClick={() => { this.confirmDeleteField(field) }}
+                        >
+                          <DeleteIcon color="error" />
+                        </IconButton>
+                      </Tooltip>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={1} container justifyContent='center' alignItems='center'>
-                    <Tooltip title="Delete Field">
-                      <IconButton className='showOnHover'
-                        onClick={() => { this.confirmDeleteField(field) }}
-                      >
-                        <DeleteIcon color="error" />
-                      </IconButton>
-                    </Tooltip>
-                  </Grid>
-                </Grid>
-              )
-            })
-            :
-            <React.Fragment key="emptyPVF">
-              No Fields
-            </React.Fragment>
-          }
+                )
+              })
+              :
+              <React.Fragment key="emptyPVF">
+                No Fields
+              </React.Fragment>
+            }
+          </MaxPageSize>
+
         </Grid>
 
         <Grid item container key="PVlistfieldsandparcels" xs={12}>
@@ -387,7 +386,7 @@ class ParcelView extends Component {
           </Grid>
         </Grid>
 
-        <Grid item key="PVjoinView" xs={12}>
+        <MaxPageSize height='512px' item key="PVjoinView" xs={12}>
           <JoinedView
             dairy={this.state.dairy}
             field_parcels={this.state.field_parcels}
@@ -396,7 +395,7 @@ class ParcelView extends Component {
             BASE_URL={this.props.BASE_URL}
           />
 
-        </Grid>
+        </MaxPageSize>
 
         <FieldParcelJoinModal key="PVparcelJoinModal"
           open={this.state.showJoinFieldParcelModal}

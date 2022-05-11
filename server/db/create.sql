@@ -11,13 +11,53 @@
 -- END $$;
 
 
-
+CREATE EXTENSION IF NOT EXISTS hstore;
 -- Query 
 CREATE TABLE IF NOT EXISTS dairy_base(
-  pk SERIAL PRIMARY KEY,  
+  pk SERIAL PRIMARY KEY,
+  company_id INTEGER NOT NULl,
   title VARCHAR(100) NOT NULL,
-  UNIQUE(title)
+  UNIQUE(title),
+  CONSTRAINT fk_company
+    FOREIGN KEY(company_id)
+    REFERENCES companies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+
+-- CREATE TABLE IF NOT EXISTS parcel_base(
+--   pk SERIAL PRIMARY KEY,
+--   pnumber VARCHAR(16) NOT NULL,
+--   dairy_base_id INT NOT NULL,
+--   UNIQUE(pnumber, dairy_id),
+--   CONSTRAINT fk_dairy
+--     FOREIGN KEY(dairy_id) 
+-- 	  REFERENCES dairies(pk)
+--     ON UPDATE CASCADE ON DELETE CASCADE
+-- );
+
+
+-- CREATE TABLE IF NOT EXISTS operator_base(
+--   pk SERIAL PRIMARY KEY,
+--   dairy_base_id INT NOT NULL,
+--   title VARCHAR(50) NOT NULL,
+--   primary_phone VARCHAR(40),
+--   secondary_phone VARCHAR(40),
+--   street VARCHAR(100),
+--   city VARCHAR(30),
+--   city_state VARCHAR(3) DEFAULT 'CA',
+--   city_zip VARCHAR(20) ,
+--   is_owner BOOLEAN default 'f',
+--   is_operator BOOLEAN default 'f',
+--   is_responsible BOOLEAN default 'f', -- responsible for paying permit fees.
+
+--   UNIQUE(dairy_id, title, primary_phone),
+--   CONSTRAINT fk_dairy
+--     FOREIGN KEY(dairy_id) 
+-- 	  REFERENCES dairies(pk)
+--     ON UPDATE CASCADE ON DELETE CASCADE
+-- );
+
 
 CREATE TABLE IF NOT EXISTS dairies(
   pk SERIAL PRIMARY KEY,
@@ -97,9 +137,9 @@ CREATE TABLE IF NOT EXISTS operators(
   city VARCHAR(30),
   city_state VARCHAR(3) DEFAULT 'CA',
   city_zip VARCHAR(20) ,
-  is_owner BOOLEAN,
-  is_operator BOOLEAN,
-  is_responsible BOOLEAN, -- responsible for paying permit fees.
+  is_owner BOOLEAN default 'f',
+  is_operator BOOLEAN default 'f',
+  is_responsible BOOLEAN default 'f', -- responsible for paying permit fees.
 
   UNIQUE(dairy_id, title, primary_phone),
   CONSTRAINT fk_dairy
@@ -659,11 +699,11 @@ CREATE TABLE IF NOT EXISTS export_contact(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
   
-  first_name VARCHAR(30),
+  first_name VARCHAR(30) NOT NULL,
   -- last_name VARCHAR(30),
   -- middle_name VARCHAR(30),
   -- suffix_name VARCHAR(10),
-  primary_phone VARCHAR(20),
+  primary_phone VARCHAR(20) NOT NULL,
   
   UNIQUE(dairy_id, first_name, primary_phone),
 
@@ -846,9 +886,9 @@ CREATE TABLE IF NOT EXISTS note(
 CREATE TABLE IF NOT EXISTS certification(
   pk SERIAL PRIMARY KEY,
   dairy_id INT NOT NULL,
-  owner_id INT NOT NULL,
+  owner_id INT,
   operator_id INT,
-  responsible_id INT NOT NULL,
+  responsible_id INT ,
 
   UNIQUE(dairy_id),
    CONSTRAINT fk_dairy
@@ -869,5 +909,33 @@ CREATE TABLE IF NOT EXISTS certification(
 	  REFERENCES operators(pk)
     ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+
+
+
+  -- These names match TSV Types/ Sheet names but in lowercase and spaceToUnderscore.
+ CREATE TABLE setting_templates (
+	pk serial primary key,
+  dairy_id INT NOT NULL,
+  production_records  hstore,
+  ww_applications  hstore,
+  fw_applications  hstore,
+  sm_applications  hstore,
+  commercial_fertilizer  hstore,
+  soil_analyses  hstore,
+  plowdown_credit  hstore,
+  tile_drainage_systems  hstore,
+  discharges  hstore,
+  sm_exports  hstore,
+  ww_exports  hstore,
+  
+   UNIQUE(dairy_id),
+   CONSTRAINT fk_dairy
+    FOREIGN KEY(dairy_id) 
+	  REFERENCES dairies(pk)
+    ON UPDATE CASCADE ON DELETE CASCADE
+
+);
+
 
 

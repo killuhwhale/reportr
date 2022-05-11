@@ -25,7 +25,7 @@ class OperatorForm extends Component {
         <Grid item xs={4}>
           <TextField
             name='title'
-            value={this.state.operator.title}
+            value={this.props.operator.title}
             onChange={(ev) => this.props.onChange(this.props.index, ev)}
             label="Owner / Operator Name"
             style={{ width: "100%" }}
@@ -34,7 +34,7 @@ class OperatorForm extends Component {
         <Grid item xs={4}>
           <TextField
             name='primary_phone'
-            value={this.state.operator.primary_phone}
+            value={this.props.operator.primary_phone}
             onChange={(ev) => this.props.onChange(this.props.index, ev)}
             label="Primary phone number"
             style={{ width: "100%" }}
@@ -43,7 +43,7 @@ class OperatorForm extends Component {
         <Grid item xs={4}>
           <TextField
             name='secondary_phone'
-            value={this.state.operator.secondary_phone}
+            value={this.props.operator.secondary_phone}
             onChange={(ev) => this.props.onChange(this.props.index, ev)}
             label="Secondary phone number"
             style={{ width: "100%" }}
@@ -52,7 +52,7 @@ class OperatorForm extends Component {
         <Grid item xs={6}>
           <TextField
             name='street'
-            value={this.state.operator.street}
+            value={this.props.operator.street}
             onChange={(ev) => this.props.onChange(this.props.index, ev)}
             label="Street"
             style={{ width: "100%" }}
@@ -61,7 +61,7 @@ class OperatorForm extends Component {
         <Grid item xs={4}>
           <TextField
             name='city'
-            value={this.state.operator.city}
+            value={this.props.operator.city}
             onChange={(ev) => this.props.onChange(this.props.index, ev)}
             label="City"
             style={{ width: "100%" }}
@@ -70,7 +70,7 @@ class OperatorForm extends Component {
         <Grid item xs={2}>
           <TextField
             name='city_state'
-            value={this.state.operator.city_state}
+            value={this.props.operator.city_state}
             onChange={(ev) => this.props.onChange(this.props.index, ev)}
             label="State"
             style={{ width: "100%" }}
@@ -79,7 +79,7 @@ class OperatorForm extends Component {
         <Grid item xs={4}>
           <TextField
             name='city_zip'
-            value={this.state.operator.city_zip}
+            value={this.props.operator.city_zip}
             onChange={(ev) => this.props.onChange(this.props.index, ev)}
             label="Zip"
             style={{ width: "100%" }}
@@ -93,7 +93,7 @@ class OperatorForm extends Component {
           <Switch
             name="is_responsible" color="secondary"
             label="Responsible for permit fees"
-            checked={this.state.operator.is_responsible}
+            checked={this.props.operator.is_responsible}
             onChange={(ev) => this.props.onChange(this.props.index, { target: { name: 'is_responsible', value: ev.target.checked } })}
           />
         </Grid>
@@ -105,7 +105,7 @@ class OperatorForm extends Component {
           <Switch
             name="is_owner" color="secondary"
             label="Owner"
-            checked={this.state.operator.is_owner}
+            checked={this.props.operator.is_owner}
             onChange={(ev) => this.props.onChange(this.props.index, { target: { name: 'is_owner', value: ev.target.checked } })}
           />
         </Grid>
@@ -116,7 +116,7 @@ class OperatorForm extends Component {
           <Switch
             name="is_operator" color="secondary"
             label="Operator"
-            checked={this.state.operator.is_operator}
+            checked={this.props.operator.is_operator}
             onChange={(ev) => this.props.onChange(this.props.index, { target: { name: 'is_operator', value: ev.target.checked } })}
           />
         </Grid>

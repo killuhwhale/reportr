@@ -3,27 +3,23 @@ import {
   Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 
-import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { CloudUpload } from '@material-ui/icons'
-import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import formats, { groupByKeys } from "../../utils/format"
+import { formatDate, groupByKeys, splitDate } from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
-import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
+
 import {
-  DRAIN, TSV_INFO, readTSV, uploadTileDrainage, uploadTSVToDB
+  DRAIN, TSVUtil
 } from "../../utils/TSV"
 
 
@@ -137,15 +133,14 @@ class Drain extends Component {
       dairy_id: props.dairy_id,
       field_crop_app_drain: {},
       field_crop_app_drain_analysis: {},
-      tsvType: TSV_INFO[DRAIN].tsvType,
-      numCols: TSV_INFO[DRAIN].numCols,
+      tsvType: DRAIN,
       showAddDrainModal: false,
       showConfirmDeleteDrainModal: false,
       showConfirmDeleteDrainAnalysisModal: false,
       showUploadFieldCropAppDrainTSVModal: false,
       deleteDrainObj: {},
       deleteDrainAnalysisObj: {},
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: "",
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
@@ -191,7 +186,10 @@ class Drain extends Component {
   }
   onDrainDelete() {
     if (Object.keys(this.state.deleteDrainObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/drain_source/delete`, { pk: this.state.deleteDrainObj.pk })
+      post(`${this.props.BASE_URL}/api/drain_source/delete`, {
+        pk: this.state.deleteDrainObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteDrainModal(false)
@@ -213,7 +211,10 @@ class Drain extends Component {
   }
   onDrainAnalysisDelete() {
     if (Object.keys(this.state.deleteDrainAnalysisObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/drain_analysis/delete`, { pk: this.state.deleteDrainAnalysisObj.pk })
+      post(`${this.props.BASE_URL}/api/drain_analysis/delete`, {
+        pk: this.state.deleteDrainAnalysisObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteDrainAnalysisModal(false)
@@ -230,36 +231,52 @@ class Drain extends Component {
   toggleShowUploadFieldCropAppDrainTSVModal(val) {
     this.setState({
       showUploadFieldCropAppDrainTSVModal: val,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: ""
     })
   }
+
   onUploadFieldCropAppDrainTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
     }
   }
-  onUploadFieldCropAppDrainTSV() {
+
+  async onUploadFieldCropAppDrainTSV() {
     // 24 columns from TSV
-    let dairy_pk = this.state.dairy_id
-    uploadTileDrainage(this.state.tsvText, this.state.tsvType, dairy_pk)
-      .then(res => {
-        console.log("Completed uploading Process Wastewater TSV", res)
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.toggleShowUploadFieldCropAppDrainTSVModal(false)
-        this.getFieldCropAppDrains()
-        this.getFieldCropAppDrainAnalyses()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        this.props.onAlert('Failed to upload!', 'error')
-        console.log(err)
-      })
+    let dairy_id = this.state.dairy_id
+
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      console.log("Upload TSV result: ", this.state.tsvType, result)
+      this.toggleShowUploadFieldCropAppDrainTSVModal(false)
+      this.getFieldCropAppDrains()
+      this.getFieldCropAppDrainAnalyses()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
+
+
+
+
+    // uploadTileDrainage(this.state.tsvFile, this.state.tsvType, dairy_pk)
+    //   .then(res => {
+    //     console.log("Completed uploading Process Wastewater TSV", res)
+    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
+    //     this.toggleShowUploadFieldCropAppDrainTSVModal(false)
+    //     this.getFieldCropAppDrains()
+    //     this.getFieldCropAppDrainAnalyses()
+    //     this.props.onAlert('Success!', 'success')
+    //   })
+    //   .catch(err => {
+    //     console.log("Error with all promises")
+    //     this.props.onAlert('Failed to upload!', 'error')
+    //     console.log(err)
+    //   })
   }
   toggleViewTSVsModal(val) {
     this.setState({ showViewTSVsModal: val })
@@ -369,7 +386,7 @@ class Drain extends Component {
           open={this.state.showConfirmDeleteDrainModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Drain for ${this.state.deleteDrainObj.fieldtitle} - ${this.state.deleteDrainObj.app_date}?`}
+          modalText={`Delete Drain: ${this.state.deleteDrainObj.src_desc}?`}
 
           onAction={this.onDrainDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteDrainModal(false)}
@@ -379,7 +396,7 @@ class Drain extends Component {
           open={this.state.showConfirmDeleteDrainAnalysisModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Drain Analysis for ${this.state.deleteDrainAnalysisObj.sample_desc} - ${this.state.deleteDrainAnalysisObj.sample_date}?`}
+          modalText={`Delete Drain Analysis: ${formatDate(splitDate(this.state.deleteDrainAnalysisObj.sample_date))} - ${this.state.deleteDrainAnalysisObj.sample_desc}?`}
           onAction={this.onDrainAnalysisDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteDrainAnalysisModal(false)}
         />
@@ -398,6 +415,7 @@ class Drain extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Drain TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.onUploadFieldCropAppDrainTSV.bind(this)}
           onChange={this.onUploadFieldCropAppDrainTSVModalChange.bind(this)}

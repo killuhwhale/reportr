@@ -1,5 +1,3 @@
-
-
 const MG_ML_TO_LBS_PER_GAL = 8.345e-6
 const LBS_PER_GAL = 8.345
 const TO_MG_KG = 1e4    // converts percent to decimal 1e-2 and mg to kg 1e6 ex=> 0.5% is .005 as a decimal

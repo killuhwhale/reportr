@@ -9,14 +9,17 @@ import {
   PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, MANURE, WASTEWATER, HARVEST, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, TSV_INFO
 } from '../utils/TSV'
 import { createHeaderMap, mapsColToTemplate } from '../utils/TSV'
-import { TABLE_HEADER_BACKGROUND_COLOR, B64_LOGO, } from "../specific"
+import { TABLE_HEADER_BACKGROUND_COLOR, } from "../specific"
+import { Dairy } from '../utils/dairy/dairy'
+import { Logo } from '../utils/Logo/logo'
+import { auth } from '../utils/users'
 
 
 const CROP_TITLE_MAP = { 'Alfalfa Haylage': 'Alfalfa Haylage', 'Alfalfa hay': 'Alfalfa hay', 'Almond in shell': 'Almond in shell', 'Apple': 'Apple', 'Barley silage boot stage': 'Barley silage boot stage', 'Barley silage soft dough': 'Barley silage soft dough', 'Barley grain': 'Barley grain', 'Bermudagrass hay': 'Bermudagrass hay', 'Broccoli': 'Broccoli', 'Bromegrass forage': 'Bromegrass forage', 'Cabbage': 'Cabbage', 'Canola grain': 'Canola grain', 'Cantaloupe': 'Cantaloupe', 'Celery': 'Celery', 'Clover-grass hay': 'Clover-grass hay', 'Corn grain': 'Corn grain', 'Corn silage': 'Corn silage', 'Cotton lint': 'Cotton lint', 'Grape': 'Grape', 'Lettuce': 'Lettuce', 'Oats grain': 'Oats grain', 'Oats hay': 'Oats hay', 'Oats silage-soft dough': 'Oats silage', 'Orchardgrass hay': 'Orchardgrass hay', 'Pasture': 'Pasture', 'Pasture Silage': 'Pasture Silage', 'Peach': 'Peach', 'Pear': 'Pear', 'Potato': 'Potato', 'Prune': 'Prune', 'Ryegrass hay': 'Ryegrass hay', 'Safflower': 'Safflower', 'Sorghum': 'Sorghum', 'Sorghum-Sudangrass forage': 'Sorghum-Sudangrass forage', 'Squash': 'Squash', 'Sudangrass hay': 'Sudangrass hay', 'Sudangrass silage': 'Sudangrass silage', 'Sugar beets': 'Sugar beets', 'Sweet Potato': 'Sweet Potato', 'Tall Fescue hay': 'Tall Fescue hay', 'Timothy hay': 'Timothy hay', 'Tomato': 'Tomato', 'Triticale boot stage': 'Triticale boot stage', 'Triticale soft dough': 'Triticale soft dough', 'Vetch forage': 'Vetch forage', 'Wheat grain': 'Wheat grain', 'Wheat Hay': 'Wheat Hay', 'Wheat silage boot stage': 'Wheat silage boot stage', 'Wheat silage soft dough': 'Wheat silage soft dough' }
 
 // List of nums to use
 
-const tsvPrintCols = {
+const TSV_PRINT_COLS = {
   [PROCESS_WASTEWATER]:
     [
       "Application Date",
@@ -37,7 +40,6 @@ const tsvPrintCols = {
       'P (Lbs/ Acre)',
       'K (Lbs/ Acre)',
     ],
-  // [PROCESS_WASTEWATER]: [0, 1, 2, 5, 12, 14, 18, 19, 27, 28, 47, 48, 49, 50, 51, 52, 53, 54],
   [FRESHWATER]:
     [
       "Application Date",
@@ -212,11 +214,22 @@ class TSVPrint extends Component {
     }
   }
 
-  printTSV() {
+  async printTSV() {
     window.focus()
     window.document.title = this.state.tsv.title.substring(0, this.state.tsv.title.length - 4)
     let footerImg = document.getElementById('footerImg')
-    footerImg.src = B64_LOGO
+
+    try {
+      const logo = await Logo.getLogo(auth.currentUser.company_id)
+      if (logo.error) {
+        return console.log(logo)
+      }
+      footerImg.src = logo
+    } catch (e) {
+      console.log(e)
+      return { error: e }
+    }
+
 
     footerImg.onload = () => {
       window.print()
@@ -226,7 +239,7 @@ class TSVPrint extends Component {
   getTSV() {
     Promise.all([
       get(`${this.props.BASE_URL}/api/tsv/${this.state.dairy_id}/${this.state.tsvType}`),
-      get(`${this.props.BASE_URL}/api/dairy/${this.state.dairy_id}`),
+      Dairy.getDairyByPK(this.state.dairy_id)
     ])
       .then(([res, dairy]) => {
         let aboveHeader = []
@@ -284,7 +297,7 @@ class TSVPrint extends Component {
     let headerMap = {}
 
     let splitText = tsvText.split('\n')
-    let printCols = tsvPrintCols[this.state.tsvType]  // List of ints representing indices to print from TSV
+    let printCols = TSV_PRINT_COLS[this.state.tsvType]  // List of ints representing indices to print from TSV
 
     splitText.forEach((row, i) => {
       // Need a function to extract the cols I need

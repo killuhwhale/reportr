@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip, TextField,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -8,6 +8,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import { CloudUpload } from '@material-ui/icons' // uploadTSV
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
@@ -15,7 +16,7 @@ import { withTheme } from '@material-ui/core/styles'
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
-import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
+import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from "../../utils/format"
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import AddNutrientImportModal from "../Modals/addNutrientImportModal"
 import AddFertilizerModal from "../Modals/addFertilizerModal"
@@ -23,27 +24,17 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
 import { VariableSizeList as List } from "react-window";
-import { groupBySortBy } from "../../utils/format"
-
-import {
-  readTSV, uploadTSVToDB, uploadNutrientApp
-} from "../../utils/TSV"
-import { DatePicker } from '@material-ui/pickers'
 
 
-
-//Move to appnutrient and pass as prop
-const SOURCE_OF_ANALYSES = [
-  'Lab Analysis',
-  'Other/ Estimated',
-]
-
+import { TSVUtil } from "../../utils/TSV"
+import { FixedPageSize } from '../utils/FixedPageSize'
 
 
 /** View for Process Wastewater Entry in DB */
 const FertilizerAppEvent = (props) => {
   return (
-    <Grid item container xs={12} style={props.style}>
+
+    <FixedPageSize container item xs={12} key='pwae' height='375px' style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
 
       {
         props.fertilizers.sort((a, b) => naturalSortBy(a, b, 'app_date')).map((fertilizer, i) => {
@@ -57,217 +48,163 @@ const FertilizerAppEvent = (props) => {
           )
         })
       }
-    </Grid>
+    </FixedPageSize>
   )
 }
 
-const OldEvent = (props) => {
-  const fertilizer = props.fertilizer
-  return (
-    <Grid item container xs={12} key={`fwmainview${1}`}>
-      <Grid item xs={6}>
-        <Typography variant="subtitle1">{fertilizer.croptitle}</Typography>
-      </Grid>
-      <Grid item xs={6} align="right">
-        <DatePicker
-          value={fertilizer.plant_date}
-          label='Planted'
-        />
-      </Grid>
-
-      <div style={{ display: 'flex', alignItems: 'center' }} >
-        <DatePicker
-          label='Applied'
-          value={fertilizer.app_date}
-        />
-        <TextField label='Type' value={fertilizer.import_desc}
-        />
-
-
-      </div>
-
-
-      <Grid item container xs={10}>
-        <Grid item xs={2}>
-          <TextField
-            label="Applied (tons)"
-            value={fertilizer.amount_applied}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            label="Moisture"
-            value={fertilizer.moisture}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            label="N lbs / acre"
-            value={fertilizer.n_lbs_acre}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            label="P lbs / acre"
-            value={fertilizer.p_lbs_acre}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            label="K lbs / acre"
-            value={fertilizer.k_lbs_acre}
-          />
-        </Grid>
-        <Grid item xs={2}>
-          <TextField
-            label="Salt lbs / acre"
-            value={fertilizer.salt_lbs_acre}
-          />
-        </Grid>
-      </Grid>
-      <Grid item container xs={2} justifyContent="center" >
-        <Tooltip title="Delete Fertilizer Event">
-          <IconButton onClick={() => props.onDelete(fertilizer)}>
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Tooltip>
-      </Grid>
-
-    </Grid>
-  )
-}
-
-const FertilizerAppEventCard = (props) => {
-  const { app_method, croptitle, app_date, import_desc, amount_applied, moisture, n_con, p_con, k_con
+const FertilizerAppEventCard = withTheme((props) => {
+  const { app_date, app_method, croptitle, import_desc, amount_applied, material_type, moisture, n_con, p_con, k_con
   } = props.fertilizer
   return (
-    <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
-      <CardContent>
-        <Typography>
-          {croptitle} - {app_method}
-        </Typography>
-        <DatePicker label="App Date"
-          value={app_date}
-          open={false}
-        />
-        <Grid item xs={12}>
-          <Typography variant='caption'>
-            {`N ${formatFloat(n_con)} P ${formatFloat(p_con)} K ${formatFloat(k_con)} Mositure ${moisture} `}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant='caption'>
-            {`Amount ${formatFloat(amount_applied)}`}
-          </Typography>
-        </Grid>
-      </CardContent>
-      <CardActions>
-        <Tooltip title="Delete Fertilizer">
-          <IconButton className='showOnHover'
-            onClick={() => props.onDelete(props.fertilizer)}
-          >
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Tooltip>
-      </CardActions>
-    </Card>
-  )
-}
+    <Grid item xs={12} md={4} lg={3}>
+      <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+        <CardContent>
+          <Grid item xs={12} align='right'>
+            <Typography variant='caption' >
+              <Tooltip title='Sample date' placement="top">
+                <span style={{ color: props.theme.palette.secondary.main }}>
+                  {` ${formatDate(splitDate(app_date))}`}
+                </span>
+              </Tooltip>
+            </Typography>
+          </Grid>
 
-const NutrientImport = (props) => {
-  return (
-    <Grid item container xs={3} alignItems='center' style={{ marginTop: '8px' }} className='showOnHoverParent'>
-      <Grid item container xs={10} >
-        <Grid item container xs={12}>
           <Grid item xs={12}>
-            <DatePicker
-              fullWidth
-              value={props.nutrientImport.import_date}
-              label="Import date"
-            />
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.primary.main }}>
+                {` ${croptitle} ${app_method}`}
+              </span>
+            </Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant='caption'>
-              {`${props.nutrientImport.import_desc} Amount: ${props.nutrientImport.amount_imported}`}
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.secondary.main }}>
+                {` ${import_desc} ${material_type}`}
+              </span>
             </Typography>
-
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant='caption'>
-              {`
-              N ${formatFloat(props.nutrientImport.n_con)}
-              P ${formatFloat(props.nutrientImport.p_con)}
-              `}
-            </Typography>
-
           </Grid>
 
           <Grid item xs={12}>
             <Typography variant='caption'>
-              {`
-              K ${formatFloat(props.nutrientImport.k_con)}
-              Salt ${formatFloat(props.nutrientImport.salt_con)}
-              `}
+
+              N: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(n_con)} `}
+              </span>
+              P: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(p_con)} `}
+              </span>
+              K: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(k_con)} `}
+              </span>
+
+              Moisture: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(moisture)} `}
+              </span>
+
             </Typography>
-
           </Grid>
-
-        </Grid>
-        {/* <Grid item container xs={12}>
-          <Grid item xs={6}>
-            <TextField
-              value={props.nutrientImport.material_type}
-              label="Type"
-              style={{ width: "100%" }}
-            />
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              Amount applied: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(amount_applied)} `}
+              </span>
+            </Typography>
           </Grid>
-        </Grid> */}
-
-        {/* <Grid item container xs={12} style={{ marginTop: '8px' }}>
-          <Grid item xs={3}>
-            <TextField
-              value={props.nutrientImport.n_con}
-              label="N"
-              style={{ width: "100%" }}
-            />
+        </CardContent>
+        <CardActions>
+          <Grid item xs={2}>
+            <Tooltip title="Delete Nutrient Import">
+              <IconButton className='showOnHover' size='small'
+                onClick={() => props.props.onDelete(props.fertilizer)}
+              >
+                <DeleteIcon color="error" />
+              </IconButton>
+            </Tooltip>
           </Grid>
-          <Grid item xs={3}>
-            <TextField
-              value={props.nutrientImport.p_con}
-              label="P"
-              style={{ width: "100%" }}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <TextField
-              value={props.nutrientImport.k_con}
-              label="K"
-              style={{ width: "100%" }}
-            />
-          </Grid>
-          <Grid item xs={3}>
-            <TextField
-              value={props.nutrientImport.salt_con}
-              label="Salt"
-              style={{ width: "100%" }}
-            />
-          </Grid>
-        </Grid> */}
-
-      </Grid>
-      <Grid item xs={2} align='center'>
-        <Tooltip title="Delete Fertilizer Source">
-          <IconButton className='showOnHover'
-            onClick={() => props.onConfirmNutrientImportDelete(props.nutrientImport)}
-          >
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Tooltip>
-      </Grid>
+        </CardActions>
+      </Card>
     </Grid>
+
+  )
+})
+
+const NutrientImport = withTheme((props) => {
+  const { import_date, import_desc, material_type, method_of_reporting, amount_imported, n_con, p_con, k_con, salt_con } = props.nutrientImport
+  return (
+    <Grid item xs={12} md={4} lg={3}>
+      <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+        <CardContent>
+          <Grid item xs={12} align='right'>
+            <Typography variant='caption' >
+              <Tooltip title='Sample date' placement="top">
+                <span style={{ color: props.theme.palette.secondary.main }}>
+                  {` ${formatDate(splitDate(import_date))}`}
+                </span>
+              </Tooltip>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.primary.main }}>
+                {` ${import_desc} ${method_of_reporting}`}
+              </span>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.secondary.main }}>
+                {` ${material_type}`}
+              </span>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+
+              N: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(n_con)} `}
+              </span>
+              P: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(p_con)} `}
+              </span>
+              K: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(k_con)} `}
+              </span>
+              Salt: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(salt_con)} `}
+              </span>
+
+
+
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              Amount Imported: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(amount_imported)} `}
+              </span>
+            </Typography>
+          </Grid>
+        </CardContent>
+        <CardActions>
+          <Grid item xs={2}>
+            <Tooltip title="Delete Nutrient Import">
+              <IconButton className='showOnHover' size='small'
+                onClick={() => props.onConfirmNutrientImportDelete(props.nutrientImport)}
+              >
+                <DeleteIcon color="error" />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        </CardActions>
+      </Card>
+    </Grid>
+
+
   )
 
-}
+})
 
 
 /** Component handles showing Process Wastewater Application events.
@@ -285,6 +222,7 @@ class Fertilizer extends Component {
   constructor(props) {
     super(props)
 
+
     this.state = {
       dairy_id: props.dairy_id,
       fieldCropAppEvents: [],
@@ -298,10 +236,11 @@ class Fertilizer extends Component {
       showAddFertilizerModal: false,
       showConfirmDeleteNutrientImportModal: false,
       showConfirmDeleteFertilizerModal: false,
+      showAnalyses: 'none',
       deleteNutrientImportObj: {},
       deleteFertilizerObj: {},
       showUploadFieldCropAppFertilizerTSVModal: false,
-      tsvText: '',
+      tsvFile: '',
       uploadedFilename: '',
       showViewTSVsModal: false,
       windowWidth: window.innerWidth,
@@ -488,7 +427,10 @@ class Fertilizer extends Component {
   }
   onFertilizerDelete() {
     if (Object.keys(this.state.deleteFertilizerObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_fertilizer/delete`, { pk: this.state.deleteFertilizerObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_fertilizer/delete`, {
+        pk: this.state.deleteFertilizerObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFertilizerModal(false)
@@ -501,7 +443,10 @@ class Fertilizer extends Component {
   }
   onNutrientImportDelete() {
     if (Object.keys(this.state.deleteNutrientImportObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/nutrient_import/delete`, { pk: this.state.deleteNutrientImportObj.pk })
+      post(`${this.props.BASE_URL}/api/nutrient_import/delete`, {
+        pk: this.state.deleteNutrientImportObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteNutrientImportModal(false)
@@ -516,36 +461,49 @@ class Fertilizer extends Component {
   toggleShowUploadFieldCropAppFertilizerTSVModal(val) {
     this.setState({
       showUploadFieldCropAppFertilizerTSVModal: val,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: ""
     })
   }
   onUploadFieldCropAppFreshwateTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
+
     }
   }
-  onUploadFieldCropAppFreshwateTSV() {
+  async onUploadFieldCropAppFreshwateTSV() {
     // 24 columns from TSV
-    let dairy_pk = this.state.dairy_id
-    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
-      .then(res => {
-        console.log("Completed uploading Fertilizer TSV")
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)
-        this.getFieldCropAppFertilizer()
-        this.getNutrientImport()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        console.log(err)
-        this.props.onAlert('Failed uploading.', 'error')
-      })
+    let dairy_id = this.state.dairy_id
+
+
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      console.log("Upload TSV result: ", this.state.tsvType, result)
+      this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)
+      this.getFieldCropAppFertilizer()
+      this.getNutrientImport()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
+
+    // uploadNutrientApp(this.state.tsvFile, this.state.tsvType, dairy_pk)
+    //   .then(res => {
+    //     console.log("Completed uploading Fertilizer TSV")
+    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
+    //     this.toggleShowUploadFieldCropAppFertilizerTSVModal(false)
+    //     this.getFieldCropAppFertilizer()
+    //     this.getNutrientImport()
+    //     this.props.onAlert('Success!', 'success')
+    //   })
+    //   .catch(err => {
+    //     console.log("Error with all promises")
+    //     console.log(err)
+    //     this.props.onAlert('Failed uploading.', 'error')
+    //   })
   }
 
 
@@ -605,6 +563,10 @@ class Fertilizer extends Component {
       .catch(err => {
         console.log(err)
       })
+  }
+
+  toggleShowAnalyses() {
+    this.setState({ showAnalyses: this.state.showAnalyses === 'none' ? 'flex' : this.state.showAnalyses === 'flex' ? 'none' : 'flex' })
   }
 
   render() {
@@ -675,6 +637,7 @@ class Fertilizer extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Fertilizer TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.onUploadFieldCropAppFreshwateTSV.bind(this)}
           onChange={this.onUploadFieldCropAppFreshwateTSVModalChange.bind(this)}
@@ -683,8 +646,20 @@ class Fertilizer extends Component {
         <Grid item xs={12}>
           {this.state.nutrientImports.length > 0 ?
             <React.Fragment>
-              <Typography variant="h5">Nutrient Imports (Fertilizer)</Typography>
-              <Grid item container xs={12} spacing={4}>
+
+              <Grid item xs={12} >
+                <div style={{ display: 'flex' }}>
+                  <Typography variant="h5" style={{ alignSelf: 'center' }} >Nutrient Imports (Fertilizers)</Typography>
+                  <Tooltip title='Show'>
+                    <IconButton onClick={this.toggleShowAnalyses.bind(this)}>
+                      <ExpandMoreIcon color='primary' />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+
+              </Grid>
+
+              <FixedPageSize container item xs={12} key='pwae' height='375px' style={{ marginBottom: "40px", marginTop: "15px", display: this.state.showAnalyses }}>
                 {
                   this.state.nutrientImports.map((nutrientImport, i) => {
                     return (
@@ -695,7 +670,7 @@ class Fertilizer extends Component {
                     )
                   })
                 }
-              </Grid>
+              </FixedPageSize>
             </React.Fragment>
             :
             <React.Fragment></React.Fragment>
@@ -715,14 +690,16 @@ class Fertilizer extends Component {
             />
 
           </Grid>
-          {this.getAppEventsByViewKeys().length > 0 ?
-            <FertilizerAppEvent
-              fertilizers={this.getAppEventsByViewKeys()}
-              onDelete={this.onConfirmFertilizerDelete.bind(this)}
-            />
-            :
-            <React.Fragment></React.Fragment>
-          }
+          <FixedPageSize container item xs={12} height='375px'>
+            {this.getAppEventsByViewKeys().length > 0 ?
+              <FertilizerAppEvent
+                fertilizers={this.getAppEventsByViewKeys()}
+                onDelete={this.onConfirmFertilizerDelete.bind(this)}
+              />
+              :
+              <React.Fragment></React.Fragment>
+            }
+          </FixedPageSize>
         </Grid>
 
         {/* {this.getSortedKeys().length > 0 ?
@@ -745,7 +722,10 @@ class Fertilizer extends Component {
           open={this.state.showConfirmDeleteNutrientImportModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Nutrient Import for ${this.state.deleteNutrientImportObj.import_date} - ${this.state.deleteNutrientImportObj.import_desc}?`}
+          modalText={`Delete Nutrient Import for: 
+            ${formatDate(splitDate(this.state.deleteNutrientImportObj.import_date))} - 
+            ${this.state.deleteNutrientImportObj.import_desc}?
+          `}
           onAction={this.onNutrientImportDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteNutrientImportModal(false)}
         />
@@ -762,7 +742,7 @@ class Fertilizer extends Component {
           open={this.state.showConfirmDeleteFertilizerModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Fertilizer for ${this.state.deleteFertilizerObj.app_date}?`}
+          modalText={`Delete Fertilizer for: ${formatDate(splitDate(this.state.deleteFertilizerObj.app_date))}?`}
           onAction={this.onFertilizerDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteFertilizerModal(false)}
         />

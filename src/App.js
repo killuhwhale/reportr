@@ -20,10 +20,12 @@ import lightTheme from "./css/lightTheme"
 import Login from "./pages/login"
 import HomePage from "./pages/homePage"
 import TSVPrint from "./pages/tsvPrint"
+import AdminDashboard from "./pages/adminDashboard"
 import { BASE_URL } from "./utils/environment"
 import { TSV_INFO } from "./utils/TSV"
 import { auth } from './utils/users'
 import "./App.css"
+
 
 const AlertGrid = withStyles(theme => ({
   root: {
@@ -126,8 +128,7 @@ export default class App extends React.Component {
     super(props)
     this.state = {
       user: {},
-      // theme: darkTheme,
-      theme: LightTheme,
+      theme: DarkTheme,
       showAlert: false,
       alertSeverity: '',
       alertMsg: '',
@@ -231,6 +232,15 @@ export default class App extends React.Component {
                   }
                   }
                 />
+                <Route path="/adminDashboard">
+                  <BackgroundGrid container direction="column" alignItems="center">
+                    <AdminDashboard
+                      onAlert={this.onAlert.bind(this)}
+                      toggleTheme={this.toggleTheme.bind(this)}
+                    />
+                  </BackgroundGrid>
+                </Route>
+
               </Switch>
             </MuiPickersUtilsProvider>
             :

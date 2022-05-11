@@ -5,29 +5,21 @@ import {
 import {
   DateTimePicker
 } from '@material-ui/pickers'
-import AddIcon from '@material-ui/icons/Add'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { CloudUpload } from '@material-ui/icons'
-import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes' //AppEvent
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
-
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
-import { withTheme } from '@material-ui/core/styles'
-import formats, { groupByKeys } from "../../utils/format"
 import { VariableSizeList as List } from "react-window";
 
+import { withTheme } from '@material-ui/core/styles'
+import { formatDate, groupByKeys, splitDate } from "../../utils/format"
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
-
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types'
 import { get, post } from '../../utils/requests'
-import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
-import {
-  DISCHARGE, TSV_INFO, readTSV, uploadDischargeTSV, uploadTSVToDB
-} from "../../utils/TSV"
-import { toFloat } from '../../utils/convertCalc'
+
+import { TSVUtil, DISCHARGE } from "../../utils/TSV"
+
 
 
 /** View for Process Wastewater Entry in DB */
@@ -88,13 +80,12 @@ class Discharge extends Component {
     this.state = {
       dairy_id: props.dairy_id,
       discharge: {},
-      tsvType: TSV_INFO[DISCHARGE].tsvType,
-      numCols: TSV_INFO[DISCHARGE].numCols,
+      tsvType: DISCHARGE,
       showAddDischargeModal: false,
       showConfirmDeleteDischargeModal: false,
       showUploadFieldCropAppDischargeTSVModal: false,
       deleteDischargeObj: {},
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: "",
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
@@ -124,12 +115,18 @@ class Discharge extends Component {
   toggleShowConfirmDeleteDischargeModal(val) {
     this.setState({ showConfirmDeleteDischargeModal: val })
   }
+
   onConfirmDischargeDelete(deleteDischargeObj) {
+    console.log(deleteDischargeObj)
     this.setState({ showConfirmDeleteDischargeModal: true, deleteDischargeObj })
   }
+
   onDischargeDelete() {
     if (Object.keys(this.state.deleteDischargeObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/discharge/delete`, { pk: this.state.deleteDischargeObj.pk })
+      post(`${this.props.BASE_URL}/api/discharge/delete`, {
+        pk: this.state.deleteDischargeObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteDischargeModal(false)
@@ -145,72 +142,44 @@ class Discharge extends Component {
   toggleShowUploadFieldCropAppDischargeTSVModal(val) {
     this.setState({
       showUploadFieldCropAppDischargeTSVModal: val,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: ""
     })
   }
   onUploadFieldCropAppDischargeTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
     }
   }
-  onUploadFieldCropAppDischargeTSV() {
+  async onUploadFieldCropAppDischargeTSV() {
     // 24 columns from TSV
-    let dairy_pk = this.state.dairy_id
-    // let rows = processTSVText(this.state.tsvText, this.state.numCols) // extract rows from Text of tsv file TODO()
+    let dairy_id = this.state.dairy_id
 
 
-    // let result_promises = rows.map((row, i) => {
-    //   const [
-    //     discharge_type,
-    //     discharge_datetime,
-    //     discharge_loc,
-    //     vol,
-    //     vol_unit,
-    //     duration_of_discharge,
-    //     discharge_src,
-    //     method_of_measuring,
-    //     sample_location_reason,
-    //     ref_number
-    //   ] = row
-
-    //   let dischargeData = {
-    //     dairy_id: dairy_pk,
-    //     discharge_type,
-    //     discharge_datetime,
-    //     discharge_loc,
-    //     vol: toFloat(checkEmpty(vol)),
-    //     vol_unit,
-    //     duration_of_discharge: toFloat(checkEmpty(duration_of_discharge)),
-    //     discharge_src,
-    //     method_of_measuring,
-    //     sample_location_reason,
-    //     ref_number
-    //   }
-
-    //   return post(`${this.props.BASE_URL}/api/discharge/create`, dischargeData)
-    // })
-
-
-    // Promise.all(result_promises)            // Execute promises to create field_crop && field_crop_harvet entries in the DB
-
-    uploadDischargeTSV(this.state.tsvText, this.state.tsvType, dairy_pk)
-      .then(res => {
-        console.log("Completed uploading Discharge TSV", res)
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.toggleShowUploadFieldCropAppDischargeTSVModal(false)
-        this.getFieldCropAppDischarges()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        console.log(err)
-        this.props.onAlert('Failed uploading!', 'error')
-      })
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      this.toggleShowUploadFieldCropAppDischargeTSVModal(false)
+      this.getFieldCropAppDischarges()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
+    // uploadDischargeTSV(this.state.tsvFile, this.state.tsvType, dairy_pk)
+    //   .then(res => {
+    //     console.log("Completed uploading Discharge TSV", res)
+    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
+    //     this.toggleShowUploadFieldCropAppDischargeTSVModal(false)
+    //     this.getFieldCropAppDischarges()
+    //     this.props.onAlert('Success!', 'success')
+    //   })
+    //   .catch(err => {
+    //     console.log("Error with all promises")
+    //     console.log(err)
+    //     this.props.onAlert('Failed uploading!', 'error')
+    //   })
   }
   toggleViewTSVsModal(val) {
     this.setState({ showViewTSVsModal: val })
@@ -284,7 +253,7 @@ class Discharge extends Component {
           open={this.state.showConfirmDeleteDischargeModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Discharge for ${this.state.deleteDischargeObj.fieldtitle} - ${this.state.deleteDischargeObj.app_date}?`}
+          modalText={`Delete Discharge: ${formatDate(splitDate(this.state.deleteDischargeObj.discharge_datetime))} - ${this.state.deleteDischargeObj.discharge_loc}?`}
 
           onAction={this.onDischargeDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteDischargeModal(false)}
@@ -304,6 +273,7 @@ class Discharge extends Component {
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Discharge TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.onUploadFieldCropAppDischargeTSV.bind(this)}
           onChange={this.onUploadFieldCropAppDischargeTSVModalChange.bind(this)}

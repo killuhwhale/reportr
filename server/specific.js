@@ -1,12 +1,15 @@
-//  White list for emails that are allowed to be registered as an owner.
-exports.WHITE_LIST = ['t@g.com'].map(email => email.toLocaleLowerCase())
-exports.JWT_SECRET_KEY = '133742069'
-exports.JWT_OPTIONS = {
-    expiresIn: "10h"
+// exports.JWT_SECRET_KEY = '133742069'
+
+exports.JWT_ACCESS_OPTIONS = {
+    expiresIn: '15m'
+
 }
+exports.JWT_REFRESH_OPTIONS = {
+    expiresIn: '10h'
+
+}
+
 exports.BCRYPT_SALT_ROUNDS = 10
-
-
 
 exports.ALLOWED_ORIGINS = [
     'http://localhost',

@@ -9,7 +9,7 @@ import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import { get, post } from '../../utils/requests';
 import { ImportExport } from '@material-ui/icons';
-
+import { Herds } from "../../utils/herds/herds"
 
 /**
  * WHEN YOU NEED HERD CALCULATIONS< JUST GET ALL HERD INFO AND RUN THROUGH THE CALC FUNTION.
@@ -114,7 +114,7 @@ class HerdTable extends Component {
     }
   }
   getHerds() {
-    get(`${this.props.BASE_URL}/api/herds/${this.state.dairy.pk}`)
+    Herds.getHerd(this.state.dairy.pk)
       .then(([herdInfo]) => {
         if (!herdInfo) {
           return;
@@ -224,7 +224,7 @@ class HerdTable extends Component {
 
   createHerds() {
     // console.log(this.state.dairy)
-    post(`${this.props.BASE_URL}/api/herds/create`, { dairy_id: this.state.dairy.pk })
+    Herds.createHerd(this.state.dairy.pk)
       .then(res => {
         // console.log(res)
         this.getHerds()
@@ -240,7 +240,8 @@ class HerdTable extends Component {
       const herds = this.state.herds
       herds.p_breed = herds.p_breed.length > 0 ? herds.p_breed : this.props.BREEDS[0]
 
-      post(`${this.props.BASE_URL}/api/herds/update`, this.state.herds)
+
+      Herds.updateHerd(this.state.herds, this.state.dairy.pk)
         .then(res => {
           // console.log(res)
           this.calcHerd()
@@ -264,7 +265,7 @@ class HerdTable extends Component {
     // The Calc function should just return the extracted & updated state obj
     // Then the calling function can use the returned object as they need.\
 
-    getReportingPeriodDays(this.props.BASE_URL, this.state.dairy.pk)
+    getReportingPeriodDays(this.state.dairy.pk)
       .then(rpDays => {
         if (this.state.herds) {
           let _herdCalc = calculateHerdManNKPNaCl(this.state.herds, rpDays)

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip, TextField,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -8,11 +8,12 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { CloudUpload } from '@material-ui/icons'
 import WbCloudyIcon from '@material-ui/icons/WbCloudy' // viewTSV
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { formatFloat, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
-import { VariableSizeList as List } from "react-window";
+import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from "../../utils/format"
+// import { VariableSizeList as List } from "react-window";
 import {
   DatePicker
 } from '@material-ui/pickers';
@@ -24,189 +25,180 @@ import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
-import {
-  readTSV, uploadNutrientApp, uploadTSVToDB
-} from "../../utils/TSV"
+import { TSVUtil } from "../../utils/TSV"
+import { FixedPageSize } from '../utils/FixedPageSize'
 
 
-
-const OldAppEvent = (props) => {
-  let {
-    app_method, material_type, kn_con, nh4_con, nh3_con, no3_con, p_con, k_con, tds, ec, ph, totaln, totalp, totalk, amount_applied, app_date, croptitle, plant_date
-  } = props.wastewater
+const WastewaterAnalysis = withTheme((props) => {
+  const { kn_con, nh4_con, p_con, k_con, ec, tds, ph } = props.analysis
   return (
-    <Grid item container xs={12} key={`pwwviews${1}`} component={Paper} elevation={6} style={{ marginBottom: "30px" }}>
-      <Grid item container xs={12}>
-        <Grid item xs={6}>
-          <Typography variant="h6">
-            {croptitle}
-          </Typography>
-        </Grid>
-        <Grid item xs={6} align="right">
-          <DatePicker label="Plant Date"
-            value={plant_date}
-            open={false}
-          />
-        </Grid>
-
-
-        <Grid item container xs={12}>
-          <Grid item xs={6}>
-            <Typography variant="subtitle2">
-              {app_method}
+    <Grid item xs={12} md={4} lg={3}>
+      <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+        <CardContent>
+          <Grid item xs={12} align='right'>
+            <Typography variant='caption' >
+              <Tooltip title='Sample date' placement="top">
+                <span style={{ color: props.theme.palette.secondary.main }}>
+                  {` ${formatDate(splitDate(props.analysis.sample_date))}`}
+                </span>
+              </Tooltip>
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.primary.main }}>
+                {` ${props.analysis.sample_desc}, ${props.analysis.sample_data_src}`}
+              </span>
             </Typography>
           </Grid>
 
-          <Grid item xs={6} align="right">
-            <DatePicker label="Date Applied"
-              value={app_date}
-              open={false}
-            />
+          <Grid item xs={12}>
+            <Typography variant='caption'>
 
+              N: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(kn_con)} `}
+              </span>
+              NH4: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(nh4_con)} `}
+              </span>
+              P: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(p_con)} `}
+              </span>
+              K: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(k_con)} `}
+              </span>
+
+
+
+            </Typography>
           </Grid>
-          <Grid item xs={12} align="right">
-            <TextField
-              label="Amount Applied"
-              value={`${amount_applied} gals`}
-            />
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              TDS: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(tds)} `}
+              </span>
+              EC: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(ec)} `}
+              </span>
+              pH: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(ph)} `}
+              </span>
+
+            </Typography>
           </Grid>
-
-        </Grid>
-
-      </Grid>
-
-      <Grid item container xs={10}>
-
-        <Grid item xs={3}>
-          <TextField
-            label="Kjeldahl-nitrogen"
-            value={kn_con}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            label="Ammonium-nitrogen"
-            value={nh4_con}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            label="NH3-N"
-            value={nh3_con}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            label="Nitrate-nitrogen"
-            value={no3_con}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            label="Total phosphorus"
-            value={p_con}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            label="Total potassium "
-            value={k_con}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            label="TDS"
-            value={tds}
-          />
-        </Grid>
-
-
-
-        <Grid item xs={3}>
-          <TextField
-            label="EC"
-            value={ec}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            label="N lbs/acre"
-            value={totaln}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            label="P lbs / acre"
-            value={totalp}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <TextField
-            label="K lbs / acre"
-            value={totalk}
-          />
-        </Grid>
-      </Grid>
-
-      <Grid item container xs={2} justifyContent="center" alignItems="center">
-        <Tooltip title="Delete Process wastewater">
-          <IconButton onClick={() => props.onDelete(props.wastewater)}>
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Tooltip>
-      </Grid>
+          <Grid item xs={12}>
+            {/* <Typography variant='caption'>
+              {`Amount ${formatFloat(amount_applied)}`}
+            </Typography> */}
+          </Grid>
+        </CardContent>
+        <CardActions>
+          <Grid item xs={2}>
+            <Tooltip title="Delete Wastewater Analysis">
+              <IconButton className='showOnHover' size='small'
+                onClick={() => props.onConfirmWastewaterAnalysisDelete(props.analysis)}
+              >
+                <DeleteIcon color="error" />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        </CardActions>
+      </Card>
 
     </Grid>
 
-  )
-}
 
-const ProcessWastewaterAppEventCard = (props) => {
+  )
+
+})
+
+const ProcessWastewaterAppEventCard = withTheme((props) => {
   let {
     app_method, material_type, kn_con, nh4_con, nh3_con, no3_con, p_con,
     k_con, tds, ec, ph, totaln, totalp, totalk, amount_applied, app_date,
     croptitle, plant_date
   } = props.wastewater
   return (
-    <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
-      <CardContent>
-        <Typography>
-          {croptitle} - {app_method}
-        </Typography>
-        <DatePicker label="App Date"
-          value={app_date}
-          open={false}
-        />
-        <Grid item xs={12}>
-          <Typography variant='caption'>
-            {`N ${formatFloat(kn_con)} P ${formatFloat(p_con)} K ${formatFloat(k_con)} TDS ${formatFloat(tds)} EC ${formatFloat(ec)} pH ${formatFloat(ph)}`}
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant='caption'>
-            {`Amount ${formatFloat(amount_applied)}`}
-          </Typography>
-        </Grid>
-      </CardContent>
-      <CardActions>
-        <Tooltip title="Delete Process wastewater">
-          <IconButton className='showOnHover'
-            onClick={() => props.onDelete(props.wastewater)}
-          >
-            <DeleteIcon color="error" />
-          </IconButton>
-        </Tooltip>
-      </CardActions>
-    </Card>
-  )
-}
+    <Grid item xs={12} md={4} lg={3}>
+      <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>
+        <CardContent>
 
+          <Grid item xs={12} align='right'>
+            <Typography variant='caption'>
+              <Tooltip title='Application date' placement="top">
+                <span style={{ color: props.theme.palette.secondary.main }}>
+                  {` ${formatDate(splitDate(app_date))}`}
+                </span>
+              </Tooltip>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='subtitle1' >
+              <span style={{ color: props.theme.palette.primary.main }}>
+                {` ${croptitle}: ${app_method}`}
+              </span>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              N: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(kn_con)} `}
+              </span>
+              P: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(p_con)} `}
+              </span>
+              K: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(k_con)} `}
+              </span>
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              TDS: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(tds)} `}
+              </span>
+              EC: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(ec)} `}
+              </span>
+              pH: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(ph)} `}
+              </span>
+
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant='caption'>
+              Amount: <span style={{ color: props.theme.palette.secondary.main }}>
+                {`${formatFloat(amount_applied)} `}
+              </span>
+            </Typography>
+          </Grid>
+
+        </CardContent>
+        <CardActions>
+          <Tooltip title="Delete Process wastewater">
+            <IconButton className='showOnHover'
+              onClick={() => props.onDelete(props.wastewater)}
+            >
+              <DeleteIcon color="error" />
+            </IconButton>
+          </Tooltip>
+        </CardActions>
+      </Card>
+    </Grid>
+  )
+})
 
 /** View for Process Wastewater Entry in DB */
 const ProcessWastewaterAppEvent = (props) => {
   let process_wastewaters = props.process_wastewaters
   return (
-    <Grid container item xs={12} key='pwae' style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
+    // <Grid container item xs={12} key='pwae' style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
+    <FixedPageSize container item xs={12} key='pwae' height='375px' style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>
       {
         process_wastewaters.sort((a, b) => naturalSortBy(a, b, 'app_date')).map((wastewater, i) => {
           return (
@@ -219,20 +211,15 @@ const ProcessWastewaterAppEvent = (props) => {
           )
         })
       }
-    </Grid>
+    </FixedPageSize>
   )
 }
-
 
 /** Component handles showing Process Wastewater Application events.
  *  - Process Waste Water List view
  *  - Upload TSV
  *  - Add Process Wastewater
  *  - Delete Process Wastewater
- * 
- *  NEEDS:
- *  - fieldCropAppEvents: applications events for the dairy
- *  - field_crop_app_process_wastewater: Process wastewater events
  * 
  */
 class ProcessWastewater extends Component {
@@ -241,14 +228,18 @@ class ProcessWastewater extends Component {
     this.state = {
       dairy_id: props.dairy_id,
       fieldCropAppEvents: [],
+      fieldCropAppWastewaterAnalyses: [],
       field_crop_app_process_wastewater: {}, // This should come from parent so it updates well, 
       tsvType: props.tsvType,
       numCols: props.numCols,
       showAddProcessWastewaterModal: false,
       showConfirmDeleteProcessWastewaterModal: false,
+      showConfirmDeleteWastewaterAnalysisModal: false,
       showUploadFieldCropAppProcessWastewateTSVModal: false,
+      showAnalyses: 'none',
       deleteProcessWastewaterObj: {},
-      tsvText: "",
+      deleteAnalysis: {},
+      tsvFile: "",
       uploadedFilename: "",
       toggleShowDeleteAllModal: false,
       windowWidth: window.innerWidth,
@@ -283,12 +274,14 @@ class ProcessWastewater extends Component {
   }
   componentDidMount() {
     this.setWindowListener()
+    this.getFieldCropAppWastewaterAnalysis()
     this.getFieldCropAppProcessWastewater()
     this.getFieldCropAppEvents()
   }
   componentDidUpdate(prevProps, prevState) {
     if (prevState.dairy_id !== this.state.dairy_id || this.props.parentUpdated !== prevProps.parentUpdated) {
       this.getFieldCropAppEvents()
+      this.getFieldCropAppWastewaterAnalysis()
       this.getFieldCropAppProcessWastewater()
     }
   }
@@ -303,6 +296,17 @@ class ProcessWastewater extends Component {
         } else {
           this.setState({ field_crop_app_process_wastewater: {}, viewFieldKey: '' })
         }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  getFieldCropAppWastewaterAnalysis() {
+    get(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater_analysis/${this.state.dairy_id}`)
+      .then(res => {
+        console.log("WW analysis: ", res)
+        this.setState({ fieldCropAppWastewaterAnalyses: res })
       })
       .catch(err => {
         console.log(err)
@@ -376,7 +380,10 @@ class ProcessWastewater extends Component {
   }
   onProcessWastewaterDelete() {
     if (Object.keys(this.state.deleteProcessWastewaterObj).length > 0) {
-      post(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater/delete`, { pk: this.state.deleteProcessWastewaterObj.pk })
+      post(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater/delete`, {
+        pk: this.state.deleteProcessWastewaterObj.pk,
+        dairy_id: this.state.dairy_id
+      })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteProcessWastewaterModal(false)
@@ -388,40 +395,50 @@ class ProcessWastewater extends Component {
     }
   }
 
+  onConfirmWastewaterAnalysisDelete(analysis) {
+    console.log("del", analysis)
+    this.setState({ deleteAnalysis: analysis, showConfirmDeleteWastewaterAnalysisModal: true })
+  }
+
+  toggleShowConfirmDeleteWastewaterAnalysisModal(val) {
+    this.setState({ showConfirmDeleteWastewaterAnalysisModal: val })
+  }
+
+  deleteWatewaterAnalysis() {
+    console.log("Deleting analysis: ", this.state.deleteAnalysis)
+  }
+
   /** TSV: toggle, onChange, onUpload, View */
   toggleShowUploadFieldCropAppProcessWastewaterTSVModal(val) {
     this.setState({
       showUploadFieldCropAppProcessWastewateTSVModal: val,
-      tsvText: "",
+      tsvFile: "",
       uploadedFilename: ""
     })
   }
   onUploadFieldCropAppProcessWastewaterTSVModalChange(ev) {
     const { files } = ev.target
     if (files.length > 0) {
-      readTSV(files[0], (_ev) => {
-        const { result } = _ev.target
-        this.setState({ tsvText: result, uploadedFilename: files[0].name })
-      })
+      this.setState({ tsvFile: files[0], uploadedFilename: files[0].name })
     }
   }
-  onUploadFieldCropAppProcessWastewaterTSV() {
+
+  async onUploadFieldCropAppProcessWastewaterTSV() {
     // 24 columns from TSV
-    let dairy_pk = this.state.dairy_id
-    uploadNutrientApp(this.state.tsvText, this.state.tsvType, dairy_pk)
-      .then(res => {
-        console.log("Completed uploading Process Wastewater TSV")
-        uploadTSVToDB(this.state.uploadedFilename, this.state.tsvText, this.state.dairy_id, this.state.tsvType)
-        this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
-        this.getFieldCropAppEvents()
-        this.getFieldCropAppProcessWastewater()
-        this.props.onAlert('Success!', 'success')
-      })
-      .catch(err => {
-        console.log("Error with all promises")
-        console.log(err)
-        this.props.onAlert('Failed uploading', 'error')
-      })
+    let dairy_id = this.state.dairy_id
+
+    try {
+      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      console.log("Upload TSV result: ", this.state.tsvType, result)
+      this.toggleShowUploadFieldCropAppProcessWastewaterTSVModal(false)
+      this.getFieldCropAppEvents()
+      this.getFieldCropAppProcessWastewater()
+      this.props.onAlert('Uploaded!', 'success')
+    } catch (e) {
+      console.log("Error with all promises")
+      console.log(e)
+      this.props.onAlert('Failed uploading!', 'error')
+    }
   }
 
   toggleViewTSVsModal(val) {
@@ -465,6 +482,7 @@ class ProcessWastewater extends Component {
   confirmDeleteAllFromTable(val) {
     this.setState({ toggleShowDeleteAllModal: val })
   }
+
   deleteAllFromTable() {
     Promise.all([
       post(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater/deleteAll`, { dairy_id: this.state.dairy_id }),
@@ -480,41 +498,10 @@ class ProcessWastewater extends Component {
       })
   }
 
-  // renderFieldButtons(appEventObj) {
-  //   return appEventObj ?
-  //     Object.keys(appEventObj).sort(naturalSort).map(key => {
-  //       const fieldCropObj = appEventObj[key]
-  //       return (
-  //         <Grid item xs={2} style={{ marginTop: '8px' }}>
-  //           <Button variant='outlined' color='primary'
-  //             onClick={() => this.setState({ viewFieldKey: key, viewPlantDateKey: '' })}>
-  //             {key}
-  //           </Button>
-  //         </Grid>
-  //       )
-  //     })
-  //     :
-  //     <span>empty</span>
-  // }
 
-  // renderCropButtons(appEventObj) {
-  //   return this.state.viewFieldKey && appEventObj[this.state.viewFieldKey] ?
-  //     Object.keys(appEventObj[this.state.viewFieldKey]).sort(naturalSort).map(key => {
-  //       const fieldCropAppList = appEventObj[this.state.viewFieldKey][key]
-  //       const dateKey = key.indexOf("T") > 0 ? formatDate(key.split("T")[0]) : ''
-  //       return (
-  //         <Grid item xs={3} style={{ marginTop: '8px' }}>
-  //           <Button variant='outlined' color='secondary'
-  //             onClick={() => this.setState({ viewPlantDateKey: key })}>
-  //             {dateKey}
-  //           </Button>
-  //         </Grid>
-  //       )
-  //     })
-  //     :
-  //     <div> No Field Chosen </div>
-
-  // }
+  toggleShowAnalyses() {
+    this.setState({ showAnalyses: this.state.showAnalyses === 'none' ? 'flex' : this.state.showAnalyses === 'flex' ? 'none' : 'flex' })
+  }
 
   render() {
     return (
@@ -555,6 +542,43 @@ class ProcessWastewater extends Component {
             </IconButton>
           </Tooltip>
         </Grid> */}
+
+        <Grid item xs={12} style={{ marginTop: '16px' }} >
+          {this.state.fieldCropAppWastewaterAnalyses.length > 0 ?
+            <Grid item container xs={12}>
+
+              <Grid item xs={12} >
+                <div style={{ display: 'flex' }}>
+                  <Typography variant="h5" style={{ alignSelf: 'center' }} >Analyses</Typography>
+                  <Tooltip title='Show'>
+                    <IconButton onClick={this.toggleShowAnalyses.bind(this)}>
+                      <ExpandMoreIcon color='primary' />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+
+              </Grid>
+              <FixedPageSize container item xs={12} height='375px' style={{ display: this.state.showAnalyses }}>
+                {
+                  this.state.fieldCropAppWastewaterAnalyses.map((analysis, i) => {
+                    return (
+                      <WastewaterAnalysis key={`fcawwaview${i}`}
+                        analysis={analysis}
+                        onConfirmWastewaterAnalysisDelete={this.onConfirmWastewaterAnalysisDelete.bind(this)}
+                      />
+                    )
+                  })
+                }
+              </FixedPageSize>
+            </Grid>
+            :
+            <React.Fragment></React.Fragment>
+
+          }
+
+        </Grid>
+
+
         <Grid item container xs={12}>
           {renderFieldButtons(this.state.field_crop_app_process_wastewater, this)}
           {renderCropButtons(this.state.field_crop_app_process_wastewater, this.state.viewFieldKey, this)}
@@ -562,14 +586,16 @@ class ProcessWastewater extends Component {
             viewFieldKey={this.state.viewFieldKey}
             viewPlantDateKey={this.state.viewPlantDateKey}
           />
-          {this.getAppEventsByViewKeys().length > 0 ?
-            <ProcessWastewaterAppEvent
-              process_wastewaters={this.getAppEventsByViewKeys()}
-              onDelete={this.onConfirmProcessWastewaterDelete.bind(this)}
-            />
-            :
-            <React.Fragment></React.Fragment>
-          }
+          <FixedPageSize container item xs={12} height='375px' >
+            {this.getAppEventsByViewKeys().length > 0 ?
+              <ProcessWastewaterAppEvent
+                process_wastewaters={this.getAppEventsByViewKeys()}
+                onDelete={this.onConfirmProcessWastewaterDelete.bind(this)}
+              />
+              :
+              <React.Fragment></React.Fragment>
+            }
+          </FixedPageSize>
         </Grid>
 
         {/* This needs to be adapted to showing each app events within the view
@@ -598,7 +624,10 @@ class ProcessWastewater extends Component {
           open={this.state.showConfirmDeleteProcessWastewaterModal}
           actionText="Delete"
           cancelText="Cancel"
-          modalText={`Delete Process Wastewater for ${this.state.deleteProcessWastewaterObj.fieldtitle} - ${this.state.deleteProcessWastewaterObj.app_date}?`}
+          modalText={`Delete Process Wastewater for 
+            ${this.state.deleteProcessWastewaterObj.fieldtitle} - 
+            ${formatDate(splitDate(this.state.deleteProcessWastewaterObj.app_date))}?
+          `}
 
           onAction={this.onProcessWastewaterDelete.bind(this)}
           onClose={() => this.toggleShowConfirmDeleteProcessWastewaterModal(false)}
@@ -611,6 +640,14 @@ class ProcessWastewater extends Component {
           modalText={`Delete All Process Wastewater Application Events?`}
           onAction={this.deleteAllFromTable.bind(this)}
           onClose={() => this.confirmDeleteAllFromTable(false)}
+        />
+        <ActionCancelModal
+          open={this.state.showConfirmDeleteWastewaterAnalysisModal}
+          actionText="Delete"
+          cancelText="Cancel"
+          modalText={`Delete Process Wastewater Analysis?`}
+          onAction={this.deleteWatewaterAnalysis.bind(this)}
+          onClose={() => this.toggleShowConfirmDeleteWastewaterAnalysisModal(false)}
         />
         <AddProcessWastewaterModal
           open={this.state.showAddProcessWastewaterModal}
@@ -636,11 +673,13 @@ class ProcessWastewater extends Component {
           onClose={() => this.toggleViewTSVsModal(false)}
           BASE_URL={this.props.BASE_URL}
         />
+
         <UploadTSVModal
           open={this.state.showUploadFieldCropAppProcessWastewateTSVModal}
           actionText="Add"
           cancelText="Cancel"
           modalText={`Upload Process Wastewater TSV`}
+          fileType="csv"
           uploadedFilename={this.state.uploadedFilename}
           onAction={this.onUploadFieldCropAppProcessWastewaterTSV.bind(this)}
           onChange={this.onUploadFieldCropAppProcessWastewaterTSVModalChange.bind(this)}

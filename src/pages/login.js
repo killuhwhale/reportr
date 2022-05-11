@@ -1,12 +1,9 @@
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-
 import React, { Component } from 'react'
 import {
   Grid, Paper, Button, Typography, TextField
 } from '@material-ui/core'
 import { withTheme } from '@material-ui/core/styles'
 import { auth, UserAuth } from '../utils/users'
-
 
 class Login extends Component {
   constructor(props) {
@@ -120,7 +117,8 @@ class Login extends Component {
     } else if (!email) {
       this.props.onAlert("Missing E-mail", "error")
     } else if (pass1 === pass2 && email) {
-      auth.registerUser(email, pass1)
+
+      auth.registerHacker(email, pass1)
         .then(user => {
           console.log(user)
           this.props.onLogin(user)

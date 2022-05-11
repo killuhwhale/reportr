@@ -4,7 +4,8 @@ import { Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui/
 import { withTheme } from '@material-ui/core/styles';
 
 import { get, post } from "../../utils/requests"
-
+import { auth, UserAuth } from '../../utils/users';
+import { Dairy } from '../../utils/dairy/dairy'
 
 
 
@@ -33,10 +34,10 @@ class AddBaseDairyModal extends Component {
 
 	createBaseDairy() {
 		const title = this.state.createDairyTitle
+		const company_id = auth.currentUser.company_id
+
 		if (title && title.length > 0) {
-			post(`${this.props.BASE_URL}/api/dairy_base/create`, {
-				title
-			})
+			Dairy.createDairyBase(title, company_id)
 				.then(res => {
 					console.log(res)
 					if (res.error) {

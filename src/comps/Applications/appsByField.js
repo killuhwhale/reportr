@@ -1,11 +1,10 @@
 import { Component } from 'react'
-import { get } from '../../utils/requests'
-import { Grid, Typography, Button, withTheme } from '@material-ui/core'
+import { Grid, Typography, withTheme } from '@material-ui/core'
 import { getNutrientBudgetInfo } from '../Dairy/pdfDB'
+import { createBarChart, barChartConfig } from '../Dairy/pdfCharts'
 import { withRouter } from "react-router-dom"
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
-import { formatDate, formatFloat, groupByKeys, naturalSort, naturalSortBy, nestedGroupBy } from "../../utils/format"
-import { createBarChart, barChartConfig } from '../Dairy/pdfCharts'
+import { formatDate, formatFloat, groupByKeys, naturalSort, naturalSortBy } from "../../utils/format"
 import { opArrayByPos, toFloat } from '../../utils/convertCalc';
 import { withStyles } from '@material-ui/styles'
 
@@ -333,31 +332,39 @@ class AppsByField extends Component {
             this.state.viewPlantDateKey !== prevState.viewPlantDateKey) {
             this.updateChart()
         }
-        console.log("Theme change")
-
     }
 
     async getNutrientBudget() {
-        const { allAppEvents,  // Used to get all events for a field crop 
-            eventKeyObj, // Used to get fields and plant_date {field: {plant_date: {}}}
-            nutrientBudgetB: { allEvents: allFieldAppSummary }  // Summaries for each field crop, key: 'fieldtitle plant_date'
-        } = await getNutrientBudgetInfo(this.props.dairy_id)
+        try {
+            const res = await getNutrientBudgetInfo(this.props.dairy_id)
+            if (res.error) return res
 
-        const keys = Object.keys(eventKeyObj).sort(naturalSort)
-        if (keys.length > 0) {
-            this.setState({
-                allAppEvents,
-                eventKeyObj,
-                allFieldAppSummary,
-                viewFieldKey: keys[0]
-            })
-        } else {
-            this.setState({
-                allAppEvents: {},
-                eventKeyObj: {},
-                allFieldAppSummary: {},
-                viewFieldKey: ''
-            })
+            const {
+                allAppEvents,  // Used to get all events for a field crop 
+                eventKeyObj, // Used to get fields and plant_date {field: {plant_date: {}}}
+                nutrientBudgetB: {
+                    allEvents: allFieldAppSummary // Summaries for each field crop, key: 'fieldtitle plant_date'
+                }
+            } = res
+
+            const keys = Object.keys(eventKeyObj).sort(naturalSort)
+            if (keys.length > 0) {
+                this.setState({
+                    allAppEvents,
+                    eventKeyObj,
+                    allFieldAppSummary,
+                    viewFieldKey: keys[0]
+                })
+            } else {
+                this.setState({
+                    allAppEvents: {},
+                    eventKeyObj: {},
+                    allFieldAppSummary: {},
+                    viewFieldKey: ''
+                })
+            }
+        } catch (e) {
+            console.log(e)
         }
     }
 

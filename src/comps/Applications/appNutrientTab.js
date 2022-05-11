@@ -6,7 +6,7 @@ import {
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { withRouter } from "react-router-dom"
-import { withTheme } from '@material-ui/core/styles'
+import { withTheme, withStyles } from '@material-ui/core/styles'
 import AppsByField from "./appsByField"
 import ProcessWastewater from "./processWastewater"
 import Freshwater from "./freshwater"
@@ -17,9 +17,15 @@ import PlowdownCredit from "./plowdownCredit"
 import AddFieldCropApplicationModal from "../Modals/addFieldCropApplicationModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 
-import { get, post } from '../../utils/requests';
+import { get, post } from '../../utils/requests'
+import { Field } from '../../utils/fields/fields'
 import { TSV_INFO, PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, SOIL, PLOWDOWN_CREDIT, } from '../../utils/TSV'
 import { APP_METHODS, PRECIPITATIONS, REPORTING_METHODS, SOURCE_OF_ANALYSES, NUTRIENT_IMPORT_MATERIAL_TYPES, MATERIAL_TYPES } from '../../utils/constants'
+
+import { MinPageSize } from '../utils/FixedPageSize'
+
+
+
 
 class NutrientApplicationTab extends Component {
   constructor(props) {
@@ -94,7 +100,7 @@ class NutrientApplicationTab extends Component {
       })
   }
   getFields() {
-    get(`${this.props.BASE_URL}/api/fields/${this.state.dairy.pk}`)
+    Field.getField(this.state.dairy.pk)
       .then(fields => {
         this.setState({ fields: fields })
       })
@@ -249,25 +255,12 @@ class NutrientApplicationTab extends Component {
                 <Tab label="Plowdown Credit" key='appNutrientAppBarTab5' />
               </Tabs>
             </AppBar>
+            <MinPageSize height='720px' item xs={12}>
+              {
 
-            {
-
-              this.state.tabs[0] === "show" ?
-                <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab00'>
-                  <AppsByField
-                    dairy_id={this.state.dairy.pk}
-                    parentUpdated={this.state.parentUpdated}
-                    tsvType={TSV_INFO[PROCESS_WASTEWATER].tsvType}
-                    numCols={TSV_INFO[PROCESS_WASTEWATER].numCols}
-                    BASE_URL={this.props.BASE_URL}
-                    onAlert={this.props.onAlert}
-                  />
-                </Grid>
-
-                :
-                this.state.tabs[1] === "show" ?
-                  <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab0'>
-                    <ProcessWastewater
+                this.state.tabs[0] === "show" ?
+                  <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab00'>
+                    <AppsByField
                       dairy_id={this.state.dairy.pk}
                       parentUpdated={this.state.parentUpdated}
                       tsvType={TSV_INFO[PROCESS_WASTEWATER].tsvType}
@@ -277,74 +270,89 @@ class NutrientApplicationTab extends Component {
                     />
                   </Grid>
 
-                  : this.state.tabs[2] === "show" ?
-                    <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab1'>
-                      <Freshwater
+                  :
+                  this.state.tabs[1] === "show" ?
+                    <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab0'>
+                      <ProcessWastewater
                         dairy_id={this.state.dairy.pk}
                         parentUpdated={this.state.parentUpdated}
-                        tsvType={TSV_INFO[FRESHWATER].tsvType}
-                        numCols={TSV_INFO[FRESHWATER].numCols}
-                        onAlert={this.props.onAlert}
+                        tsvType={TSV_INFO[PROCESS_WASTEWATER].tsvType}
+                        numCols={TSV_INFO[PROCESS_WASTEWATER].numCols}
                         BASE_URL={this.props.BASE_URL}
+                        onAlert={this.props.onAlert}
                       />
-
                     </Grid>
 
-                    : this.state.tabs[3] === "show" ?
-                      <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab2'>
-
-                        <Solidmanure
+                    : this.state.tabs[2] === "show" ?
+                      <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab1'>
+                        <Freshwater
                           dairy_id={this.state.dairy.pk}
                           parentUpdated={this.state.parentUpdated}
-                          tsvType={TSV_INFO[SOLIDMANURE].tsvType}
-                          numCols={TSV_INFO[SOLIDMANURE].numCols}
-                          MATERIAL_TYPES={MATERIAL_TYPES}
-                          SOURCE_OF_ANALYSES={SOURCE_OF_ANALYSES}
-                          REPORTING_METHODS={REPORTING_METHODS}
+                          tsvType={TSV_INFO[FRESHWATER].tsvType}
+                          numCols={TSV_INFO[FRESHWATER].numCols}
                           onAlert={this.props.onAlert}
                           BASE_URL={this.props.BASE_URL}
                         />
 
                       </Grid>
 
-                      : this.state.tabs[4] === "show" ?
-                        <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab3'>
-                          <Fertilizer
+                      : this.state.tabs[3] === "show" ?
+                        <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab2'>
+
+                          <Solidmanure
                             dairy_id={this.state.dairy.pk}
                             parentUpdated={this.state.parentUpdated}
-                            tsvType={TSV_INFO[FERTILIZER].tsvType}
-                            numCols={TSV_INFO[FERTILIZER].numCols}
-                            NUTRIENT_IMPORT_MATERIAL_TYPES={NUTRIENT_IMPORT_MATERIAL_TYPES}
+                            tsvType={TSV_INFO[SOLIDMANURE].tsvType}
+                            numCols={TSV_INFO[SOLIDMANURE].numCols}
+                            MATERIAL_TYPES={MATERIAL_TYPES}
+                            SOURCE_OF_ANALYSES={SOURCE_OF_ANALYSES}
                             REPORTING_METHODS={REPORTING_METHODS}
                             onAlert={this.props.onAlert}
                             BASE_URL={this.props.BASE_URL}
                           />
+
                         </Grid>
 
-                        : this.state.tabs[5] === "show" ?
-                          <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab4'>
-                            <Soil
+                        : this.state.tabs[4] === "show" ?
+                          <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab3'>
+                            <Fertilizer
                               dairy_id={this.state.dairy.pk}
                               parentUpdated={this.state.parentUpdated}
-                              tsvType={TSV_INFO[SOIL].tsvType}
-                              numCols={TSV_INFO[SOIL].numCols}
+                              tsvType={TSV_INFO[FERTILIZER].tsvType}
+                              numCols={TSV_INFO[FERTILIZER].numCols}
+                              NUTRIENT_IMPORT_MATERIAL_TYPES={NUTRIENT_IMPORT_MATERIAL_TYPES}
+                              REPORTING_METHODS={REPORTING_METHODS}
                               onAlert={this.props.onAlert}
                               BASE_URL={this.props.BASE_URL}
                             />
                           </Grid>
-                          : this.state.tabs[6] === 'show' ?
-                            <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab5'>
-                              <PlowdownCredit
+
+                          : this.state.tabs[5] === "show" ?
+                            <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab4'>
+                              <Soil
                                 dairy_id={this.state.dairy.pk}
                                 parentUpdated={this.state.parentUpdated}
-                                tsvType={TSV_INFO[PLOWDOWN_CREDIT].tsvType}
-                                numCols={TSV_INFO[PLOWDOWN_CREDIT].numCols}
+                                tsvType={TSV_INFO[SOIL].tsvType}
+                                numCols={TSV_INFO[SOIL].numCols}
                                 onAlert={this.props.onAlert}
                                 BASE_URL={this.props.BASE_URL}
                               />
                             </Grid>
-                            : <React.Fragment></React.Fragment>
-            }
+                            : this.state.tabs[6] === 'show' ?
+                              <Grid item xs={12} style={{ marginTop: "30px" }} key='appNutrientAppBarTab5'>
+                                <PlowdownCredit
+                                  dairy_id={this.state.dairy.pk}
+                                  parentUpdated={this.state.parentUpdated}
+                                  tsvType={TSV_INFO[PLOWDOWN_CREDIT].tsvType}
+                                  numCols={TSV_INFO[PLOWDOWN_CREDIT].numCols}
+                                  onAlert={this.props.onAlert}
+                                  BASE_URL={this.props.BASE_URL}
+                                />
+                              </Grid>
+                              : <React.Fragment></React.Fragment>
+              }
+
+            </MinPageSize>
             <AddFieldCropApplicationModal
               open={this.state.showAddFieldCropAppModal}
               actionText="Add"

@@ -1,18 +1,38 @@
 import { jest } from '@jest/globals';
 import { round } from 'mathjs';
-import { postXLSX } from '../../../utils/requests'
 import fs from 'fs'
+import { postXLSX } from '../../../utils/requests'
+import { UserAuth, auth } from '../../../utils/users'
+import { Company } from '../../../utils/company/company'
+import { Herds } from '../../../utils/herds/herds'
+import { Field } from '../../../utils/fields/fields'
+import { CertAgreementNotes } from '../../../utils/certAgreementNotes/certAgreementNotes'
+import { Dairy } from '../../../utils/dairy/dairy'
+import { Parcels } from '../../../utils/parcels/parcels'
 
-import {
-    getApplicationAreaA, getApplicationAreaB, getAvailableNutrientsAB, getAvailableNutrientsC,
-    getAvailableNutrientsF, getAvailableNutrientsG, getNutrientBudgetInfo, getNutrientBudgetA,
-    getNutrientAnalysisA, getExceptionReportingABC
-} from '../../../comps/Dairy/pdfDB'
-import { naturalSort, naturalSortBy, naturalSortByKeys, sortByKeys } from '../../../utils/format';
+import { getAnnualReportData } from '../../../comps/Dairy/pdfDB'
+import { naturalSortBy, naturalSortByKeys, sortByKeys } from '../../../utils/format';
 
 import { BASE_URL } from "../../../utils/environment"
-
+import { Files } from '../../../utils/files/files';
 const dairy_id = 1
+
+const HACKER_PASSWORD = '40797bf372264ffeb8b3d74fee1b69f3'
+const HACKER_EMAIL = 'notrace@hacker.com'
+
+const TEST_USER_EMAIL_A = 'z@g.com'
+const TEST_USER_PASSWORD_A = 'abc123'
+
+const TEST_USER_EMAIL = 't@g.com'
+const TEST_USER_PASSWORD = 'abc123'
+
+const TEST_USER_EMAIL_READ = 't1@g.com'
+const TEST_USER_PASSWORD_READ = 't@g.com'
+const TEST_USER_EMAIL_WRITE = 't2@g.com'
+const TEST_USER_PASSWORD_WRITE = 't@g.com'
+const TEST_USER_EMAIL_DELETE = 't3@g.com'
+const TEST_USER_PASSWORD_DELETE = 't@g.com'
+let ARD = null
 
 const tp = (num, precision = 6) => {
     // to precision
@@ -23,12 +43,463 @@ const isIDPK = (key) => {
     return key.indexOf("_id") >= 0 || key.indexOf("pk") >= 0
 }
 
-describe('Test upload XLSX', () => {
-    test('Upload XLSX.', async () => {
+// Middle Ware 
+// verifyRefreshToken
+// verifyUserFromCompanyByDairyBaseID
+// verifyToken
+// verifyUserFromCompanyByCompanyID
+// verifyUserFromCompanyByDairyID
+// verifyUserFromCompanyByUserID
+// needsRead
+// needsWrite
+// needsDelete
+// needsAdmin
+// needsHacker
+// needsSelfOrAdmin
+
+// --------------- Create All Roles and Test various permissions ---------------------------
+describe('Create Accounts', () => {
+    test('Create 2 companies and admins', async () => {
+        await auth.login(HACKER_EMAIL, HACKER_PASSWORD)
+        const { data: { pk: company_id, title } } = await Company.createCompany('Pharmz') // pk2
+        const { data: { pk: company_id_a } } = await Company.createCompany('Growz') //pk3
+        let adminRes = null
+        expect(title).toEqual('Pharmz')
+
         try {
+            adminRes = await auth.registerUser(TEST_USER_EMAIL, TEST_USER_PASSWORD, company_id)
+            await auth.registerUser(TEST_USER_EMAIL_A, TEST_USER_PASSWORD_A, company_id_a) // Company Grows id=3
+        } catch (e) {
+            console.log("Create Admin error: ", e)
+        }
+
+        expect(adminRes).toEqual({
+            pk: 2,
+            username: '',
+            email: 't@g.com',
+            account_type: 4,
+            company_id: 2
+        })
+    })
+    test('Create READ, WRITE, DELETE Accounts with admin For First Company', async () => {
+        const company_id = 2
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
+
+        const createReadRes = await UserAuth.createUser({ email: TEST_USER_EMAIL_READ, password: TEST_USER_PASSWORD_READ, account_type: 1, username: 'test1', company_id })
+        const createWriteRes = await UserAuth.createUser({ email: TEST_USER_EMAIL_WRITE, password: TEST_USER_PASSWORD_WRITE, account_type: 2, username: 'test2', company_id })
+        const createDeleteRes = await UserAuth.createUser({ email: TEST_USER_EMAIL_DELETE, password: TEST_USER_PASSWORD_DELETE, account_type: 3, username: 'test3', company_id })
+
+        expect(createReadRes.email).toEqual(TEST_USER_EMAIL_READ)
+        expect(createWriteRes.email).toEqual(TEST_USER_EMAIL_WRITE)
+        expect(createDeleteRes.email).toEqual(TEST_USER_EMAIL_DELETE)
+    })
+})
+
+describe('Create 2 Dairies for ea  company', () => {
+    jest.setTimeout(10000)
+    test('Create Dairies', async () => {
+        try {
+            await auth.logout()
+            await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
+
+            console.log("Loggin in!")
+
+            const reportingYear = 2020
+            const company_id = 2
+            const dairyTitle = 'Pharmz'
+
+            console.log("Creating dairy")
+            const dairyBaseRes = await Dairy.createDairyBase(dairyTitle, company_id)
+            const { pk: dairyBaseID, title } = dairyBaseRes[0]
+            console.log("Base dairy created", dairyBaseRes)
+
+            const dairyRes = await Dairy.createDairy(dairyBaseID, dairyTitle, reportingYear, company_id)
+            console.log('1st Dairy Result: ', dairyRes)
+            // began, by default is a timestamp, constantly changing...
+            expect({ ...dairyRes, began: '' }).toEqual({
+                pk: 1,
+                dairy_base_id: 1,
+                reporting_yr: 2020,
+                period_start: '2020-01-01T08:00:00.000Z',
+                period_end: '2020-12-31T08:00:00.000Z',
+                street: '',
+                cross_street: '',
+                county: null,
+                city: '',
+                city_state: 'CA',
+                city_zip: '',
+                title: 'Pharmz',
+                basin_plan: null,
+                began: ''
+            })
+
+            //////////////
+            // Create a second dairy for the second company
+            ////////////////////////////
+            await auth.logout()
+            await auth.login(TEST_USER_EMAIL_A, TEST_USER_PASSWORD_A)
+            const company_id_a = 3
+            const { pk: dairyBaseID_A, title: title_A } = await Dairy.createDairyBase('GrowzDairy', company_id_a)
+            await Dairy.createDairy(dairyBaseID_A, title_A, reportingYear, company_id_a)
+
+        } catch (e) {
+            console.log("Error creating dairies: ", e)
+        }
+    })
+})
+
+
+describe("Create and Update a herd for a company", () => {
+    test('Insert and Upate Herd Information', async () => {
+        // The herd data should be in ARD but for some reason I am getting it separately here
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
+
+        const updateHerdsInfo = {
+            milk_cows: [1, 1, 2, 1, 1, 1],
+            dry_cows: [1, 1, 2, 1, 5000],
+            bred_cows: [1, 1, 2, 1, 1],
+            cows: [1, 1, 2, 1, 1],
+            calf_young: [1, 1, 2, 1],
+            calf_old: [1, 1, 2, 1],
+            p_breed: "Ayrshire",
+            p_breed_other: "",
+            dairy_id: 1
+        }
+        try {
+            await Herds.createHerd(dairy_id)
+            await Herds.updateHerd(updateHerdsInfo, dairy_id)
+        } catch (e) { }
+        const herds = await Herds.getHerd(dairy_id)
+        expect(herds[0]).toEqual({ ...updateHerdsInfo, pk: 1 })
+
+    })
+})
+
+describe('Test Accounts permissions', () => {
+    test('ADMIN Role Cannot Create Company', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
+        const res = await Company.createCompany('PharmzTest')
+        expect(res.error).toBeTruthy()
+    })
+    test('WRITE Role Cannot Create Company', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const res = await Company.createCompany('PharmzTest')
+        expect(res.error).toBeTruthy()
+    })
+    test('READ Role Cannot Create Company', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+        const res = await Company.createCompany('PharmzTest')
+        expect(res.error).toBeTruthy()
+    })
+    test('DELETE Role Cannot Create Company', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        const res = await Company.createCompany('PharmzTest')
+        expect(res.error).toBeTruthy()
+    })
+})
+
+describe('Test Accounts permissions', () => {
+    const dairy_id = 1
+    test('WRITE Role can create company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        // Create a field for dairy_id = 1
+        const res = await Field.createField({ title: 'testField', acres: 10, cropable: 10 }, dairy_id)
+        expect(res).toEqual([
+            {
+                pk: 1,
+                title: 'testField',
+                acres: '10.00',
+                cropable: '10.00',
+                dairy_id: 1
+            }
+        ])
+    })
+    test('READ Role can access company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+        const res = await Field.getField(dairy_id)
+        expect(res).toEqual([
+            {
+                pk: 1,
+                title: 'testField',
+                acres: '10.00',
+                cropable: '10.00',
+                dairy_id: 1
+            }
+        ])
+    })
+    test('DELETE Roles can remove company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        const fields = await Field.getField(dairy_id)
+        const res = await Field.deleteField(fields[0].pk, dairy_id)
+        expect(res).toEqual({ data: 'Deleted field successfully' })
+    })
+    test('Role permission sub/ super role check', async () => {
+        const dairy_id = 1
+
+        // Create a test Field
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        const field = await Field.createField({ title: 'testField', acres: 10, cropable: 10 }, dairy_id)
+        expect(field.error).toBeFalsy()
+
+
+        // WRITE ACCOUNT can READ but NOT DELETE
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const fields = await Field.getField(dairy_id) // Passes
+        const resREAD = await Field.deleteField(fields[0].pk, dairy_id) // Fails
+        expect(resREAD.error).toBeTruthy()
+
+        // READ ACCOUNT CANT WRITE OR DELETE
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+        const resWRITEA = await Field.createField({ title: 'testField', acres: 10, cropable: 10 }, dairy_id) // Fail
+        expect(resWRITEA.error).toBeTruthy
+        const resWRITEB = await Field.deleteField(fields[0].pk, dairy_id)  // Fail
+        expect(resWRITEB.error).toBeTruthy
+
+
+        // Cleanup Field - Delete it
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        const resDELETE = await Field.deleteField(fields[0].pk, dairy_id)  // Fail
+        expect(resDELETE.error).toBeFalsy()
+
+    })
+    test('Test that non-hacker roles cannot create Admin accounts ', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+
+        const res1 = await auth.registerUser('fake@admin.user',
+            'testfakepswd', 1)
+        expect(res1.error).toBeTruthy()
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+
+        const res2 = await auth.registerUser('fake@admin.user', 'testfakepswd', 1)
+        expect(res2.error).toBeTruthy()
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+
+        const res3 = await auth.registerUser('fake@admin.user', 'testfakepswd', 1)
+        expect(res3.error).toBeTruthy()
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
+        const res4 = await auth.registerUser('fake@admin.user', 'testfakepswd', 1)
+        expect(res4.error).toBeTruthy()
+
+        await auth.logout()
+    })
+
+    test('Test Roles cant alter other accounts', async () => {
+        // Admin
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
+        let user = auth.currentUser
+        const ADMIN_USER_ID = user.pk
+
+        // Update w/ correct company_id, another user from different company
+        const res1 = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: 1 })
+        expect(res1.error).toBeTruthy()
+
+        // same company_id and user from same company
+        const resA = await UserAuth.updateAccount({ username: 'TUUsername', email: user.email, account_type: 4, company_id: user.company_id, pk: ADMIN_USER_ID })
+        expect(resA.error).toBeFalsy()  // admin account makes reqest, should be successful (self)
+
+        // Ensure WRITE account is unable to update accounts
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        user = auth.currentUser
+
+        const res2 = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: 1 })
+        expect(res1.error).toBeTruthy()
+
+        const resB = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: ADMIN_USER_ID })
+        expect(resB.error).toBeTruthy()
+
+        // Ensure READ account is unable to update accounts
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+        user = auth.currentUser
+
+        const res3 = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: 1 })
+        expect(res1.error).toBeTruthy()
+
+        const resC = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: ADMIN_USER_ID })
+        expect(resC.error).toBe('You need permission: ADMIN or Self')
+
+        // Ensure DELETE account is unable to update accounts
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        user = auth.currentUser
+
+        const res4 = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: 1 })
+        expect(res1.error).toBeTruthy()
+
+        const resD = await UserAuth.updateAccount({ username: 'TUUsername', email: "test@Update.email", account_type: 4, company_id: user.company_id, pk: ADMIN_USER_ID })
+        expect(resD.error).toBeTruthy()
+
+        await auth.logout()
+    })
+    // Template.....
+    test('Test Accounts... ', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+
+        await auth.logout()
+    })
+})
+
+describe('Test Accounts cross-company restrictions', () => {
+    const dairy_id = 2 // dairy_id that doesn't belong to the user
+    test('READ role can\'t access other company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const res = await Field.createField({ title: 'testField', acres: 10, cropable: 10 }, dairy_id)
+        expect(res.error).toBeTruthy()
+    })
+    test('WRITE role can\'t create other company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_READ, TEST_USER_PASSWORD_READ)
+        const res = await Field.getField(dairy_id)
+        expect(res.error).toBeTruthy()
+    })
+    test('DELETE role can\'t remove other company data', async () => {
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_DELETE, TEST_USER_PASSWORD_DELETE)
+        const res = await Field.deleteField(1, dairy_id)
+        expect(res.error).toBeTruthy()
+    })
+})
+
+
+describe('Test middleware verifyUserFromCompanyBy*', () => {
+    test('Test *ByDairyBaseID', async () => {
+        // Send a request from a user that should work get
+        // Send a request from a user that should NOT work by:
+        //  - using wrong DiaryBaseID
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const baseDairyID = 1
+        const wrongBaseDairyID = 2
+        const res = await Dairy.getDairiesByDairyBaseID(baseDairyID)
+        expect(res.length).toBe(1)
+
+        const wrongRes = await Dairy.getDairiesByDairyBaseID(wrongBaseDairyID)
+        console.log(wrongRes)
+        expect(wrongRes.status).toBe(403)
+
+    })
+    test('Test *ByCompanyID', async () => {
+        // Send a request from a user that should work get
+        // Send a request from a user that should NOT work by:
+        //  - using wrong ByCompanyID
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const comapnyID = 2
+        const wrongCompanyID = 3
+        const res = await Dairy.getDairyBaseByCompanyID(comapnyID)
+        expect(res.length).toBe(1)
+
+        const wrongRes = await Dairy.getDairyBaseByCompanyID(wrongCompanyID)
+        expect(wrongRes.status).toBe(403)
+    })
+    test('Test *ByDairyID', async () => {
+        // Send a request from a user that should work get
+        // Send a request from a user that should NOT work by:
+        //  - using wrong ByDairyID
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const dairyID = 1
+        const wrongDairyID = 2
+        const res = await Dairy.getDairyByPK(dairyID)
+        expect(res.length).toBe(1)
+
+        const wrongRes = await Dairy.getDairyByPK(wrongDairyID)
+        expect(wrongRes.status).toBe(403)
+    })
+    test('Test *ByUserID', async () => {
+        // Send a request from a user that should work get
+        // Send a request from a user that should NOT work by:
+        //  - using wrong ByUserID
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        const user = { ...auth.currentUser }
+        delete user['company_id']
+        const wrongUser = { ...auth.currentUser, pk: 3 }
+
+        const res = await UserAuth.updateAccount(user)
+        expect(res).toEqual(user)
+
+        const wrongRes = await UserAuth.updateAccount(wrongUser)
+        expect(wrongRes.status).toBe(403)
+    })
+})
+
+// --------------- Upload XLSX and Test PDF report data calculations ---------------------------
+describe('Test upload XLSX', () => {
+    test('Upload XLSX and Create Parcels, Field Parcels, Agreements, Notes, Certificaiton.', async () => {
+        try {
+            await auth.logout()
+            await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
             let xlsxURL = `tsv/uploadXLSX/1`
             const data = fs.readFileSync('./src/tests/comps/Dairy/Test Sheet.xlsx').buffer
             const res = await postXLSX(`${BASE_URL}/${xlsxURL}`, data)
+
+            await Dairy.updateDairy('123 Fake St', 'Cross St', "Merced", 'Turlock', 'CA', '95382', 'Pharmz', 'Tulare River Basin', '1/1/2000', '1/1/2020', '12/31/2020', dairy_id)
+
+            // Insert Parcels - Create Parcel Util Class
+            // 1. user here to create a parcel for dairy
+            // Update test A land Applications to include parcel numbers on each field.
+            // 2. Replace existing parcel code with Class...
+            const fieldRes = await Field.getField(dairy_id)
+            console.log('Field Res', fieldRes)
+            const filteredFields = fieldRes.filter(field => field.title === 'Field 1')
+            await Parcels.createParcel('0000000000000420', dairy_id)
+            await Parcels.createFieldParcel(filteredFields[0].pk, 1, dairy_id)
+
+
+            // Lazyget - creates 
+            await CertAgreementNotes.getAgreements(dairy_id)
+            await CertAgreementNotes.getCertification(dairy_id)
+            await CertAgreementNotes.getNotes(dairy_id)
+
+            await CertAgreementNotes.onUpdateAgreement({
+                nmp_developed: true,
+                nmp_updated: true,
+                nmp_approved: false,
+                new_agreements: true,
+                pk: 1
+            }, dairy_id)
+            await CertAgreementNotes.onUpdateCertification({ pk: 1 }, {}, { pk: 1 }, dairy_id)
+            await CertAgreementNotes.onUpdateNote({
+                dairy_id,
+                note: 'No notes.'
+            }, dairy_id)
+
+
+
         } catch (e) {
             console.log("Upload XLSX error", e)
         }
@@ -37,18 +508,492 @@ describe('Test upload XLSX', () => {
 
 describe('Test pdfDB', () => {
 
-    // beforeAll(async () => {
-    //     //Spin up Express App and DB.
-    //     // On DB startup create scripts will be executed
-    //     // I need a way to upload the same data each time.
-    //     // Currently relying on uploadXLSX
+    beforeAll(async () => {
+        //Spin up Express App and DB.
+        // On DB startup create scripts will be executed
+        // I need a way to upload the same data each time.
+        // Currently relying on uploadXLSX
 
-    //     // Express App would need to know where to connect to/ how to connect to DB.
+        // Express App would need to know where to connect to/ how to connect to DB.
+        await auth.logout()
+        await auth.login(TEST_USER_EMAIL_WRITE, TEST_USER_PASSWORD_WRITE)
+        ARD = await getAnnualReportData(dairy_id)
+    })
 
-    // })
+    test('A. DAIRY FACILITY INFORMATION (Address and Parcels)', async () => {
+        // Get dairy info and check  address is good to go
+        // Insert dairy info and ({[{({[[{parcels}]]})}]}) before (just after uploading XLSX)
+        const { dairyInformationA } = ARD
+
+        const expected = {
+            pk: 1,
+            dairy_base_id: 1,
+            reporting_yr: 2020,
+            period_start: '2020-01-01T08:00:00.000Z',
+            period_end: '2020-12-31T08:00:00.000Z',
+            street: '123 Fake St',
+            cross_street: 'Cross St',
+            county: 'Merced',
+            city: 'Turlock',
+            city_state: 'CA',
+            city_zip: '95382',
+            title: 'Pharmz',
+            basin_plan: 'Tulare River Basin',
+            began: '2000-01-01T08:00:00.000Z',
+            parcels: [{
+                "dairy_id": 1,
+                "pk": 1,
+                "pnumber": "0000000000000420",
+            }]
+        }
+
+        expect(dairyInformationA).toEqual(expected)
+    })
+    test('BC. Operators/ Owners', async () => {
+        // Check operator was created and has correct attrs, is_owner, is_operator, is_responsible
+        // Expecting Spencer Nylund, created for Exports Tab Upload 
+        const { dairyInformationB, dairyInformationC } = ARD
+
+
+        const expectedB = {
+            operators: [
+                {
+                    pk: 1,
+                    dairy_id: 1,
+                    title: 'Spencer Nylund',
+                    primary_phone: '(209) 634-7520',
+                    secondary_phone: '',
+                    street: 'P.O. Box 1029',
+                    city: 'Hilmar',
+                    city_state: 'CA',
+                    city_zip: '95324',
+                    is_owner: true,
+                    is_operator: true,
+                    is_responsible: true
+                }
+            ]
+        }
+
+        const expectedC = {
+            owners: [
+                {
+                    pk: 1,
+                    dairy_id: 1,
+                    title: 'Spencer Nylund',
+                    primary_phone: '(209) 634-7520',
+                    secondary_phone: '',
+                    street: 'P.O. Box 1029',
+                    city: 'Hilmar',
+                    city_state: 'CA',
+                    city_zip: '95324',
+                    is_owner: true,
+                    is_operator: true,
+                    is_responsible: true
+                }
+            ]
+        }
+
+        expect(dairyInformationB).toEqual(expectedB)
+        expect(dairyInformationC).toEqual(expectedC)
+
+    })
+
+    test('AB. AVAILABLE NUTRIENTS HERD INFORMATION:MANURE GENERATED', async () => {
+        // const { availableNutrientsAB } = await getAvailableNutrientsAB(dairy_id)
+        const { availableNutrientsAB } = ARD
+
+        Object.keys(availableNutrientsAB.herdInfo).map(key => {
+            if (isIDPK(key)) {
+                delete availableNutrientsAB.herdInfo[key]
+            }
+        })
+
+        const expectedResult = {
+            herdInfo: {
+                milk_cows: [1, 1, 2, 1, 1, 1],
+                dry_cows: [1, 1, 2, 1, 5000],
+                bred_cows: [1, 1, 2, 1, 1],
+                cows: [1, 1, 2, 1, 1],
+                calf_young: [1, 1, 2, 1],
+                calf_old: [1, 1, 2, 1],
+                p_breed: "Ayrshire", // Default option
+                p_breed_other: "",
+            },
+
+            herdCalc: ['67.83', '705.93', '101.02', '146.58', '702.72']
+        }
+
+        expect(availableNutrientsAB).toEqual(expectedResult)
+
+    })
+
+    test('C. Process Wastewater Generated', async () => {
+        const { availableNutrientsC } = ARD
+
+        availableNutrientsC
+        availableNutrientsC.applied = availableNutrientsC.applied.map(el => round(el, 3)),
+            availableNutrientsC.exported = availableNutrientsC.exported.map(el => round(el, 3)),
+            availableNutrientsC.imported = availableNutrientsC.imported.map(el => round(el, 3)),
+            availableNutrientsC.generated = availableNutrientsC.generated.map(el => round(el, 3))
+        const expectedResult = {
+            applied: [4860000, 18474.8286, 860.7433560000002, 16711.363200000003, 320658.29400000005].map(el => round(el, 3)),
+            exported: [840000, 3392.7432000000003, 504.0046200000001, 6988.770600000001, 61686.240000000005].map(el => round(el, 3)),
+            imported: [0, 0, 0, 0, 0].map(el => round(el, 3)),
+            generated: [5700000, 21867.571800000005, 1364.747976, 23700.1338, 382344.534].map(el => round(el, 3))
+        }
+
+        expect(availableNutrientsC).toEqual(expectedResult)
+    })
+
+    test('F. NUTRIENT IMPORTS', async () => {
+        // const { availableNutrientsF } = await getAvailableNutrientsF(dairy_id)
+        const { availableNutrientsF } = ARD
+
+        availableNutrientsF.dry.map(item => {
+            Object.keys(item).map(key => {
+                if (isIDPK(key)) {
+                    delete item[key]
+                }
+            })
+        })
+
+        availableNutrientsF.process.map(item => {
+            Object.keys(item).map(key => {
+                if (isIDPK(key)) {
+                    delete item[key]
+                }
+            })
+        })
+
+        availableNutrientsF.commercial.map(item => {
+            Object.keys(item).map(key => {
+                if (isIDPK(key)) {
+                    delete item[key]
+                }
+            })
+        })
+
+        const expectedResult = {
+            dry: [{
+                import_desc: 'UN32',
+                import_date: '2020-05-09T07:00:00.000Z',
+                material_type: 'Dry manure: Separator solids',
+                amount_imported: '41.61',
+                method_of_reporting: 'dry-weight',
+                moisture: '56.00',
+                n_con: '1.94',
+                p_con: '0.53',
+                k_con: '2.18',
+                salt_con: '0.00'
+            }],
+            process: [],
+            commercial: [{
+                import_desc: 'UN32',
+                import_date: '2020-05-09T07:00:00.000Z',
+                material_type: 'Commercial fertilizer/ Other: Solid commercial fertilizer',
+                amount_imported: '41.61',
+                method_of_reporting: 'dry-weight',
+                moisture: '0.00',
+                n_con: '32.00',
+                p_con: '0.00',
+                k_con: '0.00',
+                salt_con: '0.00'
+            }],
+            dryTotals: [710.3659199999998, 194.06904, 798.24624, 0],
+            processTotals: [0, 0, 0, 0],
+            commercialTotals: [26603.769600000003, 0, 0, 0],
+            total: [27314.135520000003, 194.06904, 798.24624, 0]
+        }
+
+        expect(availableNutrientsF).toEqual(expectedResult)
+    })
+
+    test('G. NUTRIENT EXPORTS ', async () => {
+        const { availableNutrientsG } = ARD
+
+        availableNutrientsG.dry.map(item => {
+            Object.keys(item).map(key => {
+                if (isIDPK(key)) {
+                    delete item[key]
+                }
+            })
+        })
+        availableNutrientsG.process.map(item => {
+            Object.keys(item).map(key => {
+                if (isIDPK(key)) {
+                    delete item[key]
+                }
+            })
+        })
+
+        availableNutrientsG.dry.sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled']))
+        availableNutrientsG.process.sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled']))
+        const expectedResult = {
+            dry: [{
+                last_date_hauled: '2020-03-05T08:00:00.000Z',
+                amount_hauled: 1898,
+                material_type: 'Dry manure: Corral solids',
+                amount_hauled_method: 'IDK boss',
+                reporting_method: 'dry-weight',
+                moisture: '56.00',
+                n_con_mg_kg: 19400,
+                p_con_mg_kg: 5280,
+                k_con_mg_kg: 21800,
+                tfs: '0.0000',
+                ec_umhos_cm: '0.0000',
+                salt_lbs_rm: null,
+                n_lbs_rm: null,
+                p_lbs_rm: null,
+                k_lbs_rm: null,
+                kn_con_mg_l: '0.0000',
+                nh4_con_mg_l: '0.0000',
+                nh3_con_mg_l: '0.0000',
+                no3_con_mg_l: '0.0000',
+                p_con_mg_l: '0.0000',
+                k_con_mg_l: '0.0000',
+                tds: '0',
+                pnumber: '',
+                dest_street: '23464 Turner Ave.',
+                dest_cross_street: '',
+                dest_county: 'Merced',
+                dest_city: 'Hilmar',
+                dest_city_state: 'CA',
+                dest_city_zip: '95324',
+                dest_type: 'Farmer',
+                recipient_title: 'Caetano Ranch',
+                recipient_primary_phone: '(209) 564-6329',
+                recipient_street: '23464 Turner Ave.',
+                recipient_cross_street: '',
+                recipient_county: 'Merced',
+                recipient_city: 'Hilmar',
+                recipient_city_state: 'CA',
+                recipient_city_zip: '95324',
+                contact_first_name: 'Spencer',
+                contact_primary_phone: '(209) 634-7520',
+                operator_title: 'Spencer Nylund',
+                operator_primary_phone: '(209) 634-7520',
+                operator_secondary_phone: '',
+                operator_street: 'P.O. Box 1029',
+                operator_city: 'Hilmar',
+                operator_city_state: 'CA',
+                operator_city_zip: '95324',
+                operator_is_owner: true,
+                operator_is_responsible: true,
+                hauler_title: 'Cardoza Farm Service',
+                hauler_first_name: 'Linda ',
+                hauler_primary_phone: '(209) 564-6329',
+                hauler_street: 'P.O. Box 60',
+                hauler_cross_street: '',
+                hauler_county: 'Merced',
+                hauler_city: 'Hilmar',
+                hauler_city_state: 'CA',
+                hauler_city_zip: '95324'
+            },
+            {
+                last_date_hauled: '2020-05-08T07:00:00.000Z',
+                amount_hauled: 1839,
+                material_type: 'Dry manure: Corral solids',
+                amount_hauled_method: 'Ya got me',
+                reporting_method: 'dry-weight',
+                moisture: '35.60',
+                n_con_mg_kg: 24000,
+                p_con_mg_kg: 10000,
+                k_con_mg_kg: 48000,
+                tfs: '0.0000',
+                ec_umhos_cm: '0.0000',
+                salt_lbs_rm: null,
+                n_lbs_rm: null,
+                p_lbs_rm: null,
+                k_lbs_rm: null,
+                kn_con_mg_l: '0.0000',
+                nh4_con_mg_l: '0.0000',
+                nh3_con_mg_l: '0.0000',
+                no3_con_mg_l: '0.0000',
+                p_con_mg_l: '0.0000',
+                k_con_mg_l: '0.0000',
+                tds: '0',
+                pnumber: '',
+                dest_street: '24665 Swensen Ave.',
+                dest_cross_street: '',
+                dest_county: 'Merced',
+                dest_city: 'Hilmar',
+                dest_city_state: 'CA',
+                dest_city_zip: '95324',
+                dest_type: 'Farmer',
+                recipient_title: 'Jeff Maciel',
+                recipient_primary_phone: '(209) 614-0283',
+                recipient_street: '24665 Swensen Ave.',
+                recipient_cross_street: '',
+                recipient_county: 'Merced',
+                recipient_city: 'Hilmar',
+                recipient_city_state: 'CA',
+                recipient_city_zip: '95324',
+                contact_first_name: 'Spencer',
+                contact_primary_phone: '(209) 634-7520',
+                operator_title: 'Spencer Nylund',
+                operator_primary_phone: '(209) 634-7520',
+                operator_secondary_phone: '',
+                operator_street: 'P.O. Box 1029',
+                operator_city: 'Hilmar',
+                operator_city_state: 'CA',
+                operator_city_zip: '95324',
+                operator_is_owner: true,
+                operator_is_responsible: true,
+                hauler_title: 'Silva & Sons Manure Spreading',
+                hauler_first_name: 'Frank',
+                hauler_primary_phone: '(209) 678-2047',
+                hauler_street: '23616 Williams AVE',
+                hauler_cross_street: '',
+                hauler_county: 'Merced',
+                hauler_city: 'Hilmar',
+                hauler_city_state: 'CA',
+                hauler_city_zip: '95324'
+            }].sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled'])),
+            process: [{
+                last_date_hauled: '2020-02-12T08:00:00.000Z',
+                amount_hauled: 420000,
+                material_type: 'Process wastewater',
+                amount_hauled_method: 'Flow Meter',
+                reporting_method: '',
+                moisture: "0.00",
+                n_con_mg_kg: '0.0000',
+                p_con_mg_kg: "0.0000",
+                k_con_mg_kg: '0.0000',
+                tfs: "0.0000",
+                ec_umhos_cm: '8000.0000',
+                salt_lbs_rm: null,
+                n_lbs_rm: null,
+                p_lbs_rm: null,
+                k_lbs_rm: null,
+                kn_con_mg_l: '484.0000',
+                nh4_con_mg_l: null,
+                nh3_con_mg_l: null,
+                no3_con_mg_l: null,
+                p_con_mg_l: '71.9000',
+                k_con_mg_l: '997.0000',
+                tds: '8800',
+                pnumber: '045-200-024',
+                dest_street: '21304 Williams Ave.',
+                dest_cross_street: '',
+                dest_county: 'Merced',
+                dest_city: 'Hilmar',
+                dest_city_state: 'CA',
+                dest_city_zip: '95324',
+                dest_type: 'Farmer',
+                recipient_title: 'Johnson',
+                recipient_primary_phone: '(209) 634-1485',
+                recipient_street: '21304 Williams Ave.',
+                recipient_cross_street: '',
+                recipient_county: 'Merced',
+                recipient_city: 'Hilmar',
+                recipient_city_state: 'CA',
+                recipient_city_zip: '95324',
+                contact_first_name: 'Spencer',
+                contact_primary_phone: '(209) 634-7520',
+                operator_title: 'Spencer Nylund',
+                operator_primary_phone: '(209) 634-7520',
+                operator_secondary_phone: '',
+                operator_street: 'P.O. Box 1029',
+                operator_city: 'Hilmar',
+                operator_city_state: 'CA',
+                operator_city_zip: '95324',
+                operator_is_owner: true,
+                operator_is_responsible: true,
+                hauler_title: 'Pipeline',
+                hauler_first_name: 'Spencer',
+                hauler_primary_phone: '(209) 632-7520',
+                hauler_street: '20710 Geer RD',
+                hauler_cross_street: '',
+                hauler_county: 'Merced',
+                hauler_city: 'Hilmar',
+                hauler_city_state: 'CA',
+                hauler_city_zip: '95324'
+            },
+            {
+                last_date_hauled: '2020-01-25T08:00:00.000Z',
+                amount_hauled: 420000,
+                material_type: 'Process wastewater',
+                amount_hauled_method: 'Flow Meter',
+                reporting_method: '',
+                moisture: '0.00',
+                n_con_mg_kg: '0.0000',
+                p_con_mg_kg: "0.0000",
+                k_con_mg_kg: '0.0000',
+                tfs: "0.0000",
+                ec_umhos_cm: '8000.0000',
+                salt_lbs_rm: null,
+                n_lbs_rm: null,
+                p_lbs_rm: null,
+                k_lbs_rm: null,
+                kn_con_mg_l: '484.0000',
+                nh4_con_mg_l: null,
+                nh3_con_mg_l: null,
+                no3_con_mg_l: null,
+                p_con_mg_l: '71.9000',
+                k_con_mg_l: '997.0000',
+                tds: '8800',
+                pnumber: '17-092-022',
+                dest_street: '21189 W. American Ave.',
+                dest_cross_street: '',
+                dest_county: 'Merced',
+                dest_city: 'Hilmar',
+                dest_city_state: 'CA',
+                dest_city_zip: '95324',
+                dest_type: 'Farmer',
+                recipient_title: 'Petterson',
+                recipient_primary_phone: '(209) 667-5888',
+                recipient_street: '21189 W. American Ave.',
+                recipient_cross_street: '',
+                recipient_county: 'Merced',
+                recipient_city: 'Hilmar',
+                recipient_city_state: 'CA',
+                recipient_city_zip: '95324',
+                contact_first_name: 'Spencer',
+                contact_primary_phone: '(209) 634-7520',
+                operator_title: 'Spencer Nylund',
+                operator_primary_phone: '(209) 634-7520',
+                operator_secondary_phone: '',
+                operator_street: 'P.O. Box 1029',
+                operator_city: 'Hilmar',
+                operator_city_state: 'CA',
+                operator_city_zip: '95324',
+                operator_is_owner: true,
+                operator_is_responsible: true,
+                hauler_title: 'Pipeline',
+                hauler_first_name: 'Spencer',
+                hauler_primary_phone: '(209) 632-7520',
+                hauler_street: '20710 Geer RD',
+                hauler_cross_street: '',
+                hauler_county: 'Merced',
+                hauler_city: 'Hilmar',
+                hauler_city_state: 'CA',
+                hauler_city_zip: '95324'
+            }].sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled'])),
+            manureExported: 3737,
+            wastewaterExported: 840000,
+            dryTotal: [89249.824, 32505.1872, 150105.56799999997, 0],
+            processTotal: [
+                3392.7432000000003,
+                504.0046200000001,
+                6988.770600000001,
+                61686.240000000005
+            ],
+            total: [
+                92642.56719999999,
+                33009.19182,
+                157094.33859999996,
+                61686.240000000005
+            ]
+        }
+
+        expect(availableNutrientsG).toEqual(expectedResult)
+    })
+
 
     test('A. LIST OF LAND APPLICATION AREAS.', async () => {
-        const { applicationAreaA } = await getApplicationAreaA(dairy_id)
+        // TODO replace the rest of the calls to use this global var with the main call to the server.
+        const { applicationAreaA } = ARD
+
         applicationAreaA.fields.forEach(field => {
             Object.keys(field).forEach(key => {
                 if (isIDPK(key)) {
@@ -66,7 +1011,7 @@ describe('Test pdfDB', () => {
                     cropable: '22.00',
                     harvest_count: 2,
                     waste_type: 'process wastewater',
-                    parcels: []
+                    parcels: ['0000000000000420']
                 },
                 {
                     title: 'Field 17',
@@ -94,8 +1039,9 @@ describe('Test pdfDB', () => {
     })
 
     test('B. APPLICATION AREAS Crops and Harvests.', async () => {
-        const { applicationAreaB } = await getApplicationAreaB(dairy_id)
+        // const { applicationAreaB } = await getApplicationAreaB(dairy_id)
         // console.log(applicationAreaB)
+        const { applicationAreaB } = ARD
 
         applicationAreaB.harvests.forEach(obj => {
             Object.keys(obj).forEach(key => {
@@ -431,8 +1377,10 @@ describe('Test pdfDB', () => {
     })
 
     test('Nutrient Budget A. LAND APPLICATIONS are calculated and totaled correctly.', async () => {
-        const { nutrientBudgetA } = await getNutrientBudgetA(dairy_id)
+        // const { nutrientBudgetA } = await getNutrientBudgetA(dairy_id)
+        const { nutrientBudgetA } = ARD
         const allEvents = nutrientBudgetA.allEvents
+
         // Remove _id and pk fields from objects
         Object.keys(allEvents).map((key, i) => {
             const field = allEvents[key]
@@ -1305,7 +2253,7 @@ describe('Test pdfDB', () => {
         expect(allEvents).toEqual(expectedEvents)
     })
 
-    test('Nutrient Budget B, NaprbalABC(Summary) Info is calculated accurately.', async () => {
+    test('Nutrient Budget B(Single for ea field), NaprbalABC(Summary/ Charts) Info is calculated accurately.', async () => {
         /**
         *  {
                nutrientBudgetB: {
@@ -1337,7 +2285,8 @@ describe('Test pdfDB', () => {
 
         */
 
-        const budgetInfo = await getNutrientBudgetInfo(dairy_id)
+        // const budgetInfo = await getNutrientBudgetInfo(dairy_id)
+        const budgetInfo = ARD
         const {
             soils,
             plows,
@@ -1635,398 +2584,9 @@ describe('Test pdfDB', () => {
         })
     })
 
-    test('AB. HERD INFORMATION:MANURE GENERATED', async () => {
-        const { availableNutrientsAB } = await getAvailableNutrientsAB(dairy_id)
-
-        Object.keys(availableNutrientsAB.herdInfo).map(key => {
-            if (isIDPK(key)) {
-                delete availableNutrientsAB.herdInfo[key]
-            }
-        })
-
-        const expectedResult = {
-            herdInfo: {
-                milk_cows: [1, 1, 2, 1, 1, 1],
-                dry_cows: [1, 1, 2, 1, 5000],
-                bred_cows: [1, 1, 2, 1, 1],
-                cows: [1, 1, 2, 1, 1],
-                calf_young: [1, 1, 2, 1],
-                calf_old: [1, 1, 2, 1],
-                p_breed: "Ayrshire", // Default option
-                p_breed_other: "",
-            },
-
-            herdCalc: ['67.83', '705.93', '101.02', '146.58', '702.72']
-        }
-
-        expect(availableNutrientsAB).toEqual(expectedResult)
-
-    })
-
-    test('C. Process Wastewater Generated', async () => {
-        const { availableNutrientsC } = await getAvailableNutrientsC(dairy_id)
-
-
-        availableNutrientsC
-        availableNutrientsC.applied = availableNutrientsC.applied.map(el => round(el, 3)),
-            availableNutrientsC.exported = availableNutrientsC.exported.map(el => round(el, 3)),
-            availableNutrientsC.imported = availableNutrientsC.imported.map(el => round(el, 3)),
-            availableNutrientsC.generated = availableNutrientsC.generated.map(el => round(el, 3))
-        const expectedResult = {
-            applied: [4860000, 18474.8286, 860.7433560000002, 16711.363200000003, 320658.29400000005].map(el => round(el, 3)),
-            exported: [840000, 3392.7432000000003, 504.0046200000001, 6988.770600000001, 61686.240000000005].map(el => round(el, 3)),
-            imported: [0, 0, 0, 0, 0].map(el => round(el, 3)),
-            generated: [5700000, 21867.571800000005, 1364.747976, 23700.1338, 382344.534].map(el => round(el, 3))
-        }
-
-        expect(availableNutrientsC).toEqual(expectedResult)
-    })
-
-    test('F. NUTRIENT IMPORTS', async () => {
-        const { availableNutrientsF } = await getAvailableNutrientsF(dairy_id)
-
-        availableNutrientsF.dry.map(item => {
-            Object.keys(item).map(key => {
-                if (isIDPK(key)) {
-                    delete item[key]
-                }
-            })
-        })
-
-        availableNutrientsF.process.map(item => {
-            Object.keys(item).map(key => {
-                if (isIDPK(key)) {
-                    delete item[key]
-                }
-            })
-        })
-
-        availableNutrientsF.commercial.map(item => {
-            Object.keys(item).map(key => {
-                if (isIDPK(key)) {
-                    delete item[key]
-                }
-            })
-        })
-
-        const expectedResult = {
-            dry: [{
-                import_desc: 'UN32',
-                import_date: '2020-05-09T07:00:00.000Z',
-                material_type: 'Dry manure: Separator solids',
-                amount_imported: '41.61',
-                method_of_reporting: 'dry-weight',
-                moisture: '56.00',
-                n_con: '1.94',
-                p_con: '0.53',
-                k_con: '2.18',
-                salt_con: '0.00'
-            }],
-            process: [],
-            commercial: [{
-                import_desc: 'UN32',
-                import_date: '2020-05-09T07:00:00.000Z',
-                material_type: 'Commercial fertilizer/ Other: Solid commercial fertilizer',
-                amount_imported: '41.61',
-                method_of_reporting: 'dry-weight',
-                moisture: '0.00',
-                n_con: '32.00',
-                p_con: '0.00',
-                k_con: '0.00',
-                salt_con: '0.00'
-            }],
-            dryTotals: [710.3659199999998, 194.06904, 798.24624, 0],
-            processTotals: [0, 0, 0, 0],
-            commercialTotals: [26603.769600000003, 0, 0, 0],
-            total: [27314.135520000003, 194.06904, 798.24624, 0]
-        }
-
-        expect(availableNutrientsF).toEqual(expectedResult)
-    })
-
-    test('G. NUTRIENT EXPORTS ', async () => {
-        const { availableNutrientsG } = await getAvailableNutrientsG(dairy_id)
-
-        availableNutrientsG.dry.map(item => {
-            Object.keys(item).map(key => {
-                if (isIDPK(key)) {
-                    delete item[key]
-                }
-            })
-        })
-        availableNutrientsG.process.map(item => {
-            Object.keys(item).map(key => {
-                if (isIDPK(key)) {
-                    delete item[key]
-                }
-            })
-        })
-
-        availableNutrientsG.dry.sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled']))
-        availableNutrientsG.process.sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled']))
-        const expectedResult = {
-            dry: [{
-                last_date_hauled: '2020-03-05T08:00:00.000Z',
-                amount_hauled: 1898,
-                material_type: 'Dry manure: Corral solids',
-                amount_hauled_method: 'IDK boss',
-                reporting_method: 'dry-weight',
-                moisture: '56.00',
-                n_con_mg_kg: 19400,
-                p_con_mg_kg: 5280,
-                k_con_mg_kg: 21800,
-                tfs: '0.0000',
-                ec_umhos_cm: '0.0000',
-                salt_lbs_rm: null,
-                n_lbs_rm: null,
-                p_lbs_rm: null,
-                k_lbs_rm: null,
-                kn_con_mg_l: '0.0000',
-                nh4_con_mg_l: '0.0000',
-                nh3_con_mg_l: '0.0000',
-                no3_con_mg_l: '0.0000',
-                p_con_mg_l: '0.0000',
-                k_con_mg_l: '0.0000',
-                tds: '0',
-                pnumber: '',
-                dest_street: '23464 Turner Ave.',
-                dest_cross_street: '',
-                dest_county: 'Merced',
-                dest_city: 'Hilmar',
-                dest_city_state: 'CA',
-                dest_city_zip: '95324',
-                dest_type: 'Farmer',
-                recipient_title: 'Caetano Ranch',
-                recipient_primary_phone: '(209) 564-6329',
-                recipient_street: '23464 Turner Ave.',
-                recipient_cross_street: '',
-                recipient_county: 'Merced',
-                recipient_city: 'Hilmar',
-                recipient_city_state: 'CA',
-                recipient_city_zip: '95324',
-                contact_first_name: 'Spencer',
-                contact_primary_phone: '(209) 634-7520',
-                operator_title: 'Spencer Nylund',
-                operator_primary_phone: '(209) 634-7520',
-                operator_secondary_phone: '',
-                operator_street: 'P.O. Box 1029',
-                operator_city: 'Hilmar',
-                operator_city_state: 'CA',
-                operator_city_zip: '95324',
-                operator_is_owner: true,
-                operator_is_responsible: true,
-                hauler_title: 'Cardoza Farm Service',
-                hauler_first_name: 'Linda ',
-                hauler_primary_phone: '(209) 564-6329',
-                hauler_street: 'P.O. Box 60',
-                hauler_cross_street: '',
-                hauler_county: 'Merced',
-                hauler_city: 'Hilmar',
-                hauler_city_state: 'CA',
-                hauler_city_zip: '95324'
-            },
-            {
-                last_date_hauled: '2020-05-08T07:00:00.000Z',
-                amount_hauled: 1839,
-                material_type: 'Dry manure: Corral solids',
-                amount_hauled_method: 'Ya got me',
-                reporting_method: 'dry-weight',
-                moisture: '35.60',
-                n_con_mg_kg: 24000,
-                p_con_mg_kg: 10000,
-                k_con_mg_kg: 48000,
-                tfs: '0.0000',
-                ec_umhos_cm: '0.0000',
-                salt_lbs_rm: null,
-                n_lbs_rm: null,
-                p_lbs_rm: null,
-                k_lbs_rm: null,
-                kn_con_mg_l: '0.0000',
-                nh4_con_mg_l: '0.0000',
-                nh3_con_mg_l: '0.0000',
-                no3_con_mg_l: '0.0000',
-                p_con_mg_l: '0.0000',
-                k_con_mg_l: '0.0000',
-                tds: '0',
-                pnumber: '',
-                dest_street: '24665 Swensen Ave.',
-                dest_cross_street: '',
-                dest_county: 'Merced',
-                dest_city: 'Hilmar',
-                dest_city_state: 'CA',
-                dest_city_zip: '95324',
-                dest_type: 'Farmer',
-                recipient_title: 'Jeff Maciel',
-                recipient_primary_phone: '(209) 614-0283',
-                recipient_street: '24665 Swensen Ave.',
-                recipient_cross_street: '',
-                recipient_county: 'Merced',
-                recipient_city: 'Hilmar',
-                recipient_city_state: 'CA',
-                recipient_city_zip: '95324',
-                contact_first_name: 'Spencer',
-                contact_primary_phone: '(209) 634-7520',
-                operator_title: 'Spencer Nylund',
-                operator_primary_phone: '(209) 634-7520',
-                operator_secondary_phone: '',
-                operator_street: 'P.O. Box 1029',
-                operator_city: 'Hilmar',
-                operator_city_state: 'CA',
-                operator_city_zip: '95324',
-                operator_is_owner: true,
-                operator_is_responsible: true,
-                hauler_title: 'Silva & Sons Manure Spreading',
-                hauler_first_name: 'Frank',
-                hauler_primary_phone: '(209) 678-2047',
-                hauler_street: '23616 Williams AVE',
-                hauler_cross_street: '',
-                hauler_county: 'Merced',
-                hauler_city: 'Hilmar',
-                hauler_city_state: 'CA',
-                hauler_city_zip: '95324'
-            }].sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled'])),
-            process: [{
-                last_date_hauled: '2020-02-12T08:00:00.000Z',
-                amount_hauled: 420000,
-                material_type: 'Process wastewater',
-                amount_hauled_method: 'Flow Meter',
-                reporting_method: '',
-                moisture: "0.00",
-                n_con_mg_kg: '0.0000',
-                p_con_mg_kg: "0.0000",
-                k_con_mg_kg: '0.0000',
-                tfs: "0.0000",
-                ec_umhos_cm: '8000.0000',
-                salt_lbs_rm: null,
-                n_lbs_rm: null,
-                p_lbs_rm: null,
-                k_lbs_rm: null,
-                kn_con_mg_l: '484.0000',
-                nh4_con_mg_l: null,
-                nh3_con_mg_l: null,
-                no3_con_mg_l: null,
-                p_con_mg_l: '71.9000',
-                k_con_mg_l: '997.0000',
-                tds: '8800',
-                pnumber: '045-200-024',
-                dest_street: '21304 Williams Ave.',
-                dest_cross_street: '',
-                dest_county: 'Merced',
-                dest_city: 'Hilmar',
-                dest_city_state: 'CA',
-                dest_city_zip: '95324',
-                dest_type: 'Farmer',
-                recipient_title: 'Johnson',
-                recipient_primary_phone: '(209) 634-1485',
-                recipient_street: '21304 Williams Ave.',
-                recipient_cross_street: '',
-                recipient_county: 'Merced',
-                recipient_city: 'Hilmar',
-                recipient_city_state: 'CA',
-                recipient_city_zip: '95324',
-                contact_first_name: 'Spencer',
-                contact_primary_phone: '(209) 634-7520',
-                operator_title: 'Spencer Nylund',
-                operator_primary_phone: '(209) 634-7520',
-                operator_secondary_phone: '',
-                operator_street: 'P.O. Box 1029',
-                operator_city: 'Hilmar',
-                operator_city_state: 'CA',
-                operator_city_zip: '95324',
-                operator_is_owner: true,
-                operator_is_responsible: true,
-                hauler_title: 'Pipeline',
-                hauler_first_name: 'Spencer',
-                hauler_primary_phone: '(209) 632-7520',
-                hauler_street: '20710 Geer RD',
-                hauler_cross_street: '',
-                hauler_county: 'Merced',
-                hauler_city: 'Hilmar',
-                hauler_city_state: 'CA',
-                hauler_city_zip: '95324'
-            },
-            {
-                last_date_hauled: '2020-01-25T08:00:00.000Z',
-                amount_hauled: 420000,
-                material_type: 'Process wastewater',
-                amount_hauled_method: 'Flow Meter',
-                reporting_method: '',
-                moisture: '0.00',
-                n_con_mg_kg: '0.0000',
-                p_con_mg_kg: "0.0000",
-                k_con_mg_kg: '0.0000',
-                tfs: "0.0000",
-                ec_umhos_cm: '8000.0000',
-                salt_lbs_rm: null,
-                n_lbs_rm: null,
-                p_lbs_rm: null,
-                k_lbs_rm: null,
-                kn_con_mg_l: '484.0000',
-                nh4_con_mg_l: null,
-                nh3_con_mg_l: null,
-                no3_con_mg_l: null,
-                p_con_mg_l: '71.9000',
-                k_con_mg_l: '997.0000',
-                tds: '8800',
-                pnumber: '17-092-022',
-                dest_street: '21189 W. American Ave.',
-                dest_cross_street: '',
-                dest_county: 'Merced',
-                dest_city: 'Hilmar',
-                dest_city_state: 'CA',
-                dest_city_zip: '95324',
-                dest_type: 'Farmer',
-                recipient_title: 'Petterson',
-                recipient_primary_phone: '(209) 667-5888',
-                recipient_street: '21189 W. American Ave.',
-                recipient_cross_street: '',
-                recipient_county: 'Merced',
-                recipient_city: 'Hilmar',
-                recipient_city_state: 'CA',
-                recipient_city_zip: '95324',
-                contact_first_name: 'Spencer',
-                contact_primary_phone: '(209) 634-7520',
-                operator_title: 'Spencer Nylund',
-                operator_primary_phone: '(209) 634-7520',
-                operator_secondary_phone: '',
-                operator_street: 'P.O. Box 1029',
-                operator_city: 'Hilmar',
-                operator_city_state: 'CA',
-                operator_city_zip: '95324',
-                operator_is_owner: true,
-                operator_is_responsible: true,
-                hauler_title: 'Pipeline',
-                hauler_first_name: 'Spencer',
-                hauler_primary_phone: '(209) 632-7520',
-                hauler_street: '20710 Geer RD',
-                hauler_cross_street: '',
-                hauler_county: 'Merced',
-                hauler_city: 'Hilmar',
-                hauler_city_state: 'CA',
-                hauler_city_zip: '95324'
-            }].sort((a, b) => naturalSortByKeys(a, b, ['last_date_hauled', 'amount_hauled'])),
-            manureExported: 3737,
-            wastewaterExported: 840000,
-            dryTotal: [89249.824, 32505.1872, 150105.56799999997, 0],
-            processTotal: [
-                3392.7432000000003,
-                504.0046200000001,
-                6988.770600000001,
-                61686.240000000005
-            ],
-            total: [
-                92642.56719999999,
-                33009.19182,
-                157094.33859999996,
-                61686.240000000005
-            ]
-        }
-
-        expect(availableNutrientsG).toEqual(expectedResult)
-    })
-
-    test('A. NUTRIENT ANALYSES ', async () => {
-        const { nutrientAnalysis } = await getNutrientAnalysisA(dairy_id)
+    test('ABCDEF. NUTRIENT ANALYSES ', async () => {
+        // const { nutrientAnalysis } = await getNutrientAnalysisA(dairy_id)
+        const { nutrientAnalysis } = ARD
 
         nutrientAnalysis.manures.forEach(obj => {
             Object.keys(obj).forEach(key => {
@@ -2067,6 +2627,8 @@ describe('Test pdfDB', () => {
                 })
             })
         })
+
+
 
         Object.keys(nutrientAnalysis.harvests).forEach(key => {
             const fieldPlant = nutrientAnalysis.harvests[key]
@@ -2116,7 +2678,7 @@ describe('Test pdfDB', () => {
                 na_dl: '100.0000',
                 s_dl: '100.0000',
                 cl_dl: '100.0000',
-                tfs_dl: '50.0000'
+                tfs_dl: '1.0000'
             }],
             wastewaters: [
                 {
@@ -2542,8 +3104,117 @@ describe('Test pdfDB', () => {
         expect(nutrientAnalysis).toEqual(expectedResult)
     })
 
-    test('ABC. Exception Reporting ', async () => {
-        const res = await getExceptionReportingABC(dairy_id)
-        // console.log(res)
+    test('ABC. Exception Reporting / Discharges', async () => {
+        const { exceptionReportingABC } = ARD
+        const [landApp] = exceptionReportingABC['Land application']
+        const [manureWastewater] = exceptionReportingABC['Manure/process wastewater']
+        const [storm] = exceptionReportingABC['Storm water']
+
+        delete landApp['pk']
+        delete manureWastewater['pk']
+        delete storm['pk']
+
+        const expected = [
+            {
+                dairy_id: 1,
+                discharge_type: 'Land application',
+                discharge_datetime: '2019-10-11T00:30:00.000Z',
+                discharge_loc: 'Sumwhere',
+                vol: 1337,
+                vol_unit: 'gals',
+                duration_of_discharge: 20,
+                discharge_src: 'Storm water',
+                method_of_measuring: 'Eyeball',
+                sample_location_reason: 'It was wet there.',
+                ref_number: '133769420'
+            },
+            {
+                dairy_id: 1,
+                discharge_type: 'Manure/process wastewater',
+                discharge_datetime: '2019-10-11T00:30:00.000Z',
+                discharge_loc: 'Sumwhere',
+                vol: 1337,
+                vol_unit: 'cubic yd',
+                duration_of_discharge: 20,
+                discharge_src: 'Wastewater',
+                method_of_measuring: 'Eyeball',
+                sample_location_reason: 'It was wet there.',
+                ref_number: '133769420'
+            },
+            {
+                dairy_id: 1,
+                discharge_type: 'Storm water',
+                discharge_datetime: '2019-10-11T00:30:00.000Z',
+                discharge_loc: 'Sumwhere',
+                vol: 1337,
+                vol_unit: 'gals',
+                duration_of_discharge: 20,
+                discharge_src: 'Storm water',
+                method_of_measuring: 'Eyeball',
+                sample_location_reason: 'It was wet there.',
+                ref_number: '133769420'
+            }
+        ]
+        expect([landApp, manureWastewater, storm]).toEqual(expected)
+    })
+
+    test('AB. NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS', async () => {
+        // Insert AB. NUTRIENT MANAGEMENT PLAN AND EXPORT AGREEMENT STATEMENTS
+        const { nmpeaStatementsAB } = ARD
+        expect(nmpeaStatementsAB).toEqual({
+            pk: 1,
+            dairy_id: 1,
+            nmp_updated: true,
+            nmp_developed: true,
+            nmp_approved: false,
+            new_agreements: true
+        })
+
+    })
+    test('A. ADDITIONAL NOTES', async () => {
+        // Insert A. ADDITIONAL NOTES
+        const { notesA } = ARD
+
+        expect(notesA).toEqual({ pk: 1, dairy_id: 1, note: 'No notes.' })
+
+    })
+    test('A. CERTIFICATION', async () => {
+        // Insert A. CERTIFICATION
+
+        const { certificationA } = ARD
+
+        expect(certificationA).toEqual({
+            pk: 1,
+            owner_id: 1,
+            operator_id: null,
+            responsible_id: 1,
+            ownertitle: 'Spencer Nylund',
+            operatortitle: null
+        })
+    })
+
+
+
+})
+
+
+describe("Test Files download for a dairy", () => {
+    test('Test Files download is the right mime type and is greater than 670kb', async () => {
+        const res = await Files.getFiles('Pharmz test title', dairy_id)
+        /** res
+         *    ArrayBuffer {
+                [Uint8Contents]: <7b 22 65 72 72 6f 72 22 3a 22 47 65 74 20 61 6c 6c 20 54 53 56 73 20 75 6e 73 75 63 63 65 73 73 66 75 6c 22 2c 22 65 72 72 22 3a 7b 7d 7d>,
+                byteLength: 46
+                }
+         */
+        var blob = new Blob([res], { type: "application/zip" });
+
+        expect(blob.type).toBe('application/zip')
+        /**
+         *  Client Side upload: 1,787,874
+         *  Test        upload:   672,172
+         * 
+         */
+        expect(blob.size).toBeGreaterThanOrEqual(670000) // 671 570, || 756,710 bytes (778 KB on disk) for 13 items
     })
 })

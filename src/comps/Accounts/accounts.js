@@ -6,27 +6,30 @@ import { auth, UserAuth } from '../../utils/users'
 import Delete from "@material-ui/icons/Delete";
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import AddIcon from '@material-ui/icons/Add';
+
 import { naturalSortBy } from "../../utils/format";
 import CreateAccountModal from '../Modals/createAccountModal'
 import UpdateAccountModal from '../Modals/updateAccountModal'
 import UpdateIcon from '@material-ui/icons/Update';
 import ChangePasswordModal from '../Modals/changePasswordModal'
 import ActionCancelModal from '../Modals/actionCancelModal'
+import { ROLES } from "../../utils/constants";
 
 
 const AccountRow = (props) => {
     const account = props.account
+    const account_type = parseInt(account.account_type)
     return (
         <Grid item xs={3} className='showOnHoverParent'>
             <Card variant="outlined">
                 <CardContent>
                     <Grid item xs={12} align='right'>
-                        <Typography variant='caption'>{account.account_type === 0 ? "Owner" : "Emp"} </Typography>
+                        <Typography variant='caption'>{account_type >= ROLES.ADMIN ? "Owner" : "Emp"} {account_type >= ROLES.ADMIN ? "" : account_type == ROLES.DELETE ? "(Del)" : account_type === ROLES.WRITE ? "(Write)" : "(Read)"}  </Typography>
                     </Grid>
-                    <Grid item xs={12} align='center'>
+                    <Grid item xs={12} align='left'>
                         <Typography variant='caption'>{account.email} </Typography>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} align='left'>
                         <Typography variant='caption'> {account.username ? account.username : 'No username'} </Typography>
                     </Grid>
                 </CardContent>
@@ -92,10 +95,14 @@ class Accounts extends Component {
     }
 
     getAccounts() {
-        UserAuth.getAllAccounts()
+        const company_id = auth.currentUser.company_id
+        console.log("GEtting all accounts for comp id: ", company_id)
+        UserAuth.getAllAccounts(company_id)
             .then(res => {
+                console.log(res)
                 if (res.data) {
                     const { data: users } = res
+                    console.log("Settings users: ", users)
                     this.setState({ allAccounts: users, allAccountInvoked: true })
                 } else {
                     this.setState({ allAccountInvoked: true })
@@ -104,19 +111,6 @@ class Accounts extends Component {
             .catch(err => {
                 console.log(err)
                 this.setState({ allAccountInvoked: true })
-            })
-    }
-
-
-
-
-    registerUser(email, password) {
-        UserAuth.registerUser(email, password)
-            .then(res => {
-                console.log("Registed user!: ", res)
-            })
-            .catch(err => {
-                console.log(err)
             })
     }
 
@@ -140,7 +134,7 @@ class Accounts extends Component {
 
     deleteAccount() {
         const { email, pk } = this.state.deletedAccount
-        UserAuth.deleteAccount(pk)
+        UserAuth.deleteAccount(pk, auth.currentUser.company_id)
             .then(res => {
                 console.log("Account deleted ", res)
                 this.getAccounts()
@@ -204,7 +198,7 @@ class Accounts extends Component {
 
                                 <Grid item xs={1}></Grid>
                                 <Grid item container xs={10}>
-                                    {auth.currentUser && auth.currentUser.account_type === 0 ?
+                                    {auth.currentUser && (auth.currentUser.account_type === ROLES.ADMIN || auth.currentUser.account_type === ROLES.HACKER) ?
                                         <Fragment>
 
                                             <Grid item xs={12} align='right'>
@@ -283,7 +277,6 @@ class Accounts extends Component {
                                 <ChangePasswordModal
                                     open={this.state.showChangePasswordModal}
                                     account={this.state.changePasswordAccount}
-                                    changePasswordAccount={this.state.changePasswordAccount}
                                     onAlert={this.props.onAlert}
                                     onClose={() => this.toggleChangePasswordModal(false)}
                                 />
@@ -298,7 +291,7 @@ class Accounts extends Component {
                                     open={this.state.showConfirmDeleteAccountModal}
                                     actionText="Delete"
                                     cancelText="Cancel"
-                                    modalText={`Delete Accounts for ${this.state.deletedAccount.email}?`}
+                                    modalText={`Delete Account ${this.state.deletedAccount.email}?`}
                                     onAction={this.deleteAccount.bind(this)}
                                     onClose={() => this.toggleConfirmDeleteAccountModal(false)}
                                 />

@@ -27,7 +27,7 @@ class ViewTSVsModal extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.state.open && this.state.tsvs.length == 0 && !this.state.checkedForTSVs) {
       this.getAllTSVs()
-    }else if(prevState.open !== this.state.open){
+    } else if (prevState.open !== this.state.open) {
       this.getAllTSVs()
     }
   }
@@ -49,7 +49,10 @@ class ViewTSVsModal extends Component {
   }
   deleteTSV() {
     console.log("Deleteing tsv", this.state.curDeleteObj)
-    post(`${this.props.BASE_URL}/api/tsv/delete`, { pk: this.state.curDeleteObj.pk })
+    post(`${this.props.BASE_URL}/api/tsv/delete`, {
+      pk: this.state.curDeleteObj.pk,
+      dairy_id: this.state.dairy_id
+    })
       .then(res => {
         console.log(res)
         this.toggleShowDeleteTSV(false)
@@ -63,9 +66,9 @@ class ViewTSVsModal extends Component {
 
   printTSV() {
     let frame = document.getElementById('tsvPrintFrame')
-    if(frame){
+    if (frame) {
       frame.src = `/tsv/${this.state.dairy_id}/${this.state.tsvType}`;                   // Set source.
-    } else{
+    } else {
       frame = document.createElement('iframe')
       frame.id = "tsvPrintFrame"
       frame.style.visibility = 'hidden';                // Hide the frame.
@@ -77,7 +80,7 @@ class ViewTSVsModal extends Component {
   }
 
   downloadTSV(tsv) {
-    
+
     console.log("Downloading TSV", tsv)
 
     let element = document.createElement('a');
@@ -95,13 +98,13 @@ class ViewTSVsModal extends Component {
 
   }
 
-  onModalClose(){
+  onModalClose() {
     let frame = document.getElementById('tsvPrintFrame')
 
-    if(frame){
+    if (frame) {
       document.body.removeChild(frame)
     }
-    
+
     this.props.onClose()
   }
 
@@ -141,7 +144,7 @@ class ViewTSVsModal extends Component {
                           </Grid>
                           <Grid item xs={1} align="right">
                             <Tooltip title="Print TSV file">
-                              <IconButton onClick={ this.printTSV.bind(this) }>
+                              <IconButton onClick={this.printTSV.bind(this)}>
                                 <RemoveRedEyeIcon color='primary' />
                               </IconButton>
                             </Tooltip>

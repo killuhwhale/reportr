@@ -6,19 +6,22 @@
 
 import { get, post } from "./requests";
 import { BASE_URL } from './environment'
-import { JWT_TOKEN } from './constants'
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, COMPANY_ID_KEY } from './constants'
 
 
 class UserAuth {
-    #TOKEN_KEY = JWT_TOKEN;
-    #token = '';
+    #ACCESS_TOKEN_KEY = ACCESS_TOKEN_KEY;
+    #REFRESH_TOKEN_KEY = REFRESH_TOKEN_KEY;
+    #COMPANY_KEY = COMPANY_ID_KEY;
+    #accessToken = '';
+    #refreshToken = '';
     currentUser = {};
     #authStateChangeFns = [];
 
     constructor() {
         // Check if user is logged in.
-        this.#token = localStorage.getItem(this.#TOKEN_KEY)
-        if (this.#token) {
+        this.#accessToken = localStorage.getItem(this.#ACCESS_TOKEN_KEY)
+        if (this.#accessToken) {
             this.getUserByToken();
         }
     }
@@ -34,10 +37,16 @@ class UserAuth {
         })
     }
 
-    setUserAndToken(user, token) {
+    setUserAndToken(user, accessToken, refreshToken) {
         this.currentUser = user
-        this.#token = token
-        localStorage.setItem(this.#TOKEN_KEY, token);
+        this.updateTokens(accessToken, refreshToken)
+    }
+
+    updateTokens(accessToken, refreshToken) {
+        this.#accessToken = accessToken
+        this.#refreshToken = refreshToken
+        localStorage.setItem(this.#ACCESS_TOKEN_KEY, accessToken);
+        localStorage.setItem(this.#REFRESH_TOKEN_KEY, refreshToken);
     }
 
     getUserByToken() {
@@ -55,14 +64,21 @@ class UserAuth {
             })
     }
 
+    setCompanyID(company_id) {
+        localStorage.setItem(this.#COMPANY_KEY, company_id);
+    }
+
     login(email, password) {
         return new Promise((resolve, reject) => {
             post(`${BASE_URL}/accounts/login`, { email, password })
                 .then(res => {
                     if (res.data) {
-                        const token = res.data.token;
+                        const accessToken = res.data.accessToken.token;
+                        const refreshToken = res.data.refreshToken.token;
+
                         const user = res.data.user;
-                        this.setUserAndToken(user, token)
+                        this.setUserAndToken(user, accessToken, refreshToken)
+                        this.setCompanyID(user.company_id)
                         this.authStateChanged()
                         resolve(user)
                     } else {
@@ -79,15 +95,37 @@ class UserAuth {
     logout() {
         this.setUserAndToken(null, '')
         this.authStateChanged();
+        this.setCompanyID('')
     }
 
     getUser() {
         return this.currentUser ? this.currentUser : {}
     }
 
-    registerUser(email, password) {
+
+    // For Dev use, create account for a company
+    registerUser(email, password, company_id) {
         return new Promise((resolve, reject) => {
-            post(`${BASE_URL}/accounts/register`, { email, password })
+            post(`${BASE_URL}/accounts/register`, { email, password, company_id })
+                .then(res => {
+                    if (!res.error) {
+                        resolve(res)
+                    } else {
+                        resolve(res)
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject(err)
+                })
+        })
+    }
+
+
+    // Register Site Admin. For Dev use
+    registerHacker(email, password) {
+        return new Promise((resolve, reject) => {
+            post(`${BASE_URL}/accounts/registerAdmin`, { email, password, SECRET: "1337mostdope#@!123(*)89098&^%%^65blud" })
                 .then(res => {
                     if (res.data) {
                         const { data: { user, token } } = res
@@ -105,17 +143,33 @@ class UserAuth {
         })
     }
 
+    refreshToken() {
+        const refreshToken = localStorage.getItem(this.#REFRESH_TOKEN_KEY);
+        if (!refreshToken) return
+
+        post(`${BASE_URL}/accounts/accessToken`, { refreshToken })
+            .then(res => {
+                if (res.error) return
+                const accessToken = res.token
+                this.updateTokens(accessToken, refreshToken)
+                this.authStateChanged()
+            })
+            .catch(err => {
+                console.log(err)
+            })
+
+    }
+
     static updateAccount(user) {
         return new Promise((resolve, reject) => {
-            post(`${BASE_URL}/accounts/update`, { user })
+            post(`${BASE_URL}/accounts/update`, user)
                 .then(res => {
                     if (res.data) {
                         const updatedUser = res.data
-                        console.log(updatedUser)
                         resolve(updatedUser)
                     } else {
                         console.log(res.error)
-                        reject(res.error)
+                        resolve(res)
                     }
                 })
                 .catch(err => {
@@ -135,7 +189,7 @@ class UserAuth {
                         resolve(updatedUser)
                     } else {
                         console.log(res.error)
-                        reject(res.error)
+                        resolve(res)
                     }
                 })
                 .catch(err => {
@@ -145,17 +199,17 @@ class UserAuth {
         })
     }
 
-    static deleteAccount(pk) {
+    static deleteAccount(pk, company_id) {
         // userPassword = { currentPassword, newPassword, pk }
         return new Promise((resolve, reject) => {
-            post(`${BASE_URL}/accounts/delete`, { pk })
+            post(`${BASE_URL}/accounts/delete`, { pk, company_id })
                 .then(res => {
                     if (res.data) {
                         const deletedUser = res.data
                         resolve(deletedUser)
                     } else {
                         console.log(res.error)
-                        reject(res.error)
+                        resolve(res)
                     }
                 })
                 .catch(err => {
@@ -170,7 +224,7 @@ class UserAuth {
     // 
     static createUser(user) {
         return new Promise((resolve, reject) => {
-            post(`${BASE_URL}/accounts/create`, { user })
+            post(`${BASE_URL}/accounts/create`, user)
                 .then(res => {
                     resolve(res)
                 })
@@ -181,9 +235,9 @@ class UserAuth {
         })
     }
 
-    static getAllAccounts() {
+    static getAllAccounts(companyID) {
         return new Promise((resolve, reject) => {
-            get(`${BASE_URL}/accounts/all`)
+            get(`${BASE_URL}/accounts/all/${companyID}`)
                 .then(res => {
                     resolve(res)
                 })
@@ -204,5 +258,4 @@ class UserAuth {
 }
 
 const auth = new UserAuth()
-console.log("AUTHN CREATED!")
 export { auth, UserAuth }

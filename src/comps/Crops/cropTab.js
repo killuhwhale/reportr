@@ -9,7 +9,7 @@ import CropView from "./cropView"
 import AddFieldCropModal from "../Modals/addFieldCropModal"
 import { get, post } from '../../utils/requests'
 import { groupBySortBy } from "../../utils/format"
-
+import { Field } from '../../utils/fields/fields'
 import ActionCancelModal from "../Modals/actionCancelModal"
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
@@ -60,8 +60,9 @@ class CropTab extends Component {
     this.setState({ createFieldCropObj })
   }
   getFields() {
-    get(`${this.props.BASE_URL}/api/fields/${this.state.dairy.pk}`)
+    Field.getField(this.state.dairy.pk)
       .then(res => {
+        console.log("Feilds", res)
         this.setState({ fields: res })
       })
       .catch(err => [
@@ -124,7 +125,7 @@ class CropTab extends Component {
 
   deleteFieldCrop(delFieldCropObj) {
     console.log("Deleting field crop ", delFieldCropObj)
-    post(`${this.props.BASE_URL}/api/field_crop/delete`, { pk: delFieldCropObj.pk })
+    post(`${this.props.BASE_URL}/api/field_crop/delete`, { pk: delFieldCropObj.pk, dairy_id: this.state.dairy.pk })
       .then(res => {
         console.log(res)
         this.getAllFieldCrops()

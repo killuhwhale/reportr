@@ -89,11 +89,16 @@ class FieldParcelJoinModal extends Component {
 												native: true,
 											}}
 										>
-											{this.state.parcels.map((parcel, i) => {
-												return (
-													<option key={`parcelJoinFPJM${i}`} value={i}>{parcel.pnumber}</option>
-												)
-											})}
+											{this.state.parcels.length > 0 ?
+
+												this.state.parcels.map((parcel, i) => {
+													return (
+														<option key={`parcelJoinFPJM${i}`} value={i}>{parcel.pnumber}</option>
+													)
+												})
+												: <option>No Parcels</option>
+											}
+
 										</TextField>
 									</Grid>
 								</Grid>

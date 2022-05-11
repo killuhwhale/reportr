@@ -24,7 +24,7 @@ class OperatorView extends Component {
       dairy: props.dairy,
       showOperatorModal: false,
       showDeleteOperatorModal: false,
-      operators: [],
+      operators: props.operators,
       curDeleteOperatorObj: {},
       createOperatorObj: {
         dairy_id: "",
@@ -45,14 +45,6 @@ class OperatorView extends Component {
   static getDerivedStateFromProps(props, state) {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
-  componentDidMount() {
-    this.getAllOperators()
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.dairy.pk !== this.state.dairy.pk) {
-      this.getAllOperators()
-    }
-  }
 
   toggleOperatorModal(val) {
     this.setState({ showOperatorModal: val })
@@ -64,7 +56,7 @@ class OperatorView extends Component {
     })
       .then(res => {
         // console.log(res)
-        this.getAllOperators()
+        this.props.refreshOperators()
         this.props.onAlert('Success!', 'success')
         this.toggleOperatorModal(false)
       })
@@ -80,17 +72,8 @@ class OperatorView extends Component {
     this.setState({ createOperatorObj: operator })
   }
 
-  getAllOperators() {
-    get(`${this.props.BASE_URL}/api/operators/${this.state.dairy.pk}`)
-      .then(res => {
-        this.setState({ operators: res })
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
   onOperatorChange(index, ev) {
+    // this should just make a copy of the data
     this.updatedOperators.add(index)
     const { name, value } = ev.target
     console.log('Operator @ index ', index, name, value)
@@ -102,12 +85,15 @@ class OperatorView extends Component {
   }
 
   updateOperators() {
+    // update this
+
     let operators = this.state.operators.filter((op, i) => this.updatedOperators.has(i))
     let promises = operators.map((operator, i) => {
       return (
-        post(`${this.props.BASE_URL}/api/operators/update`, operator)
+        post(`${this.props.BASE_URL}/api/operators/update`, { ...operator, dairy_id: this.state.dairy.pk })
       )
     })
+
     Promise.all(promises)
       .then(res => {
         this.updatedOperators = new Set()
@@ -128,10 +114,10 @@ class OperatorView extends Component {
   }
   deleteOperator() {
     console.log("deleteing operator", this.state.curDeleteOperatorObj)
-    post(`${this.props.BASE_URL}/api/operators/delete`, { pk: this.state.curDeleteOperatorObj.pk })
+    post(`${this.props.BASE_URL}/api/operators/delete`, { pk: this.state.curDeleteOperatorObj.pk, dairy_id: this.state.dairy.pk })
       .then(res => {
         console.log(res)
-        this.getAllOperators()
+        this.props.refreshOperators()
         this.toggleDeleteOperatorModal(false)
       })
       .catch(err => {

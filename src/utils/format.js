@@ -5,7 +5,10 @@ const groupBySortBy = (list, groupBy, sortBy) => {
   if (!list || !groupBy) {
     throw `Parameter null or undefined:  ${list}, ${groupBy}, ${sortBy}`
   }
-
+  if (!(list instanceof Array)) {
+    console.log('List is not a list: ', list)
+    return grouped
+  }
   list.forEach(item => {
     let key = item[groupBy]
     if (!key || key.length === 0) {
@@ -36,6 +39,10 @@ const groupByKeys = (list, groupKeys) => {
   if (!groupKeys || !list) {
     throw "List is null or undefined"
   }
+  if (!(list instanceof Array)) {
+    console.log('List is not a list: ', list)
+    return grouped
+  }
   if (groupKeys.length == 0) {
     return grouped
   }
@@ -64,6 +71,11 @@ const nestedGroupBy = (list, groupByKeys) => {
   let grouped = {}
   if (!list || !groupByKeys) {
     throw `Parameter null or undefined:  ${list}, ${groupByKeys}`
+  }
+
+  if (!(list instanceof Array)) {
+    console.log('List is not a list: ', list)
+    return grouped
   }
 
   list.forEach(item => {
@@ -122,6 +134,18 @@ const naturalCollator = new Intl.Collator(undefined, {
   sensitivity: 'base'
 })
 
+const splitDate = (date) => {
+  if (date == undefined) return ''
+  try {
+    const ans = date.split('T')[0]
+    if (ans)
+      return ans
+  } catch (e) {
+    console.log("Failed to split date: ", e)
+  }
+  return ''
+}
+
 const formatDate = (date) => {
   const _date = new Date(`${date}T00:00`)
   const day = _date.getDate()
@@ -159,4 +183,7 @@ const sortByKeys = (a, b, keys) => {
 }
 
 
-export { naturalSortByKeys, sortByKeys, nestedGroupBy, groupBySortBy, groupByKeys, formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, percentageAsMGKG }
+export {
+  naturalSortByKeys, sortByKeys, nestedGroupBy, groupBySortBy, groupByKeys,
+  formatFloat, formatInt, naturalSort, naturalSortBy, formatDate, splitDate, percentageAsMGKG
+}
