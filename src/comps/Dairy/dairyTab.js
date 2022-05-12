@@ -231,6 +231,12 @@ class DairyTab extends Component {
       const blob = new Blob([res], { type: 'application/pdf' })
       window.open(URL.createObjectURL(blob))
 
+      let id = (new Date()).getTime();
+      let myWindow = window.open(`${window.location.href}?printerFriendly=true`, id, `toolbar=1,scrollbars=1,
+          location=0,statusbar=0,menubar=1,resizable=1,width=800,height=600,left = 240,top = 212`);
+      myWindow.document.write(blob);
+      myWindow.focus();
+
     } catch (e) {
       console.log('Err Res', e)
 
