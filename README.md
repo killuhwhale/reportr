@@ -1,5 +1,5 @@
 # Test Sheet 
- - Test Workbook (https://docs.google.com/spreadsheets/d/1eXclSz_cQzREQbrthEVEUsa4KUc780g4CZVT3RYawzA/edit?usp=sharing)
+ - [Test Workbook](https://docs.google.com/spreadsheets/d/1eXclSz_cQzREQbrthEVEUsa4KUc780g4CZVT3RYawzA/edit?usp=sharing)
 
 # Info
   ## React
@@ -116,9 +116,11 @@
     - Dairy, and other info
 
 # Features:
-  - Single Click Generate All TSVs and PDFS for ea Dairy
-    * Just click and get a folder to drag onto flash drive or open and print! **
-    
+  - Create READ, WRITE and DELETE accounts
+  - Manage your employees access: change their username and password
+  - Upload your dairy's data directly from Workbook/ Spreadsheet
+  - Single Click Generate All Files and Reports for the Dairy
+  - Update workbook/ spreadsheet template
 
 # Problems 
   ## PDF Report
