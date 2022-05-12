@@ -2,27 +2,19 @@
  - Test Workbook (https://docs.google.com/spreadsheets/d/1eXclSz_cQzREQbrthEVEUsa4KUc780g4CZVT3RYawzA/edit?usp=sharing)
 
 # Info
-  React
+  ## React
     reportrr % npm start
-  Express
+  ## Express
     reportrr/server % npm start 
 
-  PSQL
-    Running psql macos 
-    - /Library/PostgreSQL/13/scripts/runpsql.sh
-    - added to .zshrc ==> $ runpsql
-    start server from /server npm start
-    start react from root npm start
-    DB: reportrr
-    user: admin
-    pass: mostdope
-    // sudo kill -9 $(sudo lsof -t -i:3001)
+  ## PSQL
+    - psql -U admin reportrr 
+    - sudo kill -9 $(sudo lsof -t -i:3001)
 
   ## NodeJS Version
   - Current:          Local v15.8.0 / Digital ocean "node": "15.x"
   - Chartjs:          15.x req
   - Null coalescing:  14.x min
-  - 
 
 # Deployment:
   Backend:
