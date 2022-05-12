@@ -2489,7 +2489,7 @@ module.exports = (app) => {
         console.log("Deleting.... note", req.body.pk)
         db.rmNote(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ "error": "Deleted note successfully" });
+                res.json({ data: "Deleted note successfully" });
                 return;
             }
             console.log(err)
@@ -2506,7 +2506,7 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Updated note successfully" });
+                res.json({ data: "Updated note successfully" });
                 return;
             }
             console.log(err)
@@ -2550,7 +2550,7 @@ module.exports = (app) => {
         console.log("Deleting.... certification", req.body.pk)
         db.rmCertification(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ "error": "Deleted certification successfully" });
+                res.json({ data: "Deleted certification successfully" });
                 return;
             }
             console.log(err)
