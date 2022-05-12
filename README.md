@@ -3,9 +3,9 @@
 
 # Info
   ## React
-    reportrr % npm start
+    reportr % npm start
   ## Express
-    reportrr/server % npm start 
+    reportr/server % npm start 
 
   ## PSQL
     - psql -U admin reportrr 
