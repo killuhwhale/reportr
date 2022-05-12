@@ -1,3 +1,6 @@
+# Test Sheet 
+ - Test Workbook (https://docs.google.com/spreadsheets/d/1eXclSz_cQzREQbrthEVEUsa4KUc780g4CZVT3RYawzA/edit?usp=sharing)
+
 # Info
   React
     reportrr % npm start
@@ -15,7 +18,7 @@
     pass: mostdope
     // sudo kill -9 $(sudo lsof -t -i:3001)
 
-  # NodeJS Version
+  ## NodeJS Version
   - Current:          Local v15.8.0 / Digital ocean "node": "15.x"
   - Chartjs:          15.x req
   - Null coalescing:  14.x min
@@ -29,56 +32,13 @@
     npm build -> Firebase deploy
 
   Deploy command
-    npm build; git add .; git commit -m 'deploy'; git push; firebase deploy;
+    npm run build; git add .; git commit -m 'deploy'; git push; firebase deploy;
 
 
-
-# ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
-  - FRESH WATER APP EVENT Field 6 11/01/2019 planted, 10/10/2019 applied, this was in the spreadsheet but not in merced app   
-    - FRESH WATER APP EVENT Field 5 05/07/2020 planted, 7/27/2020 applied, 
-      - Sheet: N con 47.2 ec 1,110.0 Tds 575 , Merced app: N con 48.50 ec 1,660.0 Tds 10
-
-    - This was making me think I had a bug, but spreadsheet data and data in merced app don't match 100% :(
-
-# Features
-
-Account Management for Owners
- - Login
- - Logout
- - GetUserFromToken
-  - When user is logged in and opens app, get user info.
- - RegisterUser
-  - Create owner accounts if email on whitelist
- - CreateUser
-  - Allows Owner accounts to create user accounts
-
-  - Update
-    - Password, email, username
-  - Delete 
-
-Owner and User
-  - Change Password
-
-- Owner 
-  - Add account for user to login with
-  - View user accounts
-  - Delete Accounts
-  - Reset Passwords for accounts
-
-  - TODO()
-    - Send Emails for confirmation and passwords
-  
-  - Testing
-    - Accounts users.js
-
-
-
-Github is private, the only passwords visible in code is for the DB and that is in a .yaml file uploaded directly to Digital Ocean
-  - Might not need env vars.
 
 
 # Testing:
-  # Current Test Converagessss
+  ## Current Test Converages
   - Create Accounts
     - ✓ Create 2 companies and admins (376 ms)
     - ✓ Create READ, WRITE, DELETE Accounts with admin For First Company (320 ms)
@@ -131,90 +91,54 @@ Github is private, the only passwords visible in code is for the DB and that is 
 
 # Todo:
 
-  # Facility information
+  ## Private Github
+    - I want to make public version so people can look at code....
+    - Ensure no secrets are visible.
+    - Github is private, the only passwords visible in code is for the DB and that is in a .yaml file uploaded directly to Digital Ocean
+    - Might not need env vars.
+
+
+  ## Facility information
     - When creating a dairy base, we need to create BaseOwnerOperators and BaseParcels
-    - When creating a new dairy, create like normal but this information needs to be retrived instead.
+    - When creating a new dairy, create like normal but this information needs to be retrived instead. 
 
-  # Dairy Base
-   - Needs to be the source of truth for this info:
-    - Name, Address, began, BasinPlan...
-
-  # Owner Operators 
-    -  Needs a Base 
-    - This should be like dairy base
-    - 
-  
-  # Parcels
-
-  When creating a new dairy, this should come form base dairy, not previous dairy.
-  When updating this information on the UI, it should update the baseDairy as well as the curent dairy 
-
-
-  # Tests
+  ## Tests
     - Reporting period
       - Unit test, ensure it updates correctly....
     - Logo upload   
-       
-  - Create a spread sheet with the difference between each sheet
-    - Just copy and past each set into one sheet... comparing 2 rows  
-
+      
   
 # Goals:
-   # State Management
+   ## State Management
     Caching or State Management
     - Avoid multiple requests each time user goes to a new tab
     - Redux to store responses and check there first
     - Find another caching solution
-
+  - Setup Testing Execution before commiting to Github
+ 
+  ## Dockerize React and Express Apps
+ 
+  ## Micro Service-ize
+    - Accounts
+    - TSV
+    - Dairy, and other info
 
 # Features:
   - Single Click Generate All TSVs and PDFS for ea Dairy
     * Just click and get a folder to drag onto flash drive or open and print! **
     
-    Impl:
-    - Return a Folder of Folders
-      - Folder:{
-        -Folder_dairyA:{
-          pdfReport.pdf
-          tsv_ProductionRecords.tsv
-          tsv_SheetName.tsv
-        },
-        -Folder_dairyB:{
-          pdfReport.pdf
-          tsv_ProductionRecords.tsv
-          tsv_SheetName.tsv
-        }
-      }
-  
-  Setup Testing Execution before commiting to Github
- 
-  Dockerize React and Express Apps
- 
-  Micro Service-ize
-    - Accounts
-    - TSV
-    - Dairy, and other info
-
 
 # Problems 
-  # PDF Report
+  ## PDF Report
     REPORT MAY BE INCOMPLETE, SEE VALIDATION ERRORS 
 
-##### Rosies website notes.
-Upload their documents
-Website
-Promote, Advertise, 
-Notary service, 
-  - Upload documents, from notaries
-  - Remote online notaries
-  - 
-Title company
-  - embassy appt to sign document to do transaction
-  - tkaes 6-8 weeks to get appt
-  - Notary service solves problem online
-    - California is not authorized
-   
-  Notary SnapDoc Service, She want to be like this company.
 
-    - Title company sends email (through snapdoc), signing.
-    - Notary 
+
+# ALTERATIONS TO MERCED APP TO EXISTING DAIRIES:
+  - FRESH WATER APP EVENT Field 6 11/01/2019 planted, 10/10/2019 applied, this was in the spreadsheet but not in merced app   
+    - FRESH WATER APP EVENT Field 5 05/07/2020 planted, 7/27/2020 applied, 
+      - Sheet: N con 47.2 ec 1,110.0 Tds 575 , Merced app: N con 48.50 ec 1,660.0 Tds 10
+
+    - This was making me think I had a bug, but spreadsheet data and data in merced app don't match 100% :(
+
+
