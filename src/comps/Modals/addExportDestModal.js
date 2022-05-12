@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 // Material UI
-import { Grid, Paper, Button, Typography, Modal, TextField, Switch, FormControlLabel, FormGroup } from '@material-ui/core';
+import { Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
 // Creates a new Field
@@ -89,12 +89,12 @@ class AddExportDestModal extends Component {
 
                   <Grid item xs={6}>
                     <TextField
-                        name='pnumber'
-                        onChange={this.props.onChange.bind(this)}
-                        value={this.state.createExportDestObj.pnumber}
-                        label="Parcel Number"
-                        style={{ width: "100%" }}
-                      />
+                      name='pnumber'
+                      onChange={this.props.onChange.bind(this)}
+                      value={this.state.createExportDestObj.pnumber}
+                      label="Parcel Number"
+                      style={{ width: "100%" }}
+                    />
                   </Grid>
 
 

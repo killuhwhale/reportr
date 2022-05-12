@@ -181,7 +181,7 @@ class DairyTab extends Component {
       // If error key, show the error to the user,,
 
       if (res.error) {
-        const { error, tsvType, uploadedFilename } = res
+        const { error, tsvType } = res
         console.log(error)
         // Somtimes error is just a string, lets see if its still an obj....
         let errMsg = `${tsvType} ${error.msg ? error.msg : error}`

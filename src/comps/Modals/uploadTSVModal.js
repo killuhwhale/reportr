@@ -26,7 +26,7 @@ class UploadTSVModal extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.open != this.state.open) {
+    if (prevState.open !== this.state.open) {
       this.setState({ loading: false })
     }
   }

@@ -110,7 +110,7 @@ export const lazyGet = (endpoint, value, data, dairy_id) => {
         get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_id}`)
             .then(res => {
                 // If not found, Attempt to create
-                if (Object.keys(res).length == 0) {
+                if (Object.keys(res).length === 0) {
                     post(`${BASE_URL}/api/${endpoint}/create`, data)
                         .then(result => {
                             // If there is an error response from server.
@@ -118,12 +118,12 @@ export const lazyGet = (endpoint, value, data, dairy_id) => {
                                 get(`${BASE_URL}/api/search/${endpoint}/${value}/${dairy_id}`)
                                     .then(secondResult => {
                                         // Found entry, on second attempt.
-                                        console.log('Found 1st entry resolve: ', res)
+                                        // console.log('Found 1st entry resolve: ', res)
                                         resolve(secondResult)
                                     })
                             } else {
                                 // Created entry, returning result
-                                console.log('Created entry resolve: ', res)
+                                // console.log('Created entry resolve: ', res)
                                 resolve(result)
                             }
                         })
@@ -133,7 +133,7 @@ export const lazyGet = (endpoint, value, data, dairy_id) => {
                         })
                 } else {
                     // Found entry, returning result
-                    console.log('Second entry resolve: ', res)
+                    // console.log('Second entry resolve: ', res)
                     resolve(res)
                 }
             })

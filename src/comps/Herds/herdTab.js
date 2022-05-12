@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField, AppBar, Tabs, Tab
+  Grid, AppBar, Tabs, Tab
 } from '@material-ui/core'
 
-import AddIcon from '@material-ui/icons/Add'
-import { alpha } from '@material-ui/core/styles'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import HerdTable from './herdTable'
@@ -12,7 +10,7 @@ import Discharge from './discharge'
 import Agreement from './agreement'
 
 import Drain from './drain'
-import { get, post } from '../../utils/requests'
+
 
 
 class HerdTab extends Component {
@@ -55,7 +53,7 @@ class HerdTab extends Component {
         {Object.keys(this.state.dairy).length > 0 ?
           <Grid item xs={12}>
             <AppBar position="static" style={{ marginBottom: "32px" }} key='herdAppBar'>
-              <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
+              <Tabs value={this.state.tabIndex} selectionFollowsFocus variant="scrollable"
                 onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='herdTabs'>
                 <Tab label="Herds" key='herdTab0' />
                 <Tab label="Tile Drainage" key='herdTab1' />

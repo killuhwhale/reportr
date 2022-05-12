@@ -68,7 +68,7 @@ class ParcelView extends Component {
   }
   updateParcelNumbers() {
     let updates = Object.keys(this.state.curUpdateParcels).map((parcel_pk, i) => {
-      updates.push(Parcels.updateParcel(this.state.curUpdateParcels[parcel_pk], this.state.dairy.pk))
+      return updates.push(Parcels.updateParcel(this.state.curUpdateParcels[parcel_pk], this.state.dairy.pk))
     })
 
     Promise.all(updates)
@@ -96,7 +96,7 @@ class ParcelView extends Component {
     console.log(this.state.curUpdateFields)
     let updates = []
     Object.keys(this.state.curUpdateFields).map((field_pk, i) => {
-      updates.push(post(
+      return updates.push(post(
         `${this.props.BASE_URL}/api/fields/update`,
         {
           data: { ...this.state.curUpdateFields[field_pk], dairy_id: this.state.dairy.pk }
@@ -118,7 +118,7 @@ class ParcelView extends Component {
   async getAllFieldParcels() {
     const fieldParcels = await Parcels.getFieldParcels(this.state.dairy.pk)
     if (fieldParcels.error) return this.props.onAlert(fieldParcels.error, 'error')
-    console.log("FieldPArcels: ", fieldParcels)
+
     this.setState({ field_parcels: fieldParcels })
   }
 

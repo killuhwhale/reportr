@@ -1,4 +1,4 @@
-import { Modal, Grid, Paper, Tooltip, IconButton, Typography, Button, Card, CardContent, CardActionArea, CardActions } from "@material-ui/core"
+import { Modal, Grid, Paper, Tooltip, IconButton, Typography, Card, CardContent, CardActions } from "@material-ui/core"
 import { withTheme } from "@material-ui/core/styles"
 import { Component, Fragment } from "react"
 import CloseIcon from '@material-ui/icons/Close';
@@ -24,7 +24,7 @@ const AccountRow = (props) => {
             <Card variant="outlined">
                 <CardContent>
                     <Grid item xs={12} align='right'>
-                        <Typography variant='caption'>{account_type >= ROLES.ADMIN ? "Owner" : "Emp"} {account_type >= ROLES.ADMIN ? "" : account_type == ROLES.DELETE ? "(Del)" : account_type === ROLES.WRITE ? "(Write)" : "(Read)"}  </Typography>
+                        <Typography variant='caption'>{account_type >= ROLES.ADMIN ? "Owner" : "Emp"} {account_type >= ROLES.ADMIN ? "" : account_type === ROLES.DELETE ? "(Del)" : account_type === ROLES.WRITE ? "(Write)" : "(Read)"}  </Typography>
                     </Grid>
                     <Grid item xs={12} align='left'>
                         <Typography variant='caption'>{account.email} </Typography>
@@ -133,7 +133,7 @@ class Accounts extends Component {
     }
 
     deleteAccount() {
-        const { email, pk } = this.state.deletedAccount
+        const { pk } = this.state.deletedAccount
         UserAuth.deleteAccount(pk, auth.currentUser.company_id)
             .then(res => {
                 console.log("Account deleted ", res)

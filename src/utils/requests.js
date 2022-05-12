@@ -143,7 +143,7 @@ const refreshToken = (url, data, method) => {
       body: JSON.stringify({})
     })
       .then(async (res) => {
-        if (res.error || res.status == 403) return resolve({ error: `Error getting url: ${url}` })
+        if (res.error || res.status === 403) return resolve({ error: `Error getting url: ${url}` })
         const result = await res.json()
         console.log('refreshToken result: ', result)
 

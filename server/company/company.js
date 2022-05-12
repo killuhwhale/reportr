@@ -1,4 +1,4 @@
-const { verifyToken, needsHacker } = require("../utils/middleware")
+const { verifyToken, needsHacker, verifyUserFromCompanyByCompanyID } = require("../utils/middleware")
 const db = require('../db/company/company')
 const { encrypt } = require('../utils/crypt')
 
@@ -27,7 +27,10 @@ module.exports = (app) => {
                 res.json({ "error": "Get comapnies unsuccessful", err: err });
             })
     });
-    app.get(`/${api}/:pk`, verifyToken, needsHacker, (req, res) => {
+
+
+
+    app.get(`/${api}/:pk`, verifyToken, verifyUserFromCompanyByCompanyID, (req, res) => {
         const pk = req.params.pk
         db.getCompany(pk,
             (err, result) => {

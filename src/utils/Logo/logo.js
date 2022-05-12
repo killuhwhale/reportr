@@ -1,10 +1,8 @@
-import { get, getImage, post, postImage } from '../requests'
+import { getImage, post, postImage } from '../requests'
 import { BASE_URL } from '../environment'
 
 
 class Logo {
-    constructor() { }
-
     static getLogo(company_id) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -34,8 +32,6 @@ class Logo {
 
     static async uploadLogo(file, filetype, company_id) {
         try {
-            // const data = (await file.arrayBuffer())
-            console.log("Datat to upload", file, filetype, company_id)
             let formData = new FormData();
             formData.append("file", file)
             formData.append("filetype", filetype)

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -31,7 +31,7 @@ import { FixedPageSize } from '../utils/FixedPageSize'
 /** View for Process Wastewater Entry in DB */
 const SoilView = (props) => {
   const soils = props && props.soils ? props.soils : []
-  const headerInfo = soils && soils.length > 0 ? soils[0] : {}
+  // const headerInfo = soils && soils.length > 0 ? soils[0] : {}
 
   return (
     <Grid container item xs={12} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>

@@ -1,8 +1,7 @@
 import React, { Component, Fragment } from 'react'
 // Material UI
-import { Grid, Paper, Button, Typography, Modal, TextField, CircularProgress, Tooltip, Icon, IconButton } from '@material-ui/core';
+import { Grid, Paper, Typography, Modal, Tooltip, IconButton } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
-import { get, post } from '../../utils/requests';
 import { UserAuth } from '../../utils/users';
 import { AddCircleOutline } from '@material-ui/icons';
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -25,7 +24,7 @@ const AccountGrid = withStyles({
 
 const AccountRow = (props) => {
     const { account, username } = props
-    const { email, pk } = account
+    const { email } = account
     return (
         <Grid item container alignContent='center' alignItems='center' justifyContent='center' xs={12} align='left'>
             <Grid item xs={4} align='left' style={{ paddingLeft: '36px' }}>

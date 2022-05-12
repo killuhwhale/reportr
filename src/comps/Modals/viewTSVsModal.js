@@ -25,7 +25,7 @@ class ViewTSVsModal extends Component {
     return props
   }
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.open && this.state.tsvs.length == 0 && !this.state.checkedForTSVs) {
+    if (this.state.open && this.state.tsvs.length === 0 && !this.state.checkedForTSVs) {
       this.getAllTSVs()
     } else if (prevState.open !== this.state.open) {
       this.getAllTSVs()

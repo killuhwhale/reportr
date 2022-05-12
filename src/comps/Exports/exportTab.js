@@ -66,7 +66,7 @@ const ContactView = (props) => {
 const HaulerView = (props) => {
   let hauler = props.hauler
   return (
-    <Grid item container xs={12} style={props.style} style={{ marginTop: '16px' }} align='align' className='showOnHoverParent'>
+    <Grid item container xs={12} style={{ marginTop: '16px' }} align='align' className='showOnHoverParent'>
       <Grid item container xs={10}>
         <Grid item xs={12}>
           <Typography variant="caption" gutterBottom={false}>
@@ -95,7 +95,7 @@ const HaulerView = (props) => {
 const RecipientView = (props) => {
   let recipient = props.recipient
   return (
-    <Grid item container xs={12} style={props.style} style={{ marginTop: '16px' }} alignItems='center' className='showOnHoverParent'>
+    <Grid item container xs={12} style={{ marginTop: '16px' }} alignItems='center' className='showOnHoverParent'>
       <Grid item xs={10}>
         <Typography variant="caption">
           {recipient.title} {recipient.dest_type} {recipient.primary_phone}
@@ -117,7 +117,7 @@ const RecipientView = (props) => {
 const DestView = (props) => {
   const dest = props.dest
   return (
-    <Grid item container xs={12} style={props.style} style={{ marginTop: '16px' }} alignItems='center' className='showOnHoverParent'>
+    <Grid item container xs={12} style={{ marginTop: '16px' }} alignItems='center' className='showOnHoverParent'>
       <Grid item xs={10}>
         <Typography variant="caption">
           {dest.title} {dest.dest_type}: {`${dest.pnumber} ${dest.street} ${dest.cross_street} ${dest.city_zip}`}
@@ -140,7 +140,7 @@ const ManifestView = withTheme((props) => {
   const manifests = props.manifest
   const recipientTitle = manifests[0].recipient_title
   return (
-    <Grid item container xs={12} style={props.style} style={{ marginTop: '16px' }} >
+    <Grid item container xs={12} style={{ marginTop: '16px' }} >
       <Grid item xs={12}>
         <Typography variant="subtitle1" color='secondary'>
           {recipientTitle}

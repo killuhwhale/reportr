@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip,
   Card, CardContent, CardActions
 } from '@material-ui/core'
-
 
 import DeleteIcon from '@material-ui/icons/Delete'
 import { CloudUpload } from '@material-ui/icons'
@@ -13,7 +12,6 @@ import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import { formatDate, formatFloat, naturalSortBy, splitDate } from "../../utils/format"
-import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
@@ -22,14 +20,13 @@ import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selec
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { PLOWDOWN_CREDIT, TSVUtil } from "../../utils/TSV"
-import { DatePicker } from '@material-ui/pickers'
 import { FixedPageSize } from '../utils/FixedPageSize'
 
 
 /** View for Process Wastewater Entry in DB */
 const PlowdownCreditView = (props) => {
   const plowdownCredits = props && props.plowdownCredits ? props.plowdownCredits : []
-  const headerInfo = plowdownCredits && plowdownCredits.length > 0 ? plowdownCredits[0] : {}
+  // const headerInfo = plowdownCredits && plowdownCredits.length > 0 ? plowdownCredits[0] : {}
 
   return (
     <Grid container item xs={12} style={{ marginBottom: "40px", marginTop: "15px", ...props.style }}>

@@ -1,15 +1,12 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField, Switch
+  Grid, Typography, IconButton, Tooltip, TextField, Switch
 } from '@material-ui/core'
 
 import { CloudUpload } from '@material-ui/icons'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import formats, { groupByKeys } from "../../utils/format"
-import { get, post } from '../../utils/requests'
-
-import { lazyGet } from '../../utils/TSV'
+import { get } from '../../utils/requests'
 import { CertAgreementNotes } from '../../utils/certAgreementNotes/certAgreementNotes'
 
 
@@ -17,7 +14,6 @@ const Q1 = "Was the facility's NMP updated in the reporting period?"
 const Q2 = "Was the facility's NMP developed by a certified nutrient management planner (specialist) as specified in Attachment C of the General Order?"
 const Q3 = "Was the facility's NMP approved by a certified nutrient management planner (specialist) as specified in Attachment C of the General Order?"
 const Q4 = "Are there any new or revised written third party agreements to receive manure or process wastewater?"
-
 
 
 class Agreement extends Component {
@@ -66,7 +62,7 @@ class Agreement extends Component {
     if (agreement.error) {
       return console.log(agreement)
     }
-    console.log(agreement)
+
     this.setState({ agreement: agreement[0] })
   }
 
@@ -118,7 +114,7 @@ class Agreement extends Component {
   }
 
   onNoteChange(ev) {
-    const { name, value } = ev.target
+    const { value } = ev.target
     let note = this.state.note
     note.note = value
     this.setState({ note })
@@ -164,6 +160,7 @@ class Agreement extends Component {
       if (el.pk === id) {
         idx = i
       }
+      return ':)'
     })
     return idx
   }

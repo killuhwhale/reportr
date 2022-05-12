@@ -3,6 +3,7 @@ import { toFloat } from "./convertCalc"
 const groupBySortBy = (list, groupBy, sortBy) => {
   let grouped = {}
   if (!list || !groupBy) {
+    // eslint-disable-next-line 
     throw `Parameter null or undefined:  ${list}, ${groupBy}, ${sortBy}`
   }
   if (!(list instanceof Array)) {
@@ -12,6 +13,7 @@ const groupBySortBy = (list, groupBy, sortBy) => {
   list.forEach(item => {
     let key = item[groupBy]
     if (!key || key.length === 0) {
+      // eslint-disable-next-line 
       throw 'Key is empty'
     }
     if (grouped[key]) {
@@ -37,13 +39,14 @@ const groupBySortBy = (list, groupBy, sortBy) => {
 const groupByKeys = (list, groupKeys) => {
   let grouped = {}
   if (!groupKeys || !list) {
+    // eslint-disable-next-line 
     throw "List is null or undefined"
   }
   if (!(list instanceof Array)) {
     console.log('List is not a list: ', list)
     return grouped
   }
-  if (groupKeys.length == 0) {
+  if (groupKeys.length === 0) {
     return grouped
   }
 
@@ -51,6 +54,7 @@ const groupByKeys = (list, groupKeys) => {
     list.forEach(item => {
       let key = groupKeys.map(gkey => item[gkey]).join('')
       if (key.length === 0) {
+        // eslint-disable-next-line 
         throw 'Key is empty'
       }
       if (grouped[key]) {
@@ -62,6 +66,7 @@ const groupByKeys = (list, groupKeys) => {
   } catch {
     console.error(`List: ${list} - Keys: ${groupKeys.toString()}`)
     console.log(list)
+    // eslint-disable-next-line 
     throw "groupByKeys::Failed to create entry in object"
   }
   return grouped
@@ -70,6 +75,7 @@ const groupByKeys = (list, groupKeys) => {
 const nestedGroupBy = (list, groupByKeys) => {
   let grouped = {}
   if (!list || !groupByKeys) {
+    // eslint-disable-next-line 
     throw `Parameter null or undefined:  ${list}, ${groupByKeys}`
   }
 
@@ -82,6 +88,7 @@ const nestedGroupBy = (list, groupByKeys) => {
     let key = item[groupByKeys[0]]
     let nestedKey = item[groupByKeys[1]]
     if (!key || key.length === 0) {
+      // eslint-disable-next-line 
       throw 'Key is empty'
     }
 
@@ -116,7 +123,6 @@ const formatFloat = (num, precision = 2) => {
   }
 
   num = typeof (num) === typeof ('') ? parseFloat(num.replaceAll(',', '')) : num
-  let val = new Intl.NumberFormat().format(num.toFixed(precision))
   return num.toLocaleString("en-US", { maximumFractionDigits: precision, minimumFractionDigits: precision });
 }
 
@@ -135,7 +141,7 @@ const naturalCollator = new Intl.Collator(undefined, {
 })
 
 const splitDate = (date) => {
-  if (date == undefined) return ''
+  if (date === undefined) return ''
   try {
     const ans = date.split('T')[0]
     if (ans)

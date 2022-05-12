@@ -68,7 +68,6 @@ class HomePage extends Component {
 
   async getCompany() {
     const company = await Company.getCompany(auth.currentUser.company_id)
-    console.log('comapny::::', company)
     if (company.error) return console.log("Error w/ company: ", company)
     this.setState({ company })
   }
@@ -180,7 +179,7 @@ class HomePage extends Component {
 
 
   onBaseDairyChange(ev) {
-    const { name, value: baseDairiesIdx } = ev.target
+    const { value: baseDairiesIdx } = ev.target
     const dairyBase = this.state.baseDairies[baseDairiesIdx]
     const dairyBaseID = dairyBase && dairyBase.pk ? dairyBase.pk : null
     const company_id = auth.currentUser.company_id
@@ -206,7 +205,7 @@ class HomePage extends Component {
 
 
   onDairyIdxChange(ev) {
-    const { name, value: dairyIdx } = ev.target
+    const { value: dairyIdx } = ev.target
     const dairy = this.state.dairies[dairyIdx]
     // Actualy setState of dairyObj and the index of list....
     this.setState({ dairy, dairyIdx })
@@ -372,7 +371,7 @@ class HomePage extends Component {
 
             <Grid item xs={10} sm={11}>
               <AppBar position="static" style={{ marginBottom: "32px" }} key='homePageAppBar'>
-                <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
+                <Tabs value={this.state.tabIndex} selectionFollowsFocus variant="scrollable"
                   onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='homePageAppBar'>
                   <Tab label="Dairy" key='homePageAppBarTab0' />
                   <Tab label="Info" key='homePageAppBarTab1' />

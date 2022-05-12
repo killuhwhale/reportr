@@ -8,9 +8,6 @@ import { get, post } from '../requests'
 // PDFTest.js == Replace raw Get and Post calls for creating new dairy and base dairy with this class. 
 
 class Dairy {
-    constructor() {
-
-    }
 
     static async getDairyBaseByCompanyID(companyID) {
         try {

@@ -1,6 +1,6 @@
-import { Modal, Grid, Paper, Tooltip, IconButton, Typography, Button, Card, CardContent, CardActionArea, CardActions, TextField } from "@material-ui/core"
+import { Modal, Grid, Paper, Typography, Button, TextField } from "@material-ui/core"
 import { withTheme } from "@material-ui/core/styles"
-import { Component, Fragment } from "react"
+import { Component } from "react"
 import { auth, UserAuth } from '../../utils/users'
 
 class ChangePasswordModal extends Component {

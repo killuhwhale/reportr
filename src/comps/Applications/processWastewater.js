@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -13,10 +13,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
 import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from "../../utils/format"
-// import { VariableSizeList as List } from "react-window";
-import {
-  DatePicker
-} from '@material-ui/pickers';
+
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
 
@@ -114,9 +111,8 @@ const WastewaterAnalysis = withTheme((props) => {
 
 const ProcessWastewaterAppEventCard = withTheme((props) => {
   let {
-    app_method, material_type, kn_con, nh4_con, nh3_con, no3_con, p_con,
-    k_con, tds, ec, ph, totaln, totalp, totalk, amount_applied, app_date,
-    croptitle, plant_date
+    app_method, kn_con, p_con, k_con, tds, ec, ph,
+    amount_applied, app_date, croptitle
   } = props.wastewater
   return (
     <Grid item xs={12} md={4} lg={3}>
@@ -305,7 +301,6 @@ class ProcessWastewater extends Component {
   getFieldCropAppWastewaterAnalysis() {
     get(`${this.props.BASE_URL}/api/field_crop_app_process_wastewater_analysis/${this.state.dairy_id}`)
       .then(res => {
-        console.log("WW analysis: ", res)
         this.setState({ fieldCropAppWastewaterAnalyses: res })
       })
       .catch(err => {
@@ -396,7 +391,6 @@ class ProcessWastewater extends Component {
   }
 
   onConfirmWastewaterAnalysisDelete(analysis) {
-    console.log("del", analysis)
     this.setState({ deleteAnalysis: analysis, showConfirmDeleteWastewaterAnalysisModal: true })
   }
 

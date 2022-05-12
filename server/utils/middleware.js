@@ -138,7 +138,7 @@ exports.verifyToken = async (req, res, next) => {
 // Checks user is from same company as requested entity
 exports.verifyUserFromCompanyByCompanyID = (req, res, next) => {
     const { user } = req
-    const company_id = req.params.company_id || req.body.company_id || (req.body.userPassword || req.body.userPassword ? req.body.userPassword.company_id : null) || (req.body.user ? req.body.user.company_id : null) || null
+    const company_id = req.params.company_id || req.body.company_id || req.params.pk || (req.body.userPassword || req.body.userPassword ? req.body.userPassword.company_id : null) || (req.body.user ? req.body.user.company_id : null) || null
 
     if (!company_id) {
         return res.status(403).json({ error: 'User not a part of company.' })

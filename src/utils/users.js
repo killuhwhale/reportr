@@ -123,27 +123,6 @@ class UserAuth {
     }
 
 
-    // Register Site Admin. For Dev use
-    registerHacker(email, password) {
-        return new Promise((resolve, reject) => {
-            post(`${BASE_URL}/accounts/registerAdmin`, { email, password, SECRET: "1337mostdope#@!123(*)89098&^%%^65blud" })
-                .then(res => {
-                    if (res.data) {
-                        const { data: { user, token } } = res
-                        this.setUserAndToken(user, token)
-                        resolve(user)
-
-                    } else {
-                        reject(res.error)
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                    reject(err)
-                })
-        })
-    }
-
     refreshToken() {
         const refreshToken = localStorage.getItem(this.#REFRESH_TOKEN_KEY);
         if (!refreshToken) return

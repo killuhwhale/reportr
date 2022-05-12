@@ -11,7 +11,7 @@ import OperatorModal from "../Modals/addOperatorModal"
 import OperatorForm from "./operatorForm"
 import ActionCancelModal from "../Modals/actionCancelModal"
 
-import { get, post } from '../../utils/requests';
+import { post } from '../../utils/requests';
 import { ImportExport, InsertEmoticon } from '@material-ui/icons';
 import { naturalSortByKeys } from '../../utils/format'
 
@@ -66,7 +66,7 @@ class OperatorView extends Component {
       })
   }
   onOperatorModalUpdate(ev) {
-    const { name, value, checked } = ev.target
+    const { name, value } = ev.target
     let operator = this.state.createOperatorObj
     operator[name] = value
     this.setState({ createOperatorObj: operator })

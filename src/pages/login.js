@@ -3,7 +3,7 @@ import {
   Grid, Paper, Button, Typography, TextField
 } from '@material-ui/core'
 import { withTheme } from '@material-ui/core/styles'
-import { auth, UserAuth } from '../utils/users'
+import { auth } from '../utils/users'
 
 class Login extends Component {
   constructor(props) {
@@ -117,16 +117,8 @@ class Login extends Component {
     } else if (!email) {
       this.props.onAlert("Missing E-mail", "error")
     } else if (pass1 === pass2 && email) {
+      alert('Nice job!')
 
-      auth.registerHacker(email, pass1)
-        .then(user => {
-          console.log(user)
-          this.props.onLogin(user)
-        })
-        .catch(err => {
-          console.log(err)
-          this.props.onAlert(err.toString(), "error")
-        })
     } else {
       console.log("Error logging in?")
     }
@@ -139,7 +131,7 @@ class Login extends Component {
       <Grid item container xs={12} id="login" align="center" justifyContent="center">
 
         {
-          this.state.loggingIn ?
+          true ?
 
 
             <Grid item xs={12} >
@@ -183,15 +175,15 @@ class Login extends Component {
 
 
                 <Grid item container xs={12} align="center" spacing={4} style={{ marginTop: '96px' }}>
-                  <Grid item align='right' xs={6}>
+                  {/* <Grid item align='right' xs={6}>
                     <Button
                       variant="outlined"
                       color="secondary"
                       onClick={() => this.toggleLoggingIn(false)}>
                       Register
                     </Button>
-                  </Grid>
-                  <Grid item align='left' xs={6}>
+                  </Grid> */}
+                  <Grid item align='left' xs={12}>
                     <Button style={{ marginLeft: '4px' }}
                       variant="outlined"
                       color="primary"

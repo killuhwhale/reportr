@@ -105,9 +105,6 @@ module.exports = (app) => {
                         if (valid) {
                             delete user['password']
 
-                            // TODO() Create Access token, Refresh token
-                            // Create endpoint /accessToken to generate new access tokens
-                            //  verifyToken Middleware to attempt to get new AccessToken based on RefreshToken if TokenExpired Error
                             generateLoginTokens(user)
                                 .then(result => {
                                     const { refreshToken, accessToken } = result
@@ -186,46 +183,6 @@ module.exports = (app) => {
 
     })
 
-    // DEPRECATED: using a script to generate HACKER ROlE from server side.//
-    // Register ROLES.HACKER TODO() lock this route down somehow.... maybe password protected....
-    app.post(`/${api}/registerAdmin`, (req, res) => {
-        const { email, password, SECRET } = req.body
-        const _SECRET = "1337mostdope#@!123(*)89098&^%%^65blud"
-        // const _SECRET =  `d82de250-c4a1-4a1c-86d4-667242ed652247a28da4-9216-46dd-8a92-b9c923779849b3ed06f7-ef55-49b1-929b-142c594aee06bddcb758-1a27-406a-8275-444c5b41e16f9391848b-7bd1-41ab-b103-ea673513308a057c6897-689f-433f-9805-0920116d7983245c2197-4460-4089-86ad-37d4c29f32252c7cad82-9c38-4257-8fd8-440bb3408764d1da3c03-3cf7-4c7b-9b4e-1333ad426cb00d831121-04be-4c39-ba0c-5c5554165dc67ab0574a-27ed-4440-9b1f-3175f5e9eedde96b40bf-cbd3-4b79-98c9-6f16ebc0c9849e12f143-b2b1-41be-83da-22ab54eb11a314584881-3775-446c-87cb-e3e8e0ff087749fe5d64-cd81-45e3-b1ad-ee8206e881d6c8e5903a-290a-421c-911b-63ffcd699108e46354f0-98a8-4d43-8fec-3296d05e7674a4e402d6-d51c-40e1-86e2-b7edadd39e27eca54950-1aad-4fd5-808d-2bdb4b1a2b2644061078-8078-4439-b936-11782ea4e05e97ab7295-8cee-4934-8980-1609017a51b9f5b5dec2-d98e-4674-90bd-6cdf06041a10e89d7506-088b-4b38-844a-c2fd4e7bd2a90c5fab8e-cc6d-4bf4-a004-7ad0c37b80981be24ec4-a789-47a6-b33f-8d726b35eb00f7930c2a-ab69-4ee7-92f7-18f584dd026ec8c1cfcc-048f-4f15-bc6e-c3ce998b3de379ecbb38-4290-44e7-b3ce-eccae32592a54239af36-7099-445c-8367-04cb87c0b59af3083e82-d48e-4607-a9c0-adef937368b0c8eb82eb-bbf1-4c10-9a0d-2aef289a6f3b8113e683-b55f-495f-a49b-26941b7a8c8b65aa2e3e-dc33-4b4b-89e4-a3ba55b8c77e1bbf5609-580c-4555-9e9a-bc11a71d8dffd48e2bab-c56f-41a7-a008-c6ca7f2e6af288aeffa9-54b3-4589-9c82-8ae3f3187578cbc24a04-e30d-4528-a199-eaf8a3a3c57efc5e640f-17d0-4f9f-aaab-8960dd4e3b13216c240e-df58-442f-97b0-2f949831ae813c67c204-e422-4073-9a74-c805f7522596`
-        console.log("TODO() Secret is exposed, add to variable from environment: ", SECRET)
-
-        // if (SECRET !== _SECRET) {
-        //     console.log("Denied Secret")
-        //     return res.json({ error: "Permission denied" })
-        // }
-
-        // bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
-        //     if (!err) {
-        //         console.log("Inserting Admin Account")
-        //         db.insertAdminAccount(email, hash, (dbErr, result) => {
-        //             console.log("After insert")
-        //             if (!dbErr) {
-        //                 const user = result && result.rows.length > 0 ? result.rows[0] : {}
-        //                 jwt.sign({ user }, JWT_SECRET_KEY, JWT_OPTIONS, (err, token) => {
-        //                     res.json({ "data": { token, user } })
-        //                 })
-
-        //             } else {
-        //                 if (dbErr.code === "23505") {
-        //                     res.json({ "error": "User with email already exists." })
-        //                 } else {
-        //                     res.json({ "error": dbErr.detail })
-        //                 }
-        //             }
-        //         })
-        //     } else {
-        //         res.json({ "error": err })
-        //     }
-        // });
-
-
-
-    })
 
     app.post(`/${api}/currentUser`, verifyToken, (req, res) => {
         // Based on current token, get the user information

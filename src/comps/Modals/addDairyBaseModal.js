@@ -3,8 +3,7 @@ import React, { Component } from 'react'
 import { Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 
-import { get, post } from "../../utils/requests"
-import { auth, UserAuth } from '../../utils/users';
+import { auth } from '../../utils/users';
 import { Dairy } from '../../utils/dairy/dairy'
 
 
@@ -41,7 +40,7 @@ class AddBaseDairyModal extends Component {
 				.then(res => {
 					console.log(res)
 					if (res.error) {
-						if (res.code == '23505') {
+						if (res.code === '23505') {
 							this.props.onAlert(`${title} already exists!`, 'error')
 						} else {
 							this.props.onAlert("Failed to create new dairy.", 'error')

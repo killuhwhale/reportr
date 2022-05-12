@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Typography, IconButton, Tooltip
 } from '@material-ui/core'
 
 import { withRouter } from "react-router-dom"
@@ -62,7 +62,6 @@ class CropTab extends Component {
   getFields() {
     Field.getField(this.state.dairy.pk)
       .then(res => {
-        console.log("Feilds", res)
         this.setState({ fields: res })
       })
       .catch(err => [

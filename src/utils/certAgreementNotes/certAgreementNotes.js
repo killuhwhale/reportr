@@ -1,4 +1,4 @@
-import { get, post } from '../../utils/requests'
+import { post } from '../../utils/requests'
 import { BASE_URL } from '../../utils/environment'
 import { lazyGet } from '../../utils/TSV'
 

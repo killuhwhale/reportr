@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 
 import DeleteIcon from '@material-ui/icons/Delete'

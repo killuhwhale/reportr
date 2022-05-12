@@ -1,15 +1,14 @@
 
 import React, { Component, Fragment } from 'react'
 import {
-    Grid, Paper, Button, Typography, TextField, Tooltip, IconButton
+    Grid, Typography, Tooltip, IconButton
 } from '@material-ui/core'
 import { withTheme } from '@material-ui/core/styles'
-import { auth, UserAuth } from '../utils/users'
+import { auth } from '../utils/users'
 import { AddCircleOutline } from '@material-ui/icons'
 import AddCompanyModal from '../comps/Modals/addCompanyModal'
 import CompanyManagementModal from '../comps/Modals/companyManagementModal'
-import { get } from '../utils/requests'
-import { BASE_URL } from '../utils/environment'
+
 import { ROLES } from '../utils/constants'
 import { Company } from '../utils/company/company'
 import { withStyles } from '@material-ui/styles'
@@ -28,8 +27,6 @@ import RemoveRedEyeIcon from '@material-ui/icons/RemoveRedEye';
 
 const CoolBGGrid = withStyles({
     root: {
-        background: '#373B44',  /* fallback for old browsers */
-        background: '-webkit-linear-gradient(to right, #2980b9, #6dd5fa, #ffffff)',  /* Chrome 10-25, Safari 5.1-6 */
         background: 'linear-gradient(to right, #2980b9, #6dd5fa, #ffffff)', /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
         marginTop: '8px',
         borderRadius: '4px'

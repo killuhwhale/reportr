@@ -2,8 +2,6 @@ import { get, post } from '../requests'
 import { BASE_URL } from '../environment'
 
 class Company {
-    constructor() {
-    }
     static async createCompany(title) {
         return await post(`${BASE_URL}/company/create`, { title })
     }

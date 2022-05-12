@@ -7,7 +7,6 @@ import { getReportingPeriodDays } from "../../utils/herdCalculation"
 import calculateHerdManNKPNaCl from "../../utils/herdCalculation"
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
-import { get, post } from '../../utils/requests';
 import { ImportExport } from '@material-ui/icons';
 import { Herds } from "../../utils/herds/herds"
 
@@ -36,7 +35,6 @@ import { Herds } from "../../utils/herds/herds"
 
 
 
-const REPORTING_PERIOD = 365
 
 
 class HerdTable extends Component {
@@ -188,12 +186,11 @@ class HerdTable extends Component {
 
 
         if (key !== 'calf_old' && key !== 'calf_young') {
-          if (row[2] > 0 && row[4] <= 0 || row[4] > 5000) {
+          if (row[2] > 0 && (row[4] <= 0 || row[4] > 5000)) {
             this.props.onAlert(`Check ${this.state.displayNames[key]}, Avg Live Wt must be between 1-5000.`)
             console.log("Error, Avg Wt must be between 1-5000", this.state.displayNames[key])
             valid = false
             liveWtErrors[key] = true
-
           }
         }
       }

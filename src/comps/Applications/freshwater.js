@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -59,7 +59,7 @@ const FreshwaterAppEvent = (props) => {
 }
 
 const FreshwaterAppEventCard = withTheme((props) => {
-  const { app_method, croptitle, plant_date, src_desc, src_type, app_date, n_con, amount_applied, ec, tds } = props.freshwater
+  const { app_method, croptitle, app_date, n_con, amount_applied, ec, tds } = props.freshwater
   return (
     <Grid item xs={12} md={4} lg={3}>
       <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent' >
@@ -643,12 +643,12 @@ class Freshwater extends Component {
   getItemSize(index) {
     let field_crop_app_id = this.getSortedKeys()[index]
     let numRows = this.state.fieldCropAppFreshwaters[field_crop_app_id].length
-    let numSources = parseInt(this.state.fieldCropAppFreshwaterSources.length / 2)
-    let numAnalyses = parseInt(this.state.fieldCropAppFreshwaterAnalyses.length / 2)
+    // let numSources = parseInt(this.state.fieldCropAppFreshwaterSources.length / 2)
+    // let numAnalyses = parseInt(this.state.fieldCropAppFreshwaterAnalyses.length / 2)
 
     let headerSize = 80
-    let sourceSectionSize = 32 + (48 * numSources)
-    let analysisSectionSize = 32 + (48 * numAnalyses)
+    // let sourceSectionSize = 32 + (48 * numSources)
+    // let analysisSectionSize = 32 + (48 * numAnalyses)
     let itemSize = 120
 
     return headerSize + (numRows * itemSize)

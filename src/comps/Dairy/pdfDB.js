@@ -1,9 +1,7 @@
 /** Client Side API to fetch Data about Annual Report AKA Data Summary
  * 
  */
-
 import { get } from '../../utils/requests'
-import { opArrayByPos, calcLbsFromTonsAsPercent, MGMLToLBS } from '../../utils/convertCalc'
 import { BASE_URL } from "../../utils/environment"
 
 // Used in tests to verify data...

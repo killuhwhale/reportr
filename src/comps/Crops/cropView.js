@@ -11,10 +11,9 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { VariableSizeList as List } from "react-window";
 
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from '../Applications/selectButtonGrid'
-import { get, post } from '../../utils/requests';
+import { post } from '../../utils/requests';
 import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from '../../utils/format';
 import { FixedPageSize } from '../utils/FixedPageSize'
 
@@ -133,7 +132,7 @@ const FieldCrop = withTheme((props) => {
 
 
     props.fieldCrops && props.fieldCrops.sort((a, b) => naturalSortBy(a, b, 'plant_date')).map((fieldCrop, i) => {
-      const { croptitle, acres, cropable, plant_date, acres_planted, typical_yield, moisture, n, p, k, salt,
+      const { croptitle, plant_date, n, p, k, salt,
       } = fieldCrop
       return (
         <Card variant="outlined" key={`fieldCrop${props.index}`} className='showOnHoverParent'>
@@ -254,8 +253,6 @@ class CropView extends Component {
     return []
   }
 
-  componentDidUpdate(prevProps, prevState) {
-  }
   onFieldCropChange(ev, key, index) {
     let updates = this.state.convertedFieldCrops
     let updateField = updates[key]  // key is the field which is a list of field_crops

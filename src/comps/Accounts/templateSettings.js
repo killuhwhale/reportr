@@ -1,15 +1,13 @@
 import {
     Modal, Grid, Paper, Tooltip, IconButton, Typography,
-    Button, Card, CardContent, CardActionArea, CardActions,
     AppBar, Tabs, Tab, TextField
 } from "@material-ui/core"
 import { withTheme } from "@material-ui/core/styles"
-import React, { Component, Fragment } from "react"
+import React, { Component } from "react"
 import CloseIcon from '@material-ui/icons/Close';
 import UpdateIcon from '@material-ui/icons/Update';
 import TemplateSettings from '../../utils/settings/settings'
 import { MaxPageSize } from '../utils/FixedPageSize'
-import { DatePicker } from '@material-ui/pickers'
 import {
     REPORTING_METHODS, SOURCE_OF_ANALYSES, PRECIPITATIONS, APP_METHODS,
     MATERIAL_TYPES, WASTEWATER_MATERIAL_TYPES, NUTRIENT_IMPORT_MATERIAL_TYPES,
@@ -176,7 +174,6 @@ class TemplateViewRaw extends Component {
     }
 
     getIndex(key, value) {
-        console.log('Options for ', key, value, this.getOptions(key).indexOf(value))
         return this.getOptions(key).indexOf(value)
     }
 
@@ -185,9 +182,13 @@ class TemplateViewRaw extends Component {
     }
 
     async onUpdate() {
-        console.log("Updating: ", this.props.template, this.state.settings, this.props.dairy_id)
-        const updateRes = await TemplateSettings.updateSettings(this.props.template, this.state.settings, this.props.dairy_id)
-        console.log("Update Result: ", updateRes)
+
+        try {
+            await TemplateSettings.updateSettings(this.props.template, this.state.settings, this.props.dairy_id)
+        } catch (e) {
+            console.log('Template settings error: ', e)
+        }
+        this.toggleConfirmUpdateModal(false)
     }
 
     // What do I need to show the user, really?
@@ -331,12 +332,10 @@ class TemplateSetting extends Component {
     }
 
     async getSettings() {
-        console.log("Getting dairy Id for dairy id: ", this.props.dairy_id)
         const res = await TemplateSettings.lazyGetSettings(this.props.dairy_id)
         if (res.error) return console.log(res)
-        console.log(res)
-        this.setState({ settings: res[0] })
 
+        this.setState({ settings: res[0] })
     }
 
     handleTabChange(ev, index) {
@@ -372,10 +371,11 @@ class TemplateSetting extends Component {
                                 </Grid>
 
                                 <Grid item xs={12} align="center" style={{ marginBottom: '32px' }}>
-                                    <Typography variant='h6'>Template Settings {this.props.dairy_id}</Typography>
+                                    <Typography variant='h6'>Template Settings</Typography>
                                 </Grid>
                                 <AppBar position="static" style={{ marginBottom: "32px" }} key='appNutrientAppBar'>
-                                    <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
+
+                                    <Tabs value={this.state.tabIndex} selectionFollowsFocus variant="scrollable"
                                         onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='appNutrientAppBarTabs'>
                                         <Tab label="Harvest" key='Harvest__key_0' />
                                         <Tab label="Process Wastewater" key='Process__key_0' />

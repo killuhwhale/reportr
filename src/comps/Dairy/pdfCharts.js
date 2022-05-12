@@ -27,8 +27,6 @@ Chart.register({
           return
         }
         let bar = chartInstance._metasets[di].data[i]
-        let maxX = chartInstance.scales.x.maxWidth
-        // let maxY = chartInstance.scales.y.maxHeight
         let numChars = dataset.data[i].toString().length
         let singleCharLen = 4
         var xOffset = (500 - bar.x) / 500 < 0.03 ? ((numChars * -singleCharLen) - 10) : 0;
@@ -36,8 +34,6 @@ Chart.register({
         let num = formatInt(Math.round(toFloat(dataset.data[i])))
 
         // Format number, All should be rounded integers, if over 1000, show 412,000 as  412K
-
-        // num = num && num >= 1e4 ? `${formatInt(num / 1000)}K` : formatInt(num)
         ctx.fillStyle = "#777";
 
         if (chartInstance.scales.x.type === "logarithmic") {

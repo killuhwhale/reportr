@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField
+  Grid, Typography, IconButton, Tooltip, TextField
 } from '@material-ui/core'
 import {
   DateTimePicker
@@ -156,9 +156,8 @@ class Discharge extends Component {
     // 24 columns from TSV
     let dairy_id = this.state.dairy_id
 
-
     try {
-      const result = await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
+      await TSVUtil.uploadTSV(this.state.tsvFile, this.state.tsvType, this.state.uploadedFilename, dairy_id)
       this.toggleShowUploadFieldCropAppDischargeTSVModal(false)
       this.getFieldCropAppDischarges()
       this.props.onAlert('Uploaded!', 'success')
@@ -167,20 +166,8 @@ class Discharge extends Component {
       console.log(e)
       this.props.onAlert('Failed uploading!', 'error')
     }
-    // uploadDischargeTSV(this.state.tsvFile, this.state.tsvType, dairy_pk)
-    //   .then(res => {
-    //     console.log("Completed uploading Discharge TSV", res)
-    //     uploadTSVToDB(this.state.uploadedFilename, this.state.tsvFile, this.state.dairy_id, this.state.tsvType)
-    //     this.toggleShowUploadFieldCropAppDischargeTSVModal(false)
-    //     this.getFieldCropAppDischarges()
-    //     this.props.onAlert('Success!', 'success')
-    //   })
-    //   .catch(err => {
-    //     console.log("Error with all promises")
-    //     console.log(err)
-    //     this.props.onAlert('Failed uploading!', 'error')
-    //   })
   }
+
   toggleViewTSVsModal(val) {
     this.setState({ showViewTSVsModal: val })
   }

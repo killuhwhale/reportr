@@ -6,7 +6,7 @@ import {
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 
 import { withRouter } from "react-router-dom"
-import { withTheme, withStyles } from '@material-ui/core/styles'
+import { withTheme } from '@material-ui/core/styles'
 import AppsByField from "./appsByField"
 import ProcessWastewater from "./processWastewater"
 import Freshwater from "./freshwater"
@@ -244,7 +244,7 @@ class NutrientApplicationTab extends Component {
 
             <AppBar position="static" style={{ marginBottom: "32px" }} key='appNutrientAppBar'>
 
-              <Tabs value={this.state.tabIndex} variant="fullWidth" selectionFollowsFocus variant="scrollable"
+              <Tabs value={this.state.tabIndex} selectionFollowsFocus variant="scrollable"
                 onChange={this.handleTabChange.bind(this)} aria-label="simple tabs example" key='appNutrientAppBarTabs'>
                 <Tab label="Events" key='appNutrientAppBarTab00' />
                 <Tab label="Process Wastewater" key='appNutrientAppBarTab0' />

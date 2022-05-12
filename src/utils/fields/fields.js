@@ -2,10 +2,6 @@ import { BASE_URL } from '../environment'
 import { get, post } from '../requests'
 
 class Field {
-    constructor() {
-
-    }
-
     static async getField(dairy_id) {
         try {
             return await get(`${BASE_URL}/api/fields/${dairy_id}`)

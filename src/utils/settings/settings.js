@@ -52,7 +52,6 @@ export default class TemplateSettings {
     }
 
     static async updateSettings(template, data, dairy_id) {
-        console.log("Dairy ID to update settings: ", data, dairy_id)
         try {
             return await post(`${BASE_URL}/settings/update/${template}`, { data, dairy_id })
         } catch (e) {

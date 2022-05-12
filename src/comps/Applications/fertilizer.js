@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -23,8 +23,6 @@ import AddFertilizerModal from "../Modals/addFertilizerModal"
 import ActionCancelModal from "../Modals/actionCancelModal"
 import { get, post } from '../../utils/requests'
 import { checkEmpty } from '../../utils/TSV'
-import { VariableSizeList as List } from "react-window";
-
 
 import { TSVUtil } from "../../utils/TSV"
 import { FixedPageSize } from '../utils/FixedPageSize'
@@ -115,7 +113,7 @@ const FertilizerAppEventCard = withTheme((props) => {
           <Grid item xs={2}>
             <Tooltip title="Delete Nutrient Import">
               <IconButton className='showOnHover' size='small'
-                onClick={() => props.props.onDelete(props.fertilizer)}
+                onClick={() => props.onDelete(props.fertilizer)}
               >
                 <DeleteIcon color="error" />
               </IconButton>
@@ -325,6 +323,7 @@ class Fertilizer extends Component {
         console.log(err)
       })
   }
+
   getNutrientImport() {
     get(`${this.props.BASE_URL}/api/nutrient_import/${this.state.dairy_id}`)
       .then(res => {
@@ -382,7 +381,7 @@ class Fertilizer extends Component {
       .then(res => {
         console.log(res)
         this.toggleShowAddFertilizerModal(false)
-        this.props.getFieldCropAppFertilizer()
+        this.getFieldCropAppFertilizer()
       })
       .catch(err => {
         console.log(err)
@@ -434,7 +433,7 @@ class Fertilizer extends Component {
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFertilizerModal(false)
-          this.props.getFieldCropAppFertilizer()
+          this.getFieldCropAppFertilizer()
         })
         .catch(err => {
           console.log(err)

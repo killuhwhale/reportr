@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Button, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip,
   Card, CardContent, CardActions
 } from '@material-ui/core'
 
@@ -12,7 +12,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles'
-import { VariableSizeList as List } from "react-window";
 
 import UploadTSVModal from "../Modals/uploadTSVModal"
 import ViewTSVsModal from "../Modals/viewTSVsModal"
@@ -51,9 +50,9 @@ const SolidmanureAppEvent = (props) => {
 const SolidmanureAppEventCard = withTheme((props) => {
   let {
     app_method, material_type, n_con, p_con,
-    k_con, amount_applied, app_date, croptitle, plant_date, moisture
+    k_con, amount_applied, app_date, croptitle, moisture
   } = props.manure
-  console.log(props.manure)
+
   return (
     <Grid item xs={12} md={4} lg={3}>
       <Card variant="outlined" key={`pwwaer${props.index}`} className='showOnHoverParent'>

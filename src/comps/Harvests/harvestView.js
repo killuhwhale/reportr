@@ -7,13 +7,12 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete'
 import { withRouter } from "react-router-dom"
 import { withTheme } from '@material-ui/core/styles';
-import { VariableSizeList as List } from "react-window";
 
 import ActionCancelModal from "../Modals/actionCancelModal"
-import { get, post } from '../../utils/requests'
-import { MG_KG, KG_MG } from '../../utils/convertCalc'
+import { post } from '../../utils/requests'
+
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from '../Applications/selectButtonGrid'
-import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, percentageAsMGKG, splitDate } from '../../utils/format'
+import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from '../../utils/format'
 import { FixedPageSize } from '../utils/FixedPageSize'
 
 

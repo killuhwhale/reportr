@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
 import {
-  Grid, Paper, Typography, TableBody, Table, TableContainer, TableCell, TableRow, TableFooter
+  Grid, Typography, TableBody, Table, TableCell, TableRow, TableFooter
 } from '@material-ui/core'
 import { withRouter } from "react-router-dom"
 import { withTheme, withStyles } from '@material-ui/core/styles'
 import { get } from "../utils/requests"
 import {
-  PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, MANURE, WASTEWATER, HARVEST, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE, TSV_INFO
+  PROCESS_WASTEWATER, FRESHWATER, SOLIDMANURE, FERTILIZER, MANURE, WASTEWATER, HARVEST, SOIL, PLOWDOWN_CREDIT, DRAIN, DISCHARGE
 } from '../utils/TSV'
-import { createHeaderMap, mapsColToTemplate } from '../utils/TSV'
+import { createHeaderMap } from '../utils/TSV'
 import { TABLE_HEADER_BACKGROUND_COLOR, } from "../specific"
 import { Dairy } from '../utils/dairy/dairy'
 import { Logo } from '../utils/Logo/logo'
@@ -290,7 +290,6 @@ class TSVPrint extends Component {
   // Need to create a row equal length of the header row and fill it in correctlt
   tsvTextToRows(tsvText) {
     let dataStarted = false
-    let rows = []
     let aboveHeader = []
     let header = []
     let dataRows = []
@@ -419,7 +418,7 @@ class TSVPrint extends Component {
               <TableFooter>
                 <TableRow>
                   <BorderlessCell align='center' colSpan={this.state.header.length}>
-                    <img id='footerImg' style={{ height: '64px' }} />
+                    <img id='footerImg' alt='logo' style={{ height: '64px' }} />
                   </BorderlessCell>
                 </TableRow>
               </TableFooter>

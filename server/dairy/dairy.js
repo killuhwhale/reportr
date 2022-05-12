@@ -179,11 +179,10 @@ module.exports = (app) => {
         const { dairy_id, title, data, tsvType } = req.body
         db.insertTSV([dairy_id, title, data, tsvType], (err, result) => {
             if (!err) {
-                res.json({ "data": "Inserted TSV successfully" });
-                return;
+                return res.json({ data: "Inserted TSV successfully" });
             }
             console.log(err)
-            res.json({ "error": "Inserted TSV unsuccessful", existsErr: err.code === '23505' });
+            res.json({ error: "Inserted TSV unsuccessful", existsErr: err.code === '23505' });
         })
     });
     app.get("/api/tsv/:dairy_id/:tsvType", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
@@ -198,22 +197,20 @@ module.exports = (app) => {
         console.log("Deleting TSV w/ pk: ", req.body.pk)
         db.rmTSV(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ "error": "Deleted TSV successfully" });
-                return;
+                return res.json({ data: "Deleted TSV successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted TSV unsuccessful" });
+            res.json({ error: "Deleted TSV unsuccessful" });
         })
     });
     app.post("/api/tsv/type/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting TSV w/ dairy_id and tsvtype: ", req.body)
         db.rmTSVByDairyIDTSVType([req.body.dairy_id, req.body.tsvType], (err, result) => {
             if (!err) {
-                res.json({ "error": "Deleted TSV successfully" });
-                return;
+                return res.json({ data: "Deleted TSV successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted TSV unsuccessful" });
+            res.json({ error: "Deleted TSV unsuccessful" });
         })
     });
     app.post("/api/tsv/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
@@ -221,11 +218,10 @@ module.exports = (app) => {
         const { title, data, tsvType, dairy_id } = req.body
         db.updateTSV([title, data, tsvType, dairy_id], (err, result) => {
             if (!err) {
-                res.json({ "error": "Updated tsv successfully" });
-                return;
+                return res.json({ data: "Updated tsv successfully" });
             }
             console.log(err)
-            res.json({ "error": "Updated tsv unsuccessful" });
+            res.json({ error: "Updated tsv unsuccessful" });
         })
     });
 
@@ -240,7 +236,7 @@ module.exports = (app) => {
                 if (!err) {
                     return res.json(result.rows)
                 }
-                res.json({ "error": "Get dairy_base unsuccessful", err: err });
+                res.json({ error: "Get dairy_base unsuccessful", err: err });
             })
     });
     app.post("/api/dairy_base/create", verifyToken, verifyUserFromCompanyByCompanyID, needsWrite, async (req, res) => {
@@ -252,7 +248,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.insertDairyBase([company_id, title]))
         } catch (e) {
-            return res.json({ "error": "Inserted dairy_base unsuccessful", code: e.code })
+            return res.json({ error: "Inserted dairy_base unsuccessful", code: e.code })
         }
 
         // Once dairy base is created, we need to create the _base parcel and operators
@@ -269,8 +265,7 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json(result);
-                return;
+                return res.json(result);
             }
             console.log(err)
             res.json({ "error": "Updated dairy_base unsuccessful" });
@@ -374,8 +369,7 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json(result.rows);
-                return;
+                return res.json(result.rows);
             }
             console.log(err)
             res.json({ "error": "Inserted full dairy unsuccessful", failData: req.body });
@@ -396,15 +390,12 @@ module.exports = (app) => {
         }
     });
     app.post("/api/dairies/delete", verifyToken, verifyUserFromCompanyByDairyID, needsAdmin, (req, res) => {
-
         db.rmDairy(req.body.dairy_id, (err, result) => {
-
             if (!err) {
-                res.json({ "error": "Deleted dairy successfully" });
-                return;
+                return res.json({ data: "Deleted dairy successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted dairy unsuccessful" });
+            res.json({ error: "Deleted dairy unsuccessful" });
         })
     });
 
@@ -463,7 +454,7 @@ module.exports = (app) => {
             // if (parcelBaseRes.error) return res.json({ error: parcelBaseRes })
             return res.json(await db.insertParcel(req.body.pnumber, req.body.dairy_id))
         } catch (e) {
-            return res.json({ "error": "Inserted parcel unsuccessful", err: e });
+            return res.json({ error: "Inserted parcel unsuccessful", err: e });
         }
 
     });
@@ -471,25 +462,21 @@ module.exports = (app) => {
         console.log("Updating....", req.body.data)
         const { pnumber, pk } = req.body.data
         db.updateParcel([pnumber, pk], (err, result) => {
-
             if (!err) {
-                res.json({ data: "Updated parcel successfully" });
-                return;
+                return res.json({ data: "Updated parcel successfully" });
             }
             console.log(err)
-            res.json({ "error": "Updated parcel unsuccessful" });
+            res.json({ error: "Updated parcel unsuccessful" });
         })
     });
     app.post("/api/parcels/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmParcel(req.body.pk, (err, result) => {
-
             if (!err) {
-                res.json({ data: "Deleted parcel successfully" });
-                return;
+                return res.json({ data: "Deleted parcel successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted parcel unsuccessful" });
+            res.json({ error: "Deleted parcel unsuccessful" });
         })
     });
 
@@ -513,11 +500,10 @@ module.exports = (app) => {
         db.rmFieldParcel(pk, (err, result) => {
 
             if (!err) {
-                res.json({ data: "Deleted field_parcel successfully" });
-                return;
+                return res.json({ data: "Deleted field_parcel successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_parcel unsuccessful" });
+            res.json({ error: "Deleted field_parcel unsuccessful" });
         })
     });
 
@@ -545,10 +531,9 @@ module.exports = (app) => {
         db.getOperatorsByOwnerStatus([req.params.is_owner, req.params.dairy_id],
             (err, result) => {
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
-                res.json({ "error": "Get all operators by owner status unsuccessful" });
+                res.json({ error: "Get all operators by owner status unsuccessful" });
             })
     });
 
@@ -558,10 +543,9 @@ module.exports = (app) => {
         db.getOperatorsByOperatorStatus([req.params.is_operator, req.params.dairy_id],
             (err, result) => {
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
-                res.json({ "error": "Get all operators by operator status unsuccessful" });
+                res.json({ error: "Get all operators by operator status unsuccessful" });
             })
     });
     app.post("/api/operators/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
@@ -595,11 +579,10 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Updated operator successfully" });
-                return;
+                return res.json({ data: "Updated operator successfully" });
             }
             console.log(err)
-            res.json({ "error": "Updated operator unsuccessful" });
+            res.json({ error: "Updated operator unsuccessful" });
         })
     });
     app.post("/api/operators/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -607,11 +590,10 @@ module.exports = (app) => {
         db.rmOperator(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted operator successfully" });
-                return;
+                return res.json({ data: "Deleted operator successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted operator unsuccessful" });
+            res.json({ error: "Deleted operator unsuccessful" });
         })
     });
 
@@ -649,11 +631,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json({ "error": "Created full herds successfully" });
-                    return;
+                    return res.json({ data: "Created full herds successfully" });
                 }
                 console.log(err)
-                res.json({ "error": "Created full herds unsuccessful" });
+                res.json({ error: "Created full herds unsuccessful" });
             }
         )
     });
@@ -688,18 +669,16 @@ module.exports = (app) => {
         try {
             return res.json(await db.getCropsByTitle(req.params.title))
         } catch (e) {
-            res.json({ "error": "Get crops by Title unsuccessful" });
+            res.json({ error: "Get crops by Title unsuccessful" });
         }
     });
     app.get("/api/crops", verifyToken, (req, res) => {
         db.getCrops("",
             (err, result) => {
                 if (!err) {
-
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
-                res.json({ "error": "Get all crops unsuccessful" });
+                res.json({ error: "Get all crops unsuccessful" });
             })
     });
 
@@ -714,12 +693,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    // res.json({"error": "Created field_crop successfully"});
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop unsuccessful" });
+                res.json({ error: "Created field_crop unsuccessful" });
             }
         )
     });
@@ -727,35 +704,33 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCrop(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop unsuccessful" });
+            res.json({ error: "Get all field_crop unsuccessful" });
         }
 
     });
     app.post("/api/field_crop/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
-        console.log("Updating....", req.body)
+        console.log("Updating field_crop....", req.body)
         const { plant_date, acres_planted, typical_yield, moisture, n, p, k, salt, pk } = req.body
         db.updateFieldCrop([
             plant_date, parseInt(acres_planted), parseInt(typical_yield), moisture, n, p, k, salt, pk
         ], (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Updated field_crop successfully" });
-                return;
+                return res.json({ data: "Updated field_crop successfully" });
             }
             console.log(err)
-            res.json({ "error": "Updated field_crop unsuccessful" });
+            res.json({ error: "Updated field_crop unsuccessful" });
         })
     });
     app.post("/api/field_crop/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
-        console.log("Deleting....", req.body.pk)
+        console.log("Deleting field_crop....", req.body.pk)
         db.rmFieldCrop(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop unsuccessful" });
+            res.json({ error: "Deleted field_crop unsuccessful" });
         })
     });
     app.post("/api/field_crop/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -763,16 +738,15 @@ module.exports = (app) => {
         db.rmAllFieldCrop(req.body.dairy_id, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted all field_crop successfully" });
-                return;
+                return res.json({ data: "Deleted all field_crop successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted all field_crop unsuccessful" });
+            res.json({ error: "Deleted all field_crop unsuccessful" });
         })
     });
 
     app.post("/api/field_crop_harvest/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
-        console.log("Creating....", req.body)
+        console.log("Creating field_crop_harvest....", req.body)
         const {
             dairy_id,
             field_crop_id,
@@ -815,12 +789,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result)
-                    // res.json({"error": "Created field_crop_harvest successfully"});
-                    return;
+                    return res.json(result)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_harvest unsuccessful" });
+                res.json({ error: "Created field_crop_harvest unsuccessful" });
             }
         )
     });
@@ -828,11 +800,11 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropHarvest(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_harvest unsuccessful" });
+            res.json({ error: "Get all field_crop_harvest unsuccessful" });
         }
     });
     app.post("/api/field_crop_harvest/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
-        console.log("Updating....", req.body)
+        console.log("Updating field_crop_harvest....", req.body)
         const {
             harvest_date, density, basis, actual_yield, moisture, n, p, k, tfs, pk
         } = req.body
@@ -841,23 +813,22 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Updated field_crop_harvest successfully" });
-                return;
+                return res.json({ data: "Updated field_crop_harvest successfully" });
+
             }
             console.log(err)
-            res.json({ "error": "Updated field_crop_harvest unsuccessful" });
+            res.json({ error: "Updated field_crop_harvest unsuccessful" });
         })
     });
     app.post("/api/field_crop_harvest/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
-        console.log("Deleting....", req.body.pk)
+        console.log("Deleting field_crop_harvest....", req.body.pk)
         db.rmFieldCropHarvest(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop_harvest successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_harvest successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_harvest unsuccessful" });
+            res.json({ error: "Deleted field_crop_harvest unsuccessful" });
         })
     });
     app.post("/api/field_crop_harvest/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -865,11 +836,10 @@ module.exports = (app) => {
         db.rmAllFieldCropHarvest(req.body.dairy_id, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted all field_crop_harvest successfully" });
-                return;
+                return res.json({ data: "Deleted all field_crop_harvest successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted all field_crop_harvest unsuccessful" });
+            res.json({ error: "Deleted all field_crop_harvest unsuccessful" });
         })
     });
 
@@ -881,14 +851,11 @@ module.exports = (app) => {
                 dairy_id, field_crop_id, app_date, app_method, precip_before, precip_during, precip_after
             ],
             (err, result) => {
-
                 if (!err) {
-                    res.json(result.rows)
-                    // res.json({"error": "Created field_crop_harvest successfully"});
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app unsuccessful" });
+                res.json({ error: "Created field_crop_app unsuccessful" });
             }
         )
     });
@@ -896,12 +863,10 @@ module.exports = (app) => {
         db.getFieldCropApplication(req.params.dairy_id,
             (err, result) => {
                 if (!err) {
-
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Get all field_crop_app unsuccessful" });
+                res.json({ error: "Get all field_crop_app unsuccessful" });
             })
     });
     app.post("/api/field_crop_app/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
@@ -914,11 +879,10 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Updated field_crop_app successfully" });
-                return;
+                return res.json({ data: "Updated field_crop_app successfully" });
             }
             console.log(err)
-            res.json({ "error": "Updated field_crop_app unsuccessful" });
+            res.json({ error: "Updated field_crop_app unsuccessful" });
         })
     });
     app.post("/api/field_crop_app/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -926,11 +890,10 @@ module.exports = (app) => {
         db.rmFieldCropApplication(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app unsuccessful" });
+            res.json({ error: "Deleted field_crop_app unsuccessful" });
         })
     });
     app.post("/api/field_crop_app/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -938,11 +901,10 @@ module.exports = (app) => {
         db.rmAllFieldCropApp(req.body.dairy_id, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted all field_crop_app successfully" });
-                return;
+                return res.json({ data: "Deleted all field_crop_app successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted all field_crop_app unsuccessful" });
+            res.json({ error: "Deleted all field_crop_app unsuccessful" });
         })
     });
 
@@ -1029,11 +991,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_process_wastewater_analysis unsuccessful" });
+                res.json({ error: "Created field_crop_app_process_wastewater_analysis unsuccessful" });
             }
         )
     });
@@ -1041,7 +1002,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationProcessWastewaterAnalysis(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_process_wastewater_analysis unsuccessful" });
+            res.json({ error: "Get all field_crop_app_process_wastewater_analysis unsuccessful" });
         }
 
     });
@@ -1050,11 +1011,10 @@ module.exports = (app) => {
         db.rmFieldCropApplicationProcessWastewaterAnalysis(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_process_wastewater_analysis successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_process_wastewater_analysis successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_process_wastewater_analysis unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_process_wastewater_analysis unsuccessful" });
         })
     });
 
@@ -1079,11 +1039,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_process_wastewater unsuccessful" });
+                res.json({ error: "Created field_crop_app_process_wastewater unsuccessful" });
             }
         )
     });
@@ -1091,7 +1050,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationProcessWastewater(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_process_wastewater unsuccessful" });
+            res.json({ error: "Get all field_crop_app_process_wastewater unsuccessful" });
         }
     });
 
@@ -1100,11 +1059,10 @@ module.exports = (app) => {
         db.rmFieldCropApplicationProcessWastewater(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_process_wastewater successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_process_wastewater successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_process_wastewater unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_process_wastewater unsuccessful" });
         })
     });
 
@@ -1115,11 +1073,10 @@ module.exports = (app) => {
             db.rmAllFieldCropAppProcessWastewater(req.body.dairy_id, (errB, resultB) => {
 
                 if (!errA && !errB) {
-                    res.json({ "error": "Deleted all field_crop_app_process_wastewater successfully" });
-                    return;
+                    return res.json({ data: "Deleted all field_crop_app_process_wastewater successfully" });
                 }
                 console.log(errA, errB)
-                res.json({ "error": "Deleted all field_crop_app_process_wastewater unsuccessful" });
+                res.json({ error: "Deleted all field_crop_app_process_wastewater unsuccessful" });
             })
         })
     });
@@ -1131,11 +1088,6 @@ module.exports = (app) => {
             src_desc,
             src_type,
         } = req.body
-        console.log("Creating field_crop_app_freshwater_source ....", [
-            dairy_id,
-            src_desc,
-            src_type
-        ])
         db.insertFieldCropApplicationFreshwaterSource(
             [
                 dairy_id,
@@ -1145,11 +1097,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_freshwater_source unsuccessful" });
+                res.json({ error: "Created field_crop_app_freshwater_source unsuccessful" });
             }
         )
     });
@@ -1157,7 +1108,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationFreshwaterSource(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_freshwater_source unsuccessful" });
+            res.json({ error: "Get all field_crop_app_freshwater_source unsuccessful" });
         }
 
     });
@@ -1166,11 +1117,10 @@ module.exports = (app) => {
         db.rmFieldCropApplicationFreshwaterSource(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_freshwater_source successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_freshwater_source successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_freshwater_source unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_freshwater_source unsuccessful" });
         })
     });
 
@@ -1241,11 +1191,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_freshwater_analysis unsuccessful" });
+                res.json({ error: "Created field_crop_app_freshwater_analysis unsuccessful" });
             }
         )
     });
@@ -1253,19 +1202,17 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationFreshwaterAnalysis(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_freshwater_analysis unsuccessful" });
+            res.json({ error: "Get all field_crop_app_freshwater_analysis unsuccessful" });
         }
     });
     app.post("/api/field_crop_app_freshwater_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationFreshwaterAnalysis(req.body.pk, (err, result) => {
-
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_freshwater_analysis successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_freshwater_analysis successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_freshwater_analysis unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_freshwater_analysis unsuccessful" });
         })
     });
 
@@ -1294,11 +1241,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_freshwater unsuccessful" });
+                res.json({ error: "Created field_crop_app_freshwater unsuccessful" });
             }
         )
     });
@@ -1306,7 +1252,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationFreshwater(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_freshwater unsuccessful" });
+            res.json({ error: "Get all field_crop_app_freshwater unsuccessful" });
         }
     });
     app.post("/api/field_crop_app_freshwater/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -1314,11 +1260,10 @@ module.exports = (app) => {
         db.rmFieldCropApplicationFreshwater(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_freshwater successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_freshwater successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_freshwater unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_freshwater unsuccessful" });
         })
     });
 
@@ -1330,11 +1275,10 @@ module.exports = (app) => {
                 db.rmAllFieldCropAppFreshwater(req.body.dairy_id, (errC, resultC) => {
 
                     if (!errA && !errB && !errC) {
-                        res.json({ "error": "Deleted all field_crop_app_freshwater successfully" });
-                        return;
+                        return res.json({ data: "Deleted all field_crop_app_freshwater successfully" });
                     }
                     console.log(errA, errB, errC)
-                    res.json({ "error": "Deleted all field_crop_app_freshwater unsuccessful" });
+                    res.json({ error: "Deleted all field_crop_app_freshwater unsuccessful" });
                 })
             })
         })
@@ -1401,11 +1345,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_solidmanure_analysis unsuccessful" });
+                res.json({ error: "Created field_crop_app_solidmanure_analysis unsuccessful" });
             }
         )
     });
@@ -1413,7 +1356,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationSolidmanureAnalysis(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_solidmanure_analysis unsuccessful" });
+            res.json({ error: "Get all field_crop_app_solidmanure_analysis unsuccessful" });
         }
     });
     app.post("/api/field_crop_app_solidmanure_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -1421,11 +1364,10 @@ module.exports = (app) => {
         db.rmFieldCropApplicationSolidmanureAnalysis(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_solidmanure_analysis successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_solidmanure_analysis successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_solidmanure_analysis unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_solidmanure_analysis unsuccessful" });
         })
     });
 
@@ -1452,11 +1394,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_solidmanure unsuccessful" });
+                res.json({ error: "Created field_crop_app_solidmanure unsuccessful" });
             }
         )
     });
@@ -1464,7 +1405,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationSolidmanure(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_solidmanure unsuccessful" });
+            res.json({ error: "Get all field_crop_app_solidmanure unsuccessful" });
         }
     });
     app.post("/api/field_crop_app_solidmanure/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -1472,31 +1413,26 @@ module.exports = (app) => {
         db.rmFieldCropApplicationSolidmanure(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_solidmanure successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_solidmanure successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_solidmanure unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_solidmanure unsuccessful" });
         })
     });
     app.post("/api/field_crop_app_solidmanure/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
-        console.log("Deleting all field_crop_app_solidmanure....", req.body)
-
         db.rmAllFieldCropAppSolidmanureAnalysis(req.body.dairy_id, (errA, resultA) => {
             db.rmAllFieldCropAppSolidmanure(req.body.dairy_id, (errB, resultB) => {
 
                 if (!errA && !errB) {
-                    res.json({ "error": "Deleted all field_crop_app_solidmanure successfully" });
-                    return;
+                    return res.json({ data: "Deleted all field_crop_app_solidmanure successfully" });
                 }
                 console.log(errA, errB)
-                res.json({ "error": "Deleted all field_crop_app_solidmanure unsuccessful" });
+                res.json({ error: "Deleted all field_crop_app_solidmanure unsuccessful" });
             })
         })
     });
 
     app.post("/api/nutrient_import/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
-        console.log("Creating.... nutrient_import", req.body)
         const {
             dairy_id,
             import_desc,
@@ -1525,13 +1461,11 @@ module.exports = (app) => {
                 salt_con
             ],
             (err, result) => {
-
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created nutrient_import unsuccessful" });
+                res.json({ error: "Created nutrient_import unsuccessful" });
             }
         )
     });
@@ -1539,7 +1473,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.getNutrientImportByMaterialType(req.params.material_type, req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all nutrient_import by material_type unsuccessful" });
+            res.json({ error: "Get all nutrient_import by material_type unsuccessful" });
         }
     });
 
@@ -1547,20 +1481,17 @@ module.exports = (app) => {
         try {
             return res.json(await db.getNutrientImportByWastewater(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all nutrient_import by wastewater unsuccessful" });
+            res.json({ error: "Get all nutrient_import by wastewater unsuccessful" });
         }
 
     });
     app.post("/api/nutrient_import/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
-        console.log("Deleting....", req.body.pk)
         db.rmNutrientImport(req.body.pk, (err, result) => {
-
             if (!err) {
-                res.json({ "error": "Deleted nutrient_import successfully" });
-                return;
+                return res.json({ data: "Deleted nutrient_import successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted nutrient_import unsuccessful" });
+            res.json({ error: "Deleted nutrient_import unsuccessful" });
         })
     });
     app.get("/api/nutrient_import/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, (req, res) => {
@@ -1568,17 +1499,14 @@ module.exports = (app) => {
         db.getNutrientImport(req.params.dairy_id,
             (err, result) => {
                 if (!err) {
-
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Get all nutrient_import unsuccessful" });
+                res.json({ error: "Get all nutrient_import unsuccessful" });
             })
     });
     // Remember, a nutrient import is the analysis for a field crop fertilizer.... aka field crop nutrient import 
     app.post("/api/field_crop_app_fertilizer/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
-        console.log("Creating.... fertilizer", req.body)
         const {
             dairy_id,
             field_crop_app_id,
@@ -1596,11 +1524,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_fertilizer unsuccessful" });
+                res.json({ error: "Created field_crop_app_fertilizer unsuccessful" });
             }
         )
     });
@@ -1608,41 +1535,35 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationFertilizer(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_fertilizer unsuccessful" });
+            res.json({ error: "Get all field_crop_app_fertilizer unsuccessful" });
         }
 
     });
     app.post("/api/field_crop_app_fertilizer/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
-        console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationFertilizer(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_fertilizer successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_fertilizer successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_fertilizer unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_fertilizer unsuccessful" });
         })
     });
 
     app.post("/api/field_crop_app_fertilizer/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
-        console.log("Deleting all field_crop_app_fertilizer....", req.body)
-
         db.rmAllNutrientImport(req.body.dairy_id, (errA, resultA) => {
             db.rmAllFieldCropAppFertilizer(req.body.dairy_id, (errB, resultB) => {
 
                 if (!errA && !errB) {
-                    res.json({ "error": "Deleted all field_crop_app_fertilizer successfully" });
-                    return;
+                    return res.json({ data: "Deleted all field_crop_app_fertilizer successfully" });
                 }
                 console.log(errA, errB)
-                res.json({ "error": "Deleted all field_crop_app_fertilizer unsuccessful" });
+                res.json({ error: "Deleted all field_crop_app_fertilizer unsuccessful" });
             })
         })
     });
 
     app.post("/api/field_crop_app_soil_analysis/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
-        console.log("Creating.... soil analysis", req.body)
         const {
             dairy_id,
             field_id,
@@ -1683,13 +1604,11 @@ module.exports = (app) => {
                 org_matter_dl
             ],
             (err, result) => {
-
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_soil_analysis unsuccessful" });
+                res.json({ error: "Created field_crop_app_soil_analysis unsuccessful" });
             }
         )
     });
@@ -1697,7 +1616,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationSoilAnalysis(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_soil_analysis unsuccessful" });
+            res.json({ error: "Get all field_crop_app_soil_analysis unsuccessful" });
         }
     });
     app.post("/api/field_crop_app_soil_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -1705,11 +1624,10 @@ module.exports = (app) => {
         db.rmFieldCropApplicationSoilAnalysis(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_soil_analysis successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_soil_analysis successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_soil_analysis unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_soil_analysis unsuccessful" });
         })
     });
 
@@ -1735,11 +1653,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_soil unsuccessful" });
+                res.json({ error: "Created field_crop_app_soil unsuccessful" });
             }
         )
     });
@@ -1747,32 +1664,28 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationSoil(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_soil unsuccessful" });
+            res.json({ error: "Get all field_crop_app_soil unsuccessful" });
         }
     });
     app.post("/api/field_crop_app_soil/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationSoil(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_soil successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_soil successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_soil unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_soil unsuccessful" });
         })
     });
     app.post("/api/field_crop_app_soil/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting all field_crop_app_soil....", req.body)
-
         db.rmAllFieldCropAppSoilAnalysis(req.body.dairy_id, (errA, resultA) => {
             db.rmAllFieldCropAppSoil(req.body.dairy_id, (errB, resultB) => {
-
                 if (!errA && !errB) {
-                    res.json({ "error": "Deleted all field_crop_app_soil successfully" });
-                    return;
+                    return res.json({ data: "Deleted all field_crop_app_soil successfully" });
                 }
                 console.log(errA, errB)
-                res.json({ "error": "Deleted all field_crop_app_soil unsuccessful" });
+                res.json({ error: "Deleted all field_crop_app_soil unsuccessful" });
             })
         })
     });
@@ -1801,11 +1714,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created field_crop_app_plowdown_credit unsuccessful" });
+                res.json({ error: "Created field_crop_app_plowdown_credit unsuccessful" });
             }
         )
     });
@@ -1813,18 +1725,18 @@ module.exports = (app) => {
         try {
             return res.json(await db.getFieldCropApplicationPlowdownCredit(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all field_crop_app_plowdown_credit unsuccessful" });
+            res.json({ error: "Get all field_crop_app_plowdown_credit unsuccessful" });
         }
     });
     app.post("/api/field_crop_app_plowdown_credit/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationPlowdownCredit(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ "error": "Deleted field_crop_app_plowdown_credit successfully" });
-                return;
+                return res.json({ data: "Deleted field_crop_app_plowdown_credit successfully" });
+
             }
             console.log(err)
-            res.json({ "error": "Deleted field_crop_app_plowdown_credit unsuccessful" });
+            res.json({ error: "Deleted field_crop_app_plowdown_credit unsuccessful" });
         })
     });
     app.post("/api/field_crop_app_plowdown_credit/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -1832,16 +1744,14 @@ module.exports = (app) => {
 
         db.rmAllFieldCropAppPlowdownCredit(req.body.dairy_id, (errA, resultA) => {
             if (!errA) {
-                res.json({ "error": "Deleted all field_crop_app_plowdown_credit successfully" });
-                return;
+                return res.json({ data: "Deleted all field_crop_app_plowdown_credit successfully" });
             }
             console.log(errA)
-            res.json({ "error": "Deleted all field_crop_app_plowdown_credit unsuccessful" });
+            res.json({ error: "Deleted all field_crop_app_plowdown_credit unsuccessful" });
         })
     });
 
     app.post("/api/drain_source/create", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
-        console.log("Creating.... drain source", req.body)
         const {
             dairy_id,
             src_desc,
@@ -1854,11 +1764,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created drain_source unsuccessful" });
+                res.json({ error: "Created drain_source unsuccessful" });
             }
         )
     });
@@ -1866,7 +1775,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.getDrainSource(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all drain_source unsuccessful" });
+            res.json({ error: "Get all drain_source unsuccessful" });
         }
 
     });
@@ -1874,11 +1783,10 @@ module.exports = (app) => {
         console.log("Deleting....", req.body.pk)
         db.rmDrainSource(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ "error": "Deleted drain_source successfully" });
-                return;
+                return res.json({ data: "Deleted drain_source successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted drain_source unsuccessful" });
+            res.json({ error: "Deleted drain_source unsuccessful" });
         })
     });
 
@@ -1922,11 +1830,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created drain_analysis unsuccessful" });
+                res.json({ error: "Created drain_analysis unsuccessful" });
             }
         )
     });
@@ -1934,18 +1841,18 @@ module.exports = (app) => {
         try {
             return res.json(await db.getDrainAnalysis(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all drain_analysis unsuccessful" });
+            res.json({ error: "Get all drain_analysis unsuccessful" });
         }
     });
     app.post("/api/drain_analysis/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmDrainAnalysis(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ "error": "Deleted drain_analysis successfully" });
+                res.json({ data: "Deleted drain_analysis successfully" });
                 return;
             }
             console.log(err)
-            res.json({ "error": "Deleted drain_analysis unsuccessful" });
+            res.json({ error: "Deleted drain_analysis unsuccessful" });
         })
     });
 
@@ -1982,11 +1889,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created export_hauler unsuccessful" });
+                res.json({ error: "Created export_hauler unsuccessful" });
             }
         )
     });
@@ -1995,12 +1901,10 @@ module.exports = (app) => {
         db.getExportHauler(req.params.dairy_id,
             (err, result) => {
                 if (!err) {
-
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Get all export_hauler unsuccessful" });
+                res.json({ error: "Get all export_hauler unsuccessful" });
             })
     });
     app.post("/api/export_hauler/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -2008,11 +1912,10 @@ module.exports = (app) => {
         db.rmExportHauler(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted export_hauler successfully" });
-                return;
+                return res.json({ "error": "Deleted export_hauler successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted export_hauler unsuccessful" });
+            res.json({ error: "Deleted export_hauler unsuccessful" });
         })
     });
 
@@ -2034,11 +1937,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created export_contact unsuccessful" });
+                res.json({ error: "Created export_contact unsuccessful" });
             }
         )
     });
@@ -2047,12 +1949,10 @@ module.exports = (app) => {
         db.getExportContact(req.params.dairy_id,
             (err, result) => {
                 if (!err) {
-
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Get all export_contact unsuccessful" });
+                res.json({ error: "Get all export_contact unsuccessful" });
             })
     });
     app.post("/api/export_contact/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -2060,11 +1960,10 @@ module.exports = (app) => {
         db.rmExportContact(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted export_contact successfully" });
-                return;
+                return res.json({ data: "Deleted export_contact successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted export_contact unsuccessful" });
+            res.json({ error: "Deleted export_contact unsuccessful" });
         })
     });
 
@@ -2099,11 +1998,10 @@ module.exports = (app) => {
             (err, result) => {
 
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created export_recipient unsuccessful" });
+                res.json({ error: "Created export_recipient unsuccessful" });
             }
         )
     });
@@ -2112,12 +2010,10 @@ module.exports = (app) => {
         db.getExportRecipient(req.params.dairy_id,
             (err, result) => {
                 if (!err) {
-
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Get all export_recipient unsuccessful" });
+                res.json({ error: "Get all export_recipient unsuccessful" });
             })
     });
     app.post("/api/export_recipient/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -2125,11 +2021,10 @@ module.exports = (app) => {
         db.rmExportRecipient(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted export_recipient successfully" });
-                return;
+                return res.json({ "error": "Deleted export_recipient successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted export_recipient unsuccessful" });
+            res.json({ error: "Deleted export_recipient unsuccessful" });
         })
     });
 
@@ -2161,11 +2056,10 @@ module.exports = (app) => {
             ],
             (err, result) => {
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created export_dest unsuccessful" });
+                res.json({ error: "Created export_dest unsuccessful" });
             }
         )
     });
@@ -2174,12 +2068,10 @@ module.exports = (app) => {
         db.getExportDest(req.params.dairy_id,
             (err, result) => {
                 if (!err) {
-
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Get all export_dest unsuccessful" });
+                res.json({ error: "Get all export_dest unsuccessful" });
             })
     });
     app.post("/api/export_dest/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -2187,11 +2079,10 @@ module.exports = (app) => {
         db.rmExportDest(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted export_dest successfully" });
-                return;
+                return res.json({ data: "Deleted export_dest successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted export_dest unsuccessful" });
+            res.json({ error: "Deleted export_dest unsuccessful" });
         })
     });
 
@@ -2258,11 +2149,10 @@ module.exports = (app) => {
             ],
             (err, result) => {
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created export_manifest unsuccessful" });
+                res.json({ error: "Created export_manifest unsuccessful" });
             }
         )
     });
@@ -2270,14 +2160,14 @@ module.exports = (app) => {
         try {
             return res.json(await db.getExportManifestByWastewater(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all export_manifest wastewater unsuccessful" });
+            res.json({ error: "Get all export_manifest wastewater unsuccessful" });
         }
     });
     app.get("/api/export_manifest/material_type/:material_type/:dairy_id", verifyToken, verifyUserFromCompanyByDairyID, needsRead, async (req, res) => {
         try {
             return res.json(await db.getExportManifestByMaterialType(req.params.material_type, req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all export_manifest unsuccessful" });
+            res.json({ error: "Get all export_manifest unsuccessful" });
         }
 
     });
@@ -2286,12 +2176,10 @@ module.exports = (app) => {
         db.getExportManifest(req.params.dairy_id,
             (err, result) => {
                 if (!err) {
-
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log("Export manifest", err)
-                res.json({ "error": "Get all export_manifest unsuccessful" });
+                res.json({ error: "Get all export_manifest unsuccessful" });
             })
     });
     app.post("/api/export_manifest/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -2299,11 +2187,10 @@ module.exports = (app) => {
         db.rmExportManifest(req.body.pk, (err, result) => {
 
             if (!err) {
-                res.json({ "error": "Deleted export_manifest successfully" });
-                return;
+                return res.json({ "error": "Deleted export_manifest successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted export_manifest unsuccessful" });
+            res.json({ error: "Deleted export_manifest unsuccessful" });
         })
     });
     app.post("/api/export_manifest/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
@@ -2316,11 +2203,10 @@ module.exports = (app) => {
                         db.rmExportManifest(req.body.dairy_id, (errE, resultE) => {
 
                             if (!errA && !errB && !errC && !errD && !errE) {
-                                res.json({ "error": "Deleted all export_manifest successfully" });
-                                return;
+                                return res.json({ data: "Deleted all export_manifest successfully" });
                             }
                             console.log(errA, errB, errC, errD, errE)
-                            res.json({ "error": "Deleted all export_manifest unsuccessful" });
+                            res.json({ error: "Deleted all export_manifest unsuccessful" });
                         })
                     })
                 })
@@ -2360,11 +2246,10 @@ module.exports = (app) => {
             ],
             (err, result) => {
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created discharge unsuccessful" });
+                res.json({ error: "Created discharge unsuccessful" });
             }
         )
     });
@@ -2372,18 +2257,17 @@ module.exports = (app) => {
         try {
             return res.json(await db.getDischarge(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all discharge unsuccessful" });
+            res.json({ error: "Get all discharge unsuccessful" });
         }
     });
     app.post("/api/discharge/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... discharge", req.body.pk)
         db.rmDischarge(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ "error": "Deleted discharge successfully" });
-                return;
+                return res.json({ data: "Deleted discharge successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted discharge unsuccessful" });
+            res.json({ error: "Deleted discharge unsuccessful" });
         })
     });
 
@@ -2407,11 +2291,10 @@ module.exports = (app) => {
             ],
             (err, result) => {
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created agreement unsuccessful" });
+                res.json({ error: "Created agreement unsuccessful" });
             }
         )
     });
@@ -2419,18 +2302,17 @@ module.exports = (app) => {
         try {
             return res.json(await db.getAgreement(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all agreement unsuccessful" });
+            res.json({ error: "Get all agreement unsuccessful" });
         }
     });
     app.post("/api/agreement/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... agreement", req.body.pk)
         db.rmAgreement(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ "error": "Deleted agreement successfully" });
-                return;
+                return res.json({ data: "Deleted agreement successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted agreement unsuccessful" });
+            res.json({ error: "Deleted agreement unsuccessful" });
         })
     });
     app.post("/api/agreement/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
@@ -2452,7 +2334,7 @@ module.exports = (app) => {
                 return res.json({ data: "Updated agreement successfully" });
             }
             console.log(err)
-            res.json({ "error": "Updated agreement unsuccessful" });
+            res.json({ error: "Updated agreement unsuccessful" });
         })
     });
 
@@ -2470,11 +2352,10 @@ module.exports = (app) => {
             ],
             (err, result) => {
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created note unsuccessful" });
+                res.json({ error: "Created note unsuccessful" });
             }
         )
     });
@@ -2489,11 +2370,10 @@ module.exports = (app) => {
         console.log("Deleting.... note", req.body.pk)
         db.rmNote(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ data: "Deleted note successfully" });
-                return;
+                return res.json({ data: "Deleted note successfully" })
             }
             console.log(err)
-            res.json({ "error": "Deleted note unsuccessful" });
+            res.json({ error: "Deleted note unsuccessful" });
         })
     });
     app.post("/api/note/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
@@ -2506,11 +2386,10 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json({ data: "Updated note successfully" });
-                return;
+                return res.json({ data: "Updated note successfully" });
             }
             console.log(err)
-            res.json({ "error": "Updated note unsuccessful" });
+            res.json({ error: "Updated note unsuccessful" });
         })
     });
 
@@ -2531,11 +2410,10 @@ module.exports = (app) => {
             ],
             (err, result) => {
                 if (!err) {
-                    res.json(result.rows)
-                    return;
+                    return res.json(result.rows)
                 }
                 console.log(err)
-                res.json({ "error": "Created certification unsuccessful" });
+                res.json({ error: "Created certification unsuccessful" });
             }
         )
     });
@@ -2543,18 +2421,17 @@ module.exports = (app) => {
         try {
             return res.json(await db.getCertification(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Get all certification unsuccessful" });
+            res.json({ error: "Get all certification unsuccessful" });
         }
     });
     app.post("/api/certification/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting.... certification", req.body.pk)
         db.rmCertification(req.body.pk, (err, result) => {
             if (!err) {
-                res.json({ data: "Deleted certification successfully" });
-                return;
+                return res.json({ data: "Deleted certification successfully" });
             }
             console.log(err)
-            res.json({ "error": "Deleted certification unsuccessful" });
+            res.json({ error: "Deleted certification unsuccessful" });
         })
     });
     app.post("/api/certification/update", verifyToken, verifyUserFromCompanyByDairyID, needsWrite, (req, res) => {
@@ -2571,8 +2448,7 @@ module.exports = (app) => {
         ], (err, result) => {
 
             if (!err) {
-                res.json({ data: "Updated certification successfully" });
-                return;
+                return res.json({ data: "Updated certification successfully" });
             }
             console.log(err)
             res.json({ error: "Updated certification unsuccessful" });
@@ -2583,7 +2459,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.searchCertification(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Search all certifications unsuccessful" });
+            res.json({ error: "Search all certifications unsuccessful" });
         }
     });
 
@@ -2591,7 +2467,7 @@ module.exports = (app) => {
         try {
             return res.json(await db.searchNote(req.params.dairy_id))
         } catch (e) {
-            res.json({ "error": "Search all notes unsuccessful" });
+            res.json({ error: "Search all notes unsuccessful" });
         }
     });
 
@@ -2600,7 +2476,7 @@ module.exports = (app) => {
             return res.json(await db.searchAgreement(req.params.dairy_id))
         } catch (e) {
             console.log('Search all agreements unsuccessful', e)
-            res.json({ "error": "Search all agreements unsuccessful", err: e });
+            res.json({ error: "Search all agreements unsuccessful", err: e });
         }
     });
 

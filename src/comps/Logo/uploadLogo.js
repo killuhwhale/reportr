@@ -74,7 +74,7 @@ class UploadLogo extends Component {
             <Grid item xs={12} container className='showOnHoverParent'>
                 {this.state.logoUrl ?
                     <div style={{ position: 'relative', width: '100%' }}>
-                        <img src={this.state.logoUrl} style={{ width: '100%', height: '65px', borderRadius: '8px' }} />
+                        <img src={this.state.logoUrl} alt='company logo' style={{ width: '100%', height: '65px', borderRadius: '8px' }} />
                         <Tooltip title='Update logo' className='showOnHover' style={{ position: 'absolute', bottom: '0px', right: '0px' }}>
                             <IconButton onClick={() => this.toggleUploadModal(true)} size='medium' >
                                 <PanoramaIcon style={{ fontSize: '2.75rem', color: '#54efd3' }} />

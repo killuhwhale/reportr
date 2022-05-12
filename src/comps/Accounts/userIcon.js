@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
-import { deepOrange, deepPurple } from '@material-ui/core/colors';
+import TuneIcon from '@material-ui/icons/Tune';
 import { auth } from '../../utils/users';
 import { Grid, Tooltip, Popper, Fade, Paper, ClickAwayListener, Typography, IconButton, TextField } from '@material-ui/core';
 import { withTheme } from "@material-ui/core/styles"
@@ -158,10 +158,10 @@ const ProfilePopper = (props) => {
 
 
                                     <Grid item xs={2} align='center'>
-                                        <Tooltip title="Accounts">
+                                        <Tooltip title="Template Settings">
                                             <IconButton color="primary" variant="outlined" style={{ marginTop: "16px" }}
                                                 onClick={() => props.toggleSettingsModal(true)}>
-                                                <SupervisorAccountIcon />
+                                                <TuneIcon />
                                             </IconButton>
                                         </Tooltip>
                                     </Grid>

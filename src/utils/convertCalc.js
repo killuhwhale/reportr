@@ -7,6 +7,7 @@ const toFloat = (num) => {
   const float = num && typeof (num) === typeof ('') && num.length > 0 ? parseFloat(num.replaceAll(',', '')) : typeof (num) === typeof (0) || typeof (num) === typeof (0.0) ? num : 0
 
   if (isNaN(float)) {
+    // eslint-disable-next-line 
     throw `${float} is not a number`
     // return 0.0001337
   }
@@ -15,6 +16,7 @@ const toFloat = (num) => {
 
 const zeroTimeDate = (dt) => {
   if (!dt) {
+    // eslint-disable-next-line 
     throw `Invalid date given ${dt}`
   }
 
@@ -23,6 +25,7 @@ const zeroTimeDate = (dt) => {
 
 const daysBetween = (d1, d2) => {
   if (!d1 || !d2) {
+    // eslint-disable-next-line 
     throw `Invalid dates given: ${d1} - ${d2}`
   }
   // console.log("Calculating days between", d1, d2)
@@ -45,7 +48,7 @@ const opArrayByPos = (a, b, op = "+") => {
     return op === '+' ? el + b[i] :
       op === '-' ? el - b[i] :
         op === '*' ? el * b[i] :
-          op === '/' ? (b[i] != 0 ? el / b[i] : 0) :
+          op === '/' ? (b[i] !== 0 ? el / b[i] : 0) :
             null
   })
 }

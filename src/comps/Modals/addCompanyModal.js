@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 // Material UI
-import { Grid, Paper, Button, Typography, Modal, TextField, CircularProgress } from '@material-ui/core';
+import { Grid, Paper, Button, Typography, Modal, TextField } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
-import { get, post } from '../../utils/requests';
-import { BASE_URL } from '../../utils/environment';
 import { Company } from '../../utils/company/company'
 
 class AddCompanyModal extends Component {
