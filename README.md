@@ -30,7 +30,12 @@
   Deploy command
     npm run build; git add .; git commit -m 'deploy'; git push; firebase deploy;
 
-
+# Features:
+  - Upload your dairy's data directly from Workbook/ Spreadsheet
+  - Single Click Generate All Files and Reports for the Dairy
+  - Create READ, WRITE and DELETE accounts
+  - Manage your employees access, change their username and password
+  - Update workbook/ spreadsheet template
 
 
 # Testing:
@@ -86,14 +91,6 @@
 
 
 # Todo:
-
-  ## Private Github
-    - I want to make public version so people can look at code....
-    - Ensure no secrets are visible.
-    - Github is private, the only passwords visible in code is for the DB and that is in a .yaml file uploaded directly to Digital Ocean
-    - Might not need env vars.
-
-
   ## Facility information
     - When creating a dairy base, we need to create BaseOwnerOperators and BaseParcels
     - When creating a new dairy, create like normal but this information needs to be retrived instead. 
@@ -119,12 +116,7 @@
     - TSV
     - Dairy, and other info
 
-# Features:
-  - Create READ, WRITE and DELETE accounts
-  - Manage your employees access: change their username and password
-  - Upload your dairy's data directly from Workbook/ Spreadsheet
-  - Single Click Generate All Files and Reports for the Dairy
-  - Update workbook/ spreadsheet template
+
 
 # Problems 
   ## PDF Report
