@@ -90,7 +90,7 @@ class UploadTSVModal extends Component {
                       color="secondary"
                       variant="outlined"
                       onClick={() => {
-                        // this.setState({ loading: true })
+                        this.setState({ loading: true })
                         this.props.onAction()
                       }}>
                       {this.props.actionText}
