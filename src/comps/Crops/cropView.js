@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
 import {
-  Grid, Typography, IconButton, Tooltip, TextField,
+  Grid, Typography, IconButton, Tooltip,
   Card, CardContent, CardActions
 } from '@material-ui/core'
-import {
-  DatePicker
-} from '@material-ui/pickers';
 import DeleteIcon from '@material-ui/icons/Delete'
 
 import { withRouter } from "react-router-dom"
@@ -16,115 +13,6 @@ import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from '../Appl
 import { post } from '../../utils/requests';
 import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from '../../utils/format';
 import { FixedPageSize } from '../utils/FixedPageSize'
-
-const CropViewTable = withTheme((props) => {
-  const fc = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0 ? props.field_crops[0] : {}
-  const fcs = props && props.field_crops && typeof props.field_crops === typeof [] && props.field_crops.length > 0 ? props.field_crops : []
-  return (
-    <Grid item xs={12} style={{ marginBottom: "32px", ...props.style }}>
-      <Grid item container xs={12}>
-        <Grid item xs={4}>
-          <Typography variant="h4" >
-            {fc.fieldtitle}
-          </Typography>
-        </Grid>
-        <Grid item xs={4} >
-          <Typography variant="h6" gutterBottom>
-            {fc.acres} Total Acres
-          </Typography>
-        </Grid>
-        <Grid item xs={4}>
-          <Typography variant="h6" gutterBottom>
-            {fc.cropable} Cropable Acres
-          </Typography>
-        </Grid>
-      </Grid>
-      {fcs.map((field_crop, i) => {
-        return (
-          <Grid item container spacing={2} xs={12} key={`cwtfc${i}`} style={{ marginBottom: "16px" }}>
-            <Grid item container xs={12}>
-              <Grid item xs={12}>
-                <Typography variant="h5" gutterBottom>
-                  {field_crop.croptitle}
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid item xs={2} align="right">
-              <DatePicker label="Plant Date"
-                value={field_crop.plant_date}
-                open={false}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Acres Planted"
-                name="acres_planted"
-                value={field_crop.acres_planted}
-
-                style={{ width: "100%" }}
-              />
-            </Grid>
-            <Grid item xs={2}>
-              <TextField
-                label="Typical Yield"
-                name="typical_yield"
-                value={field_crop.typical_yield}
-                style={{ width: "100%" }}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                label="Moisture"
-                name="moisture"
-                value={field_crop.moisture}
-                style={{ width: "100%" }}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                label="N"
-                name="n"
-                value={parseFloat(field_crop.n).toFixed(3)}
-                style={{ width: "100%" }}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                label="P"
-                name="p"
-                value={parseFloat(field_crop.p).toFixed(3)}
-                style={{ width: "100%" }}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                label="K"
-                name="k"
-                value={parseFloat(field_crop.k).toFixed(3)}
-                style={{ width: "100%" }}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <TextField
-                label="Salt"
-                name="salt"
-                value={parseFloat(field_crop.salt).toFixed(3)}
-                style={{ width: "100%" }}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <Tooltip title="Remove Crop">
-                <IconButton onClick={() => props.onDelete(field_crop)}>
-                  <DeleteIcon color="error" />
-                </IconButton>
-              </Tooltip>
-            </Grid>
-          </Grid>
-        )
-      })}
-    </Grid>
-  )
-})
 
 
 const FieldCrop = withTheme((props) => {
@@ -217,25 +105,17 @@ class CropView extends Component {
     return props
   }
   componentDidMount() {
-    this.setWindowListener()
     this.formatFieldCrops()
   }
 
-  getConvertedFieldCropKeys(fc) {
-    return Object.keys(fc)
-      .sort(new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare)
-  }
-
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.dairy.pk !== this.state.dairy.pk || prevProps.field_crops !== this.props.field_crops) {
+    if (prevState.dairy.pk !== this.state.dairy.pk || this.state.field_crops_list.length !== prevState.field_crops_list.length) {
       this.formatFieldCrops()
     }
   }
 
-
-
   formatFieldCrops() {
-    let fieldCropsByFieldtitle = nestedGroupBy(this.props.field_crops_list, ['fieldtitle', 'plant_date'])
+    let fieldCropsByFieldtitle = nestedGroupBy(this.state.field_crops_list, ['fieldtitle', 'plant_date'])
     const keys = Object.keys(fieldCropsByFieldtitle).sort(naturalSort)
     if (keys.length > 0) {
       this.setState({ field_crops: fieldCropsByFieldtitle, viewFieldKey: keys[0] })
@@ -312,33 +192,8 @@ class CropView extends Component {
     this.setState({ delFieldCropObj: fieldCrop })
     this.toggleShowDeleteFieldCropModal(true)
   }
-  setWindowListener() {
-    window.addEventListener('resize', (ev) => {
-      this.setState({ windowHeight: window.innerHeight, windowWidth: window.innerWidth })
-    })
-  }
-  getItemSize(index) {
-    let headerSize = 75
-    let itemSize = 135
-    let keys = this.getConvertedFieldCropKeys(this.state.convertedFieldCrops)
-    let field_id = keys[index]
-    let field_crops = this.state.convertedFieldCrops[field_id]
-    let numRows = field_crops && field_crops.length ? field_crops.length : 45
 
-    return headerSize + (numRows * itemSize)
-  }
-  renderItem({ index, style }) {
-    let keys = this.getConvertedFieldCropKeys(this.state.convertedFieldCrops)
-    let field_id = keys[index]
-    let field_crops = this.state.convertedFieldCrops[field_id]
-    return (
-      <CropViewTable key={`cwtz${index}`} style={style}
-        field_crops={field_crops}
-        onChange={this.onFieldCropChange.bind(this)}
-        onDelete={this.onFieldCropDelete.bind(this)}
-      />
-    )
-  }
+
 
   render() {
     return (
@@ -376,21 +231,6 @@ class CropView extends Component {
                 }
               </FixedPageSize>
             </Grid>
-            {/* <Grid item xs={12}>
-              {this.getConvertedFieldCropKeys(this.state.convertedFieldCrops).length > 0 ?
-                <List
-                  height={Math.max(this.state.windowHeight - 265, 100)}
-                  itemCount={this.getConvertedFieldCropKeys(this.state.convertedFieldCrops).length}
-                  itemSize={this.getItemSize.bind(this)}
-                  width={this.state.windowWidth * (.82)}
-                >
-                  {this.renderItem.bind(this)}
-                </List>
-                :
-                <React.Fragment></React.Fragment>
-              }
-
-            </Grid> */}
           </Grid>
           :
           <React.Fragment>Loading....</React.Fragment>
@@ -400,9 +240,10 @@ class CropView extends Component {
           actionText="Delete"
           cancelText="Cancel"
           modalText={`Are you sure you want to delete: ${this.state.delFieldCropObj.fieldtitle} - ${this.state.delFieldCropObj.croptitle}`}
-          onAction={() => {
+          onAction={async () => {
 
-            this.props.onDeleteFieldCrop(this.state.delFieldCropObj)
+            await this.props.onDeleteFieldCrop(this.state.delFieldCropObj)
+            this.getFieldCropsByViewKeys()
             this.toggleShowDeleteFieldCropModal(false)
           }
           }

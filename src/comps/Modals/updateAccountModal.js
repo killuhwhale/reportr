@@ -8,7 +8,6 @@ import { ROLES } from "../../utils/constants";
 class UpdateAccountModal extends Component {
     constructor(props) {
         super(props)
-        console.log('this.state.accountInfo.account_type', props.updateAccount)
         this.state = {
             emailError: '',
             usernameError: '',
@@ -41,7 +40,6 @@ class UpdateAccountModal extends Component {
         }
 
         if (email !== oldEmail || username !== oldUsername || account_type !== old_account_type) {
-            console.log("Updating ", user)
             UserAuth.updateAccount(user)
                 .then(res => {
                     if (auth.currentUser.account_type === ROLES.ADMIN) {
@@ -83,7 +81,6 @@ class UpdateAccountModal extends Component {
     }
 
     render() {
-        console.log('this.state.accountInfo.account_type', this.state.accountInfo.account_type)
         return (
             <Modal open={this.props.open} onClose={this.props.onClose}
                 aria-labelledby="simple-modal-title"

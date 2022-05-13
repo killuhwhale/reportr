@@ -437,7 +437,7 @@ class Solidmanure extends Component {
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteSolidmanureModal(false)
-          this.props.getFieldCropAppSolidmanure()
+          this.getFieldCropAppSolidmanure()
         })
         .catch(err => {
           console.log(err)
@@ -455,7 +455,7 @@ class Solidmanure extends Component {
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteSolidmanureAnalysisModal(false)
-          this.props.getFieldCropAppSolidmanureAnalysis()
+          this.getFieldCropAppSolidmanureAnalysis()
         })
         .catch(err => {
           console.log(err)

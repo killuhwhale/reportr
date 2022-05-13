@@ -96,13 +96,10 @@ class Accounts extends Component {
 
     getAccounts() {
         const company_id = auth.currentUser.company_id
-        console.log("GEtting all accounts for comp id: ", company_id)
         UserAuth.getAllAccounts(company_id)
             .then(res => {
-                console.log(res)
                 if (res.data) {
                     const { data: users } = res
-                    console.log("Settings users: ", users)
                     this.setState({ allAccounts: users, allAccountInvoked: true })
                 } else {
                     this.setState({ allAccountInvoked: true })
@@ -123,12 +120,10 @@ class Accounts extends Component {
     }
 
     onChangePassword(account) {
-        console.log("Chanign password for ", account)
         this.setState({ changePasswordAccount: account, showChangePasswordModal: true })
     }
 
     onDeleteAccount(account) {
-        console.log("Delete acount ", account)
         this.setState({ deletedAccount: account, showConfirmDeleteAccountModal: true })
     }
 
@@ -136,9 +131,9 @@ class Accounts extends Component {
         const { pk } = this.state.deletedAccount
         UserAuth.deleteAccount(pk, auth.currentUser.company_id)
             .then(res => {
-                console.log("Account deleted ", res)
-                this.getAccounts()
                 this.toggleConfirmDeleteAccountModal(false)
+                if (res.error) return this.props.onAlert(res.error, 'error')
+                this.getAccounts()
                 this.props.onAlert("Account deleted", 'success')
             })
     }

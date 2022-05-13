@@ -148,11 +148,10 @@ const ManifestView = withTheme((props) => {
       </Grid>
 
       {manifests.map((manifest, i) => {
-        console.log(manifest)
         return (
 
 
-          <Grid item xs={12} md={4} lg={3}>
+          <Grid item xs={12} md={4} lg={3} key={`${i}_mview`}>
             <Card variant="outlined" key={`expmani_${i}`} className='showOnHoverParent'>
               <CardContent>
                 <Grid item xs={12} align='right'>
@@ -506,7 +505,9 @@ class ExportTab extends Component {
     get(`${this.props.BASE_URL}/api/export_manifest/${this.state.dairy.pk}`)
       .then(res => {
         let groupedManifests = groupBySortBy(res, 'recipient_id', 'last_date_hauled')
-        this.setState({ exportManifests: groupedManifests })
+        this.setState({ exportManifests: groupedManifests }, () => {
+          this.fetchExportTotals()
+        })
       })
       .catch(err => {
         console.log(err)
@@ -676,16 +677,27 @@ class ExportTab extends Component {
   onConfirmExportContactDelete(deleteObj) {
     this.setState({ showConfirmDeleteExportContactModal: true, deleteExportContactObj: deleteObj })
   }
+
+  toggleShowConfirmDeleteExportContactModal(val) {
+    this.setState({ showConfirmDeleteExportContactModal: val })
+  }
+
   onExportContactDelete() {
     if (Object.keys(this.state.deleteExportContactObj).length > 0) {
       post(`${this.props.BASE_URL}/api/export_contact/delete`, {
         pk: this.state.deleteExportContactObj.pk,
-        dairy: this.state.dairy.pk
+        dairy_id: this.state.dairy.pk
       })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportContactModal(false)
           this.getExportContact()
+          this.getOperators()
+          this.getExportHaulers()
+          this.getExportRecipients()
+          this.getExportDests()
+          this.getExportManifests()
+          this.fetchExportTotals()
         })
         .catch(err => {
           console.log(err)
@@ -696,16 +708,25 @@ class ExportTab extends Component {
   onConfirmExportHaulerDelete(deleteObj) {
     this.setState({ showConfirmDeleteExportHaulerModal: true, deleteExportHaulerObj: deleteObj })
   }
+
+  toggleShowConfirmDeleteExportHaulerModal(val) {
+    this.setState({ showConfirmDeleteExportHaulerModal: val })
+  }
+
   onExportHaulerDelete() {
     if (Object.keys(this.state.deleteExportHaulerObj).length > 0) {
       post(`${this.props.BASE_URL}/api/export_hauler/delete`, {
         pk: this.state.deleteExportHaulerObj.pk,
-        dairy: this.state.dairy.pk
+        dairy_id: this.state.dairy.pk
       })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportHaulerModal(false)
-          this.getExportHauler()
+          this.getExportHaulers()
+          this.getExportRecipients()
+          this.getExportDests()
+          this.getExportManifests()
+          this.fetchExportTotals()
         })
         .catch(err => {
           console.log(err)
@@ -716,16 +737,24 @@ class ExportTab extends Component {
   onConfirmExportRecipientDelete(deleteObj) {
     this.setState({ showConfirmDeleteExportRecipientModal: true, deleteExportRecipientObj: deleteObj })
   }
+  toggleShowConfirmDeleteExportRecipientModal(val) {
+    this.setState({ showConfirmDeleteExportRecipientModal: val })
+  }
+
+
   onExportRecipientDelete() {
     if (Object.keys(this.state.deleteExportRecipientObj).length > 0) {
       post(`${this.props.BASE_URL}/api/export_recipient/delete`, {
         pk: this.state.deleteExportRecipientObj.pk,
-        dairy: this.state.dairy.pk
+        dairy_id: this.state.dairy.pk
       })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportRecipientModal(false)
-          this.getExportRecipient()
+          this.getExportRecipients()
+          this.getExportDests()
+          this.getExportManifests()
+          this.fetchExportTotals()
         })
         .catch(err => {
           console.log(err)
@@ -736,16 +765,21 @@ class ExportTab extends Component {
   onConfirmExportDestDelete(deleteObj) {
     this.setState({ showConfirmDeleteExportDestModal: true, deleteExportDestObj: deleteObj })
   }
+  toggleShowConfirmDeleteExportDestModal(val) {
+    this.setState({ showConfirmDeleteExportDestModal: val })
+  }
   onExportDestDelete() {
     if (Object.keys(this.state.deleteExportDestObj).length > 0) {
       post(`${this.props.BASE_URL}/api/export_dest/delete`, {
         pk: this.state.deleteExportDestObj.pk,
-        dairy: this.state.dairy.pk
+        dairy_id: this.state.dairy.pk
       })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportDestModal(false)
-          this.getExportDest()
+          this.getExportDests()
+          this.getExportManifests()
+          this.fetchExportTotals()
         })
         .catch(err => {
           console.log(err)
@@ -757,16 +791,22 @@ class ExportTab extends Component {
     this.setState({ showConfirmDeleteExportManifestModal: true, deleteExportManifestObj: deleteObj })
   }
 
+  toggleShowConfirmDeleteExportManifestModal(val) {
+    this.setState({ showConfirmDeleteExportManifestModal: val })
+  }
+
   onExportManifestDelete() {
+    console.log("Deleting...", this.state.deleteExportManifestObj)
     if (Object.keys(this.state.deleteExportManifestObj).length > 0) {
       post(`${this.props.BASE_URL}/api/export_manifest/delete`, {
         pk: this.state.deleteExportManifestObj.pk,
-        dairy: this.state.dairy.pk
+        dairy_id: this.state.dairy.pk
       })
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteExportManifestModal(false)
-          this.getExportManifest()
+          this.getExportManifests()
+          this.fetchExportTotals()
         })
         .catch(err => {
           console.log(err)
@@ -886,13 +926,14 @@ class ExportTab extends Component {
       post(`${this.props.BASE_URL}/api/tsv/type/delete`, { dairy_id: this.state.dairy.pk, tsvType: WASTEWATER }),
     ])
       .then(res => {
+        console.log("Delete all exports: ", res)
         this.getExportContact()
-        this.getOperators()
         this.getExportHaulers()
         this.getExportRecipients()
         this.getExportDests()
         this.getExportManifests()
         this.confirmDeleteAllFromTable(false)
+
       })
       .catch(err => {
         console.log(err)

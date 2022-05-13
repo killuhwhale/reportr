@@ -14,7 +14,6 @@ import AddDairyBaseModal from "../comps/Modals/addDairyBaseModal"
 import NutrientApplicationTab from "../comps/Applications/appNutrientTab"
 import ExportTab from "../comps/Exports/exportTab"
 import ActionCancelModal from "../comps/Modals/actionCancelModal"
-import Accounts from "../comps/Accounts/accounts"
 import { auth } from '../utils/users'
 import { get } from "../utils/requests"
 import { Dairy } from '../utils/dairy/dairy'
@@ -386,6 +385,7 @@ class HomePage extends Component {
             <Grid item xs={2} sm={1}>
               <UserIcon toggleTheme={this.props.toggleTheme}
                 company={this.state.company}
+                onAlert={this.props.onAlert}
                 dairy_id={this.state.dairies.length > 0 ? this.state.dairies[this.state.dairyIdx].pk : 0}
               />
             </Grid>
@@ -504,12 +504,6 @@ class HomePage extends Component {
         />
 
 
-        <Accounts
-          key={'DOESTHISWORK'}
-          open={this.state.showAccountsModal}
-          onAlert={this.props.onAlert}
-          onClose={() => this.toggleAccountsModal(false)}
-        />
 
         <ActionCancelModal
           open={this.state.toggleShowLogoutModal}

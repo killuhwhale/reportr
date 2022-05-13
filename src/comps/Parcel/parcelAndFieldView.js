@@ -168,6 +168,7 @@ class ParcelView extends Component {
 
     if (res.error) return this.props.onAlert(res.error, 'error')
     this.props.onParcelDelete()
+    this.getAllFieldParcels()
 
   }
 
@@ -180,8 +181,10 @@ class ParcelView extends Component {
         } else {
           this.props.onAlert('Deleted!', 'success')
           this.props.onFieldDelete()
+          this.getAllFieldParcels()
         }
         this.toggleDeleteFieldModal(false)
+
       })
       .catch(err => {
         console.log("error: ", err)

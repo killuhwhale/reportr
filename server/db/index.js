@@ -1169,6 +1169,7 @@ module.exports = {
       // nitrateN, totalP, totalK, totalTDS
       `SELECT 
         'freshwater' as entry_type,
+        fcfw.pk,
         sample_date,
         src_desc,
         src_type,
@@ -1326,6 +1327,7 @@ module.exports = {
       // nitrateN, totalP, totalK, totalTDS
       `SELECT 
       'manure' as entry_type,
+      fcasm.pk,
       fcasm.src_desc,
       fcasm.amount_applied,
       fcasm.amt_applied_per_acre,
@@ -1490,6 +1492,7 @@ module.exports = {
       // nitrateN, totalP, totalK, totalTDS
       `SELECT 
       'fertilizer' as entry_type,
+      fcaf.pk,
       fcaf.amount_applied,
 
       ni.import_desc,
@@ -2723,38 +2726,54 @@ module.exports = {
   },
   rmExportContact: (id, callback) => {
     return pool.query(
-      format("DELETE FROM export_contact where dairy_id = %L", id),
+      format("DELETE FROM export_contact where pk = %L", id),
       [],
       callback
     )
   },
   rmExportHauler: (id, callback) => {
     return pool.query(
-      format("DELETE FROM export_hauler where dairy_id = %L", id),
+      format("DELETE FROM export_hauler where pk = %L", id),
       [],
       callback
     )
   },
   rmExportRecipient: (id, callback) => {
     return pool.query(
-      format("DELETE FROM export_recipient where dairy_id = %L", id),
+      format("DELETE FROM export_recipient where pk = %L", id),
       [],
       callback
     )
   },
   rmExportDest: (id, callback) => {
     return pool.query(
-      format("DELETE FROM export_dest where dairy_id = %L", id),
+      format("DELETE FROM export_dest where pk = %L", id),
       [],
       callback
     )
   },
   rmExportManifest: (id, callback) => {
     return pool.query(
-      format("DELETE FROM export_manifest where dairy_id = %L", id),
+      format("DELETE FROM export_manifest where pk = %L", id),
       [],
       callback
     )
+  },
+  rmAllExports: (dairy_id) => {
+    return Promise.all([
+      queryPromiseByValues(`
+        DELETE FROM export_contact where dairy_id = $1
+      `, [dairy_id]),
+      queryPromiseByValues(`
+        DELETE FROM export_hauler where dairy_id = $1
+      `, [dairy_id]),
+      queryPromiseByValues(`
+        DELETE FROM export_dest where dairy_id = $1
+      `, [dairy_id]),
+      queryPromiseByValues(`
+        DELETE FROM export_recipient where dairy_id = $1
+      `, [dairy_id])
+    ])
   }
 
 

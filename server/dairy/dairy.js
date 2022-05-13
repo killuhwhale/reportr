@@ -1259,7 +1259,7 @@ module.exports = (app) => {
         console.log("Deleting....", req.body.pk)
         db.rmFieldCropApplicationFreshwater(req.body.pk, (err, result) => {
 
-            if (!err) {
+            if (!err && result.rowCount > 0) {
                 return res.json({ data: "Deleted field_crop_app_freshwater successfully" });
             }
             console.log(err)
@@ -2185,33 +2185,27 @@ module.exports = (app) => {
     app.post("/api/export_manifest/delete", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
         console.log("Deleting....", req.body.pk)
         db.rmExportManifest(req.body.pk, (err, result) => {
-
+            console.log(result)
             if (!err) {
-                return res.json({ "error": "Deleted export_manifest successfully" });
+                return res.json({ data: "Deleted export_manifest successfully" });
             }
             console.log(err)
             res.json({ error: "Deleted export_manifest unsuccessful" });
         })
     });
-    app.post("/api/export_manifest/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, (req, res) => {
+    app.post("/api/export_manifest/deleteAll", verifyToken, verifyUserFromCompanyByDairyID, needsDelete, async (req, res) => {
         console.log("Deleting all export_manifest....", req.body)
+        try {
+            const dbRes = await db.rmAllExports(req.body.dairy_id)
+            console.log("Export deletes: ", dbRes)
+            const failedExports = dbRes.filter(obj => obj.error)
+            if (failedExports.length > 0) return res.json({ error: "Deleted all export_manifest unsuccessful" });
 
-        db.rmExportContact(req.body.dairy_id, (errA, resultA) => {
-            db.rmExportHauler(req.body.dairy_id, (errB, resultB) => {
-                db.rmExportRecipient(req.body.dairy_id, (errC, resultC) => {
-                    db.rmExportDest(req.body.dairy_id, (errD, resultD) => {
-                        db.rmExportManifest(req.body.dairy_id, (errE, resultE) => {
-
-                            if (!errA && !errB && !errC && !errD && !errE) {
-                                return res.json({ data: "Deleted all export_manifest successfully" });
-                            }
-                            console.log(errA, errB, errC, errD, errE)
-                            res.json({ error: "Deleted all export_manifest unsuccessful" });
-                        })
-                    })
-                })
-            })
-        })
+            return res.json({ data: "Deleted all export_manifest successfully" });
+        } catch (e) {
+            console.log(e)
+            res.json({ error: "Deleted all export_manifest unsuccessful" });
+        }
     });
 
 

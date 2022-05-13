@@ -8,7 +8,6 @@ import { withTheme } from '@material-ui/core/styles';
 import CropView from "./cropView"
 import AddFieldCropModal from "../Modals/addFieldCropModal"
 import { get, post } from '../../utils/requests'
-import { groupBySortBy } from "../../utils/format"
 import { Field } from '../../utils/fields/fields'
 import ActionCancelModal from "../Modals/actionCancelModal"
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
@@ -22,7 +21,6 @@ class CropTab extends Component {
       fields: [], // fields from dairy
       crops: [],  // crops stored in DB with default data
       field_crops: [],
-      convertedFieldCrops: {},
       toggleShowDeleteAllModal: false,
       createFieldCropObj: {
         createFieldIdx: 0,
@@ -95,7 +93,6 @@ class CropTab extends Component {
       k: crop.k,
       salt: crop.salt
     }
-    console.log(field_crop)
 
     post(`${this.props.BASE_URL}/api/field_crop/create`, field_crop)
       .then(res => {
@@ -110,11 +107,10 @@ class CropTab extends Component {
   getAllFieldCrops() {
     get(`${this.props.BASE_URL}/api/field_crop/${this.state.dairy.pk}`)
       .then(res => {
-        if (res.test) {
+        if (res.error) {
           console.log("Field Crops not found.")
         } else {
-          let convertedFieldCrops = groupBySortBy(res, 'fieldtitle', 'plant_date')
-          this.setState({ field_crops: res, convertedFieldCrops })
+          this.setState({ field_crops: res })
         }
       })
       .catch(err => {
@@ -122,13 +118,10 @@ class CropTab extends Component {
       })
   }
 
-  deleteFieldCrop(delFieldCropObj) {
-    console.log("Deleting field crop ", delFieldCropObj)
-    post(`${this.props.BASE_URL}/api/field_crop/delete`, { pk: delFieldCropObj.pk, dairy_id: this.state.dairy.pk })
-      .then(res => {
-        console.log(res)
-        this.getAllFieldCrops()
-      })
+  async deleteFieldCrop(delFieldCropObj) {
+    const res = await post(`${this.props.BASE_URL}/api/field_crop/delete`, { pk: delFieldCropObj.pk, dairy_id: this.state.dairy.pk })
+    this.getAllFieldCrops()
+    return res
   }
 
   confirmDeleteAllFromTable(val) {

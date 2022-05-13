@@ -342,6 +342,7 @@ module.exports = (app) => {
     app.post(`/${api}/delete`, verifyToken, verifyUserFromCompanyByCompanyID, needsSelfOrAdmin, (req, res) => {
         const { pk, company_id } = req.body
         const { user } = req
+        if (pk === user.pk) return res.json({ error: 'Cannot delete self.' })
         db.rmAccount(pk, (dbErr, result) => {
             console.log("Done deleteing")
             if (!dbErr) {

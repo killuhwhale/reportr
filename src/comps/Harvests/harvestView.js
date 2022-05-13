@@ -14,7 +14,7 @@ import { post } from '../../utils/requests'
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from '../Applications/selectButtonGrid'
 import { formatDate, formatFloat, naturalSort, naturalSortBy, nestedGroupBy, splitDate } from '../../utils/format'
 import { FixedPageSize } from '../utils/FixedPageSize'
-
+import { BASE_URL } from '../../utils/environment';
 
 /** Displays field_crop_harvest entries
  *      -includes fields and field_crop information
@@ -117,7 +117,7 @@ class HarvestView extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.dairy.pk !== this.state.dairy.pk || prevProps.fieldCropHarvestEvents !== this.props.fieldCropHarvestEvents) {
+    if (prevState.dairy.pk !== this.state.dairy.pk || prevProps.fieldCropHarvestEvents.length !== this.props.fieldCropHarvestEvents.length) {
       this.formatHarvests()
     }
   }
@@ -151,7 +151,7 @@ class HarvestView extends Component {
   }
   deleteFieldCropHarvest() {
     console.log("Deleting field crop harvest obj", this.state.delFieldCropHarvestObj)
-    post(`${this.props.BASE_URL}/api/field_crop_harvest/delete`, {
+    post(`${BASE_URL}/api/field_crop_harvest/delete`, {
       pk: this.state.delFieldCropHarvestObj.pk,
       dairy_id: this.state.dairy.pk
     }

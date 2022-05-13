@@ -332,6 +332,8 @@ class TemplateSetting extends Component {
     }
 
     async getSettings() {
+        if (this.props.dairy_id === 0) return
+
         const res = await TemplateSettings.lazyGetSettings(this.props.dairy_id)
         if (res.error) return console.log(res)
 

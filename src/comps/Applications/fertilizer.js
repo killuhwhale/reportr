@@ -449,7 +449,7 @@ class Fertilizer extends Component {
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteNutrientImportModal(false)
-          this.props.getNutrientImport()
+          this.getNutrientImport()
         })
         .catch(err => {
           console.log(err)

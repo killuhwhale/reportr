@@ -24,6 +24,7 @@ import { WASTEWATER_MATERIAL_TYPES } from '../../utils/constants'
 import { renderFieldButtons, renderCropButtons, CurrentFieldCrop } from './selectButtonGrid'
 import { TSVUtil } from "../../utils/TSV"
 import { FixedPageSize } from '../utils/FixedPageSize'
+import { BASE_URL } from '../../utils/environment'
 
 
 const WastewaterAnalysis = withTheme((props) => {
@@ -269,7 +270,6 @@ class ProcessWastewater extends Component {
     return props // if default props change return props | compare props.dairy == state.dairy
   }
   componentDidMount() {
-    this.setWindowListener()
     this.getFieldCropAppWastewaterAnalysis()
     this.getFieldCropAppProcessWastewater()
     this.getFieldCropAppEvents()
@@ -398,8 +398,14 @@ class ProcessWastewater extends Component {
     this.setState({ showConfirmDeleteWastewaterAnalysisModal: val })
   }
 
-  deleteWatewaterAnalysis() {
-    console.log("Deleting analysis: ", this.state.deleteAnalysis)
+  async deleteWatewaterAnalysis() {
+    await post(`${BASE_URL}/api/field_crop_app_process_wastewater_analysis/delete`, {
+      pk: this.state.deleteAnalysis.pk,
+      dairy_id: this.state.dairy_id
+    })
+    this.getFieldCropAppWastewaterAnalysis()
+    this.toggleShowConfirmDeleteWastewaterAnalysisModal(false)
+
   }
 
   /** TSV: toggle, onChange, onUpload, View */
@@ -448,30 +454,6 @@ class ProcessWastewater extends Component {
     return []
   }
 
-  renderItem({ index, style }) {
-    let events = this.getAppEventsByViewKeys()
-    return (
-      <ProcessWastewaterAppEvent key={`ppwwviewrow${index}`} style={style}
-        process_wastewaters={events}
-        onDelete={this.onConfirmProcessWastewaterDelete.bind(this)}
-      />
-    )
-  }
-
-  getItemSize(index) {
-    let numRows = this.getAppEventsByViewKeys().length
-
-    // let numRows = this.state.field_crop_app_process_wastewater[this.state.viewFieldKey][field_crop_app_id].length
-    let headerSize = 55
-    let itemSize = 350
-
-    return headerSize + (itemSize * numRows)
-  }
-  setWindowListener() {
-    window.addEventListener('resize', (ev) => {
-      this.setState({ windowHeight: window.innerHeight, windowWidth: window.innerWidth })
-    })
-  }
 
   confirmDeleteAllFromTable(val) {
     this.setState({ toggleShowDeleteAllModal: val })

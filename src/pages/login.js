@@ -183,7 +183,7 @@ class Login extends Component {
                       Register
                     </Button>
                   </Grid> */}
-                  <Grid item align='left' xs={12}>
+                  <Grid item align='center' xs={12}>
                     <Button style={{ marginLeft: '4px' }}
                       variant="outlined"
                       color="primary"

@@ -513,6 +513,7 @@ class Freshwater extends Component {
   }
 
   onFreshwaterDelete() {
+    console.log("Deleteing freshwater: ", this.state.deleteFreshwaterObj)
     if (Object.keys(this.state.deleteFreshwaterObj).length > 0) {
       post(`${this.props.BASE_URL}/api/field_crop_app_freshwater/delete`, {
         pk: this.state.deleteFreshwaterObj.pk,
@@ -522,7 +523,7 @@ class Freshwater extends Component {
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFreshwaterModal(false)
-          this.props.getFieldCropAppFreshwater()
+          this.getFieldCropAppFreshwater()
         })
         .catch(err => {
           console.log(err)
@@ -539,7 +540,7 @@ class Freshwater extends Component {
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFreshwaterSourceModal(false)
-          this.props.getFieldCropAppFreshwaterSource()
+          this.getFieldCropAppFreshwaterSource()
         })
         .catch(err => {
           console.log(err)
@@ -556,7 +557,7 @@ class Freshwater extends Component {
         .then(res => {
           console.log(res)
           this.toggleShowConfirmDeleteFreshwaterAnalysisModal(false)
-          this.props.getFieldCropAppFreshwaterAnalysis()
+          this.getFieldCropAppFreshwaterAnalysis()
         })
         .catch(err => {
           console.log(err)

@@ -34,7 +34,6 @@ class UploadLogo extends Component {
     }
 
     async getLogo() {
-        console.log("Starting to Getting Logo ")
         try {
             const logo = await Logo.getLogo(this.state.company_id)
             if (logo.error) {
