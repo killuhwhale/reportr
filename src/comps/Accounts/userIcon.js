@@ -41,7 +41,10 @@ const paperStyle = makeStyles((theme) => ({
 
 const poperStyle = makeStyles((theme) => ({
     root: {
-        zIndex: '1200 !important'
+        zIndex: '1200 !important',
+        top: '8px !important',
+        left: '-8px !important',
+
     },
 
 }));
@@ -66,7 +69,8 @@ const ProfilePopper = (props) => {
     return (
         <ClickAwayListener onClickAway={props.handleClickAway}>
             <Popper id={props.id} open={props.open} anchorEl={props.anchorEl}
-                placement='bottom-start' transition className={poperClasses.root}>
+                placement='bottom-start' transition className={poperClasses.root}
+            >
                 {({ TransitionProps }) => (
                     <Fade {...TransitionProps} timeout={350}>
                         <Grid item xs={12}>
