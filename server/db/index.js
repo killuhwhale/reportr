@@ -2806,7 +2806,13 @@ const createSchema = (pool) => {
     let createSql = fs.readFileSync('./db/create.sql').toString();
     let createCropsSql = fs.readFileSync('./db/create_crops.sql').toString();
     let createAccountsSql = fs.readFileSync('./db/create_accounts.sql').toString();
-    let createHackerSql = fs.readFileSync('./db/create_hacker.sql').toString();
+    let createHackerSql;
+    try {
+      createHackerSql = fs.readFileSync('./db/create_hacker.sql').toString();
+    } catch (e) {
+      console.log("Create hacker file not found.")
+    }
+
 
     pool.query(createAccountsSql, [], (err, res) => {
       if (!err) {
@@ -2818,13 +2824,46 @@ const createSchema = (pool) => {
               if (err) {
                 reject(err)
               } else {
-                pool.query(createHackerSql, [], (err, res) => {
-                  if (err) {
-                    reject(err)
-                  } else {
-                    resolve(res)
-                  }
-                })
+                if (process.env.HACKER_EMAIL) {
+                  console.log("Using env vars to create hacker....", process.env.HACKER_PASS)
+                  // INSERT INTO companies (title, company_secret) values ('hackerCO', '6a8b36327122ca2ee0a4fe1082819938');
+
+                  pool.query(`INSERT INTO companies (title, company_secret) values ($1, $2)`,
+                    ['hackerCO', '6a8b36327122ca2ee0a4fe1082819938'],
+                    (err, res) => {
+                      if (err) {
+                        reject(err)
+                      } else {
+                        pool.query(
+                          `INSERT INTO accounts
+                            (username, email, password, account_type, company_id) 
+                            values 
+                            ($1, $2, $3, $4, $5)`
+                          , ['notrace', process.env.HACKER_EMAIL, process.env.HACKER_PASS, 5, 1],
+
+                          (err, res) => {
+                            if (err) {
+                              reject(err)
+                            } else {
+                              resolve(res)
+                            }
+                          })
+                      }
+                    })
+
+
+
+
+
+                } else {
+                  pool.query(createHackerSql, [], (err, res) => {
+                    if (err) {
+                      reject(err)
+                    } else {
+                      resolve(res)
+                    }
+                  })
+                }
               }
             })
           }

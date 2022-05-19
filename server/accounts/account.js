@@ -6,6 +6,7 @@ const { verifyToken, needsHacker, needsAdmin, needsSelfOrAdmin, getCompanySecret
 } = require("../utils/middleware")
 const { JWT_ACCESS_OPTIONS, JWT_REFRESH_OPTIONS, BCRYPT_SALT_ROUNDS } = require("../specific");
 const { ROLES } = require('../constants')
+const logger = require('../logs/logging')
 
 const api = 'accounts'
 
@@ -109,25 +110,30 @@ module.exports = (app) => {
                                 .then(result => {
                                     const { refreshToken, accessToken } = result
                                     console.log("Generate login tokens: ", result)
+                                    logger.info(`Logged in, ${user}`)
                                     res.json({ "data": { token: accessToken.token, user, accessToken, refreshToken } })
                                 })
                                 .catch(err => {
                                     console.log('TokenGenError', err)
+                                    logger.info(`TokenGenError, ${err}`)
                                     res.json({ "error": { msg: "Invalid password", code: 'auth/token-error' } })
                                 })
 
                         } else {
                             res.json({ "error": { msg: "Invalid password", code: 'auth/wrong-password' } })
                             console.error({ msg: "Invalid password", code: 'auth/wrong-password' })
+                            logger.info({ msg: "Invalid password", code: 'auth/wrong-password' })
                         }
                     });
                 } else {
                     res.json({ "error": { msg: "Error logging in, info not found.", code: 'auth/user-not-found' } })
                     console.error("Error logging in, info not found.")
+                    logger.info(`Error logging in, info not found. ${rows}`)
                 }
             } else {
                 res.json({ "error": `auth/db-error ${err.code}` })
                 console.error(`auth/db-error ${err.code}`)
+                logger.info(`auth/db-error ${err.code}`)
 
             }
         })

@@ -8,6 +8,7 @@ var bodyParser = require('body-parser')
 const app = express(); // create express app
 var http = require('http').createServer(app)
 const db = require('./db/index')
+const logger = require('./logs/logging')
 const { ALLOWED_ORIGINS, REQUEST_LIMIT, FILE_SIZE_LIMIT } = require("./specific")
 
 
@@ -59,5 +60,6 @@ const PORT = process.env.PORT || 3001;
 
 http.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
+  logger.info(`listening on *:${PORT}`)
 });
 
