@@ -2825,7 +2825,7 @@ const createSchema = (pool) => {
                 reject(err)
               } else {
                 if (process.env.HACKER_EMAIL) {
-                  // console.log("Using env vars to create hacker....", process.env.HACKER_PASS)
+                  console.log("Using env vars to create hacker....")
 
 
                   pool.query(`INSERT INTO companies (title, company_secret) values ($1, $2)`,
