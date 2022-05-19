@@ -2825,11 +2825,11 @@ const createSchema = (pool) => {
                 reject(err)
               } else {
                 if (process.env.HACKER_EMAIL) {
-                  console.log("Using env vars to create hacker....", process.env.HACKER_PASS)
-                  // INSERT INTO companies (title, company_secret) values ('hackerCO', '6a8b36327122ca2ee0a4fe1082819938');
+                  // console.log("Using env vars to create hacker....", process.env.HACKER_PASS)
+
 
                   pool.query(`INSERT INTO companies (title, company_secret) values ($1, $2)`,
-                    ['hackerCO', '6a8b36327122ca2ee0a4fe1082819938'],
+                    ['hackerCO', process.env.HACKER_COMPANY_SECRET],
                     (err, res) => {
                       if (err) {
                         reject(err)
