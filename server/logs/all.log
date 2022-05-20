@@ -94,3 +94,43 @@
 {"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
 {"0":{"data":"Complete","tsvType":"Production Records","uploadedFilename":"Production Records"},"1":{"data":"Complete","tsvType":"WW Applications","uploadedFilename":"WW Applications"},"10":{"data":"Complete","tsvType":"Discharges","uploadedFilename":"Discharges"},"2":{"data":"Complete","tsvType":"FW Applications","uploadedFilename":"FW Applications"},"3":{"data":"Complete","tsvType":"SM Applications","uploadedFilename":"SM Applications"},"4":{"data":"Complete","tsvType":"Commercial Fertilizer","uploadedFilename":"Commercial Fertilizer"},"5":{"data":"Complete","tsvType":"SM Exports","uploadedFilename":"SM Exports"},"6":{"data":"Complete","tsvType":"WW Exports","uploadedFilename":"WW Exports"},"7":{"data":"Complete","tsvType":"Soil Analyses","uploadedFilename":"Soil Analyses"},"8":{"data":"Complete","tsvType":"Plowdown Credit","uploadedFilename":"Plowdown Credit"},"9":{"data":"Complete","tsvType":"Tile Drainage Systems","uploadedFilename":"Tile Drainage Systems"},"level":"info","message":"(tsv/serverTsv.js:1822)","service":"user-service"}
 {"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(db/index.js:46) Connected to db: Test db.","service":"user-service"}
+{"level":"info","message":"(index.js:63) listening on *:3001","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
+{"0":{"data":"Complete","tsvType":"Production Records","uploadedFilename":"Production Records"},"1":{"data":"Complete","tsvType":"WW Applications","uploadedFilename":"WW Applications"},"10":{"data":"Complete","tsvType":"Discharges","uploadedFilename":"Discharges"},"2":{"data":"Complete","tsvType":"FW Applications","uploadedFilename":"FW Applications"},"3":{"data":"Complete","tsvType":"SM Applications","uploadedFilename":"SM Applications"},"4":{"data":"Complete","tsvType":"Commercial Fertilizer","uploadedFilename":"Commercial Fertilizer"},"5":{"data":"Complete","tsvType":"SM Exports","uploadedFilename":"SM Exports"},"6":{"data":"Complete","tsvType":"WW Exports","uploadedFilename":"WW Exports"},"7":{"data":"Complete","tsvType":"Soil Analyses","uploadedFilename":"Soil Analyses"},"8":{"data":"Complete","tsvType":"Plowdown Credit","uploadedFilename":"Plowdown Credit"},"9":{"data":"Complete","tsvType":"Tile Drainage Systems","uploadedFilename":"Tile Drainage Systems"},"level":"info","message":"(tsv/serverTsv.js:1822)","service":"user-service"}
+{"level":"info","message":"(accounts/account.js:113) Logged in, [object Object]","service":"user-service"}
