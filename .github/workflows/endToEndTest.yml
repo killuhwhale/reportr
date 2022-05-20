@@ -27,6 +27,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run build --if-present
+    - run: npm install
+    # - run: npm run build --if-present
     - run: cd server/;(NODE_ENV=test HACKER_COMPANY_SECRET=$HACKER_COMPANY_SECRET HACKER_EMAIL=$HACKER_EMAIL HACKER_PASS=$HACKER_PASS npm start&);
     - run: cd ../; npm test;
