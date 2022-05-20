@@ -1,16 +1,16 @@
-require('dotenv').config()
 const express = require("express");
 var bodyParser = require('body-parser')
-const fileupload = require('express-fileupload');
+const fileupload = require("express-fileupload");
 const cors = require('cors');
 const process = require('process');
 const jwt = require("jsonwebtoken");
 const app = express(); // create express app
-var http = require('http').createServer(app)
+var _http = require('http')
 const db = require('./db/index')
 const logger = require('./logs/logging')
 const { ALLOWED_ORIGINS, REQUEST_LIMIT, FILE_SIZE_LIMIT } = require("./specific")
-
+require('dotenv').config()
+const http = _http.createServer(app)
 
 // Setup
 app.use(express.json({ limit: REQUEST_LIMIT }))
