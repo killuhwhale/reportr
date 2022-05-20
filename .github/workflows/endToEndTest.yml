@@ -31,4 +31,4 @@ jobs:
     # - run: npm run build --if-present
     - run: (NODE_ENV=test HACKER_COMPANY_SECRET=$HACKER_COMPANY_SECRET HACKER_EMAIL=$HACKER_EMAIL HACKER_PASS=$HACKER_PASS npm start&);
     - run: cd ../;
-    - run: npm test;
+    - run: GITHUB_WORKFLOW_ENV=true npm test;
