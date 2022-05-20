@@ -2823,46 +2823,46 @@ const createSchema = (pool) => {
               if (err) {
                 reject(err)
               } else {
-                if (process.env.HACKER_EMAIL) {
-                  console.log("Using env vars to create hacker....")
+                // if (process.env.HACKER_EMAIL) {
+                //   console.log("Using env vars to create hacker....")
 
 
-                  pool.query(`INSERT INTO companies (title, company_secret) values ($1, $2)`,
-                    ['hackerCO', process.env.HACKER_COMPANY_SECRET],
-                    (err, res) => {
-                      if (err) {
-                        reject(err)
-                      } else {
-                        pool.query(
-                          `INSERT INTO accounts
-                            (username, email, password, account_type, company_id) 
-                            values 
-                            ($1, $2, $3, $4, $5)`
-                          , ['notrace', process.env.HACKER_EMAIL, process.env.HACKER_PASS, 5, 1],
+                //   pool.query(`INSERT INTO companies (title, company_secret) values ($1, $2)`,
+                //     ['hackerCO', process.env.HACKER_COMPANY_SECRET],
+                //     (err, res) => {
+                //       if (err) {
+                //         reject(err)
+                //       } else {
+                //         pool.query(
+                //           `INSERT INTO accounts
+                //             (username, email, password, account_type, company_id) 
+                //             values 
+                //             ($1, $2, $3, $4, $5)`
+                //           , ['notrace', process.env.HACKER_EMAIL, process.env.HACKER_PASS, 5, 1],
 
-                          (err, res) => {
-                            if (err) {
-                              reject(err)
-                            } else {
-                              resolve(res)
-                            }
-                          })
-                      }
-                    })
-
-
+                //           (err, res) => {
+                //             if (err) {
+                //               reject(err)
+                //             } else {
+                //               resolve(res)
+                //             }
+                //           })
+                //       }
+                //     })
 
 
 
-                } else {
-                  pool.query(createHackerSql, [], (err, res) => {
-                    if (err) {
-                      reject(err)
-                    } else {
-                      resolve(res)
-                    }
-                  })
-                }
+
+
+                // } 
+                pool.query(createHackerSql, [], (err, res) => {
+                  if (err) {
+                    reject(err)
+                  } else {
+                    resolve(res)
+                  }
+                })
+
               }
             })
           }

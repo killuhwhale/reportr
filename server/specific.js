@@ -17,8 +17,6 @@ exports.ALLOWED_ORIGINS = [
     'http://localhost:3001',
     'http://localhost:8080',
     '127.0.0.1:3001', // Testing - npm test
-    'http://127.0.0.1:3001', // Testing - npm test
-    'https://127.0.0.1:3001', // Testing - npm test
     "https://fragservices.app",
     "https://reportrr-918ff.web.app"
 ];
