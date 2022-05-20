@@ -28,5 +28,5 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build --if-present
-    - run: NODE_ENV=test HACKER_COMPANY_SECRET='6a8b36327122ca2ee0a4fe1082819938' HACKER_EMAIL="notrace@hacker.com" HACKER_PASS="\$2b\$10\$8CmbjaNFzFe7vKFdevIJdeNES9CFQDfS4HBKRzKIi5XS4qFFIh8RC" npm start 
-    - run: cd ../ & npm test
+    - run: cd server/;(NODE_ENV=test HACKER_COMPANY_SECRET=$HACKER_COMPANY_SECRET HACKER_EMAIL=$HACKER_EMAIL HACKER_PASS=$HACKER_PASS npm start&);
+    - run: cd ../; npm test;
