@@ -15,7 +15,7 @@ const { ALLOWED_ORIGINS, REQUEST_LIMIT, FILE_SIZE_LIMIT } = require("./specific"
 // Setup
 app.use(express.json({ limit: REQUEST_LIMIT }))
 app.use(bodyParser.raw({ limit: FILE_SIZE_LIMIT })) // Sneding TSV to server
-app.use(fileUpload());
+app.use(fileUpload()); // Multipart form data
 
 app.use(cors({
   origin: function (origin, callback) {
