@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require("express");
 var bodyParser = require('body-parser')
-// const fileUpload = require('express-fileupload');
+const fileupload = require('express-fileupload');
 const cors = require('cors');
 const process = require('process');
 const jwt = require("jsonwebtoken");
@@ -15,7 +15,7 @@ const { ALLOWED_ORIGINS, REQUEST_LIMIT, FILE_SIZE_LIMIT } = require("./specific"
 // Setup
 app.use(express.json({ limit: REQUEST_LIMIT }))
 app.use(bodyParser.raw({ limit: FILE_SIZE_LIMIT })) // Sneding TSV to server
-// app.use(fileUpload()); // Multipart form data
+app.use(fileupload()); // Multipart form data
 
 app.use(cors({
   origin: function (origin, callback) {
