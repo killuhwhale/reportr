@@ -1,10 +1,10 @@
 require('dotenv').config()
 const express = require("express");
+var bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
 const process = require('process');
 const jwt = require("jsonwebtoken");
-var bodyParser = require('body-parser')
 const app = express(); // create express app
 var http = require('http').createServer(app)
 const db = require('./db/index')
