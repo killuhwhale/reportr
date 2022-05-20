@@ -1,9 +1,8 @@
 const format = require('pg-format');
-const { Pool, Client } = require('pg');
+const { Pool } = require('pg');
 const fs = require('fs');
 const process = require('process');
 const logger = require('../logs/logging')
-const PORT = process.env.PORT || 3001;
 const {
   validFieldCropHarvest, validProcessWastewaterAnalysis, validProcessWastewater,
   validFreshwaterAnalysis, validSolidmanureAnalysis, validSolidmanure, validNutrientImport,

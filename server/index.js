@@ -2,7 +2,8 @@ const express = require("express");
 var bodyParser = require('body-parser')
 const cors = require('cors');
 const process = require('process');
-// const fileupload = require("express-fileupload");
+
+const fileupload = require("express-fileupload");
 const app = express(); // create express app
 var _http = require('http')
 const db = require('./db/index')
