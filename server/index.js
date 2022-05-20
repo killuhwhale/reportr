@@ -1,9 +1,9 @@
 const express = require("express");
 var bodyParser = require('body-parser')
-const fileupload = require("express-fileupload");
 const cors = require('cors');
 const process = require('process');
 const jwt = require("jsonwebtoken");
+const fileupload = require("express-fileupload");
 const app = express(); // create express app
 var _http = require('http')
 const db = require('./db/index')
