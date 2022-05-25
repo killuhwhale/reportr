@@ -1,5 +1,6 @@
 # App
  - [AG Services](https://fragservices.app/)
+ - Login: test@admin.com/test
 
 # Test Sheet 
   Open and Download the test sheet to upload in the app.
